@@ -3,566 +3,710 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第1回：案件メール地獄から脱出する！ | 営業パイプライン自動化フロー</title>
+    <title>第1回：案件メール地獄から脱出する | 営業パイプライン自動化フロー</title>
+    <meta name="description" content="Google Workspace Studioで営業メール仕事を分解する">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-primary: #2563eb;
+            --accent-secondary: #7c3aed;
+            --accent-tertiary: #0891b2;
+            --accent-gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #0891b2 100%);
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition-fast: 0.15s ease;
+            --transition-base: 0.3s ease;
+            --coral: #ef4444;
+            --green: #22c55e;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --ink: #0A0E27;
-            --paper: #FEFEF8;
-            --electric: #00F0FF;
-            --coral: #FF6B6B;
-            --violet: #7C3AED;
-            --gray: #4A5568;
-            --google-blue: #4285F4;
-            --google-green: #34A853;
-            --sales-orange: #FF8C00;
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: 'Zen Kaku Gothic New', sans-serif;
-            background: var(--paper);
-            color: var(--ink);
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.7;
-            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
         }
 
-        body::before {
-            content: '';
+        ::selection {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .nav {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 2px,
-                rgba(10, 14, 39, 0.01) 2px,
-                rgba(10, 14, 39, 0.01) 4px
-            );
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(254, 254, 248, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            padding: 1.5rem 0;
-            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .nav-container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .nav-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-
-        .nav-menu {
+        .nav-back {
             display: flex;
-            gap: 2rem;
-        }
-
-        .nav-menu a {
-            color: var(--ink);
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
             text-decoration: none;
-            font-size: 0.9rem;
-            position: relative;
-            transition: color 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition-fast);
         }
 
-        .nav-menu a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--sales-orange);
-            transition: width 0.3s ease;
+        .nav-back:hover {
+            color: var(--accent-primary);
         }
 
-        .nav-menu a:hover::after {
-            width: 100%;
+        .nav-lesson {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--accent-primary);
         }
 
         .hero {
-            min-height: 100vh;
+            min-height: 70vh;
             display: flex;
             align-items: center;
-            padding: 0 2rem;
-            margin-top: 80px;
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            position: relative;
+        }
+
+        .hero-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0);
+            background-size: 40px 40px;
+            opacity: 0.5;
         }
 
         .hero-content {
-            max-width: 1400px;
+            max-width: 900px;
             margin: 0 auto;
-            width: 100%;
+            position: relative;
+            z-index: 1;
         }
 
-        .hero-label {
-            display: inline-block;
-            background: var(--ink);
-            color: var(--paper);
-            padding: 0.5rem 1.5rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            letter-spacing: 0.1em;
-            margin-bottom: 2rem;
-            transform: rotate(-1deg);
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
         }
 
         .hero-title {
-            font-size: clamp(3rem, 8vw, 5rem);
-            font-weight: 900;
-            line-height: 0.95;
-            margin-bottom: 2rem;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
             letter-spacing: -0.03em;
+            line-height: 1.2;
+            margin-bottom: 1rem;
         }
 
-        .hero-title span {
-            display: block;
-            color: var(--sales-orange);
-            font-size: 0.6em;
-            margin-top: 0.2em;
+        .hero-title-accent {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero-description {
-            font-size: 1.25rem;
-            max-width: 800px;
-            margin-bottom: 3rem;
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 700px;
             line-height: 1.8;
-            font-weight: 300;
-        }
-
-        .course-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--sales-orange), var(--coral));
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 1rem;
         }
 
         .section {
-            max-width: 1400px;
-            margin: 80px auto;
-            padding: 0 2rem;
+            padding: 5rem 2rem;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
         }
 
         .section-label {
-            font-family: 'Space Grotesk', monospace;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 0.2em;
-            opacity: 0.5;
-            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
+            color: var(--accent-primary);
+            margin-bottom: 0.75rem;
         }
 
         .section-title {
-            font-size: 2.5rem;
+            font-size: clamp(1.5rem, 3vw, 2rem);
             font-weight: 700;
-            margin-bottom: 3rem;
-            position: relative;
-            padding-bottom: 1rem;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: var(--sales-orange);
-        }
-
-        .grid {
-            display: grid;
-            gap: 2rem;
-        }
-
-        .grid-2 {
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-        }
-
-        .grid-3 {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        }
-
-        .card {
-            background: var(--paper);
-            border: 2px solid var(--ink);
-            padding: 2rem;
-            position: relative;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: 100%;
-            height: 100%;
-            background: var(--ink);
-            z-index: -1;
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translate(-4px, -4px);
-            background: var(--ink);
-            color: var(--paper);
-        }
-
-        .card:hover::before {
-            top: 8px;
-            left: 8px;
-        }
-
-        .card:hover .card-number {
-            background: var(--paper);
-            color: var(--ink);
-        }
-
-        .card-number {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            background: var(--sales-orange);
-            color: white;
-            font-family: 'Space Grotesk', monospace;
-            font-weight: 700;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 700;
+            letter-spacing: -0.02em;
             margin-bottom: 1rem;
-            line-height: 1.2;
         }
 
-        .card-description {
-            font-size: 0.95rem;
-            opacity: 0.8;
-            line-height: 1.7;
-        }
-
-        .phase-card {
-            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
-            background-size: 20px 1px;
-            background-repeat: repeat-x;
-            background-position: 0 100%;
-            padding-bottom: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .phase-header {
-            display: flex;
-            align-items: baseline;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .phase-number {
-            font-family: 'Space Grotesk', monospace;
-            font-size: 5rem;
-            font-weight: 700;
-            line-height: 1;
-            color: var(--sales-orange);
-            opacity: 0.2;
-        }
-
-        .phase-title {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .phase-subtitle {
+        .section-description {
             font-size: 1rem;
-            color: var(--gray);
-            margin-top: 0.5rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.8;
         }
 
-        .comparison-box {
-            background: rgba(255, 107, 107, 0.05);
-            border-left: 4px solid var(--coral);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .comparison-box.after {
-            background: rgba(0, 240, 255, 0.05);
-            border-left: 4px solid var(--electric);
-        }
-
-        .comparison-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        ul {
-            list-style-position: inside;
-            margin-left: 1rem;
-        }
-
-        ul li {
-            margin-bottom: 0.5rem;
-        }
-
-        .note {
-            background: rgba(255, 140, 0, 0.05);
-            border-left: 4px solid var(--sales-orange);
-            padding: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .note-title {
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .stat-card {
-            background: var(--ink);
-            color: var(--paper);
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .stat-number {
-            font-family: 'Space Grotesk', monospace;
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--sales-orange);
-            line-height: 1;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-top: 0.5rem;
-        }
-
-        .course-schedule {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 3rem;
-        }
-
-        .course-schedule th {
-            background: var(--ink);
-            color: var(--paper);
-            padding: 1rem;
-            text-align: left;
-            font-weight: 500;
-            font-size: 0.9rem;
-            letter-spacing: 0.05em;
-        }
-
-        .course-schedule td {
-            padding: 1.25rem 1rem;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            vertical-align: top;
-        }
-
-        .course-schedule tr:hover {
-            background: rgba(255,140,0,0.05);
-        }
-
-        .schedule-session {
-            font-family: 'Space Grotesk', monospace;
-            font-weight: 700;
-            color: var(--sales-orange);
-        }
-
-        .checklist {
-            background: rgba(124, 58, 237, 0.05);
-            border: 2px solid var(--violet);
-            border-radius: 8px;
-            padding: 2rem;
-            margin: 2rem 0;
-        }
-
-        .checklist h3 {
-            color: var(--violet);
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .checklist li {
-            margin-bottom: 1rem;
-        }
-
-        .intro-text {
-            font-size: 1.1rem;
-            line-height: 1.9;
-            margin-bottom: 2rem;
-        }
-
-        .intro-text strong {
-            color: var(--sales-orange);
-        }
-
-        .goal-box {
-            background: linear-gradient(135deg, var(--sales-orange), var(--coral));
+        .goal-card {
+            background: var(--accent-gradient);
             color: white;
             padding: 2rem;
-            margin: 2rem 0;
-            border-radius: 8px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 3rem;
         }
 
-        .goal-box h3 {
-            font-size: 1.3rem;
+        .goal-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
             margin-bottom: 1rem;
         }
 
         .goal-list {
             list-style: none;
-            margin: 0;
         }
 
         .goal-list li {
             padding: 0.5rem 0;
-            padding-left: 1.5rem;
+            padding-left: 1.75rem;
             position: relative;
+            font-size: 0.9375rem;
         }
 
         .goal-list li::before {
             content: '✓';
             position: absolute;
             left: 0;
-            font-weight: bold;
+            font-weight: 700;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            transition: var(--transition-base);
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-card {
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+
+        .comparison-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .comparison-card.before {
+            border-top: 4px solid var(--coral);
+        }
+
+        .comparison-card.after {
+            border-top: 4px solid var(--green);
+        }
+
+        .comparison-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+
+        .comparison-card.before .comparison-header {
+            color: var(--coral);
+        }
+
+        .comparison-card.after .comparison-header {
+            color: var(--green);
+        }
+
+        .comparison-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .comparison-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        .comparison-list li::before {
+            content: '';
+            flex-shrink: 0;
+            width: 6px;
+            height: 6px;
+            margin-top: 0.5rem;
+            border-radius: 50%;
+        }
+
+        .comparison-card.before .comparison-list li::before {
+            background: var(--coral);
+        }
+
+        .comparison-card.after .comparison-list li::before {
+            background: var(--green);
         }
 
         .highlight-stat {
             display: flex;
             align-items: center;
             gap: 2rem;
-            background: var(--ink);
-            color: var(--paper);
+            background: var(--text-primary);
+            color: white;
             padding: 2rem;
+            border-radius: var(--radius-lg);
             margin: 2rem 0;
         }
 
-        .highlight-stat-number {
-            font-family: 'Space Grotesk', monospace;
-            font-size: 4rem;
+        .highlight-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .highlight-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .phase-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .phase-item {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+
+        .phase-item:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .phase-number {
+            width: 64px;
+            height: 64px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .phase-content h3 {
+            font-size: 1.25rem;
             font-weight: 700;
-            color: var(--sales-orange);
-            line-height: 1;
+            margin-bottom: 0.5rem;
         }
 
-        .highlight-stat-text {
-            font-size: 1.2rem;
+        .phase-content p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
         }
 
-        .automation-flow {
+        .phase-content ul {
+            list-style: disc;
+            margin-left: 1.25rem;
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        .phase-content ul li {
+            margin-bottom: 0.25rem;
+        }
+
+        .automation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .automation-card {
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+
+        .automation-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .automation-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--accent-gradient);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 700;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+        }
+
+        .automation-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .automation-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .flow-diagram {
             display: flex;
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
             gap: 1rem;
-            background: rgba(0,0,0,0.02);
             padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
             margin: 2rem 0;
         }
 
         .flow-item {
-            background: white;
-            border: 2px solid var(--ink);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
             font-weight: 500;
-            text-align: center;
-            min-width: 140px;
+            font-size: 0.9375rem;
         }
 
         .flow-item.highlight {
-            background: var(--sales-orange);
+            background: var(--accent-gradient);
             color: white;
-            border-color: var(--sales-orange);
+            border: none;
         }
 
         .flow-arrow {
-            font-size: 1.5rem;
-            color: var(--sales-orange);
+            color: var(--accent-primary);
+            font-size: 1.25rem;
+            font-weight: 700;
         }
 
-        .next-preview {
-            background: var(--ink);
-            color: var(--paper);
-            padding: 3rem;
-            margin-top: 4rem;
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
 
-        .next-preview h2 {
-            color: var(--sales-orange);
+        .schedule-table th {
+            background: var(--text-primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .schedule-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .schedule-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .schedule-table tr:hover td {
+            background: var(--bg-secondary);
+        }
+
+        .schedule-session {
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .note {
+            background: rgba(37, 99, 235, 0.05);
+            border-left: 4px solid var(--accent-primary);
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 2rem 0;
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--accent-primary);
+        }
+
+        .note p, .note ul {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .note ul {
+            margin-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .checklist {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .checklist h3 {
+            color: var(--accent-secondary);
+            font-size: 1.25rem;
             margin-bottom: 1rem;
         }
 
+        .checklist ul {
+            list-style: none;
+        }
+
+        .checklist li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+
+        .checklist li::before {
+            content: '□';
+            position: absolute;
+            left: 0;
+            color: var(--accent-secondary);
+            font-weight: 700;
+        }
+
+        .next-preview {
+            background: var(--text-primary);
+            color: white;
+            padding: 4rem 2rem;
+        }
+
+        .next-preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .next-preview .section-label {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .next-preview h2 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-preview h3 {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .next-preview p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9375rem;
+            max-width: 600px;
+        }
+
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9375rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
+        }
+
+        .nav-prev {
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-prev:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .nav-next {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .nav-next:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
+            .hero {
+                padding: 6rem 1.5rem 3rem;
             }
 
-            .grid-2, .grid-3 {
+            .section {
+                padding: 3rem 1.5rem;
+            }
+
+            .comparison-grid {
                 grid-template-columns: 1fr;
             }
 
-            .hero-title {
-                font-size: 2.5rem;
-            }
-
-            .phase-header {
+            .phase-item {
                 flex-direction: column;
                 gap: 1rem;
             }
 
             .phase-number {
-                font-size: 3rem;
-            }
-
-            .card {
-                padding: 1.5rem;
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
             }
 
             .highlight-stat {
@@ -570,38 +714,48 @@
                 text-align: center;
             }
 
-            .automation-flow {
+            .flow-diagram {
                 flex-direction: column;
             }
 
             .flow-arrow {
                 transform: rotate(90deg);
             }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .lesson-nav {
+                flex-direction: column;
+            }
+        }
+
+        [id] {
+            scroll-margin-top: 80px;
         }
     </style>
 </head>
 <body>
-    <nav>
+    <nav class="nav">
         <div class="nav-container">
-            <div class="nav-title">営業パイプライン自動化フロー</div>
-            <div class="nav-menu">
-                <a href="#intro">はじめに</a>
-                <a href="#problem">課題</a>
-                <a href="#breakdown">業務分解</a>
-                <a href="#automation">自動化</a>
-                <a href="#agents">エージェント</a>
-                <a href="#preparation">準備</a>
-            </div>
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 1 / 5</div>
         </div>
     </nav>
 
-    <div class="hero">
+    <section class="hero">
+        <div class="hero-pattern"></div>
         <div class="hero-content">
-            <div class="hero-label">第1回 / 全5回</div>
-            <div class="course-badge">営業パイプライン自動化フロー</div>
+            <div class="hero-badge">第1回 / 全5回</div>
             <h1 class="hero-title">
-                案件メール地獄から脱出する！
-                <span>Google Workspace Studioで営業メール仕事を分解する</span>
+                案件メール地獄から脱出する！<br>
+                <span class="hero-title-accent">Google Workspace Studioで営業メール仕事を分解する</span>
             </h1>
             <p class="hero-description">
                 毎日50〜100件のメールに埋もれていませんか？
@@ -609,319 +763,321 @@
                 追客漏れゼロ・見落としゼロ・確認時間80%削減を実現します。
             </p>
         </div>
-    </div>
+    </section>
 
     <section class="section" id="intro">
-        <div class="section-label">Introduction</div>
-        <h2 class="section-title">この講座について</h2>
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Introduction</div>
+                <h2 class="section-title">この講座について</h2>
+            </div>
 
-        <p class="intro-text">
-            営業担当の皆さん、<strong>毎日50〜100件のメールに埋もれて、本来の商談に集中できない</strong>という悩みはありませんか？「重要な案件メールを見落とした」「追客タイミングを逃して失注した」という経験は誰にでもあるはずです。
-        </p>
+            <p class="section-description" style="margin-bottom: 2rem;">
+                営業担当の皆さん、毎日50〜100件のメールに埋もれて、本来の商談に集中できないという悩みはありませんか？「重要な案件メールを見落とした」「追客タイミングを逃して失注した」という経験は誰にでもあるはずです。
+            </p>
 
-        <p class="intro-text">
-            この講座では、<strong>Google Workspace Studio</strong>と<strong>Gemini</strong>を使って、営業メール業務を徹底的に自動化します。AIエージェントがあなたの代わりにメールを読み、要約し、優先順位をつけ、追客漏れを防ぎます。
-        </p>
+            <p class="section-description" style="margin-bottom: 2rem;">
+                この講座では、Google Workspace StudioとGeminiを使って、営業メール業務を徹底的に自動化します。AIエージェントがあなたの代わりにメールを読み、要約し、優先順位をつけ、追客漏れを防ぎます。
+            </p>
 
-        <div class="goal-box">
-            <h3>この講座のゴール</h3>
-            <ul class="goal-list">
-                <li>メール確認時間を<strong>80%削減</strong>（1時間→12分）</li>
-                <li>追客漏れを<strong>ゼロ</strong>に</li>
-                <li>重要案件の見落としを<strong>完全防止</strong></li>
-                <li>営業資料を<strong>自動整理</strong>して探す時間ゼロ</li>
-            </ul>
+            <div class="goal-card">
+                <h3>この講座のゴール</h3>
+                <ul class="goal-list">
+                    <li>メール確認時間を<strong>80%削減</strong>（1時間→12分）</li>
+                    <li>追客漏れを<strong>ゼロ</strong>に</li>
+                    <li>重要案件の見落としを<strong>完全防止</strong></li>
+                    <li>営業資料を<strong>自動整理</strong>して探す時間ゼロ</li>
+                </ul>
+            </div>
         </div>
     </section>
 
-    <section class="section" id="problem">
-        <div class="section-label">Problem</div>
-        <h2 class="section-title">営業メール業務の課題</h2>
-
-        <p class="intro-text">
-            営業メール業務には、見えないコストが隠れています。まずは現状を数字で把握しましょう。
-        </p>
-
-        <div class="stat-grid">
-            <div class="stat-card">
-                <div class="stat-number">50-100</div>
-                <div class="stat-label">1日あたりの受信メール</div>
+    <section class="section" id="problem" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Problem</div>
+                <h2 class="section-title">営業メール業務の課題</h2>
+                <p class="section-description">営業メール業務には、見えないコストが隠れています。まずは現状を数字で把握しましょう。</p>
             </div>
-            <div class="stat-card">
-                <div class="stat-number">1-2時間</div>
-                <div class="stat-label">メール確認・仕分け時間</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">月1-2件</div>
-                <div class="stat-label">追客漏れによる失注</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">数百万円</div>
-                <div class="stat-label">年間売上ロス</div>
-            </div>
-        </div>
 
-        <div class="comparison-box">
-            <div class="comparison-title">Before：現状の課題</div>
-            <ul>
-                <li>案件メールが埋もれて対応が遅れる</li>
-                <li>重要顧客からのメールを見落とす</li>
-                <li>追客すべきタイミングを逃して失注</li>
-                <li>提案資料・見積書がDriveに散在して探せない</li>
-                <li>期限が迫る案件に直前で気づく</li>
-            </ul>
-        </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">50-100</div>
+                    <div class="stat-label">1日あたりの受信メール</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1-2h</div>
+                    <div class="stat-label">メール確認・仕分け時間</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">月1-2件</div>
+                    <div class="stat-label">追客漏れによる失注</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">数百万円</div>
+                    <div class="stat-label">年間売上ロス</div>
+                </div>
+            </div>
 
-        <div class="comparison-box after">
-            <div class="comparison-title">After：Studio導入後</div>
-            <ul>
-                <li>案件メールをGeminiが自動要約・優先度判定（<strong>確認時間80%削減</strong>）</li>
-                <li>重要顧客メールは即座にアラート（<strong>見落としゼロ</strong>）</li>
-                <li>要対応案件は自動ラベル付け＆次アクション提示（<strong>追客漏れゼロ</strong>）</li>
-                <li>提案資料・見積書は案件フォルダに自動整理（<strong>探す時間ゼロ</strong>）</li>
-                <li>期限監視で確度高い案件を逃さない（<strong>対応遅延ゼロ</strong>）</li>
-            </ul>
-        </div>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before</div>
+                    <ul class="comparison-list">
+                        <li>案件メールが埋もれて対応が遅れる</li>
+                        <li>重要顧客からのメールを見落とす</li>
+                        <li>追客すべきタイミングを逃して失注</li>
+                        <li>提案資料・見積書がDriveに散在して探せない</li>
+                        <li>期限が迫る案件に直前で気づく</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After</div>
+                    <ul class="comparison-list">
+                        <li>案件メールをGeminiが自動要約・優先度判定（確認時間80%削減）</li>
+                        <li>重要顧客メールは即座にアラート（見落としゼロ）</li>
+                        <li>要対応案件は自動ラベル付け＆次アクション提示（追客漏れゼロ）</li>
+                        <li>提案資料・見積書は案件フォルダに自動整理（探す時間ゼロ）</li>
+                        <li>期限監視で確度高い案件を逃さない（対応遅延ゼロ）</li>
+                    </ul>
+                </div>
+            </div>
 
-        <div class="highlight-stat">
-            <div class="highlight-stat-number">250-500h</div>
-            <div class="highlight-stat-text">
-                これらを全て手動でやると、1日1〜2時間。年間で250〜500時間。<br>
-                これは<strong>本来、商談や提案に使うべき時間</strong>です。
+            <div class="highlight-stat">
+                <div class="highlight-number">250-500h</div>
+                <div class="highlight-text">
+                    これらを全て手動でやると、1日1〜2時間。年間で250〜500時間。<br>
+                    これは<strong>本来、商談や提案に使うべき時間</strong>です。
+                </div>
             </div>
         </div>
     </section>
 
     <section class="section" id="breakdown">
-        <div class="section-label">Breakdown</div>
-        <h2 class="section-title">営業メール業務の5つの要素</h2>
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Breakdown</div>
+                <h2 class="section-title">営業メール業務の5つの要素</h2>
+                <p class="section-description">営業メール業務を自動化するために、まず業務を5つの要素に分解します。それぞれの要素にAIエージェントを割り当てることで、効率的な自動化が可能になります。</p>
+            </div>
 
-        <p class="intro-text">
-            営業メール業務を自動化するために、まず業務を5つの要素に分解します。それぞれの要素にAIエージェントを割り当てることで、効率的な自動化が可能になります。
-        </p>
-
-        <div class="phase-card">
-            <div class="phase-header">
-                <div class="phase-number">01</div>
-                <div>
-                    <div class="phase-title">確認・仕分け</div>
-                    <div class="phase-subtitle">毎日30分〜1時間を費やす</div>
+            <div class="phase-list">
+                <div class="phase-item">
+                    <div class="phase-number">01</div>
+                    <div class="phase-content">
+                        <h3>確認・仕分け</h3>
+                        <p>毎日30分〜1時間を費やす</p>
+                        <ul>
+                            <li>案件メールと非案件メールを分ける</li>
+                            <li>緊急度・重要度で優先順位をつける</li>
+                            <li>担当案件かどうかを判断する</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-number">02</div>
+                    <div class="phase-content">
+                        <h3>重要顧客対応</h3>
+                        <p>見落としが失注に直結</p>
+                        <ul>
+                            <li>キーアカウントからのメールを見落とさない</li>
+                            <li>VIP顧客には優先対応</li>
+                            <li>決裁者・キーパーソンからのメールを即座に把握</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-number">03</div>
+                    <div class="phase-content">
+                        <h3>追客・フォローアップ</h3>
+                        <p>タイミングを逃すと失注</p>
+                        <ul>
+                            <li>提案後のフォロー時期を管理</li>
+                            <li>見積もり提出後の反応を確認</li>
+                            <li>契約に向けた次のアクションを決める</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-number">04</div>
+                    <div class="phase-content">
+                        <h3>資料管理</h3>
+                        <p>探す時間が無駄</p>
+                        <ul>
+                            <li>提案資料・見積書の送付履歴</li>
+                            <li>受領した資料の整理</li>
+                            <li>案件ごとのドキュメント管理</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-number">05</div>
+                    <div class="phase-content">
+                        <h3>期限管理</h3>
+                        <p>見逃しが致命的</p>
+                        <ul>
+                            <li>回答期限のある案件</li>
+                            <li>契約更新時期</li>
+                            <li>入札・コンペの締め切り</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <ul>
-                <li>案件メールと非案件メールを分ける</li>
-                <li>緊急度・重要度で優先順位をつける</li>
-                <li>担当案件かどうかを判断する</li>
-            </ul>
-        </div>
-
-        <div class="phase-card">
-            <div class="phase-header">
-                <div class="phase-number">02</div>
-                <div>
-                    <div class="phase-title">重要顧客対応</div>
-                    <div class="phase-subtitle">見落としが失注に直結</div>
-                </div>
-            </div>
-            <ul>
-                <li>キーアカウントからのメールを見落とさない</li>
-                <li>VIP顧客には優先対応</li>
-                <li>決裁者・キーパーソンからのメールを即座に把握</li>
-            </ul>
-        </div>
-
-        <div class="phase-card">
-            <div class="phase-header">
-                <div class="phase-number">03</div>
-                <div>
-                    <div class="phase-title">追客・フォローアップ</div>
-                    <div class="phase-subtitle">タイミングを逃すと失注</div>
-                </div>
-            </div>
-            <ul>
-                <li>提案後のフォロー時期を管理</li>
-                <li>見積もり提出後の反応を確認</li>
-                <li>契約に向けた次のアクションを決める</li>
-            </ul>
-        </div>
-
-        <div class="phase-card">
-            <div class="phase-header">
-                <div class="phase-number">04</div>
-                <div>
-                    <div class="phase-title">資料管理</div>
-                    <div class="phase-subtitle">探す時間が無駄</div>
-                </div>
-            </div>
-            <ul>
-                <li>提案資料・見積書の送付履歴</li>
-                <li>受領した資料の整理</li>
-                <li>案件ごとのドキュメント管理</li>
-            </ul>
-        </div>
-
-        <div class="phase-card">
-            <div class="phase-header">
-                <div class="phase-number">05</div>
-                <div>
-                    <div class="phase-title">期限管理</div>
-                    <div class="phase-subtitle">見逃しが致命的</div>
-                </div>
-            </div>
-            <ul>
-                <li>回答期限のある案件</li>
-                <li>契約更新時期</li>
-                <li>入札・コンペの締め切り</li>
-            </ul>
         </div>
     </section>
 
-    <section class="section" id="automation">
-        <div class="section-label">Automation</div>
-        <h2 class="section-title">Studioで何が自動化できるか</h2>
-
-        <p class="intro-text">
-            Google Workspace Studioを使えば、上記5つの要素をすべて自動化できます。それぞれの自動化内容を見ていきましょう。
-        </p>
-
-        <div class="grid grid-2">
-            <div class="card">
-                <div class="card-number">01</div>
-                <h3 class="card-title">確認・仕分け → Gemini要約 + 自動分類</h3>
-                <p class="card-description">
-                    案件メールをGeminiが自動で要約。案件ステージ（問い合わせ/提案中/見積もり/契約交渉）を自動判定。緊急度・重要度を自動で判定。
-                </p>
+    <section class="section" id="automation" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Automation</div>
+                <h2 class="section-title">Studioで何が自動化できるか</h2>
+                <p class="section-description">Google Workspace Studioを使えば、上記5つの要素をすべて自動化できます。それぞれの自動化内容を見ていきましょう。</p>
             </div>
 
-            <div class="card">
-                <div class="card-number">02</div>
-                <h3 class="card-title">重要顧客対応 → 即時アラート</h3>
-                <p class="card-description">
-                    キーアカウントからのメールを検知。即座にChatで通知。VIP顧客リストとの自動照合。
-                </p>
+            <div class="automation-grid">
+                <div class="automation-card">
+                    <div class="automation-number">01</div>
+                    <h3>確認・仕分け → Gemini要約 + 自動分類</h3>
+                    <p>案件メールをGeminiが自動で要約。案件ステージ（問い合わせ/提案中/見積もり/契約交渉）を自動判定。緊急度・重要度を自動で判定。</p>
+                </div>
+                <div class="automation-card">
+                    <div class="automation-number">02</div>
+                    <h3>重要顧客対応 → 即時アラート</h3>
+                    <p>キーアカウントからのメールを検知。即座にChatで通知。VIP顧客リストとの自動照合。</p>
+                </div>
+                <div class="automation-card">
+                    <div class="automation-number">03</div>
+                    <h3>追客 → 自動ラベル + 次アクション提示</h3>
+                    <p>「要対応」メールを自動でラベル付け。Geminiが次のアクションを提案。追客期限を自動設定。</p>
+                </div>
+                <div class="automation-card">
+                    <div class="automation-number">04</div>
+                    <h3>資料管理 → Drive自動整理</h3>
+                    <p>添付ファイルを案件フォルダに自動保存。提案資料・見積書を自動分類。ファイル名を自動でリネーム。</p>
+                </div>
+                <div class="automation-card">
+                    <div class="automation-number">05</div>
+                    <h3>期限管理 → キーワード監視 + アラート</h3>
+                    <p>期限関連のキーワードを監視。締め切り前にリマインド。確度高い案件を優先アラート。</p>
+                </div>
             </div>
 
-            <div class="card">
-                <div class="card-number">03</div>
-                <h3 class="card-title">追客 → 自動ラベル + 次アクション提示</h3>
-                <p class="card-description">
-                    「要対応」メールを自動でラベル付け。Geminiが次のアクションを提案。追客期限を自動設定。
-                </p>
+            <div class="flow-diagram">
+                <div class="flow-item">メール受信</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item highlight">Gemini分析</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">自動分類</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">通知・保存</div>
             </div>
-
-            <div class="card">
-                <div class="card-number">04</div>
-                <h3 class="card-title">資料管理 → Drive自動整理</h3>
-                <p class="card-description">
-                    添付ファイルを案件フォルダに自動保存。提案資料・見積書を自動分類。ファイル名を自動でリネーム。
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="card-number">05</div>
-                <h3 class="card-title">期限管理 → キーワード監視 + アラート</h3>
-                <p class="card-description">
-                    期限関連のキーワードを監視。締め切り前にリマインド。確度高い案件を優先アラート。
-                </p>
-            </div>
-        </div>
-
-        <div class="automation-flow">
-            <div class="flow-item">メール受信</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item highlight">Gemini分析</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item">自動分類</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item">通知・保存</div>
         </div>
     </section>
 
     <section class="section" id="agents">
-        <div class="section-label">Agents</div>
-        <h2 class="section-title">この講座で作る4つのエージェント</h2>
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Agents</div>
+                <h2 class="section-title">この講座で作る4つのエージェント</h2>
+                <p class="section-description">この講座では、営業メール業務を自動化する4つのAIエージェントを作成します。第1回（今回）で全体像を理解し、第2〜5回で実際にエージェントを構築していきます。</p>
+            </div>
 
-        <p class="intro-text">
-            この講座では、営業メール業務を自動化する4つのAIエージェントを作成します。第1回（今回）で全体像を理解し、第2〜5回で実際にエージェントを構築していきます。
-        </p>
-
-        <table class="course-schedule">
-            <thead>
-                <tr>
-                    <th>回</th>
-                    <th>エージェント名</th>
-                    <th>機能</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="schedule-session">第2回</td>
-                    <td>見込み顧客メール要約エージェント</td>
-                    <td>毎朝、見込み顧客メールをGeminiが要約。重要顧客を優先表示。緊急案件はアラート通知。</td>
-                </tr>
-                <tr>
-                    <td class="schedule-session">第3回</td>
-                    <td>追客漏れゼロエージェント</td>
-                    <td>要対応案件メールを自動ラベル化。Geminiが次のアクションを提案。Chatに対応リストを通知。</td>
-                </tr>
-                <tr>
-                    <td class="schedule-session">第4回</td>
-                    <td>営業資料自動整理エージェント</td>
-                    <td>提案資料・見積書をDriveに自動保存。案件フォルダに自動分類。定期レポートを自動送信。</td>
-                </tr>
-                <tr>
-                    <td class="schedule-session">第5回</td>
-                    <td>確度高案件監視エージェント</td>
-                    <td>営業キーワード（提案/見積もり/契約）を監視。確度高い案件を優先アラート。複数エージェントを統合して運用。</td>
-                </tr>
-            </tbody>
-        </table>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>回</th>
+                        <th>エージェント名</th>
+                        <th>機能</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="schedule-session">第2回</td>
+                        <td>見込み顧客メール要約エージェント</td>
+                        <td>毎朝、見込み顧客メールをGeminiが要約。重要顧客を優先表示。緊急案件はアラート通知。</td>
+                    </tr>
+                    <tr>
+                        <td class="schedule-session">第3回</td>
+                        <td>追客漏れゼロエージェント</td>
+                        <td>要対応案件メールを自動ラベル化。Geminiが次のアクションを提案。Chatに対応リストを通知。</td>
+                    </tr>
+                    <tr>
+                        <td class="schedule-session">第4回</td>
+                        <td>営業資料自動整理エージェント</td>
+                        <td>提案資料・見積書をDriveに自動保存。案件フォルダに自動分類。定期レポートを自動送信。</td>
+                    </tr>
+                    <tr>
+                        <td class="schedule-session">第5回</td>
+                        <td>確度高案件監視エージェント</td>
+                        <td>営業キーワード（提案/見積もり/契約）を監視。確度高い案件を優先アラート。複数エージェントを統合して運用。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </section>
 
-    <section class="section" id="preparation">
-        <div class="section-label">Preparation</div>
-        <h2 class="section-title">事前準備と利用条件</h2>
+    <section class="section" id="preparation" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Preparation</div>
+                <h2 class="section-title">事前準備と利用条件</h2>
+            </div>
 
-        <div class="note">
-            <div class="note-title">アカウント要件</div>
-            <ul>
-                <li>Google Workspace（Business Starter/Standard/Plus、Enterprise Standard/Plus）アカウント</li>
-                <li>またはGoogle AI Ultra for Businessアドオン</li>
-                <li>管理コンソール > 生成AI > Gemini for Workspace で有効化されていること</li>
-                <li>18歳以上のユーザーであること（18歳未満はAI機能を使用不可）</li>
-            </ul>
-        </div>
+            <div class="note">
+                <div class="note-title">アカウント要件</div>
+                <ul>
+                    <li>Google Workspace（Business Starter/Standard/Plus、Enterprise Standard/Plus）アカウント</li>
+                    <li>またはGoogle AI Ultra for Businessアドオン</li>
+                    <li>管理コンソール > 生成AI > Gemini for Workspace で有効化されていること</li>
+                    <li>18歳以上のユーザーであること（18歳未満はAI機能を使用不可）</li>
+                </ul>
+            </div>
 
-        <div class="note">
-            <div class="note-title">Studioへのアクセス</div>
-            <p>ブラウザで以下のURLにアクセスしてください：</p>
-            <p style="font-family: 'Space Grotesk', monospace; margin-top: 0.5rem; font-size: 1.1rem;"><strong>studio.workspace.google.com</strong></p>
-        </div>
+            <div class="note">
+                <div class="note-title">Studioへのアクセス</div>
+                <p>ブラウザで以下のURLにアクセスしてください：</p>
+                <p style="font-weight: 700; margin-top: 0.5rem; font-size: 1rem;">studio.workspace.google.com</p>
+            </div>
 
-        <div class="checklist">
-            <h3>次回までに準備するもの</h3>
-            <ul>
-                <li><strong>重要顧客リスト</strong>：キーアカウントのメールアドレスまたはドメインをリスト化（例：@a-corp.co.jp, @b-inc.com）</li>
-                <li><strong>案件ステージ定義</strong>：問い合わせ/提案中/見積もり/契約交渉/受注/失注の判定基準を整理</li>
-                <li><strong>監視キーワード</strong>：「提案書」「見積もり」「契約」「期限」など、自社で使う営業キーワードをリストアップ</li>
-                <li><strong>Google Chat</strong>：エージェントからのDM通知を受け取れるように確認（※スペースへの投稿機能は削除されました）</li>
-                <li><strong>営業資料フォルダ</strong>：Google Driveに案件資料を保存するための親フォルダを作成</li>
-                <li><strong>アクセス確認</strong>：studio.workspace.google.com にアクセスできるか確認</li>
-            </ul>
+            <div class="checklist">
+                <h3>次回までに準備するもの</h3>
+                <ul>
+                    <li><strong>重要顧客リスト</strong>：キーアカウントのメールアドレスまたはドメインをリスト化（例：@a-corp.co.jp, @b-inc.com）</li>
+                    <li><strong>案件ステージ定義</strong>：問い合わせ/提案中/見積もり/契約交渉/受注/失注の判定基準を整理</li>
+                    <li><strong>監視キーワード</strong>：「提案書」「見積もり」「契約」「期限」など、自社で使う営業キーワードをリストアップ</li>
+                    <li><strong>Google Chat</strong>：エージェントからのDM通知を受け取れるように確認（※スペースへの投稿機能は削除されました）</li>
+                    <li><strong>営業資料フォルダ</strong>：Google Driveに案件資料を保存するための親フォルダを作成</li>
+                    <li><strong>アクセス確認</strong>：studio.workspace.google.com にアクセスできるか確認</li>
+                </ul>
+            </div>
         </div>
     </section>
 
     <section class="next-preview">
-        <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
-            <div class="section-label" style="color: rgba(255,255,255,0.5);">NEXT</div>
+        <div class="next-preview-container">
+            <div class="section-label">Next</div>
             <h2>次回予告</h2>
-            <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">第2回：見込み顧客メールを10分で把握！</h3>
-            <p style="font-size: 1.1rem; opacity: 0.9;">要約・重要顧客優先・緊急案件アラートの自動化</p>
-            <p style="margin-top: 1rem; opacity: 0.7;">
+            <h3>第2回：見込み顧客メールを10分で把握！</h3>
+            <p>要約・重要顧客優先・緊急案件アラートの自動化</p>
+            <p style="margin-top: 1rem;">
                 実際にStudioにアクセスして、見込み顧客メールを自動要約するエージェントを作成します。
                 重要顧客リストとの照合、緊急案件のアラート通知まで、実際の画面を見ながら学びます。
             </p>
         </div>
     </section>
+
+    <nav class="lesson-nav">
+        <a href="index.html" class="nav-btn nav-prev">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            コース一覧
+        </a>
+        <a href="lesson2.html" class="nav-btn nav-next">
+            次のレッスン
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </nav>
 </body>
 </html>
