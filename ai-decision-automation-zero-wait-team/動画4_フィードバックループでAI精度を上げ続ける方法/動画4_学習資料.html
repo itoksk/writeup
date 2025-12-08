@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画4: フィードバックループでAI精度を上げ続ける方法</title>
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 5px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin: 40px 0 25px 0;
+            font-size: 1.8em;
+        }
+        .intro-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c3e50;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .feedback-loop-visual {
+            background: #f8f9fa;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            text-align: center;
+            border: 3px solid #667eea;
+        }
+        .loop-diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .loop-step {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .loop-arrow {
+            position: absolute;
+            right: -30px;
+            font-size: 2em;
+            color: #667eea;
+        }
+        .before-after-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        .comparison-card {
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .before-card {
+            background: #ffe0e0;
+            border: 3px solid #e74c3c;
+        }
+        .after-card {
+            background: #e0f2ff;
+            border: 3px solid #3498db;
+        }
+        .abtest-demo {
+            background: #fff5cc;
+            border: 3px solid #f39c12;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .abtest-results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .prompt-result {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .accuracy-timeline {
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 40px 0;
+        }
+        .timeline-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            position: relative;
+        }
+        .timeline-point {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+        .timeline-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            z-index: 1;
+        }
+        .accuracy-percentage {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .code-example {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .improvement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        .improvement-card {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .improvement-card:hover {
+            transform: translateY(-5px);
+        }
+        .improvement-icon {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .monthly-process {
+            background: #e8f5e9;
+            border: 3px solid #27ae60;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .process-week {
+            background: white;
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .dashboard-preview {
+            background: #f0f0f0;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .kpi-item {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .action-items {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+        }
+        .highlight-box {
+            background: #fffbf0;
+            border-left: 5px solid #f39c12;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .best-practice {
+            background: #e8f8f5;
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 動画4: フィードバックループでAI精度を上げ続ける方法</h1>
+        
+        <div class="intro-box">
+            <h3>🎯 この動画で実現すること</h3>
+            <p style="font-size: 1.3em; font-weight: bold;">動画1〜3で構築したAI承認システムを、データドリブンな継続改善により<br>精度90%から98%以上へ自動的に向上させ続ける仕組みを10分で構築</p>
+        </div>
+
+        <h2>🔍 なぜフィードバックループが必要か？</h2>
+        
+        <div class="feedback-loop-visual">
+            <h3>継続的改善サイクル</h3>
+            <div class="loop-diagram">
+                <div class="loop-step">
+                    <div>📊<br><strong>測定</strong><br>精度を記録</div>
+                    <div class="loop-arrow">→</div>
+                </div>
+                <div class="loop-step">
+                    <div>🔍<br><strong>分析</strong><br>失敗パターン特定</div>
+                    <div class="loop-arrow">→</div>
+                </div>
+                <div class="loop-step">
+                    <div>💡<br><strong>改善</strong><br>プロンプト最適化</div>
+                    <div class="loop-arrow">→</div>
+                </div>
+                <div class="loop-step">
+                    <div>🧪<br><strong>検証</strong><br>A/Bテスト実施</div>
+                </div>
+            </div>
+        </div>
+
+        <h2>📊 Before / After 比較</h2>
+        
+        <div class="before-after-comparison">
+            <div class="comparison-card before-card">
+                <h3>❌ 一度作って放置のAI</h3>
+                <ul>
+                    <li><strong>精度固定</strong>: 導入時90%のまま</li>
+                    <li><strong>環境変化に未対応</strong>: 新しい案件タイプで失敗</li>
+                    <li><strong>改善方法不明</strong>: どこを直せばいいか分からない</li>
+                    <li><strong>信頼性低下</strong>: 時間とともに精度悪化</li>
+                    <li><strong>最終的な結果</strong>: 使われなくなる</li>
+                </ul>
+            </div>
+            <div class="comparison-card after-card">
+                <h3>✅ 自己進化するAI</h3>
+                <ul>
+                    <li><strong>継続的向上</strong>: 毎月1-2%ずつ精度改善</li>
+                    <li><strong>自動適応</strong>: 新パターンを学習し続ける</li>
+                    <li><strong>科学的改善</strong>: データに基づく客観的最適化</li>
+                    <li><strong>信頼性向上</strong>: PDCAで確実に進化</li>
+                    <li><strong>最終的な結果</strong>: チームに不可欠な存在に</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>🧪 A/Bテストの実装方法</h2>
+        
+        <div class="abtest-demo">
+            <h3>実例：同じ案件を2つのプロンプトで判断</h3>
+            <p><strong>テスト案件</strong>: 「マーケティングオートメーションツール導入 30万円」</p>
+            
+            <div class="abtest-results">
+                <div class="prompt-result">
+                    <h4>📘 プロンプトA（基本版）</h4>
+                    <p><strong>判断</strong>: 条件付き承認</p>
+                    <p><strong>信頼度</strong>: 82%</p>
+                    <p><strong>理由</strong>: 「ROI予測が不明確なため、3ヶ月のトライアル実施を推奨」</p>
+                </div>
+                <div class="prompt-result">
+                    <h4>📗 プロンプトB（Few-shot学習版）</h4>
+                    <p><strong>判断</strong>: 承認</p>
+                    <p><strong>信頼度</strong>: 88%</p>
+                    <p><strong>理由</strong>: 「過去の類似案件で平均ROI 250%を達成。早期導入を推奨」</p>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <strong>💡 ポイント</strong>: 動画3で学んだFew-shot学習により、プロンプトBは過去の成功事例を参照して、より確信を持った判断ができています
+            </div>
+        </div>
+
+        <h2>📈 精度向上の実績</h2>
+        
+        <div class="accuracy-timeline">
+            <h3>6ヶ月間の継続改善による精度推移</h3>
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                <div class="timeline-point">
+                    <span class="accuracy-percentage">90%</span>
+                    <strong>導入時</strong><br>
+                    基本プロンプト
+                </div>
+                <div class="timeline-point">
+                    <span class="accuracy-percentage">92%</span>
+                    <strong>1ヶ月後</strong><br>
+                    Few-shot追加
+                </div>
+                <div class="timeline-point">
+                    <span class="accuracy-percentage">94%</span>
+                    <strong>2ヶ月後</strong><br>
+                    A/Bテスト最適化
+                </div>
+                <div class="timeline-point">
+                    <span class="accuracy-percentage">96%</span>
+                    <strong>3ヶ月後</strong><br>
+                    カテゴリ別調整
+                </div>
+                <div class="timeline-point">
+                    <span class="accuracy-percentage">98%</span>
+                    <strong>6ヶ月後</strong><br>
+                    継続改善完成
+                </div>
+            </div>
+        </div>
+
+        <h2>🛠️ Google SheetsでのA/Bテスト管理</h2>
+        
+        <div class="code-example">
+<pre>
+// A/Bテスト管理シートの列構成
+A列: 日付（=TODAY()）
+B列: 案件内容（Slackから自動転記）
+C列: 使用プロンプト版（=IF(MOD(DAY(A2),2)=1,"プロンプトA","プロンプトB")）
+D列: AI判断結果
+E列: AI信頼度
+F列: 実際の結果（3ヶ月後に手動更新）
+G列: 正誤判定（=IF(D2=F2,1,0)）
+H列: カテゴリ（システム/マーケティング/人材）
+I列: 金額レンジ
+J列: 改善ヒント（間違えた理由の分析）
+
+// 精度計算式
+プロンプトA精度: =AVERAGEIF(C:C,"プロンプトA",G:G)
+プロンプトB精度: =AVERAGEIF(C:C,"プロンプトB",G:G)
+</pre>
+        </div>
+
+        <h2>🚀 高度な改善テクニック</h2>
+        
+        <div class="improvement-grid">
+            <div class="improvement-card">
+                <div class="improvement-icon">🎯</div>
+                <h3>プロンプト要素の最適化</h3>
+                <ul>
+                    <li>判断基準の詳細度テスト</li>
+                    <li>事例数の最適化（5個 vs 10個 vs 15個）</li>
+                    <li>出力フォーマットの改善</li>
+                    <li>制約条件の調整</li>
+                </ul>
+            </div>
+            
+            <div class="improvement-card">
+                <div class="improvement-icon">📅</div>
+                <h3>時期・カテゴリ別最適化</h3>
+                <ul>
+                    <li>四半期末：保守的判断モード</li>
+                    <li>新規事業期：積極的判断モード</li>
+                    <li>IT案件：技術リスク重視</li>
+                    <li>マーケティング：ROI測定重視</li>
+                </ul>
+            </div>
+            
+            <div class="improvement-card">
+                <div class="improvement-icon">⚠️</div>
+                <h3>失敗パターン分析</h3>
+                <ul>
+                    <li>間違いやすい案件の特定</li>
+                    <li>見落としリスクの発見</li>
+                    <li>過信要因の分析</li>
+                    <li>エッジケースへの対応</li>
+                </ul>
+            </div>
+            
+            <div class="improvement-card">
+                <div class="improvement-icon">⏰</div>
+                <h3>フィードバックタイミング</h3>
+                <ul>
+                    <li>即座判定：明確な良/悪案件</li>
+                    <li>3ヶ月判定：効果測定必要案件</li>
+                    <li>1年判定：長期影響評価案件</li>
+                    <li>継続監視：段階的確認案件</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>📊 自動分析スクリプト</h2>
+        
+        <div class="code-example">
+<pre>
+// Google Apps Scriptで週次自動分析
+function analyzeABTest() {
+  const sheet = SpreadsheetApp.getActiveSheet();
+  
+  // 1. 精度の自動計算
+  const accuracyA = sheet.getRange("K2").setFormula(
+    '=AVERAGEIF(C:C,"プロンプトA",G:G)'
+  );
+  const accuracyB = sheet.getRange("K3").setFormula(
+    '=AVERAGEIF(C:C,"プロンプトB",G:G)'
+  );
+  
+  // 2. 統計的有意性の確認
+  const sampleSize = sheet.getRange("K4").setFormula(
+    '=COUNTIF(G:G,"<>"")'
+  );
+  
+  // 3. カテゴリ別分析
+  const categories = ["システム投資", "マーケティング", "人材育成"];
+  categories.forEach((cat, i) => {
+    sheet.getRange(`L${i+2}`).setFormula(
+      `=AVERAGEIFS(G:G,H:H,"${cat}",C:C,"プロンプトB")`
+    );
+  });
+  
+  // 4. 失敗パターンの抽出
+  const failures = sheet.getDataRange().getValues()
+    .filter(row => row[6] === 0) // 正誤判定が0（失敗）
+    .map(row => ({
+      content: row[1],
+      category: row[7],
+      amount: row[8],
+      hint: row[9]
+    }));
+  
+  // 5. 改善提案の生成
+  if (accuracyB.getValue() > accuracyA.getValue() && sampleSize.getValue() > 30) {
+    sendSlackNotification("プロンプトBが有意に優れています。本番環境への適用を推奨します。");
+  }
+  
+  // 6. レポート作成
+  createWeeklyReport(accuracyA.getValue(), accuracyB.getValue(), failures);
+}
+
+// Slackへの通知
+function sendSlackNotification(message) {
+  // 動画5で詳しく説明するSlack連携
+  // 今は精度向上の通知のみ
+}
+
+// 週次レポートの自動生成
+function createWeeklyReport(accA, accB, failures) {
+  const report = `
+週次A/Bテストレポート
+=====================
+プロンプトA精度: ${(accA * 100).toFixed(1)}%
+プロンプトB精度: ${(accB * 100).toFixed(1)}%
+改善率: ${((accB - accA) * 100).toFixed(1)}%
+
+失敗パターンTOP3:
+${failures.slice(0, 3).map(f => `- ${f.category}: ${f.hint}`).join('\n')}
+
+推奨アクション:
+${generateRecommendations(failures)}
+  `;
+  
+  // レポートをシートに保存
+  saveReport(report);
+}
+</pre>
+        </div>
+
+        <h2>🗓️ 月次改善プロセス</h2>
+        
+        <div class="monthly-process">
+            <h3>実践的な運用スケジュール</h3>
+            
+            <div class="process-week">
+                <h4>📊 第1週：データ収集・整理</h4>
+                <ul>
+                    <li>新しい判断結果の収集（Make→Sheets自動連携）</li>
+                    <li>実際の成果との照合（手動で結果を更新）</li>
+                    <li>精度計算・トレンド分析（自動スクリプト実行）</li>
+                    <li>異常値の確認（信頼度50%以下をチェック）</li>
+                </ul>
+            </div>
+            
+            <div class="process-week">
+                <h4>🔍 第2週：問題分析・仮説立案</h4>
+                <ul>
+                    <li>失敗パターンの分析（共通点を探る）</li>
+                    <li>新しいビジネスパターンの発見</li>
+                    <li>改善仮説の立案（具体的な修正案）</li>
+                    <li>優先順位の決定（影響度×頻度）</li>
+                </ul>
+            </div>
+            
+            <div class="process-week">
+                <h4>💡 第3週：プロンプト改善・テスト開始</h4>
+                <ul>
+                    <li>新プロンプトの作成（仮説を反映）</li>
+                    <li>A/Bテストの設計（対照群の設定）</li>
+                    <li>Makeでの実装（Routerで振り分け）</li>
+                    <li>初期データの収集開始</li>
+                </ul>
+            </div>
+            
+            <div class="process-week">
+                <h4>✅ 第4週：効果検証・本番適用</h4>
+                <ul>
+                    <li>テスト結果の統計分析</li>
+                    <li>有意差の確認（サンプル数30以上）</li>
+                    <li>改善版の本番環境適用</li>
+                    <li>次月の改善計画策定</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>📊 改善ダッシュボードの構成</h2>
+        
+        <div class="dashboard-preview">
+            <h3>月次改善ミーティング用ダッシュボード</h3>
+            <div style="display: flex; justify-content: center; flex-wrap: wrap;">
+                <div class="metric-card">
+                    <h4>全体精度</h4>
+                    <p style="font-size: 2em; font-weight: bold; color: #27ae60;">94.2%</p>
+                    <p>前月比 +1.3%</p>
+                </div>
+                <div class="metric-card">
+                    <h4>カテゴリ別精度</h4>
+                    <p>システム: 95%</p>
+                    <p>マーケティング: 88%</p>
+                    <p>人材: 92%</p>
+                </div>
+                <div class="metric-card">
+                    <h4>処理件数</h4>
+                    <p style="font-size: 2em; font-weight: bold; color: #3498db;">156件</p>
+                    <p>前月比 +23件</p>
+                </div>
+                <div class="metric-card">
+                    <h4>改善効果</h4>
+                    <p>時間削減: 87時間</p>
+                    <p>コスト削減: 43.5万円</p>
+                </div>
+            </div>
+        </div>
+
+        <h2>🎯 成功のためのKPI設定</h2>
+        
+        <div class="kpi-grid">
+            <div class="kpi-item">
+                <h4>📈 精度向上率</h4>
+                <p><strong>目標</strong>: 月1-2%向上</p>
+                <p><strong>測定方法</strong>: 正解率の統計分析</p>
+                <p><strong>現在</strong>: 1.3%/月</p>
+            </div>
+            <div class="kpi-item">
+                <h4>🎯 判断一貫性</h4>
+                <p><strong>目標</strong>: ブレ率5%以下</p>
+                <p><strong>測定方法</strong>: 同類案件の分散</p>
+                <p><strong>現在</strong>: 3.8%</p>
+            </div>
+            <div class="kpi-item">
+                <h4>⚡ 適応速度</h4>
+                <p><strong>目標</strong>: 新パターン対応1週間</p>
+                <p><strong>測定方法</strong>: 改善サイクル日数</p>
+                <p><strong>現在</strong>: 5日</p>
+            </div>
+            <div class="kpi-item">
+                <h4>⏰ 運用効率</h4>
+                <p><strong>目標</strong>: 改善活動5時間/月</p>
+                <p><strong>測定方法</strong>: 作業時間記録</p>
+                <p><strong>現在</strong>: 4.2時間</p>
+            </div>
+        </div>
+
+        <h2>💡 ベストプラクティス</h2>
+        
+        <div class="best-practice">
+            <h3>✅ 効果的なA/Bテストのコツ</h3>
+            <ul>
+                <li><strong>十分なサンプル数</strong>: 最低30件以上のデータを収集してから判断</li>
+                <li><strong>単一変数の原則</strong>: 一度に変更するのは1要素のみ</li>
+                <li><strong>ランダム化</strong>: 日付の奇数偶数での振り分けで偏りを防ぐ</li>
+                <li><strong>長期追跡</strong>: 3ヶ月後の実結果まで必ず追跡</li>
+            </ul>
+        </div>
+        
+        <div class="best-practice">
+            <h3>✅ 継続改善を成功させる秘訣</h3>
+            <ul>
+                <li><strong>定期的なレビュー</strong>: 月1回必ず振り返りの時間を確保</li>
+                <li><strong>小さな改善の積み重ね</strong>: 大きな変更より小さな最適化</li>
+                <li><strong>失敗を恐れない</strong>: 失敗データこそ最高の学習材料</li>
+                <li><strong>チーム全体で取り組む</strong>: 改善アイデアを全員から募集</li>
+            </ul>
+        </div>
+
+        <div class="action-items">
+            <h3>🚀 今すぐ始められるアクション</h3>
+            <ol>
+                <li><strong>記録開始</strong>: 今日からすべてのAI判断結果をGoogle Sheetsに記録</li>
+                <li><strong>テンプレート活用</strong>: 提供するA/Bテスト管理シートをコピーして使用</li>
+                <li><strong>最初のテスト</strong>: 基本プロンプト vs Few-shot版で2週間テスト</li>
+                <li><strong>分析スクリプト導入</strong>: 自動分析スクリプトを週次で実行設定</li>
+                <li><strong>改善会議の予約</strong>: 来月第1月曜日に30分の振り返り会議を設定</li>
+            </ol>
+        </div>
+
+        <div class="intro-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <h3>🎉 次回予告</h3>
+            <p style="font-size: 1.1em;">「動画5では、SlackとGoogle Apps Scriptを完全統合！<br>
+            チャットで承認依頼→AIが即座に判断→結果を自動記録する<br>
+            『24時間365日稼働するAI承認ボット』を構築します！」</p>
+        </div>
+    </div>
+</body>
+</html>

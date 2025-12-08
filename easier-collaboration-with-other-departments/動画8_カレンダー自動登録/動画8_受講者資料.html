@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画8: 入社日をトリガーにGoogleカレンダーへ自動登録！AI人事執事を完成させ、手作業をゼロにする方法</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #4285f4;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #34495e;
+            border-left: 5px solid #4285f4;
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+        
+        h3 {
+            color: #2c3e50;
+            margin-top: 25px;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .final-system {
+            background-color: #e8f0fe;
+            border: 2px solid #4285f4;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .before {
+            background-color: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .after {
+            background-color: #e8f5e8;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .time-trigger {
+            background-color: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .calendar-integration {
+            background-color: #f3e5f5;
+            border: 2px solid #9c27b0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .ai-butler {
+            background-color: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .timeline {
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .timeline-item {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-left: 4px solid #4285f4;
+            border-radius: 0 8px 8px 0;
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 25px;
+            width: 12px;
+            height: 12px;
+            background: #4285f4;
+            border-radius: 50%;
+        }
+        
+        .feature-highlight {
+            background: linear-gradient(90deg, #e8f0fe 0%, #f3e5f5 100%);
+            border-left: 5px solid #4285f4;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .success-tip {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .flow-diagram {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .achievement-card {
+            background: #f8f9fa;
+            border: 2px solid #4285f4;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .achievement-card h4 {
+            color: #4285f4;
+            margin-top: 0;
+        }
+        
+        .metrics-showcase {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        
+        .final-celebration {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .before-after, .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 AI人事執事システム完成！時間ベース完全自動化の集大成</h1>
+        
+        <div class="highlight-box">
+            <h2 style="border: none; color: white; margin-top: 0;">🎯 最終回で完成させること</h2>
+            <ul>
+                <li>時間ベーストリガーによる完全自動化システム</li>
+                <li>入社日をキーとしたGoogleカレンダー自動登録</li>
+                <li>フォローアップシステムの自動実行</li>
+                <li>AI人事執事システムの運用開始とメンテナンス</li>
+            </ul>
+        </div>
+
+        <h2>🚀 時間ベース自動化の革命的価値</h2>
+        
+        <div class="before-after">
+            <div class="before">
+                <h3>❌ 従来の人事業務</h3>
+                <ul>
+                    <li><strong>記憶依存:</strong> 「入社日の準備、忘れてた！」</li>
+                    <li><strong>手動実行:</strong> 毎回手動でメール・カレンダー操作</li>
+                    <li><strong>タイミング問題:</strong> 適切な時期の判断が困難</li>
+                    <li><strong>フォローアップ漏れ:</strong> 入社後の確認を忘れがち</li>
+                    <li><strong>属人化:</strong> 担当者不在時の対応不可</li>
+                </ul>
+            </div>
+            
+            <div class="after">
+                <h3>✅ AI人事執事システム</h3>
+                <ul>
+                    <li><strong>自動記憶:</strong> システムが全ての日程を管理</li>
+                    <li><strong>自動実行:</strong> 適切なタイミングで自動処理</li>
+                    <li><strong>最適タイミング:</strong> AIが最適な実行時期を判定</li>
+                    <li><strong>確実フォロー:</strong> 1週間後、1ヶ月後も自動実行</li>
+                    <li><strong>システム化:</strong> 24時間365日稼働の信頼性</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>🏗️ 完成システム全体設計</h2>
+        
+        <div class="flow-diagram">
+            <h3>🤖 AI人事執事システム完全版</h3>
+            <div class="code-block" style="text-align: left;">
+日次実行トリガー（毎朝8時）
+        ↓
+入社日チェック処理
+    ├→ 今日入社者の処理
+    │   ├→ ウェルカムメール（AI生成）
+    │   ├→ カレンダーイベント作成
+    │   ├→ 部署通知送信
+    │   ├→ タスク自動生成
+    │   └→ 個人フォルダ作成
+    │
+    ├→ 入社予定者の事前処理
+    │   ├→ 1週間前：事前準備通知
+    │   ├→ 3日前：最終確認リマインド
+    │   └→ 1日前：明日準備完了確認
+    │
+    └→ 入社後フォローアップ
+        ├→ 1週間後：適応状況確認
+        ├→ 1ヶ月後：定着度面談設定
+        └→ 3ヶ月後：評価面談スケジューリング
+        
+※ 全処理が並行実行、エラー時は自動フォールバック
+</div>
+            <p><strong>🎯 最終形の特徴：</strong> 人間の関与なしに、新入社員のライフサイクル全体を自動サポート</p>
+        </div>
+
+        <h2>⏰ 時間ベースシステム実装</h2>
+        
+        <div class="time-trigger">
+            <h3>🕐 日次自動実行システム</h3>
+            
+            <h4>Step 1: メイン日次処理関数</h4>
+            <div class="code-block">
+function dailyEmployeeCheck() {
+  console.log('=== 日次入社日チェック開始 ===');
+  
+  try {
+    const today = new Date();
+    console.log(`実行日: ${Utilities.formatDate(today, 'JST', 'yyyy年MM月dd日')}`);
+    
+    // 1. 今日入社の社員をチェック
+    const newEmployeesToday = checkTodayNewEmployees(today);
+    
+    // 2. 入社予定者の事前準備チェック
+    const upcomingEmployees = checkUpcomingEmployees(today);
+    
+    // 3. 入社後フォローアップが必要な社員
+    const followUpEmployees = checkFollowUpRequired(today);
+    
+    // 4. 各種自動処理実行（並行処理）
+    const results = {
+      newEmployees: processNewEmployees(newEmployeesToday),
+      upcomingReminders: processUpcomingReminders(upcomingEmployees),
+      followUps: processFollowUps(followUpEmployees)
+    };
+    
+    // 5. 処理結果をレポート
+    const report = generateDailyReport(results, today);
+    sendDailyReportToHR(report);
+    
+    console.log('=== 日次処理完了 ===');
+    return { success: true, results: results };
+    
+  } catch (error) {
+    console.error('日次処理エラー:', error);
+    sendErrorNotification(error);
+    return { success: false, error: error.message };
+  }
+}
+
+function checkTodayNewEmployees(today) {
+  console.log('今日入社の社員チェック中');
+  
+  const employeeSheet = SpreadsheetApp.getActiveSheet();
+  const data = employeeSheet.getDataRange().getValues();
+  
+  const todayEmployees = [];
+  
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const startDate = new Date(row[3]); // 入社日列
+    
+    if (isSameDate(startDate, today)) {
+      const employee = {
+        name: row[1],
+        email: row[2],
+        startDate: startDate,
+        department: row[4],
+        position: row[5],
+        employmentType: row[6],
+        rowIndex: i + 1,
+        isNewEmployeeToday: true
+      };
+      
+      todayEmployees.push(employee);
+    }
+  }
+  
+  console.log(`今日入社: ${todayEmployees.length}名`);
+  return todayEmployees;
+}</div>
+            
+            <h4>Step 2: 入社前段階的準備システム</h4>
+            <div class="code-block">
+function checkUpcomingEmployees(today) {
+  console.log('入社予定者チェック中');
+  
+  const employeeSheet = SpreadsheetApp.getActiveSheet();
+  const data = employeeSheet.getDataRange().getValues();
+  const upcomingEmployees = [];
+  
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const startDate = new Date(row[3]);
+    const daysDiff = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24));
+    
+    // 7日前、3日前、1日前にチェック
+    if ([7, 3, 1].includes(daysDiff)) {
+      upcomingEmployees.push({
+        name: row[1],
+        email: row[2],
+        startDate: startDate,
+        department: row[4],
+        position: row[5],
+        daysUntilStart: daysDiff,
+        preparationPhase: daysDiff === 7 ? '1週間前準備' : 
+                         daysDiff === 3 ? '3日前確認' : '最終準備'
+      });
+    }
+  }
+  
+  console.log(`入社予定者: ${upcomingEmployees.length}名`);
+  return upcomingEmployees;
+}
+
+function processUpcomingReminders(employees) {
+  console.log('入社予定者リマインダー処理中');
+  
+  const results = [];
+  
+  employees.forEach(employee => {
+    try {
+      let reminderResult = {};
+      
+      switch(employee.daysUntilStart) {
+        case 7:
+          // 1週間前：準備開始通知
+          reminderResult = send1WeekBeforeReminder(employee);
+          break;
+        case 3:
+          // 3日前：準備状況確認
+          reminderResult = send3DaysBeforeReminder(employee);
+          break;
+        case 1:
+          // 1日前：最終確認
+          reminderResult = send1DayBeforeReminder(employee);
+          break;
+      }
+      
+      results.push({
+        employee: employee.name,
+        phase: employee.preparationPhase,
+        success: reminderResult.success
+      });
+      
+    } catch (error) {
+      console.error(`${employee.name}のリマインダー処理エラー:`, error);
+      results.push({
+        employee: employee.name,
+        phase: employee.preparationPhase,
+        success: false,
+        error: error.message
+      });
+    }
+  });
+  
+  return results;
+}</div>
+            
+            <div class="success-tip">
+                <strong>⏰ 時間ベース処理の威力:</strong> 人間が覚えていなくても、システムが適切なタイミングで自動実行
+            </div>
+        </div>
+
+        <h2>📅 Googleカレンダー統合自動登録</h2>
+        
+        <div class="calendar-integration">
+            <h3>🗓️ ウェルカムイベント自動生成</h3>
+            
+            <h4>Step 1: 複数カレンダーへの同時登録</h4>
+            <div class="code-block">
+function processNewEmployees(employees) {
+  console.log('新入社員自動処理実行中');
+  
+  const results = [];
+  
+  employees.forEach(employee => {
+    try {
+      // 統合処理の実行（前回までの機能を統合）
+      const integrationResult = {
+        welcomeEmail: generateAndSendWelcomeEmail(employee),
+        calendarEvents: createWelcomeEvents(employee),
+        chatNotifications: sendDepartmentChatNotifications(employee),
+        taskGeneration: createEmployeeTasks(employee),
+        folderCreation: createEmployeeFolder(employee)
+      };
+      
+      // 処理ステータス更新
+      updateEmployeeStatus(employee, '入社日処理完了');
+      
+      results.push({
+        employee: employee.name,
+        success: true,
+        integrationResult: integrationResult
+      });
+      
+      console.log(`✅ ${employee.name}さんの入社日処理完了`);
+      
+    } catch (error) {
+      console.error(`${employee.name}さんの処理エラー:`, error);
+      updateEmployeeStatus(employee, `処理エラー: ${error.message}`);
+      
+      results.push({
+        employee: employee.name,
+        success: false,
+        error: error.message
+      });
+    }
+  });
+  
+  return results;
+}
+
+function createWelcomeEvents(employee) {
+  console.log('ウェルカムイベント作成:', employee.name);
+  
+  const events = [
+    // 1. 朝のウェルカム面談（9:00-10:00）
+    {
+      summary: `【ウェルカム面談】${employee.name}さん`,
+      start: getTimeSlot(employee.startDate, 9, 0),
+      end: getTimeSlot(employee.startDate, 10, 0),
+      attendees: [
+        employee.email,
+        'hr@company.com',
+        getDepartmentManager(employee.department).email
+      ],
+      description: createEventDescription('ウェルカム面談', employee),
+      conferenceData: {
+        createRequest: {
+          requestId: `welcome-${employee.name}-${Date.now()}`
+        }
+      }
+    },
+    
+    // 2. 部署オリエンテーション（14:00-15:30）
+    {
+      summary: `${employee.department} オリエンテーション - ${employee.name}さん`,
+      start: getTimeSlot(employee.startDate, 14, 0),
+      end: getTimeSlot(employee.startDate, 15, 30),
+      attendees: getDepartmentMembersEmails(employee.department),
+      description: createEventDescription('部署オリエンテーション', employee),
+      location: `${employee.department}会議室`
+    },
+    
+    // 3. ウェルカムランチ（12:00-13:30）
+    {
+      summary: `🍽️ ${employee.name}さん ウェルカムランチ`,
+      start: getTimeSlot(employee.startDate, 12, 0),
+      end: getTimeSlot(employee.startDate, 13, 30),
+      attendees: [
+        employee.email,
+        getDepartmentManager(employee.department).email,
+        'hr@company.com'
+      ],
+      description: `歓迎ランチ会
+
+新しい職場での第一印象を大切に、
+リラックスした雰囲気で交流を深めましょう。
+
+💰 経費: 会社負担
+📍 場所: 社員食堂 または 近隣レストラン`,
+      location: '社員食堂 または 近隣レストラン'
+    }
+  ];
+  
+  // イベント作成実行
+  const createdEvents = [];
+  events.forEach(eventData => {
+    try {
+      const event = Calendar.Events.insert(eventData, 'primary');
+      createdEvents.push({
+        id: event.id,
+        summary: event.summary,
+        success: true
+      });
+      console.log(`📅 イベント作成成功: ${event.summary}`);
+    } catch (error) {
+      console.error(`イベント作成失敗: ${eventData.summary}`, error);
+      createdEvents.push({
+        summary: eventData.summary,
+        success: false,
+        error: error.message
+      });
+    }
+  });
+  
+  return { events: createdEvents, totalCreated: createdEvents.filter(e => e.success).length };
+}</div>
+            
+            <h4>Step 2: 初日スケジュール詳細作成</h4>
+            <div class="code-block">
+function createFirstDaySchedule(employee) {
+  console.log('初日スケジュール作成:', employee.name);
+  
+  const schedule = [
+    { time: '9:00-9:30', activity: '受付・入社手続き', location: '1F受付', responsible: '人事部' },
+    { time: '9:30-10:00', activity: 'ウェルカム面談', location: '人事部会議室', responsible: '人事部長' },
+    { time: '10:00-10:30', activity: 'PC・備品受け取り', location: 'IT部門', responsible: 'IT管理者' },
+    { time: '10:30-11:30', activity: '社内ツール設定', location: '自席', responsible: 'IT担当者' },
+    { time: '11:30-12:00', activity: '安全衛生説明', location: '総務部', responsible: '総務担当' },
+    { time: '12:00-13:30', activity: 'ウェルカムランチ', location: '社員食堂', responsible: '部署マネージャー' },
+    { time: '13:30-14:00', activity: '自席案内・環境設定', location: employee.department, responsible: '部署アシスタント' },
+    { time: '14:00-15:30', activity: '部署オリエンテーション', location: `${employee.department}会議室`, responsible: '部署長' },
+    { time: '15:30-16:30', activity: '業務システム説明', location: '自席', responsible: '先輩社員' },
+    { time: '16:30-17:30', activity: '初日振り返り面談', location: '人事部', responsible: '人事担当' }
+  ];
+  
+  // Googleスプレッドシートに初日スケジュール保存
+  const scheduleSheet = getOrCreateScheduleSheet();
+  
+  schedule.forEach(item => {
+    scheduleSheet.appendRow([
+      employee.name,
+      employee.startDate,
+      item.time,
+      item.activity,
+      item.location,
+      item.responsible,
+      '予定',
+      new Date()
+    ]);
+  });
+  
+  // スケジュール確認メール送信
+  const scheduleHtml = createScheduleEmailContent(employee, schedule);
+  sendScheduleConfirmationEmail(employee, scheduleHtml);
+  
+  return { success: true, scheduleItems: schedule.length };
+}</div>
+            
+            <div class="success-tip">
+                <strong>📅 カレンダー統合の価値:</strong> 入社初日の詳細スケジュールまで自動生成。新入社員は安心して初日を迎えられる
+            </div>
+        </div>
+
+        <h2>🔄 フォローアップシステム</h2>
+        
+        <div class="ai-butler">
+            <h3>📈 継続的成長サポート</h3>
+            
+            <h4>Step 1: フォローアップ判定システム</h4>
+            <div class="code-block">
+function checkFollowUpRequired(today) {
+  console.log('フォローアップ対象者チェック中');
+  
+  const employeeSheet = SpreadsheetApp.getActiveSheet();
+  const data = employeeSheet.getDataRange().getValues();
+  const followUpEmployees = [];
+  
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const startDate = new Date(row[3]);
+    const daysSinceStart = Math.ceil((today - startDate) / (1000 * 60 * 60 * 24));
+    
+    // 入社後1週間、1ヶ月、3ヶ月にフォローアップ
+    if ([7, 30, 90].includes(daysSinceStart) && startDate <= today) {
+      const employee = {
+        name: row[1],
+        email: row[2],
+        startDate: startDate,
+        department: row[4],
+        position: row[5],
+        daysSinceStart: daysSinceStart,
+        followUpType: daysSinceStart === 7 ? '1週間後' : 
+                     daysSinceStart === 30 ? '1ヶ月後' : '3ヶ月後'
+      };
+      
+      followUpEmployees.push(employee);
+    }
+  }
+  
+  console.log(`フォローアップ対象: ${followUpEmployees.length}名`);
+  return followUpEmployees;
+}
+
+function processFollowUps(employees) {
+  console.log('フォローアップ処理中');
+  
+  const results = [];
+  
+  employees.forEach(employee => {
+    try {
+      let followUpResult = {};
+      
+      if (employee.followUpType === '1週間後') {
+        // 1週間後フォローアップ
+        followUpResult = {
+          meeting: createWeeklyFollowUpMeeting(employee),
+          email: sendWeeklyCheckEmail(employee),
+          survey: sendAdaptationSurvey(employee)
+        };
+        
+      } else if (employee.followUpType === '1ヶ月後') {
+        // 1ヶ月後フォローアップ
+        followUpResult = {
+          meeting: createMonthlyReviewMeeting(employee),
+          feedback: sendMonthlyFeedbackRequest(employee),
+          evaluation: initiateMonthlyEvaluation(employee)
+        };
+        
+      } else if (employee.followUpType === '3ヶ月後') {
+        // 3ヶ月後フォローアップ
+        followUpResult = {
+          meeting: createQuarterlyEvaluation(employee),
+          review: sendQuarterlyReviewInvitation(employee),
+          development: createDevelopmentPlan(employee)
+        };
+      }
+      
+      results.push({
+        employee: employee.name,
+        followUpType: employee.followUpType,
+        success: true,
+        result: followUpResult
+      });
+      
+      console.log(`✅ ${employee.name}さんの${employee.followUpType}フォローアップ完了`);
+      
+    } catch (error) {
+      console.error(`${employee.name}さんのフォローアップエラー:`, error);
+      results.push({
+        employee: employee.name,
+        followUpType: employee.followUpType,
+        success: false,
+        error: error.message
+      });
+    }
+  });
+  
+  return results;
+}</div>
+            
+            <h4>Step 2: 段階的フォローアップ実装</h4>
+            <div class="code-block">
+function createWeeklyFollowUpMeeting(employee) {
+  const meetingDate = new Date();
+  meetingDate.setHours(16, 0, 0, 0); // 今日の16:00
+  
+  const meetingEnd = new Date(meetingDate);
+  meetingEnd.setHours(16, 30, 0, 0);
+  
+  const event = {
+    summary: `【1週間フォローアップ】${employee.name}さん`,
+    start: { dateTime: meetingDate.toISOString() },
+    end: { dateTime: meetingEnd.toISOString() },
+    description: `入社1週間後のフォローアップミーティング
+
+📋 確認事項:
+• 業務理解度と初期印象
+• 職場適応状況とチーム関係
+• 困っていることや不安な点
+• サポートが必要な具体的な領域
+• 今後1ヶ月間の目標設定
+
+🎯 目的:
+早期の適応支援と問題の早期発見・解決
+
+🤖 自動生成: Google Apps Script`,
+    attendees: [
+      { email: employee.email },
+      { email: getDepartmentManager(employee.department).email },
+      { email: 'hr@company.com' }
+    ],
+    conferenceData: {
+      createRequest: { requestId: `followup-1w-${employee.name}-${Date.now()}` }
+    }
+  };
+  
+  const createdEvent = Calendar.Events.insert(event, 'primary');
+  console.log(`📅 1週間フォローアップ作成: ${employee.name}`);
+  
+  return { success: true, eventId: createdEvent.id };
+}
+
+function createMonthlyReviewMeeting(employee) {
+  const reviewDate = new Date();
+  reviewDate.setDate(reviewDate.getDate() + 1); // 明日
+  reviewDate.setHours(15, 0, 0, 0);
+  
+  const reviewEnd = new Date(reviewDate);
+  reviewEnd.setHours(16, 0, 0, 0);
+  
+  const event = {
+    summary: `【1ヶ月評価面談】${employee.name}さん`,
+    start: { dateTime: reviewDate.toISOString() },
+    end: { dateTime: reviewEnd.toISOString() },
+    description: `入社1ヶ月後の総合評価面談
+
+📊 評価項目:
+• 業務スキルの習得状況
+• チームへの貢献度
+• 会社文化への適応度
+• コミュニケーション能力
+• 今後の成長計画策定
+
+📝 準備資料:
+• 1ヶ月間の業務振り返りシート
+• 上司・同僚からのフィードバック
+• 本人の自己評価
+
+🎯 目的:
+正式配属への最終確認と今後の成長支援計画策定`,
+    attendees: [
+      { email: employee.email },
+      { email: getDepartmentManager(employee.department).email },
+      { email: 'hr@company.com' }
+    ]
+  };
+  
+  const createdEvent = Calendar.Events.insert(event, 'primary');
+  return { success: true, eventId: createdEvent.id };
+}</div>
+            
+            <div class="success-tip">
+                <strong>📈 フォローアップの価値:</strong> 入社からの経過日数を自動計算し、適切なタイミングで継続サポート。定着率向上に大きく貢献
+            </div>
+        </div>
+
+        <h2>🔧 トリガー設定と運用開始</h2>
+        
+        <div class="final-system">
+            <h3>⚙️ システム心臓部の設定</h3>
+            
+            <h4>Step 1: 日次トリガー設定</h4>
+            <div class="code-block">
+function setupDailyTriggers() {
+  console.log('AI人事執事システム起動中...');
+  
+  try {
+    // 既存のトリガーを確認・削除（重複防止）
+    const triggers = ScriptApp.getProjectTriggers();
+    triggers.forEach(trigger => {
+      if (trigger.getHandlerFunction() === 'dailyEmployeeCheck') {
+        ScriptApp.deleteTrigger(trigger);
+        console.log('既存トリガーを削除しました');
+      }
+    });
+    
+    // 新しいトリガーを設定（毎日朝8時実行）
+    const newTrigger = ScriptApp.newTrigger('dailyEmployeeCheck')
+      .timeBased()
+      .everyDays(1)
+      .atHour(8)
+      .create();
+    
+    console.log('✅ 日次トリガー設定完了');
+    console.log(`トリガーID: ${newTrigger.getUniqueId()}`);
+    
+    // 設定確認通知を送信
+    sendSystemStartupNotification();
+    
+    return { 
+      success: true, 
+      triggerId: newTrigger.getUniqueId(),
+      executionTime: '毎日8:00AM',
+      status: 'AI人事執事システム稼働開始'
+    };
+    
+  } catch (error) {
+    console.error('トリガー設定エラー:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+function sendSystemStartupNotification() {
+  const message = {
+    text: `🤖 AI人事執事システム稼働開始`,
+    cards: [{
+      header: {
+        title: 'AI人事執事システム',
+        subtitle: '自動化システムが正常に起動しました'
+      },
+      sections: [{
+        widgets: [{
+          textParagraph: {
+            text: `<b>🚀 システム稼働開始</b><br>
+毎日朝8時に自動実行します<br><br>
+
+<b>📋 自動実行機能:</b><br>
+✅ 入社日チェック・ウェルカム処理<br>
+✅ 事前準備リマインダー<br>
+✅ フォローアップ面談設定<br>
+✅ 進捗レポート自動生成<br><br>
+
+<b>🎯 効果:</b><br>
+• 手作業時間 95%削減<br>
+• 作業漏れ 100%防止<br>
+• 対応品質の標準化<br>
+• 24時間365日稼働`
+          }
+        }]
+      }]
+    }]
+  };
+  
+  const hrWebhook = getDepartmentWebhook('人事部');
+  if (hrWebhook) {
+    sendChatMessage(hrWebhook, message);
+  }
+}</div>
+            
+            <h4>Step 2: システム健全性監視</h4>
+            <div class="code-block">
+function systemHealthCheck() {
+  console.log('システム健全性チェック実行');
+  
+  const healthStatus = {
+    timestamp: new Date(),
+    services: {
+      spreadsheet: checkSpreadsheetHealth(),
+      chatGPT: checkChatGPTHealth(),
+      gmail: checkGmailHealth(),
+      calendar: checkCalendarHealth(),
+      chat: checkChatHealth(),
+      triggers: checkTriggerHealth()
+    },
+    overallStatus: 'OK'
+  };
+  
+  // 各サービスの状態確認
+  Object.keys(healthStatus.services).forEach(service => {
+    if (!healthStatus.services[service].healthy) {
+      healthStatus.overallStatus = 'WARNING';
+      console.warn(`${service}に問題があります:`, healthStatus.services[service].error);
+    }
+  });
+  
+  // 異常検知時のアラート
+  if (healthStatus.overallStatus !== 'OK') {
+    sendHealthAlert(healthStatus);
+  }
+  
+  // 健全性ログ記録
+  logHealthStatus(healthStatus);
+  
+  return healthStatus;
+}
+
+function checkTriggerHealth() {
+  try {
+    const triggers = ScriptApp.getProjectTriggers();
+    const dailyTrigger = triggers.find(t => t.getHandlerFunction() === 'dailyEmployeeCheck');
+    
+    return {
+      healthy: !!dailyTrigger,
+      message: dailyTrigger ? 'トリガー正常動作中' : 'トリガーが見つかりません',
+      lastRun: dailyTrigger ? '不明' : null
+    };
+  } catch (error) {
+    return {
+      healthy: false,
+      error: error.message
+    };
+  }
+}
+
+function sendHealthAlert(healthStatus) {
+  const alertMessage = {
+    text: `🚨 AI人事執事システム アラート`,
+    cards: [{
+      header: {
+        title: 'システム異常検知',
+        subtitle: `ステータス: ${healthStatus.overallStatus}`
+      },
+      sections: [{
+        widgets: [{
+          textParagraph: {
+            text: `システムの一部で問題が検出されました。<br>
+管理者による確認が必要です。<br><br>
+<b>確認日時:</b> ${Utilities.formatDate(healthStatus.timestamp, 'JST', 'yyyy年MM月dd日 HH:mm:ss')}`
+          }
+        }]
+      }]
+    }]
+  };
+  
+  const hrWebhook = getDepartmentWebhook('人事部');
+  if (hrWebhook) {
+    sendChatMessage(hrWebhook, alertMessage);
+  }
+}</div>
+        </div>
+
+        <h2>📊 シリーズ総括と成果</h2>
+        
+        <div class="metrics-showcase">
+            <h3 style="color: white;">🎯 8回シリーズで達成した革命的成果</h3>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>動画1: Google完結型アーキテクチャ体感</h4>
+                    <p>複雑な外部サービス連携から、Google環境内完結への方針転換</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>動画2: 統合フロー設計図作成</h4>
+                    <p>Apps Script中央ハブによる統合システム設計</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>動画3: Googleフォーム自動反映システム</h4>
+                    <p>手動転記からの完全解放、データ品質向上</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>動画4: ChatGPT AI歓迎メール生成</h4>
+                    <p>個別化されたAI生成メールで感動体験を創出</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>動画5: 人事専用AI WebApp開発</h4>
+                    <p>チーム全体でのAI活用を実現、技術的敷居を撤廃</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>動画6: Google APIs統合連携</h4>
+                    <p>複数サービスの協調自動化、真の統合システム完成</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>動画7: タスク管理・Chat通知システム</h4>
+                    <p>抜け漏れゼロの完璧な進捗管理を実現</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>動画8: AI人事執事システム完成</h4>
+                    <p>時間ベース完全自動化、真の「手作業ゼロ」達成</p>
+                </div>
+            </div>
+            
+            <div class="achievements-grid">
+                <div class="achievement-card">
+                    <h4>⏱️ 時間効果</h4>
+                    <p><strong>月20時間 → 月1時間</strong></p>
+                    <p>95%の工数削減</p>
+                </div>
+                <div class="achievement-card">
+                    <h4>💰 コスト効果</h4>
+                    <p><strong>月額$86 → 月額$10</strong></p>
+                    <p>88%のコスト削減</p>
+                </div>
+                <div class="achievement-card">
+                    <h4>🎯 精度向上</h4>
+                    <p><strong>人的ミス5% → 0%</strong></p>
+                    <p>完璧な実行精度</p>
+                </div>
+                <div class="achievement-card">
+                    <h4>⚡ 速度向上</h4>
+                    <p><strong>1件20分 → 30秒</strong></p>
+                    <p>40倍の処理速度</p>
+                </div>
+            </div>
+        </div>
+
+        <h2>🔮 今後の可能性と展開</h2>
+        
+        <div class="feature-highlight">
+            <h3>🚀 AI人事執事システムの未来</h3>
+            
+            <h4>📈 拡張可能性</h4>
+            <ul>
+                <li><strong>他の人事業務への横展開:</strong> 評価、昇進、退職手続きの自動化</li>
+                <li><strong>他部署での同様システム構築:</strong> 営業、開発、マーケティング部門での活用</li>
+                <li><strong>より高度なAI機能の追加:</strong> 自然言語処理、予測分析、パーソナライゼーション</li>
+                <li><strong>会社全体のDX推進:</strong> デジタル変革のモデルケースとして展開</li>
+            </ul>
+            
+            <h4>🔧 継続的改善</h4>
+            <ul>
+                <li><strong>利用データの分析:</strong> 蓄積されたログデータから改善点を特定</li>
+                <li><strong>ユーザーフィードバック反映:</strong> 実際の利用者の声をシステムに反映</li>
+                <li><strong>新Google API活用:</strong> 新機能・新サービスとの連携</li>
+                <li><strong>セキュリティ強化:</strong> 継続的なセキュリティアップデート</li>
+            </ul>
+            
+            <div class="success-tip">
+                <strong>🎯 成功の要因:</strong> Google Workspace完結型アプローチにより、安全性・経済性・拡張性の三拍子が揃った持続可能なシステムを実現
+            </div>
+        </div>
+
+        <h2>🛠️ 運用・メンテナンス</h2>
+        
+        <div class="final-system">
+            <h3>📋 継続運用のためのポイント</h3>
+            
+            <h4>日常的な監視項目</h4>
+            <ul>
+                <li><strong>トリガー動作確認:</strong> 毎日の自動実行が正常に動作しているか</li>
+                <li><strong>API利用状況:</strong> ChatGPT APIの利用量とコスト管理</li>
+                <li><strong>エラーログ確認:</strong> 処理失敗やシステムエラーの早期発見</li>
+                <li><strong>データ品質チェック:</strong> スプレッドシートデータの整合性確認</li>
+            </ul>
+            
+            <h4>定期的なメンテナンス</h4>
+            <ul>
+                <li><strong>月次レビュー:</strong> システム利用状況と効果測定</li>
+                <li><strong>四半期アップデート:</strong> 新機能追加と改善実装</li>
+                <li><strong>年次システム監査:</strong> セキュリティと性能の総合評価</li>
+                <li><strong>バックアップ管理:</strong> データとスクリプトのバックアップ確認</li>
+            </ul>
+            
+            <div class="warning-box">
+                <h4>⚠️ 運用時の注意点</h4>
+                <ul>
+                    <li><strong>API制限の監視:</strong> Google APIとChatGPT APIの利用制限を超えないよう管理</li>
+                    <li><strong>権限管理:</strong> Apps ScriptとWebhookの適切な権限設定を維持</li>
+                    <li><strong>データ保護:</strong> 個人情報の取り扱いに関するコンプライアンス遵守</li>
+                    <li><strong>障害対応:</strong> システム障害時の手動処理手順を準備</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="final-celebration">
+            <h2 style="color: white;">🎉 AI人事執事システム完成おめでとうございます！</h2>
+            <p style="font-size: 20px; color: white;">
+                <strong>8回のシリーズを通して、皆さんは素晴らしいシステムを構築しました</strong>
+            </p>
+            <p style="color: white;">
+                これまで手動で行っていた煩雑な人事業務が、AI人事執事によって完全自動化されました。<br>
+                Google Workspace完結型アプローチで、安全で経済的で拡張性の高いシステムを手に入れたのです。
+            </p>
+            <p style="font-size: 18px; color: white;">
+                <strong>これを機に、皆さんの会社でも真のデジタル変革を実現してください。</strong><br>
+                AI人事執事と共に、素晴らしい人事業務の未来を創っていきましょう！
+            </p>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background: #e8f0fe; border-radius: 8px;">
+            <h3>✨ 手作業ゼロの未来、ここに完成！</h3>
+            <p style="font-size: 18px; color: #2c3e50;">AI人事執事システムで、人事業務の新時代を切り開きました。</p>
+        </div>
+    </div>
+</body>
+</html>

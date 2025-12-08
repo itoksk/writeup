@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画5: Slack + Makeで作る自動承認ワークフロー実装編</title>
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #9b59b6;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            background: linear-gradient(90deg, #8e44ad, #9b59b6);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 30px 0 20px 0;
+        }
+        .implementation-showcase {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .step-by-step {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border: 3px solid #9b59b6;
+        }
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 30px 0;
+        }
+        .module-card {
+            background: white;
+            border: 3px solid #9b59b6;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .module-number {
+            background: #9b59b6;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 15px auto;
+        }
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .slack-setup {
+            background: #e8f5e8;
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .make-setup {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .prompt-integration {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .test-demo {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .slack-message {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .ai-response {
+            background: #d1edff;
+            border-left: 4px solid #0084ff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .checklist {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .checklist ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .checklist li {
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        .checklist li:before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 動画5: Slack + Makeで作る自動承認ワークフロー実装編</h1>
+        
+        <div class="implementation-showcase">
+            <h3>🎯 この動画の学習目標</h3>
+            <p style="font-size: 1.2em;"><strong>動画1でお見せしたデモを実際に構築！<br>
+            動画2,3,4で作成した最強プロンプトを実装し、<br>
+            本番環境で動く完全な承認自動化システムを10分で完成させる</strong></p>
+        </div>
+
+        <h2>📋 実装準備チェックリスト</h2>
+        
+        <div class="checklist">
+            <h3>✅ 必要なもの（すべて準備済みのはず）</h3>
+            <ul>
+                <li>Slackワークスペース（会社で使用中のもの）</li>
+                <li>Makeアカウント（無料版でOK）</li>
+                <li>OpenAI APIキー（動画1で取得）</li>
+                <li>改善済みプロンプト（動画2,3,4で作成）</li>
+                <li>やる気（これが一番大事！）</li>
+            </ul>
+        </div>
+
+        <h2>🔧 Step 1: Slack App作成（3分）</h2>
+        
+        <div class="slack-setup">
+            <h3>1-1. Slack Appの新規作成</h3>
+            <div class="code-block">1. https://api.slack.com にアクセス
+2. "Create New App" をクリック
+3. "From scratch" を選択
+4. App Name: "AI承認アシスタント"
+5. ワークスペースを選択して "Create App"</div>
+            
+            <h3>1-2. Bot権限の設定</h3>
+            <p>左メニューから "OAuth & Permissions" を選択し、以下の4つを追加：</p>
+            <div class="code-block">Scopes to Add:
+• app_mentions:read  ← メンション読み取り
+• chat:write        ← メッセージ送信
+• channels:history  ← チャンネル履歴読み取り
+• channels:read     ← チャンネル情報読み取り</div>
+            
+            <h3>1-3. Botトークンの取得</h3>
+            <div class="code-block">1. "Install to Workspace" をクリック
+2. 権限を確認して "許可する"
+3. Bot User OAuth Token をコピー
+   （xoxb-で始まる長い文字列）
+4. 安全な場所に保存</div>
+            
+            <div class="warning-box">
+                ⚠️ <strong>重要</strong>: Botトークンは他人に見せないでください。これはあなたのBotの「パスワード」です。
+            </div>
+        </div>
+
+        <h2>🔄 Step 2: Make シナリオ作成（4分）</h2>
+        
+        <div class="make-setup">
+            <h3>2-1. 新規シナリオの作成</h3>
+            <div class="code-block">1. https://make.com にログイン
+2. "Scenarios" → "Create a new scenario"
+3. テンプレートは使用せず、空のシナリオから開始</div>
+            
+            <h3>2-2. 3つのモジュール設定</h3>
+            
+            <div class="module-grid">
+                <div class="module-card">
+                    <div class="module-number">1</div>
+                    <h4>Slack "Watch Events"</h4>
+                    <p><strong>トリガー設定</strong></p>
+                    <ul style="text-align: left; font-size: 0.9em;">
+                        <li>Connection: 新規作成</li>
+                        <li>Bot Token: 先ほどコピー</li>
+                        <li>Event Type: app_mention</li>
+                        <li>Webhook名: AI承認トリガー</li>
+                    </ul>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-number">2</div>
+                    <h4>OpenAI "Create a Completion"</h4>
+                    <p><strong>AI判断設定</strong></p>
+                    <ul style="text-align: left; font-size: 0.9em;">
+                        <li>Connection: APIキー接続</li>
+                        <li>Model: gpt-4</li>
+                        <li>Max Tokens: 500</li>
+                        <li>Temperature: 0.3</li>
+                    </ul>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-number">3</div>
+                    <h4>Slack "Create a Message"</h4>
+                    <p><strong>返信設定</strong></p>
+                    <ul style="text-align: left; font-size: 0.9em;">
+                        <li>Channel: {{1.event.channel}}</li>
+                        <li>Text: {{2.choices[0].message.content}}</li>
+                        <li>Thread TS: {{1.event.ts}}</li>
+                        <li>As User: false</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="success-box">
+                💡 <strong>ポイント</strong>: モジュールは左から右に自動で実行されます。ドラッグ&ドロップで繋ぐだけ！
+            </div>
+        </div>
+
+        <h2>🧠 Step 3: 最強プロンプトの実装（2分）</h2>
+        
+        <div class="prompt-integration">
+            <h3>統合プロンプトの設定</h3>
+            <p>OpenAIモジュールの "Messages" セクションに以下を設定：</p>
+            
+            <h4>System Message:</h4>
+            <div class="code-block">あなたは創業15年のIT企業で10年以上の管理職経験を持つ承認責任者です。
+以下の基準と過去事例に基づいて判断してください。
+
+## 判断基準
+- 30万円以下＋ROI 200%以上 → 即承認
+- 50万円以下＋必要性明確 → 条件付き承認
+- 50万円超 or ROI不明 → 追加情報要求
+- 100万円超 → 役員承認必須
+- 法的リスクあり → 即却下
+
+## 過去の判断事例（重要な参考情報）
+
+### 承認・成功パターン
+1. SFAツール導入30万円 → 営業効率35%向上、5ヶ月でROI達成
+2. オンライン研修15万円 → 全社スキル向上、離職率10%改善
+3. MA導入25万円 → リード獲得2.5倍、売上20%増
+4. リモートワークツール月3万円 → 生産性25%向上
+5. データ分析ツール月5万円 → 意思決定スピード2倍
+
+### 承認・失敗パターン
+1. SNS広告50万円 → 効果は想定の30%、ターゲティング失敗
+2. 高額セミナー20万円 → 実務に活かせず、費用対効果なし
+3. 新規ECプラットフォーム80万円 → 連携不可、追加費用発生
+
+### 却下・正解パターン
+1. 展示会出展100万円 → 他社実績も低く、却下が正解
+2. 不明確なコンサル60万円 → 具体性なく、却下で問題回避
+3. 重複機能のツール月8万円 → 既存で代替可能
+
+## 出力フォーマット
+【判断】承認/条件付き承認/却下/追加情報要求
+【類似事例】過去の○○と類似
+【理由】
+- 理由1: 
+- 理由2: 
+- 理由3: 
+【信頼度】○○%
+【次のアクション】</div>
+            
+            <h4>User Message:</h4>
+            <div class="code-block">{{1.event.text}}</div>
+            
+            <div class="success-box">
+                🎉 これで動画2,3,4で作った最強プロンプトが実装完了！
+            </div>
+        </div>
+
+        <h2>🎬 動作テスト</h2>
+        
+        <div class="test-demo">
+            <h3>テスト手順</h3>
+            <ol>
+                <li><strong>Makeでシナリオを有効化</strong>（右上のONボタン）</li>
+                <li><strong>Slackで専用チャンネル作成</strong>（例: #ai-approval）</li>
+                <li><strong>AI承認アシスタントをチャンネルに招待</strong></li>
+                <li><strong>テストメッセージを投稿</strong></li>
+            </ol>
+            
+            <h3>実際のやり取り</h3>
+            
+            <div class="slack-message">
+                <strong>👤 あなた</strong><br>
+                @AI承認アシスタント<br>
+                営業支援ツール「SalesBoost」月額4万円の導入承認をお願いします。<br>
+                営業チーム15名で利用、活動時間30%削減見込みです。
+            </div>
+            
+            <div class="ai-response">
+                <strong>🤖 AI承認アシスタント</strong><br>
+                【判断】承認<br>
+                【類似事例】過去のSFAツール導入30万円と類似<br>
+                【理由】<br>
+                - 理由1: 月額4万円は承認基準内で妥当な金額<br>
+                - 理由2: 営業活動時間30%削減は十分な投資効果<br>
+                - 理由3: 過去の営業系ツール導入で成功実績あり<br>
+                【信頼度】92%<br>
+                【次のアクション】導入手続きを進めてください。3ヶ月後に効果測定を実施。
+            </div>
+            
+            <p style="text-align: center; margin-top: 20px; font-size: 1.2em; color: #27ae60;">
+                <strong>🎉 3秒で的確な判断！過去事例も参照して完璧な回答！</strong>
+            </p>
+        </div>
+
+        <h2>🔧 トラブルシューティング</h2>
+        
+        <div style="background: #f8f9fa; padding: 30px; border-radius: 15px; margin: 30px 0;">
+            <h3>よくある問題と解決方法</h3>
+            
+            <h4>❌ Slackに反応しない</h4>
+            <ul>
+                <li>Botがチャンネルに参加しているか確認</li>
+                <li>Makeのシナリオが有効化されているか確認</li>
+                <li>Webhook URLが正しく設定されているか確認</li>
+            </ul>
+            
+            <h4>❌ エラーが返ってくる</h4>
+            <ul>
+                <li>OpenAI APIキーの残高を確認</li>
+                <li>プロンプトの文字数が長すぎないか確認</li>
+                <li>Makeのログでエラー詳細を確認</li>
+            </ul>
+            
+            <h4>❌ 判断が的外れ</h4>
+            <ul>
+                <li>プロンプトが正しくコピーされているか確認</li>
+                <li>System Messageに全て入力されているか確認</li>
+                <li>Temperature設定が0.3になっているか確認</li>
+            </ul>
+        </div>
+
+        <h2>📊 実装完了後の効果</h2>
+        
+        <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 40px; border-radius: 20px; margin: 30px 0; text-align: center;">
+            <h3>🎯 これで実現できたこと</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">
+                <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                    <h4>⏱️ 承認時間</h4>
+                    <p style="font-size: 2em; margin: 10px 0;">3時間→3秒</p>
+                    <p>60倍の高速化</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                    <h4>🎯 判断精度</h4>
+                    <p style="font-size: 2em; margin: 10px 0;">70%→92%</p>
+                    <p>Few-shot学習の効果</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                    <h4>💰 月額コスト</h4>
+                    <p style="font-size: 2em; margin: 10px 0;">500円</p>
+                    <p>ランチ1回分</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px;">
+                    <h4>⚙️ 実装時間</h4>
+                    <p style="font-size: 2em; margin: 10px 0;">10分</p>
+                    <p>コード不要</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="implementation-showcase">
+            <h3>🚀 次回への導線</h3>
+            <p style="font-size: 1.1em;">「基本的な承認自動化は完成しました。でも、Makeの真の力はこんなものじゃありません。<br>
+            次回は、承認後の処理も完全自動化。メール通知、タスク作成、レポート生成、<br>
+            さらには他システムとの連携まで。あなたが寝ている間も働き続ける<br>
+            『完全自動化システム』の構築方法をお見せします！」</p>
+        </div>
+    </div>
+</body>
+</html>

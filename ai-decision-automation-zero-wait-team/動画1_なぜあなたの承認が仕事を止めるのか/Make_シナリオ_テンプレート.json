@@ -1,0 +1,199 @@
+{
+  "name": "AI承認システム - デモシナリオ",
+  "description": "Slackの承認依頼をChatGPTで自動判断し、結果を返信するシナリオ",
+  "version": "1.0.0",
+  "modules": [
+    {
+      "id": 1,
+      "name": "Slack - Watch Messages",
+      "type": "trigger",
+      "module": "slack:watchPublicChannelMessages",
+      "config": {
+        "channel": "#approval-requests",
+        "filter": {
+          "text": {
+            "contains": "承認依頼"
+          }
+        }
+      },
+      "description": "承認依頼メッセージを監視"
+    },
+    {
+      "id": 2,
+      "name": "Data Parser",
+      "type": "transformer",
+      "module": "builtin:dataParser",
+      "config": {
+        "parseRules": {
+          "amount": {
+            "pattern": "(\\d+)万円",
+            "type": "number",
+            "multiplier": 10000
+          },
+          "requestType": {
+            "pattern": "【承認依頼】(.+?)\\n",
+            "type": "string"
+          }
+        }
+      },
+      "description": "メッセージから金額や案件名を抽出"
+    },
+    {
+      "id": 3,
+      "name": "ChatGPT API",
+      "type": "action",
+      "module": "http:makeRequest",
+      "config": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer {{OPENAI_API_KEY}}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "model": "gpt-4",
+          "messages": [
+            {
+              "role": "system",
+              "content": "あなたは経験豊富な管理職として、承認業務を担当します。\n\n判断基準:\n- 金額基準: 10万円以下は原則承認、50万円超は詳細検討\n- ROI基準: 投資回収期間12ヶ月以内を目安\n- リスク評価: 会社への潜在的影響度を3段階で評価\n- 過去事例: 類似案件の結果を参考に判断\n\n出力は必ず以下のJSON形式で返してください:\n{\n  \"decision\": \"承認/条件付き承認/却下\",\n  \"reasoning\": \"判断根拠（100文字以内）\",\n  \"confidence\": 信頼度（0-100の数値）,\n  \"notes\": \"注意事項\"\n}"
+            },
+            {
+              "role": "user",
+              "content": "{{1.text}}"
+            }
+          ],
+          "temperature": 0.7,
+          "max_tokens": 500,
+          "response_format": {
+            "type": "json_object"
+          }
+        }
+      },
+      "description": "ChatGPTで承認判断を実行"
+    },
+    {
+      "id": 4,
+      "name": "Parse ChatGPT Response",
+      "type": "transformer",
+      "module": "builtin:jsonParser",
+      "config": {
+        "jsonString": "{{3.body.choices[0].message.content}}"
+      },
+      "description": "ChatGPTの応答をパース"
+    },
+    {
+      "id": 5,
+      "name": "Slack Reply",
+      "type": "action",
+      "module": "slack:postMessage",
+      "config": {
+        "channel": "{{1.channel}}",
+        "thread_ts": "{{1.ts}}",
+        "blocks": [
+          {
+            "type": "header",
+            "text": {
+              "type": "plain_text",
+              "text": "🤖 AI承認システムによる判断結果"
+            }
+          },
+          {
+            "type": "section",
+            "fields": [
+              {
+                "type": "mrkdwn",
+                "text": "*判断結果:*\n{{4.decision == '承認' ? '✅' : '❌'}} {{4.decision}}"
+              },
+              {
+                "type": "mrkdwn",
+                "text": "*承認コード:*\nAP-{{formatDate(now, 'YYYY-MMdd-HHmmss')}}"
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": "*判断根拠:*\n{{4.reasoning}}"
+            }
+          },
+          {
+            "type": "context",
+            "elements": [
+              {
+                "type": "mrkdwn",
+                "text": "AI信頼度: {{4.confidence}}% | 処理時間: {{round((now - 1.timestamp) / 1000, 1)}}秒"
+              }
+            ]
+          }
+        ]
+      },
+      "description": "Slackにスレッド返信"
+    },
+    {
+      "id": 6,
+      "name": "Record to Spreadsheet",
+      "type": "action",
+      "module": "googlesheets:addRow",
+      "config": {
+        "spreadsheetId": "{{SPREADSHEET_ID}}",
+        "sheetName": "承認履歴",
+        "values": {
+          "A": "{{formatDate(now, 'YYYY/MM/DD HH:mm:ss')}}",
+          "B": "{{1.user_name}}",
+          "C": "{{1.text}}",
+          "D": "{{4.decision}}",
+          "E": "{{4.reasoning}}",
+          "F": "{{4.confidence}}%",
+          "G": "{{round((now - 1.timestamp) / 1000, 1)}}秒"
+        }
+      },
+      "description": "承認履歴をスプレッドシートに記録"
+    }
+  ],
+  "connections": [
+    {
+      "from": 1,
+      "to": 2
+    },
+    {
+      "from": 2,
+      "to": 3
+    },
+    {
+      "from": 3,
+      "to": 4
+    },
+    {
+      "from": 4,
+      "to": 5
+    },
+    {
+      "from": 4,
+      "to": 6
+    }
+  ],
+  "settings": {
+    "errorHandling": {
+      "continueOnError": false,
+      "retryAttempts": 2,
+      "retryDelay": 5000
+    },
+    "scheduling": {
+      "enabled": false,
+      "interval": "manual"
+    }
+  },
+  "variables": {
+    "OPENAI_API_KEY": {
+      "type": "string",
+      "description": "OpenAI APIキー",
+      "required": true
+    },
+    "SPREADSHEET_ID": {
+      "type": "string", 
+      "description": "記録用スプレッドシートID",
+      "required": true
+    }
+  }
+}

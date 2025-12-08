@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画6: AIがプロンプトの効果を見える化！A/Bテスト分析の完全自動化</title>
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 5px solid #e74c3c;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: white;
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin: 40px 0 25px 0;
+            font-size: 1.8em;
+        }
+        .hero {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 50px;
+            border-radius: 25px;
+            margin: 40px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .time-breakdown {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        tr.total {
+            background: #2c3e50;
+            color: white;
+            font-weight: bold;
+        }
+        .automation-showcase {
+            background: #fff5e6;
+            padding: 35px;
+            border-radius: 20px;
+            margin: 40px 0;
+            border: 3px solid #e74c3c;
+        }
+        .module-config {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #ddd;
+        }
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .implementation-steps {
+            background: #fff3cd;
+            border: 3px solid #ffc107;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .tips-section {
+            background: #e3f2fd;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        .tip-card {
+            background: white;
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .metrics-showcase {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .next-episode {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        .metric-card {
+            background: white;
+            border: 2px solid #e74c3c;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+        }
+        .metric-card .number {
+            font-size: 3em;
+            color: #e74c3c;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .timeline {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .timeline-item .time {
+            font-weight: bold;
+            color: #e74c3c;
+            margin-right: 20px;
+            min-width: 50px;
+        }
+        .timeline-item .event {
+            flex: 1;
+        }
+        .demo-section {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .slack-message {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .achievement-card {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .achievement-card h4 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        .roi-showcase {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .roi-showcase .code-block {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .roi-calculation {
+            background: #e8f5e8;
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .roi-calculation .calculation {
+            font-size: 1.1em;
+            line-height: 2;
+        }
+        .roi-calculation p {
+            margin: 10px 0;
+        }
+        .preview-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .preview-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .preview-content li {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        .system-architecture {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .demo-flow {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        .demo-flow h4 {
+            color: #e74c3c;
+            margin: 20px 0 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 動画6: AIがプロンプトの効果を見える化！A/Bテスト分析の完全自動化</h1>
+        
+        <div class="hero">
+            <h2>A/Bテストの数字を眠らせるな！Geminiがスプレッドシートを丸ごと分析</h2>
+            <p>動画4で集めたA/BテストデータをGemini Deep Researchにかけるだけ<br>
+            10分でプロの分析レポートとインフォグラフィック案が完成します</p>
+        </div>
+
+        <h2>📊 Before/After A/Bテスト分析の革命</h2>
+        
+        <div class="time-breakdown">
+            <h3>A/Bテスト管理の現実（週間）</h3>
+            <table>
+                <tr>
+                    <th>業務内容</th>
+                    <th>Before（手作業）</th>
+                    <th>After（AI自動分析）</th>
+                    <th>削減率</th>
+                </tr>
+                <tr>
+                    <td>A/Bテストデータ分析</td>
+                    <td>2時間 × 1回 = 2時間</td>
+                    <td>10分（Geminiにリンクを渡すだけ）</td>
+                    <td>92%</td>
+                </tr>
+                <tr>
+                    <td>最適プロンプトの判断</td>
+                    <td>1時間 × 1回 = 1時間</td>
+                    <td>0分（AIが即座に判定）</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td>改善点の抽出</td>
+                    <td>30分 × 1回 = 0.5時間</td>
+                    <td>0分（AIが具体的に提案）</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td>レポート作成</td>
+                    <td>2時間 × 1回 = 2時間</td>
+                    <td>20分（Canvaでサクッと作成）</td>
+                    <td>83%</td>
+                </tr>
+                <tr>
+                    <td>チームへの共有</td>
+                    <td>1時間 × 1回 = 1時間</td>
+                    <td>0分（作ったらすぐ共有可能）</td>
+                    <td>100%</td>
+                </tr>
+                <tr class="total">
+                    <td><strong>合計</strong></td>
+                    <td><strong>6.5時間</strong></td>
+                    <td><strong>30分</strong></td>
+                    <td><strong>92%</strong></td>
+                </tr>
+            </table>
+            
+            <div class="roi-calculation">
+                <h3>💰 投資対効果（ROI）</h3>
+                <div class="calculation">
+                    <p><strong>削減価値</strong>: 6時間 × 5,000円 × 4週 = 120,000円/月</p>
+                    <p><strong>導入コスト</strong>: 0円（Gemini無料枠 + Canva無料版）</p>
+                    <p><strong>ROI</strong>: 無限大（コスト0円）</p>
+                    <p><strong>追加価値</strong>: プロレベルの分析が誰でも可能に</p>
+                </div>
+            </div>
+        </div>
+
+        <h2>🔧 今回の実装内容</h2>
+        
+        <div class="automation-showcase">
+            <h3>動画4のA/Bテストデータを瞬時に分析</h3>
+            <div class="system-architecture">
+                <h4>現在の分析方法</h4>
+                <div class="code-block">Google Sheets（A/Bテスト結果）
+    ↓ 手動で数字を見る
+    ↓ 意味を考える
+レポート作成（手作業）</div>
+                
+                <h4>今回実現すること</h4>
+                <div class="code-block">Gemini Deep Researchで一発分析：
+├─ スプレッドシート全体を読み込み
+├─ AIが深層分析を実行  
+├─ 分かりやすいインフォグラフィック案を提示
+└─ 誰でも理解できる形で可視化準備完了</div>
+            </div>
+        </div>
+
+        <h2>🔧 実装手順（詳細解説）</h2>
+        
+        <div class="implementation-steps">
+            <h3>Step 1: Gemini Deep Researchの準備</h3>
+            
+            <div class="module-config">
+                <h4>1-1. Google AI Studioへアクセス</h4>
+                <div class="code-block">1. aistudio.google.com にアクセス
+2. Googleアカウントでログイン
+3. 「New Chat」をクリック
+4. モデル選択: Gemini 2.0 Flash (最新版)</div>
+                
+                <h4>1-2. System Instructionsの設定</h4>
+                <div class="code-block">System Instructionsに以下を入力：
+
+あなたはA/Bテストの専門アナリストです。
+スプレッドシートのデータを分析し、
+以下の点を明確にしてください：
+1. どちらのプロンプトが優れているか
+2. なぜその差が生まれたか
+3. 今後の改善方向性
+4. 誰でも分かるインフォグラフィック案</div>
+            </div>
+            
+            <h3>Step 2: スプレッドシートの分析準備</h3>
+            
+            <div class="module-config">
+                <h4>2-1. スプレッドシートの共有設定</h4>
+                <div class="code-block">1. Google Sheetsを開く
+2. 右上の「共有」ボタンをクリック
+3. 「リンクを知っている全員」に変更
+4. 「閲覧者」権限でOK
+5. リンクをコピー
+
+※注意: 社外秘のデータは共有設定に注意</div>
+                
+                <h4>2-2. 分析用プロンプトの準備</h4>
+                <div class="code-block">以下のプロンプトをコピー：
+
+以下のスプレッドシートのA/Bテスト結果を分析してください：
+[スプレッドシートのURL]
+
+このデータは承認業務AIのプロンプト比較実験の結果です。
+
+分析してほしいこと：
+1. どちらのプロンプトが全体的に優れているか
+2. カテゴリ別の勝敗パターン
+3. なぜその差が生まれているか（仮説）
+4. 今後の改善方向性
+
+最後に、この分析結果を誰でも理解できる
+インフォグラフィックの構成案を提示してください。
+数字が苦手な人でも一目で分かるような
+ビジュアル表現を考えてください。</div>
+            </div>
+
+            <h3>Step 3: Gemini分析の実行</h3>
+            
+            <div class="module-config">
+                <h4>3-1. Deep Researchの実行</h4>
+                <div class="code-block">1. プロンプトを入力欄にペースト
+2. スプレッドシートのURLを挿入
+3. 「Run」ボタンをクリック
+4. 5-10分待つ
+
+※ Deep Research中の表示：
+「Searching...」「Analyzing...」などが表示されます</div>
+                
+                <h4>3-2. 分析結果の出力内容</h4>
+                <div class="code-block">Geminiが提供する分析：
+
+1. 勝者判定
+   - 「プロンプトBが92.3%で勝利」等
+
+2. 詳細分析
+   - カテゴリ別の強み・弱み
+   - 失敗パターンの分析
+   - 改善が期待できる領域
+
+3. 改善提案
+   - 具体的なプロンプト改善案
+   - 新たなFew-shot例の提案
+
+4. インフォグラフィック案
+   - デザイン構成
+   - 必要なグラフ種別
+   - 配置レイアウト</div>
+                
+                <h4>3-3. 結果の保存</h4>
+                <div class="code-block">分析結果の活用：
+1. 「コピー」ボタンで結果をコピー
+2. Google Docsに貼り付けて保存
+3. インフォグラフィック作成の参考に
+4. チームで共有して議論</div>
+            </div>
+
+            <h3>Step 4: インフォグラフィックの作成</h3>
+            
+            <div class="module-config">
+                <h4>4-1. Canvaでの作成</h4>
+                <div class="code-block">1. canva.com にアクセス（無料アカウントOK）
+2. 「インフォグラフィック」で検索
+3. 気に入ったテンプレートを選択
+4. 「このテンプレートをカスタマイズ」
+
+※ 初心者はテンプレートを最大限活用</div>
+                
+                <h4>4-2. データの入力</h4>
+                <div class="code-block">インフォグラフィックに入れる内容：
+
+1. タイトル
+   「A/Bテスト結果：プロンプトBが勝利！」
+
+2. メイン数値
+   「92.3% vs 77.1%」（大きく）
+
+3. サブ情報
+   - 「15.2%の改善」
+   - 「IT申請で98%の高精度」
+
+4. 次のアクション
+   - 「出張申請にもFew-shot追加を」</div>
+                
+                <h4>4-3. デザインのポイント</h4>
+                <div class="code-block">シンプルで効果的なデザイン：
+
+1. 色は2-3色に絞る
+   - メインカラー：結果を強調
+   - サブカラー：補足情報
+
+2. フォントサイズ
+   - 重要数字：特大
+   - 説明文：読みやすいサイズ
+
+3. アイコンの活用
+   - 勝者には王冠アイコン
+   - 改善点には電球アイコン
+
+4. 余白を十分に
+   - 詰め込みすぎない
+   - 視線の流れを意識</div>
+            </div>
+        </div>
+
+        <h2>🎬 実際の動作デモ</h2>
+        
+        <div class="demo-section">
+            <h3>Gemini Deep Researchの実演</h3>
+            
+            <div class="demo-flow">
+                <h4>1. 分析の実行</h4>
+                <p>Google AI StudioでプロンプトとURLを入力</p>
+                
+                <h4>2. Deep Researchの進行</h4>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="time">0分</span>
+                        <span class="event">「Run」ボタンをクリック</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">1分</span>
+                        <span class="event">「Searching...」表示</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">3分</span>
+                        <span class="event">「Analyzing data...」表示</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">5分</span>
+                        <span class="event">「Generating insights...」表示</span>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="time">7分</span>
+                        <span class="event">分析完了・結果表示</span>
+                    </div>
+                </div>
+                
+                <h4>3. 実際の分析結果例</h4>
+                <div class="code-block">【Geminiの分析結果】
+
+🏆 勝者: プロンプトB（Few-shot版）
+
+📊 全体性能:
+- プロンプトA: 77.1% (154/200)
+- プロンプトB: 92.3% (192/208)
+- 改善率: +15.2%
+
+🔍 カテゴリ別分析:
+1. IT関連: 98% (非常に高い)
+2. 備品購入: 95% (良好)
+3. 出張申請: 85% (改善余地あり)
+4. 経費精算: 88% (まずまず)
+
+💡 成功要因:
+- 具体例が文脈理解を向上
+- 判断基準が明確化
+- エッジケースへの対応力向上
+
+🎯 推奨アクション:
+1. 出張申請にFew-shot追加
+2. 季節要因の考慮
+3. 却下事例も学習に含める</div>
+            </div>
+        </div>
+
+        <h2>💡 実装のポイント</h2>
+        
+        <div class="tips-section">
+            <h3>成功のための実装テクニック</h3>
+            
+            <div class="tip-card">
+                <h4>1. スプレッドシート共有のポイント</h4>
+                <div class="code-block">// 共有設定の注意点
+1. 「リンクを知っている全員」に設定
+2. 「閲覧者」権限で十分
+3. 編集権限は与えない
+4. 社外秘データは注意
+
+// セキュリティの確認
+- 個人情報が含まれていないか
+- 機密情報が含まれていないか
+- 必要に応じて匿名化</div>
+            </div>
+            
+            <div class="tip-card">
+                <h4>2. エラーハンドリング</h4>
+                <div class="code-block">各モジュールにError Handlerを追加：
+1. 右クリック → "Add error handler"
+2. Type: "Resume"
+3. 代替処理: 管理者にSlack通知</div>
+            </div>
+            
+            <div class="tip-card">
+                <h4>3. インフォグラフィック作成のコツ</h4>
+                <div class="code-block">初心者でも簡単に作る方法：
+
+1. テンプレートを最大限活用
+   - 「比較」「結果」「分析」で検索
+   - プロが作ったデザインを使う
+
+2. 数字は大きく、説明は小さく
+   - 「92.3%」は特大サイズ
+   - 説明文は読める程度に
+
+3. 色はシンプルに
+   - 勝者: 緑系
+   - 敗者: グレー系
+   - アクセント: 青系</div>
+            </div>
+        </div>
+
+        <h2>🎯 実装後の成果</h2>
+        
+        <div class="metrics-showcase">
+            <h3>これで実現した成果</h3>
+            
+            <div class="achievement-grid">
+                <div class="achievement-card">
+                    <h4>✅ 分析時間</h4>
+                    <p>2時間→10分（95%削減）</p>
+                </div>
+                <div class="achievement-card">
+                    <h4>✅ 分析の質</h4>
+                    <p>プロレベルの深い洞察</p>
+                </div>
+                <div class="achievement-card">
+                    <h4>✅ 可視化</h4>
+                    <p>数字が苦手でも一目瞭然</p>
+                </div>
+                <div class="achievement-card">
+                    <h4>✅ 発見</h4>
+                    <p>人間が見逃すパターンをAIが発見</p>
+                </div>
+                <div class="achievement-card">
+                    <h4>✅ 改善提案</h4>
+                    <p>具体的なネクストアクション</p>
+                </div>
+                <div class="achievement-card">
+                    <h4>✅ コスト</h4>
+                    <p>無料で始められる</p>
+                </div>
+            </div>
+            
+            <div class="roi-showcase">
+                <h3>必要なスキルとコスト</h3>
+                <div class="code-block">必要なスキル: 
+- Googleアカウントがあること
+- 日本語が読めること
+- それだけ！
+
+コスト:
+- Gemini: 無料枠で十分
+- Canva: 無料版でOK
+- 合計: 0円で始められる！
+
+削減価値: 6時間/週 × 5,000円 = 120,000円/月</div>
+            </div>
+        </div>
+
+        <div class="next-episode">
+            <h2>🚀 次回予告（最終回）</h2>
+            <div class="preview-content">
+                <h3>AIシステムは完成し、自動で進化し続ける仕組みも整いました。<br>
+                でも本当の挑戦はここから！</h3>
+                <p>次回最終回では、この革新的なシステムを組織全体に浸透させ、<br>
+                真の『上司待ちゼロ』文化を作る方法をお伝えします。</p>
+                
+                <h4>最終回で学ぶこと：</h4>
+                <ul>
+                    <li>📈 データで実証された成果を武器にした説得法</li>
+                    <li>🤝 インフォグラフィックで成果をアピール</li>
+                    <li>🏆 小さな成功から大きな変革へ</li>
+                    <li>👥 組織全体を巻き込む変革のリーダーシップ</li>
+                </ul>
+                
+                <p><strong>技術を超えた、本当の組織変革の話をしましょう！</strong></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

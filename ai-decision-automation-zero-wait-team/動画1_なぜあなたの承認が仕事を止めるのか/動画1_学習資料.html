@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画1: なぜあなたの承認が仕事を止めるのか</title>
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #e74c3c;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 30px 0 20px 0;
+        }
+        .problem-showcase {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .before, .after {
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .before {
+            background: #f8d7da;
+            border: 3px solid #dc3545;
+        }
+        .after {
+            background: #d1edff;
+            border: 3px solid #0084ff;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .metric-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+        }
+        .metric-label {
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+        .demo-preview {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border: 3px solid #3498db;
+        }
+        .demo-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .demo-step {
+            background: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 25px;
+            border: 2px solid #3498db;
+            position: relative;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+        .demo-step::after {
+            content: "→";
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+            color: #3498db;
+        }
+        .demo-step:last-child::after {
+            display: none;
+        }
+        .system-architecture {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .learning-path {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .success-showcase {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚫 動画1: なぜあなたの承認が仕事を止めるのか</h1>
+        
+        <div class="problem-showcase">
+            <h3>💡 この動画の学習目標</h3>
+            <p style="font-size: 1.2em;"><strong>承認業務の課題を数値化し、たった3つのツール（Slack + Make + ChatGPT）で10分で構築できるAI承認システムの全体像を理解する</strong></p>
+        </div>
+
+        <h2>📊 承認業務の現実</h2>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span class="metric-number">15件</span>
+                <span class="metric-label">1日の平均承認依頼数</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-number">20分</span>
+                <span class="metric-label">1件あたりの検討時間</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-number">100時間</span>
+                <span class="metric-label">月間承認業務時間</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-number">68%</span>
+                <span class="metric-label">判断に迷う案件の割合</span>
+            </div>
+        </div>
+
+        <h2>🔄 Before / After 比較</h2>
+        
+        <div class="before-after">
+            <div class="before">
+                <h3>❌ Before: 承認地獄の毎日</h3>
+                <ul>
+                    <li><strong>時間の無駄</strong>: 1日5時間が承認業務に消える</li>
+                    <li><strong>判断の迷い</strong>: 「これで良いのか？」と常に不安</li>
+                    <li><strong>一貫性の欠如</strong>: 似た案件でも判断がブレる</li>
+                    <li><strong>部下からのプレッシャー</strong>: 「まだですか？」の催促</li>
+                    <li><strong>戦略業務の時間不足</strong>: 本来やるべき仕事ができない</li>
+                </ul>
+            </div>
+            <div class="after">
+                <h3>✅ After: AI承認で劇的改善</h3>
+                <ul>
+                    <li><strong>90%時間削減</strong>: 月100時間 → 10時間に短縮</li>
+                    <li><strong>即座の判断</strong>: 3秒で根拠付き判断完了</li>
+                    <li><strong>判断の一貫性</strong>: 過去データに基づく公平な判断</li>
+                    <li><strong>部下からの感謝</strong>: 「対応が早い！」と信頼向上</li>
+                    <li><strong>戦略業務に集中</strong>: 本来の管理職業務に専念</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>🎯 デモシステムの簡単構築</h2>
+        
+        <div style="background: #d4edda; border: 3px solid #28a745; border-radius: 15px; padding: 30px; margin: 30px 0; text-align: center;">
+            <h3 style="color: #155724;">⏱️ たった10分で設定完了！</h3>
+            <p style="font-size: 1.2em; color: #155724; margin: 15px 0;">プログラミング経験ゼロでもOK！ドラッグ&ドロップだけで完成</p>
+            <div style="display: flex; justify-content: center; gap: 30px; margin-top: 20px; flex-wrap: wrap;">
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5em;">1️⃣</div>
+                    <strong>Slack App作成</strong><br>
+                    5分
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5em;">2️⃣</div>
+                    <strong>Make設定</strong><br>
+                    3分
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5em;">3️⃣</div>
+                    <strong>ChatGPT接続</strong><br>
+                    2分
+                </div>
+            </div>
+        </div>
+
+        <h2>🎯 最終完成形デモプレビュー</h2>
+        
+        <div class="demo-preview">
+            <h3>📱 AI承認システム動作フロー（Slack + Make + ChatGPT）</h3>
+            <div class="demo-flow">
+                <div class="demo-step">
+                    <strong>承認依頼受信</strong><br>
+                    営業部より予算申請
+                </div>
+                <div class="demo-step">
+                    <strong>AI分析</strong><br>
+                    過去データ参照・判断
+                </div>
+                <div class="demo-step">
+                    <strong>3秒で結果通知</strong><br>
+                    承認・根拠を返信
+                </div>
+                <div class="demo-step">
+                    <strong>自動記録</strong><br>
+                    データベースに履歴保存
+                </div>
+            </div>
+            
+            <h4>🗣️ 実際のデモ会話例</h4>
+            <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <p><strong>👤 田中（営業）:</strong> 「新規顧客向けキャンペーン費用30万円の承認お願いします」</p>
+                <p><strong>🤖 AI承認Bot:</strong> 「✅ 承認: 過去の同規模キャンペーンで平均ROI 280%を記録。予算範囲内で妥当と判断します。」</p>
+                <p><strong>⏱️ 処理時間:</strong> 3秒</p>
+            </div>
+        </div>
+
+        <h2>🏗️ システム構成</h2>
+        
+        <div class="system-architecture">
+            <h3>🔧 たった3つのツールで実現！</h3>
+            <p style="text-align: center; font-size: 1.2em; color: #e74c3c; font-weight: bold; margin: 20px 0;">🎯 10分で設定完了・プログラミング不要</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
+                <div>
+                    <h4>💬 Slack（情報収集・通知）</h4>
+                    <ul>
+                        <li>承認依頼の受信</li>
+                        <li>判断結果の即時通知</li>
+                        <li>Bot Tokenで簡単設定（5分）</li>
+                        <li>プログラミング不要</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>🔧 Make（ノーコード自動化）</h4>
+                    <ul>
+                        <li>ドラッグ&ドロップで接続</li>
+                        <li>専用モジュールで簡単設定</li>
+                        <li>視覚的にフローを作成</li>
+                        <li>無料プラン（月1000回）でOK</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>🤖 ChatGPT（AI判断エンジン）</h4>
+                    <ul>
+                        <li>APIキー1つで即利用可能</li>
+                        <li>高速・低コストな判断</li>
+                        <li>カスタムプロンプトで制御</li>
+                        <li>デモ20回で約100円</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2>📚 7動画学習ロードマップ</h2>
+        
+        <div class="learning-path">
+            <h3>🎯 段階的スキル習得</h3>
+            <ol>
+                <li><strong>動画1</strong>: 問題認識と全体像把握（今回）</li>
+                <li><strong>動画2</strong>: AIにあなたの思考をインストールする方法</li>
+                <li><strong>動画3</strong>: 過去データでAIを賢くする手法</li>
+                <li><strong>動画4</strong>: A/Bテストによる精度改善</li>
+                <li><strong>動画5</strong>: 自動承認ワークフローの実装</li>
+                <li><strong>動画6</strong>: Make自動化で管理者をルーチンから解放</li>
+                <li><strong>動画7</strong>: 承認業務改革で組織の競争力を高める</li>
+            </ol>
+        </div>
+
+        <h2>💰 コスト比較</h2>
+        
+        <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 15px; padding: 25px; margin: 20px 0;">
+            <h3>🎯 月額コスト比較</h3>
+            <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
+                <tr style="background: #1976d2; color: white;">
+                    <th style="padding: 15px; text-align: left;">サービス</th>
+                    <th style="padding: 15px; text-align: center;">料金</th>
+                    <th style="padding: 15px; text-align: center;">備考</th>
+                </tr>
+                <tr style="background: #f5f5f5;">
+                    <td style="padding: 15px;"><strong>Slack</strong></td>
+                    <td style="padding: 15px; text-align: center;">無料</td>
+                    <td style="padding: 15px; text-align: center;">無料プランで十分</td>
+                </tr>
+                <tr>
+                    <td style="padding: 15px;"><strong>Make</strong></td>
+                    <td style="padding: 15px; text-align: center;">無料</td>
+                    <td style="padding: 15px; text-align: center;">月1000回まで無料</td>
+                </tr>
+                <tr style="background: #f5f5f5;">
+                    <td style="padding: 15px;"><strong>ChatGPT API</strong></td>
+                    <td style="padding: 15px; text-align: center;">約500円</td>
+                    <td style="padding: 15px; text-align: center;">1000件処理で約500円</td>
+                </tr>
+                <tr style="background: #bbdefb; font-weight: bold;">
+                    <td style="padding: 15px;">合計</td>
+                    <td style="padding: 15px; text-align: center;">約500円/月</td>
+                    <td style="padding: 15px; text-align: center;">ランチ1回分！</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2>⚠️ 成功のための重要ポイント</h2>
+        
+        <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 10px; padding: 25px; margin: 20px 0;">
+            <h3>🎯 段階的アプローチが成功の鍵</h3>
+            <p style="text-align: center; margin: 15px 0;">
+                <strong>💡 初心者は専用モジュールからスタート！</strong><br>
+                HTTPモジュールは動画5以降で解説します
+            </p>
+            <ul>
+                <li><strong>小さく始める</strong>: 最初は低リスク案件から開始</li>
+                <li><strong>80%の精度で開始</strong>: 完璧を求めず実用性重視</li>
+                <li><strong>人間の最終判断権確保</strong>: AIは支援ツール、決定は人間</li>
+                <li><strong>セキュリティ第一</strong>: 機密情報の取り扱い注意</li>
+                <li><strong>継続改善</strong>: 運用しながら精度向上</li>
+            </ul>
+        </div>
+
+        <h2>💰 期待される効果・ROI</h2>
+        
+        <div class="success-showcase">
+            <h3>🚀 導入効果シミュレーション（実測値）</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 30px;">
+                <div>
+                    <h4>時間削減効果</h4>
+                    <div style="font-size: 2em; font-weight: bold;">90時間/月</div>
+                    <p>承認業務時間の大幅削減</p>
+                </div>
+                <div>
+                    <h4>判断品質向上</h4>
+                    <div style="font-size: 2em; font-weight: bold;">95%</div>
+                    <p>過去データ基準の一貫した判断</p>
+                </div>
+                <div>
+                    <h4>チーム満足度</h4>
+                    <div style="font-size: 2em; font-weight: bold;">+40%</div>
+                    <p>迅速対応による信頼関係向上</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="problem-showcase">
+            <h3>🚀 次回への導線</h3>
+            <p style="font-size: 1.1em;">「10分でAI承認システムが作れることが分かりました。次回は、いよいよAIに『あなたの判断基準』をインストールする方法を学びます。どんなプロンプトを書けば、あなたと同じレベルの判断をAIができるようになるのか？その極意を実践的に解説します！」</p>
+            <p style="margin-top: 20px; text-align: center;">
+                <strong>📖 今すぐ始めたい方は「動画1_AI承認システム完全ガイド」をご覧ください</strong>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

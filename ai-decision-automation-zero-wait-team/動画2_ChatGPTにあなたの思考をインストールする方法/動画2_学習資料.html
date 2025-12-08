@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画2: ChatGPTにあなたの思考をインストールする方法</title>
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            line-height: 1.8;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 30px 0 20px 0;
+        }
+        .thinking-showcase {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .prompt-framework {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border: 3px solid #3498db;
+        }
+        .prompt-component {
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .before-after-demo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .demo-bad, .demo-good {
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .demo-bad {
+            background: #f8d7da;
+            border: 3px solid #dc3545;
+        }
+        .demo-good {
+            background: #d1edff;
+            border: 3px solid #0084ff;
+        }
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        .tip-card {
+            background: white;
+            border: 3px solid #3498db;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .tip-title {
+            color: #3498db;
+            font-weight: bold;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .tip-icon {
+            font-size: 1.8em;
+            margin-right: 15px;
+        }
+        .output-format {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .make-integration {
+            background: #e3f2fd;
+            border: 3px solid #2196f3;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .warning-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 動画2: ChatGPTにあなたの思考をインストールする方法</h1>
+        
+        <div class="thinking-showcase">
+            <h3>🎯 この動画の学習目標</h3>
+            <p style="font-size: 1.2em;"><strong>動画1で作った10分システムに「頭脳」を搭載！<br>
+            あなたの判断基準をChatGPTに完璧にコピーして、<br>
+            一貫した高品質な承認判断を自動化する</strong></p>
+        </div>
+
+        <h2>🔑 なぜプロンプト設計が重要なのか？</h2>
+        
+        <div style="background: #e8f5e8; border: 3px solid #27ae60; border-radius: 15px; padding: 25px; margin: 20px 0;">
+            <h3>💡 プロンプトの有無で天と地の差</h3>
+            <p><strong>プロンプトなし</strong>: AIは一般的な知識で適当に判断 → 使い物にならない</p>
+            <p><strong>最適化プロンプト</strong>: あなたの判断基準で分析 → 信頼できる分身に！</p>
+        </div>
+
+        <h2>🧩 プロンプト設計の3層構造</h2>
+        
+        <div class="prompt-framework">
+            <h3>📋 Make + ChatGPTで実装する効果的なプロンプト</h3>
+            
+            <div class="prompt-component">
+                <h4>1️⃣ 役割設定（Role）- AIの人格を決める</h4>
+                <p><strong>ChatGPTに「誰として」振る舞わせるかを明確に定義</strong></p>
+                <div class="code-block">あなたは創業15年のIT企業で、10年以上の管理職経験を持つ
+承認責任者です。コスト意識が高く、投資対効果を重視しますが、
+チームの成長に必要な投資は積極的に承認する方針です。
+部下からの承認依頼に対して、公平で一貫した判断を行ってください。</div>
+                <p style="color: #e74c3c;">💡 <strong>ポイント</strong>: 具体的な経験年数や価値観を入れることで、AIの判断に一貫性が生まれます</p>
+            </div>
+            
+            <div class="prompt-component">
+                <h4>2️⃣ 判断基準（Criteria）- 明確なルール</h4>
+                <p><strong>数値基準と評価軸を具体的に設定</strong></p>
+                <div class="code-block">【金額基準】
+- 30万円以下＋ROI 200%以上 → 即承認
+- 50万円以下＋必要性明確 → 条件付き承認
+- 50万円超 or ROI不明 → 追加情報要求
+- 法的リスクあり → 即却下
+
+【重視ポイント】
+1. 投資回収期間（12ヶ月以内が理想）
+2. チーム生産性への影響（20%以上の改善期待）
+3. 競合他社の動向（業界標準への対応）
+4. 実行体制の確実性（責任者と期限が明確）</div>
+            </div>
+            
+            <div class="prompt-component">
+                <h4>3️⃣ 出力形式（Format）- ブレない回答</h4>
+                <p><strong>Makeの自動化で処理しやすい構造化フォーマット</strong></p>
+                <div class="code-block">必ず以下の形式で回答してください：
+【判断】承認/条件付き承認/却下/追加情報要求
+【理由】
+- 理由1: （具体的な根拠）
+- 理由2: （データに基づく説明）
+- 理由3: （リスクと効果の評価）
+【信頼度】0-100%（判断の確実性）
+【次のアクション】（申請者への具体的指示）</div>
+            </div>
+        </div>
+
+        <h2>📊 Before/After 実例比較</h2>
+        
+        <div class="before-after-demo">
+            <div class="demo-bad">
+                <h3>❌ プロンプトなし・適当な設定</h3>
+                <div style="background: #495057; color: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong>Slack入力:</strong><br>
+                    「マーケティングツール月額8万円の承認お願いします」
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong>ChatGPT回答:</strong><br>
+                    「マーケティングツールの導入は良いアイデアだと思います。8万円は少し高いかもしれませんが、効果があれば良いでしょう。他の選択肢も検討してみてください。」
+                </div>
+                <p style="color: #dc3545;"><strong>問題点:</strong><br>
+                • 判断が不明確（承認？却下？）<br>
+                • 根拠が曖昧<br>
+                • 次のアクション不明<br>
+                • 自動化で使えない</p>
+            </div>
+            
+            <div class="demo-good">
+                <h3>✅ 最適化プロンプト使用</h3>
+                <div style="background: #495057; color: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong>Slack入力:</strong><br>
+                    「マーケティングツール月額8万円の承認お願いします」
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                    <strong>ChatGPT回答:</strong><br>
+                    【判断】追加情報要求<br>
+                    【理由】<br>
+                    - 理由1: 月額8万円は年間96万円の投資となり詳細検討が必要<br>
+                    - 理由2: ROIと具体的な活用計画が不明<br>
+                    - 理由3: 他社ツールとの比較検討結果が必要<br>
+                    【信頼度】95%<br>
+                    【次のアクション】以下の情報を提供してください：①期待ROI ②3社以上の比較表 ③活用計画書
+                </div>
+                <p style="color: #28a745;"><strong>改善点:</strong><br>
+                • 明確な判断結果<br>
+                • 具体的な根拠<br>
+                • 実行可能な指示<br>
+                • Make自動化に最適</p>
+            </div>
+        </div>
+
+        <h2>🛠️ Make実装での実践テクニック</h2>
+        
+        <div class="make-integration">
+            <h3>⚙️ ChatGPTモジュールでの設定方法</h3>
+            
+            <h4>1. System Messageの活用</h4>
+            <div class="code-block">Make内のChatGPTモジュール設定:
+1. Role: System を選択
+2. Message Content: プロンプト全文を貼り付け
+3. Temperature: 0.3（一貫性重視）
+4. Max Tokens: 500（簡潔な回答）</div>
+
+            <h4>2. 変数を使った動的プロンプト</h4>
+            <div class="code-block">承認依頼の詳細:
+申請者: {{1.user_name}}
+案件: {{1.text}}
+申請日時: {{1.ts}}
+
+この情報を基に判断してください。</div>
+
+            <h4>3. エラーハンドリング</h4>
+            <div class="code-block">もし情報が不足している場合は、
+【判断】追加情報要求
+として、必要な情報を具体的に列挙してください。</div>
+        </div>
+
+        <h2>🎯 プロンプト改善の実践テクニック</h2>
+        
+        <div class="tips-grid">
+            <div class="tip-card">
+                <div class="tip-title">
+                    <span class="tip-icon">📖</span>
+                    具体例の威力
+                </div>
+                <div class="code-block" style="font-size: 0.9em;">【成功事例】
+Slack有料版(月3万円)
+→ 効率40%向上で承認
+
+【失敗事例】
+高額CRM(月20万円)
+→ 活用率10%で却下</div>
+                <p>過去の判断例を入れることで、AIの判断精度が劇的に向上します</p>
+            </div>
+            
+            <div class="tip-card">
+                <div class="tip-title">
+                    <span class="tip-icon">🔀</span>
+                    条件分岐の明確化
+                </div>
+                <div class="code-block" style="font-size: 0.9em;">IF 法務リスク → 即却下
+ELSEIF 予算超過 → 上位承認
+ELSEIF ROI不明 → 情報要求
+ELSE → 通常判断</div>
+                <p>プログラムのような明確な条件分岐で、判断の一貫性を保証</p>
+            </div>
+            
+            <div class="tip-card">
+                <div class="tip-title">
+                    <span class="tip-icon">🔧</span>
+                    継続的な改善
+                </div>
+                <ul style="margin: 10px 0;">
+                    <li>週次で判断結果をレビュー</li>
+                    <li>誤判断をプロンプトに反映</li>
+                    <li>新しいケースを追加</li>
+                    <li>チームフィードバック反映</li>
+                </ul>
+                <p>プロンプトは「生きた文書」として育てていく</p>
+            </div>
+        </div>
+
+        <h2>📝 実用プロンプトテンプレート（完全版）</h2>
+        
+        <div class="output-format">
+            <h3>🔧 コピー＆ペーストですぐ使える！</h3>
+            <div class="code-block"># AI承認システム プロンプト v2.0
+
+あなたは創業15年のIT企業で10年以上の管理職経験を持つ承認責任者です。
+コスト意識が高く投資対効果を重視しますが、チーム成長に必要な投資は積極的に承認します。
+
+## 判断基準
+【金額ルール】
+- 30万円以下＋ROI 200%以上 → 即承認
+- 50万円以下＋必要性明確 → 条件付き承認
+- 50万円超 or ROI不明 → 追加情報要求
+- 100万円超 → 役員承認必須
+- 法的リスクあり → 即却下
+
+【評価軸】
+1. ROI: 投資回収12ヶ月以内
+2. 生産性: 20%以上の改善期待
+3. リスク: 低/中/高で評価
+4. 緊急度: 競合対策として必要か
+
+【成功事例】
+- Slack有料版(3万円/月) → 承認 → 効率40%向上
+- Tableau(5万円/月) → 承認 → 意思決定2倍速
+- 高額CRM(20万円/月) → 却下 → 活用率10%予測
+
+## 出力形式
+【判断】承認/条件付き承認/却下/追加情報要求
+【理由】
+- 理由1: 
+- 理由2: 
+- 理由3: 
+【信頼度】0-100%
+【次のアクション】
+
+## 制約
+- 個人情報は扱わない
+- 法的問題は即却下
+- 不明点は追加情報要求
+- 簡潔に回答（500文字以内）
+
+承認依頼の内容を入力してください:</div>
+        </div>
+
+        <h2>⚠️ 注意点とトラブルシューティング</h2>
+        
+        <div class="warning-box">
+            <h3>🚨 よくある失敗と対策</h3>
+            <table style="width: 100%; margin: 15px 0;">
+                <tr style="background: #f8d7da;">
+                    <th style="padding: 10px; text-align: left;">失敗例</th>
+                    <th style="padding: 10px; text-align: left;">原因</th>
+                    <th style="padding: 10px; text-align: left;">対策</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px;">判断がブレる</td>
+                    <td style="padding: 10px;">基準が曖昧</td>
+                    <td style="padding: 10px;">数値基準を明確化</td>
+                </tr>
+                <tr style="background: #f5f5f5;">
+                    <td style="padding: 10px;">回答が長すぎる</td>
+                    <td style="padding: 10px;">形式指定なし</td>
+                    <td style="padding: 10px;">文字数制限を追加</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px;">重要項目見落とし</td>
+                    <td style="padding: 10px;">チェックリスト不足</td>
+                    <td style="padding: 10px;">必須確認項目を明記</td>
+                </tr>
+                <tr style="background: #f5f5f5;">
+                    <td style="padding: 10px;">Make連携エラー</td>
+                    <td style="padding: 10px;">フォーマット不一致</td>
+                    <td style="padding: 10px;">出力形式を厳密に指定</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2>📈 プロンプトの成長戦略</h2>
+        
+        <div style="background: #e8f5e8; border: 2px solid #27ae60; border-radius: 10px; padding: 25px; margin: 20px 0;">
+            <h3>🔄 4週間改善サイクル</h3>
+            <ol>
+                <li><strong>1週目: 基本動作確認</strong>
+                    <ul>
+                        <li>10件の承認依頼でテスト</li>
+                        <li>基本的な判断の正確性を確認</li>
+                    </ul>
+                </li>
+                <li><strong>2週目: エッジケース対応</strong>
+                    <ul>
+                        <li>特殊な案件での動作確認</li>
+                        <li>例外処理ルールの追加</li>
+                    </ul>
+                </li>
+                <li><strong>3週目: 精度向上</strong>
+                    <ul>
+                        <li>判断理由の質を改善</li>
+                        <li>信頼度スコアの調整</li>
+                    </ul>
+                </li>
+                <li><strong>4週目: チーム展開</strong>
+                    <ul>
+                        <li>他部署からのフィードバック収集</li>
+                        <li>全社展開に向けた最終調整</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="thinking-showcase">
+            <h3>🚀 次回への導線</h3>
+            <p style="font-size: 1.1em;">「プロンプトで『思考』をコピーできました。でも、まだAIには『経験』が足りません。<br>
+            次回は、エクセルに眠る過去1000件の承認データを使って、<br>
+            AIに実践的な判断力を身につけさせる『Few-shot学習』の技法を伝授します！<br>
+            たった30分で、新人が10年のベテランに変身する秘密をお見せします」</p>
+        </div>
+    </div>
+</body>
+</html>
