@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画5：請求ステータスを自動で変える！オートメーションで運用効率UP</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap');
+
+        :root {
+            /* Literary Editorial Design System Colors */
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --paper-shadow: #F5F5F0;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+
+            /* Typography */
+            --font-primary: 'Zen Kaku Gothic New', sans-serif;
+            --font-secondary: 'Space Grotesk', monospace;
+            --font-serif: 'Noto Serif JP', serif;
+
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(10, 14, 39, 0.1);
+            --shadow-md: 0 4px 16px rgba(10, 14, 39, 0.15);
+            --shadow-lg: 0 8px 32px rgba(10, 14, 39, 0.2);
+            --shadow-xl: 0 16px 48px rgba(10, 14, 39, 0.25);
+
+            /* Border */
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+            padding: var(--space-lg) 0;
+        }
+
+        /* Paper Texture Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.03) 2px,
+                    rgba(10, 14, 39, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.02) 2px,
+                    rgba(10, 14, 39, 0.02) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-sm);
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+
+        .subtitle {
+            font-family: var(--font-secondary);
+            font-size: 1.25rem;
+            color: var(--ink);
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+
+        /* Navigation */
+        nav {
+            margin-bottom: var(--space-lg);
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-pill {
+            padding: var(--space-xs) var(--space-md);
+            background: var(--paper);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 50px;
+            font-family: var(--font-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        .nav-pill:hover::before {
+            left: 0;
+        }
+
+        .nav-pill:hover {
+            color: var(--paper);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Content Section */
+        .content-section {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .content-section:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .section-number {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--electric);
+            background: var(--ink);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        /* Content Typography */
+        .content-section h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            margin-bottom: var(--space-lg);
+            color: var(--ink);
+            position: relative;
+            line-height: 1.2;
+        }
+
+        .content-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+
+        .content-section h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            color: var(--ink);
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+        }
+
+        .content-section p {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-md);
+        }
+
+        .content-section ul {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-md) 0;
+        }
+
+        .content-section li {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-sm);
+            padding-left: var(--space-lg);
+            position: relative;
+        }
+
+        .content-section li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Card */
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-number {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-family: var(--font-secondary);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--electric);
+            opacity: 0.3;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: var(--space-md);
+            border-radius: 8px;
+            font-family: var(--font-secondary);
+            font-size: 0.9rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            margin: var(--space-md) 0;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-block::before {
+            content: 'DEMO';
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--electric);
+            opacity: 0.5;
+        }
+
+        /* Highlight Box */
+        .highlight {
+            background: linear-gradient(135deg, var(--electric), var(--coral));
+            padding: 3px;
+            border-radius: 8px;
+            margin: var(--space-md) 0;
+        }
+
+        .highlight-content {
+            background: var(--paper);
+            padding: var(--space-md);
+            border-radius: 5px;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .grid-item {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 180px;
+        }
+
+        .grid-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--electric), var(--coral));
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .grid-item:hover::after {
+            transform: translateY(0);
+        }
+
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: var(--space-lg);
+            margin: var(--space-md) 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--ink);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: var(--space-md);
+            padding-left: var(--space-md);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--electric);
+            border: 3px solid var(--ink);
+        }
+
+        /* Step Box */
+        .step-box {
+            background: #fff;
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            border-left: 6px solid var(--electric);
+        }
+
+        .step-number {
+            font-family: var(--font-secondary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--electric);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: #fff;
+            border: 2px solid var(--coral);
+            border-left: 6px solid var(--coral);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .warning-box h4 {
+            color: var(--coral);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: var(--space-lg) 0;
+            border-top: 3px solid var(--ink);
+            margin-top: var(--space-xl);
+            font-family: var(--font-secondary);
+            letter-spacing: 0.05em;
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background: var(--ink);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 2px solid var(--ink);
+        }
+
+        .dark-mode-toggle::before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: var(--paper);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .dark-mode-toggle.active {
+            background: var(--electric);
+            border-color: var(--electric);
+        }
+
+        .dark-mode-toggle.active::before {
+            transform: translateX(30px);
+            background: var(--ink);
+        }
+
+        /* Dark Mode Styles */
+        .dark-mode {
+            --ink: #FEFEF8;
+            --paper: #0A0E27;
+            --paper-shadow: #1A1E37;
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .dark-mode {
+            --shadow-sm: 0 2px 8px rgba(255, 255, 255, 0.1);
+            --shadow-md: 0 4px 16px rgba(255, 255, 255, 0.15);
+            --shadow-lg: 0 8px 32px rgba(255, 255, 255, 0.2);
+            --shadow-xl: 0 16px 48px rgba(255, 255, 255, 0.25);
+        }
+
+        .dark-mode .code-block {
+            background: #1a1a2e;
+            color: #eee;
+            border: 1px solid #444;
+        }
+
+        .dark-mode .section-number {
+            background: var(--paper);
+            color: var(--electric);
+            border: 1px solid var(--electric);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content-section h2 {
+                font-size: 2rem;
+            }
+
+            .content-section h3 {
+                font-size: 1.5rem;
+            }
+
+            .content-section p, .content-section li {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">請求ステータスを自動で変える！<br>オートメーションで運用効率UP</h1>
+            </div>
+        </header>
+
+        <nav>
+            <a href="#goal" class="nav-pill">今日のゴール</a>
+            <a href="#overview" class="nav-pill">自動化フロー図解</a>
+            <a href="#actions" class="nav-pill">アクション設計</a>
+            <a href="#bots" class="nav-pill">Bot設定</a>
+            <a href="#status" class="nav-pill">ステータス管理</a>
+            <a href="#monitor" class="nav-pill">監視とログ</a>
+            <a href="#practice" class="nav-pill">実践チェック</a>
+            <a href="#troubleshooting" class="nav-pill">トラブル対策</a>
+        </nav>
+
+        <main class="main-content">
+            <section id="goal" class="content-section">
+                <span class="section-number">01</span>
+                <h2>今日のゴール</h2>
+                <p>ボタンを押すだけで請求関連の自動処理（PDF出力・ステータス更新・通知）まで完了する運用を構築します。</p>
+                <div class="grid">
+                    <div class="grid-item">
+                        <h3>ActionとAutomationの役割分担</h3>
+                        <p>ユーザー操作 = Action、裏側の処理 = Automation という設計思想を理解します。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>3つのフラグ管理</h3>
+                        <p>見積書発行・請求書発行・一覧出力それぞれのフラグを使い分け、状態遷移を自動化。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>ステータス更新の自動化</h3>
+                        <p>書類発行後にステータスを「請求済」「入金済」へ自動変更するルールを組み込む。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>監視と例外処理</h3>
+                        <p>Automation Monitor とログを使ったデバッグ方法を習得し、再実行時の注意点を押さえる。</p>
+                    </div>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>準備:</strong> 動画4で作成したボタン＆Bot（PDF出力）が完成している前提で進めます。
+                    </div>
+                </div>
+            </section>
+
+            <section id="overview" class="content-section">
+                <span class="section-number">02</span>
+                <h2>自動化フローを図で把握する</h2>
+                <p>フラグのON/OFFを軸に、処理の流れを整理しましょう。</p>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h3>1. ボタンを押す（Action）</h3>
+                        <p>ユーザーが「見積書発行」ボタンをタップ → 見積書発行フラグ = TRUE に更新。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>2. Botが発火（Automation）</h3>
+                        <p>フラグがTRUEのレコードを検知して、PDF生成とメール送付を自動実行。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>3. ステータスを自動更新</h3>
+                        <p>Bot内の追加ステップでステータスを「請求済」に変更し、フラグをFALSEに戻す。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>4. ログを確認</h3>
+                        <p>Automation Monitor で成功/失敗を確認。必要に応じて再実行や手動修正を行う。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="actions" class="content-section">
+                <span class="section-number">03</span>
+                <h2>3種類のアクションを設計する</h2>
+                <p>すべて <strong>Data: set the values of some columns</strong> をベースにし、対象フラグをTRUEにします。</p>
+                <div class="step-box">
+                    <div class="step-number">Action 01</div>
+                    <h3>見積書発行</h3>
+                    <ul>
+                        <li>Table: 注文</li>
+                        <li>Set column values: 見積書発行フラグ = TRUE</li>
+                        <li>Only if this condition is true: <code>[ステータス] = "見積発行済"</code> など業務ルールに合わせて設定</li>
+                        <li>Display: App: prominently（カードビューのFloatingボタンとして配置）</li>
+                    </ul>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">Action 02</div>
+                    <h3>請求書発行</h3>
+                    <ul>
+                        <li>Set column values: 請求書発行フラグ = TRUE</li>
+                        <li>Condition例: <code>[納入単価合計] &gt; 0</code> <br> 未入力の明細がある状態を防ぎます。</li>
+                        <li>Behavior ▶ Confirmation message に「請求書を生成します。よろしいですか？」などの確認文を設定。</li>
+                    </ul>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">Action 03</div>
+                    <h3>一覧出力（Excelエクスポート）</h3>
+                    <ul>
+                        <li>Set column values: 一覧出力フラグ = TRUE</li>
+                        <li>Condition: 月末のみ実行したい場合は <code>IN(TODAY(), EOMONTH(TODAY(),0))</code> などスケジュール条件を追加</li>
+                        <li>Grouped Action にまとめ、出力後にステータスを「完了」へ更新することも可能です。</li>
+                    </ul>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>ボタン配置Tips:</strong> View の Behavior ▶ Event actions で Detail画面のボタン表示位置を最適化。スマホユーザー向けに Floating ボタンと Overlay ボタンを使い分けましょう。
+                    </div>
+                </div>
+            </section>
+
+            <section id="bots" class="content-section">
+                <span class="section-number">04</span>
+                <h2>Bot（Automation）で処理を連鎖させる</h2>
+                <p>Botは「Event」「Process」「Task」「Condition」の組み合わせで構成されます。各フラグごとにBotを用意するのが基本です。</p>
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>Bot: 見積書自動生成</h4>
+                        <ul>
+                            <li>Event: Data change on 注文（条件: <code>[見積書発行フラグ]</code>）</li>
+                            <li>Process 1: Create file from template（動画4で設定）</li>
+                            <li>Process 2: Data: set the values… → 見積書発行フラグ = FALSE、ステータス = "見積発行済"</li>
+                        </ul>
+                    </div>
+                    <div class="grid-item">
+                        <h4>Bot: 請求書自動生成</h4>
+                        <ul>
+                            <li>Event: <code>[請求書発行フラグ]</code> が TRUE</li>
+                            <li>Process 1: Create file from template（請求書テンプレート）</li>
+                            <li>Process 2: Send email to `[ID社員].[メール]`（請求書PDFを添付）</li>
+                            <li>Process 3: Data: set the values… → 請求書発行フラグ = FALSE、ステータス = "請求済"</li>
+                        </ul>
+                    </div>
+                    <div class="grid-item">
+                        <h4>Bot: 一覧出力</h4>
+                        <ul>
+                            <li>Event: Scheduled（例：毎月1日 09:00 / Orders table）</li>
+                            <li>Process: Run a task ▷ Export rows to a CSV file</li>
+                            <li>Process後: 一覧出力フラグをFALSEに戻す、エクスポート完了メールを管理者へ送付</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="warning-box">
+                    <h3>Botの共通設定</h3>
+                    <p>同じテーブルに複数Botがある場合は <strong>Event名称・条件</strong> を明確に区別し、重複トリガーを避けましょう。イベント条件には <code>[_THISROW_BEFORE].[フラグ] <> [_THISROW_AFTER].[フラグ]</code> を加えると多重起動を防げます。</p>
+                </div>
+            </section>
+
+            <section id="status" class="content-section">
+                <span class="section-number">05</span>
+                <h2>ステータス自動更新の設計</h2>
+                <p>ステータスカラムはアプリの見える化に直結するため、オートメーションで確実に更新します。</p>
+                <div class="card">
+                    <span class="card-number">ルール例</span>
+                    <ul>
+                        <li>見積書発行完了 ➡ ステータス = "見積発行済"</li>
+                        <li>請求書発行完了 ➡ ステータス = "請求済"</li>
+                        <li>入金確認（手動入力 or 別Bot） ➡ ステータス = "入金済"</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <span class="card-number">入金確認の自動化</span>
+                    <p>銀行入金CSVを別途取り込みシートに追加 → Botで合致する請求番号を検索し、入金日とステータスを更新する応用パターンも可能です。</p>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>UI連携:</strong> UX ▶ Format rules でステータスごとに色分けすると、営業が一覧で状況を素早く把握できます。
+                    </div>
+                </div>
+            </section>
+
+            <section id="monitor" class="content-section">
+                <span class="section-number">06</span>
+                <h2>監視とログ活用</h2>
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>Automation Monitor</h4>
+                        <p>実行ログ・成功/失敗のステータスを確認。失敗時はStack Traceから原因（テンプレート未アクセス、アクセス権不足など）を特定。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>Audit History</h4>
+                        <p>アプリ右上の <strong>Manage ▶ Monitor ▶ Audit History</strong> で、各アクション・Botの実行履歴を詳細に確認できます。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>テスト実行</h4>
+                        <p>Bot編集画面の <strong>Test</strong> ボタンで、任意レコードを指定して単体テスト。運用前に最低1回は試験実行しましょう。</p>
+                    </div>
+                </div>
+                <div class="warning-box">
+                    <h3>再実行時の注意</h3>
+                    <p>Botを再実行すると同名PDFが生成されたりメールが重複送信される恐れがあります。テスト時は一時的にフラグ更新のみを有効にするなど、サンドボックス手順を作成しましょう。</p>
+                </div>
+            </section>
+
+            <section id="practice" class="content-section">
+                <span class="section-number">07</span>
+                <h2>実践チェック＆振り返り</h2>
+                <div class="card">
+                    <span class="card-number">Practice 01</span>
+                    <p>見積書発行→請求書発行の順にボタン操作し、ステータスが <code>見積発行済 → 請求済</code> と遷移するか確認。</p>
+                </div>
+                <div class="card">
+                    <span class="card-number">Practice 02</span>
+                    <p>Automation Monitorで直近のBot実行ログを確認し、エラーが無いこと、処理時間が想定内であることを記録。</p>
+                </div>
+                <div class="card">
+                    <span class="card-number">Practice 03</span>
+                    <p>一覧出力フラグをTRUEにしてBotを手動起動し、出力されたCSVをチームで共有。フォーマットに改善余地があればメモ。</p>
+                </div>
+                <div class="card">
+                    <span class="card-number">Practice 04</span>
+                    <p>想定外シナリオ（ステータスが受注のままボタンを押す等）を試し、エラーメッセージと運用ルールを見直す。</p>
+                </div>
+            </section>
+
+            <section id="troubleshooting" class="content-section">
+                <span class="section-number">08</span>
+                <h2>トラブル対策と改善アイデア</h2>
+                <div class="warning-box">
+                    <h3>Botが動かない</h3>
+                    <p>Event条件の記載ミスや、Botが <strong>Enabled</strong> になっていないケースが多いです。Bot一覧でステータスを確認し、該当Botの「Run」ボタンから即時実行テストを行いましょう。</p>
+                </div>
+                <div class="warning-box">
+                    <h3>ステータスが変わらない</h3>
+                    <p>Process内でデータ更新ステップが含まれているか確認。TRUEにしたフラグをFALSEへ戻す処理とセットで実装しないと、次回以降Botが起動しません。</p>
+                </div>
+                <div class="warning-box">
+                    <h3>通知メールが届かない</h3>
+                    <p>送信元アドレスの権限設定（AppSheetからGmail送信）や、受信側の迷惑メール振り分けをチェック。メール本文には請求番号・金額・ファイルURLを記載し、後から検索しやすくします。</p>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>次の一歩:</strong> さらなる自動化として、支払期日が近づいた案件にリマインドメールを送る Bot や、Slack/Chat 通知との連携も検討してみましょう。
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>AppSheetで営業事務の"紙地獄"を脱出！ゼロから作る見積・請求アプリ</p>
+            <p>動画5/5: 請求ステータスを自動で変える！オートメーションで運用効率UP</p>
+        </footer>
+    </div>
+</body>
+</html>

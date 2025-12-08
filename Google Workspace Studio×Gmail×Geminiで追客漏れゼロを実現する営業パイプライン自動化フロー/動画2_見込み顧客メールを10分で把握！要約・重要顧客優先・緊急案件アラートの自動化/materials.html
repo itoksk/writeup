@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：見込み顧客メールを10分で把握！ | 営業パイプライン自動化フロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+            --google-blue: #4285F4;
+            --google-green: #34A853;
+            --sales-orange: #FF8C00;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 2rem;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--sales-orange);
+            font-size: 0.5em;
+            margin-top: 0.5em;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--sales-orange);
+            display: inline-block;
+        }
+
+        .step-container {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 80px;
+            height: 80px;
+            background: var(--sales-orange);
+            color: white;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .step-description {
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--electric);
+            padding: 1.5rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .code-block .comment {
+            color: #888;
+        }
+
+        .highlight-box {
+            background: rgba(255, 140, 0, 0.1);
+            border-left: 4px solid var(--sales-orange);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box h4 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: rgba(0,0,0,0.02);
+        }
+
+        .flow-item {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: var(--sales-orange);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .comparison-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .badge-before {
+            background: var(--coral);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            border-radius: 4px;
+        }
+
+        .badge-after {
+            background: var(--google-green);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            border-radius: 4px;
+        }
+
+        .checklist {
+            background: rgba(124, 58, 237, 0.05);
+            border: 2px solid var(--violet);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .checklist h3 {
+            color: var(--violet);
+            margin-bottom: 1rem;
+        }
+
+        .checklist li {
+            margin-bottom: 0.75rem;
+            list-style: none;
+        }
+
+        .checklist li::before {
+            content: '✓';
+            color: var(--violet);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .next-preview {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 3rem;
+            margin-top: 4rem;
+        }
+
+        .next-preview h2 {
+            color: var(--sales-orange);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .step-container {
+                flex-direction: column;
+            }
+
+            .step-number {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .flow-diagram {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">営業パイプライン自動化フロー</div>
+            <div class="nav-menu">
+                <a href="#flow">フロー概要</a>
+                <a href="#steps">作成手順</a>
+                <a href="#prompt">プロンプト</a>
+                <a href="#test">テスト</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第2回 / 全5回</div>
+            <h1 class="hero-title">
+                見込み顧客メールを10分で把握！
+                <span>要約・重要顧客優先・緊急案件アラートの自動化</span>
+            </h1>
+            <p class="hero-description">
+                毎朝9時に自動実行。Geminiがメールを要約・優先度判定し、
+                Chatに通知。緊急案件はアラートで即座に把握できます。
+            </p>
+        </div>
+    </div>
+
+    <section class="section" id="flow">
+        <div class="section-label">FLOW</div>
+        <h2 class="section-title">エージェントのフロー</h2>
+
+        <div class="flow-diagram">
+            <div class="flow-item">スケジュール<br>毎朝9時</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">Gmail<br>メール取得</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">Gemini<br>要約・分類</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">Chat<br>通知</div>
+        </div>
+
+        <div class="highlight-box">
+            <h4>作成するエージェント：見込み顧客メール要約エージェント</h4>
+            <ul>
+                <li>毎朝9時に自動実行</li>
+                <li>重要顧客からの未読メールを取得</li>
+                <li>Geminiが日本語で要約・優先度判定</li>
+                <li>Chatに通知（緊急案件はアラート）</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="steps">
+        <div class="section-label">STEPS</div>
+        <h2 class="section-title">作成手順</h2>
+
+        <div class="step-container">
+            <div class="step-number">01</div>
+            <div class="step-content">
+                <h3 class="step-title">Studioにアクセス</h3>
+                <p class="step-description">ブラウザで studio.workspace.google.com にアクセスし、「Create」から新規エージェントを作成。</p>
+                <div class="code-block">
+                    URL: studio.workspace.google.com
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-number">02</div>
+            <div class="step-content">
+                <h3 class="step-title">スターター設定（Scheduled）</h3>
+                <p class="step-description">毎朝9時に自動実行するスケジュールを設定。</p>
+                <div class="highlight-box">
+                    <h4>設定値</h4>
+                    <ul>
+                        <li><strong>頻度:</strong> Daily（毎日）</li>
+                        <li><strong>時刻:</strong> 9:00 AM</li>
+                        <li><strong>タイムゾーン:</strong> Asia/Tokyo</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-number">03</div>
+            <div class="step-content">
+                <h3 class="step-title">Gmail検索ステップ</h3>
+                <p class="step-description">重要顧客からの未読メールを検索条件で取得。</p>
+                <div class="code-block">
+                    <span class="comment"># 検索クエリ例</span><br>
+                    newer_than:1d is:unread from:(@a-corp.co.jp OR @b-inc.com OR @c-group.jp)
+                </div>
+                <div class="highlight-box">
+                    <h4>検索条件のポイント</h4>
+                    <ul>
+                        <li><strong>newer_than:1d</strong> - 過去24時間以内</li>
+                        <li><strong>is:unread</strong> - 未読のみ</li>
+                        <li><strong>from:(...)</strong> - 重要顧客のドメイン</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-number">04</div>
+            <div class="step-content">
+                <h3 class="step-title">Gemini要約ステップ</h3>
+                <p class="step-description">取得したメールをGeminiで分析・要約。</p>
+                <p>→ プロンプトは下記セクションを参照</p>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-number">05</div>
+            <div class="step-content">
+                <h3 class="step-title">Chat通知ステップ</h3>
+                <p class="step-description">要約結果をGoogle Chatに送信。</p>
+                <div class="code-block">
+                    📬 本日の見込み顧客メール要約<br><br>
+                    {gemini_summary}<br><br>
+                    ---<br>
+                    対応漏れがないかご確認ください。
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="prompt">
+        <div class="section-label">PROMPT</div>
+        <h2 class="section-title">Geminiプロンプト</h2>
+
+        <div class="code-block">
+Analyze the following sales emails and provide a summary in Japanese:
+
+{gmail_emails}
+
+For each email, provide:
+1. 【送信者】Sender name and company
+2. 【件名】Subject
+3. 【要約】3-sentence summary
+4. 【緊急度】HIGH/MEDIUM/LOW
+5. 【案件ステージ】Inquiry/Proposal/Quote/Negotiation
+6. 【推奨アクション】Recommended next action
+
+Sort by priority (HIGH first).
+        </div>
+
+        <div class="highlight-box">
+            <h4>プロンプトのポイント</h4>
+            <ul>
+                <li><strong>{gmail_emails}</strong>：前のステップで取得したメールの変数</li>
+                <li>出力は日本語を指定</li>
+                <li>優先度でソートして重要案件を上位に</li>
+                <li>推奨アクションで次のステップを明確に</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="test">
+        <div class="section-label">TEST</div>
+        <h2 class="section-title">テストと有効化</h2>
+
+        <div class="checklist">
+            <h3>テスト確認項目</h3>
+            <ul>
+                <li>Gmailからメールが正しく取得されているか</li>
+                <li>Geminiが日本語で要約を出力しているか</li>
+                <li>緊急度・案件ステージが正しく判定されているか</li>
+                <li>Chatに通知が届いているか</li>
+                <li>変数が正しく展開されているか</li>
+            </ul>
+        </div>
+
+        <h3 style="margin-top: 2rem;">Before / After</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th><span class="badge-before">Before</span></th>
+                    <th><span class="badge-after">After</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>メール確認時間</td>
+                    <td>1時間/日</td>
+                    <td>10分/日</td>
+                </tr>
+                <tr>
+                    <td>優先順位付け</td>
+                    <td>手動で判断</td>
+                    <td>Geminiが自動判定</td>
+                </tr>
+                <tr>
+                    <td>緊急案件の見落とし</td>
+                    <td>時々発生</td>
+                    <td>アラートで即座に把握</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="next-preview">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+            <div class="section-label" style="color: rgba(255,255,255,0.5);">NEXT</div>
+            <h2>次回予告</h2>
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">第3回：追客漏れゼロの受信トレイ！</h3>
+            <p>要対応案件メールの自動ラベル化＆次アクション設計</p>
+        </div>
+    </section>
+</body>
+</html>

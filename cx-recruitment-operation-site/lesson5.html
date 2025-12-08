@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：採用オペレーションを完全自動化！ | CX向上型採用オペレーションフロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #EC4899;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+            --green: #22C55E;
+            --red: #EF4444;
+            --amber: #F59E0B;
+        }
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .nav-back:hover { opacity: 0.7; }
+        .nav-lesson {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            color: var(--violet);
+            font-weight: 700;
+        }
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 60px;
+            background: linear-gradient(135deg, var(--ink) 0%, #1a1f3a 100%);
+            color: var(--paper);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
+            opacity: 0.15;
+        }
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-label {
+            display: inline-block;
+            background: var(--violet);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.5em;
+            margin-top: 0.5em;
+        }
+        .hero-desc {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--violet);
+            display: inline-block;
+        }
+        .goal-card {
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            padding: 2rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        .config-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+        }
+        .config-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .config-table tr:hover {
+            background: rgba(124, 58, 237, 0.03);
+        }
+        .code-block {
+            background: var(--ink);
+            color: #00F0FF;
+            padding: 1.5rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        .stat-card {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            text-align: center;
+        }
+        .stat-value {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--violet);
+            line-height: 1;
+        }
+        .stat-label {
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            color: var(--gray);
+        }
+        .agent-list {
+            margin: 2rem 0;
+        }
+        .agent-item {
+            display: grid;
+            grid-template-columns: 60px 1fr 200px 200px;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: white;
+            border: 1px solid rgba(10, 14, 39, 0.1);
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+        .agent-item:hover {
+            background: rgba(124, 58, 237, 0.03);
+        }
+        .agent-num {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--electric);
+        }
+        .agent-name {
+            font-weight: 500;
+        }
+        .agent-role {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        .agent-trigger {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            color: var(--violet);
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .comparison-card {
+            padding: 2rem;
+        }
+        .comparison-card.before {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--red);
+        }
+        .comparison-card.after {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 4px solid var(--green);
+        }
+        .comparison-header {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .comparison-card li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(10, 14, 39, 0.05);
+        }
+        .comparison-card li:last-child {
+            border-bottom: none;
+        }
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.9rem;
+        }
+        .status-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .status-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .points-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .point-card {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 1.5rem;
+        }
+        .point-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--electric);
+            margin-bottom: 0.5rem;
+        }
+        .point-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+        .point-card p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .highlight-box {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .highlight-box h4 {
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .future-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .future-card {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(236, 72, 153, 0.05));
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            padding: 1.5rem;
+        }
+        .future-badge {
+            display: inline-block;
+            background: var(--violet);
+            color: white;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .future-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+        .future-card p {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        .complete-banner {
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            padding: 3rem;
+            text-align: center;
+            margin: 3rem 0;
+        }
+        .complete-banner h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .complete-banner p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 1rem;
+        }
+        .nav-prev, .nav-next {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--ink);
+            border: 2px solid var(--ink);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-prev:hover, .nav-next:hover {
+            background: var(--ink);
+            color: var(--paper);
+        }
+        .nav-next {
+            background: var(--violet);
+            color: white;
+            border-color: var(--violet);
+        }
+        .nav-next:hover {
+            background: #6D28D9;
+            border-color: #6D28D9;
+        }
+        @media (max-width: 768px) {
+            .stats-row { grid-template-columns: 1fr; }
+            .comparison-grid { grid-template-columns: 1fr; }
+            .future-grid { grid-template-columns: 1fr; }
+            .agent-item { grid-template-columns: 1fr; }
+            .lesson-nav { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 5 / 5</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第5回 / 全5回（最終回）</div>
+            <h1 class="hero-title">
+                採用オペレーションを完全自動化！
+                <span>選考フロー全体をStudioで一本化する方法</span>
+            </h1>
+            <p class="hero-desc">
+                これまで作成した6つのエージェントを統合し、選考フロー全体を一本化する運用設計を完成させます。
+                日次ダッシュボードで全体を可視化し、持続可能な運用を実現しましょう。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">GOAL</div>
+        <h2 class="section-title">学習目標</h2>
+        <div class="goal-card">
+            これまで作成したエージェントを統合し、選考フロー全体を一本化する運用設計を完成させる
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">ACHIEVEMENT</div>
+        <h2 class="section-title">コース全体の成果</h2>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value">70%</div>
+                <div class="stat-label">連絡業務時間削減</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">0</div>
+                <div class="stat-label">連絡漏れ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">即時</div>
+                <div class="stat-label">候補者対応</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">AGENTS OVERVIEW</div>
+        <h2 class="section-title">作成したエージェント一覧</h2>
+
+        <div class="agent-list">
+            <div class="agent-item" style="background: var(--ink); color: var(--paper);">
+                <div style="font-weight: 700;">#</div>
+                <div style="font-weight: 700;">エージェント名</div>
+                <div style="font-weight: 700;">役割</div>
+                <div style="font-weight: 700;">トリガー</div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-num">01</div>
+                <div class="agent-name">Interview Prep Notification</div>
+                <div class="agent-role">面接前準備</div>
+                <div class="agent-trigger">Schedule Daily 9AM</div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-num">02</div>
+                <div class="agent-name">Post-Interview Workflow</div>
+                <div class="agent-role">面接後作業</div>
+                <div class="agent-trigger">Calendar event ends</div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-num">03</div>
+                <div class="agent-name">Interview Reminder</div>
+                <div class="agent-role">面接リマインド</div>
+                <div class="agent-trigger">Schedule Daily/Hourly</div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-num">04</div>
+                <div class="agent-name">Evaluation Reminder</div>
+                <div class="agent-role">評価リマインド</div>
+                <div class="agent-trigger">Schedule Daily 10AM</div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-num">05</div>
+                <div class="agent-name">Delay Alert</div>
+                <div class="agent-role">遅延アラート</div>
+                <div class="agent-trigger">Schedule Daily 9AM</div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-num">06</div>
+                <div class="agent-name">Daily Recruiting Dashboard</div>
+                <div class="agent-role">日次サマリー</div>
+                <div class="agent-trigger">Schedule Daily 9AM</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">DASHBOARD AGENT</div>
+        <h2 class="section-title">Daily Recruiting Dashboard 設計</h2>
+
+        <table class="config-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>設定値</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>エージェント名</td>
+                    <td>Daily Recruiting Dashboard</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>Delivers daily summary of recruiting pipeline</td>
+                </tr>
+                <tr>
+                    <td>スターター</td>
+                    <td>Schedule (Daily, 9:00 AM)</td>
+                </tr>
+                <tr>
+                    <td>データソース</td>
+                    <td>候補者管理シート + Calendar</td>
+                </tr>
+                <tr>
+                    <td>出力</td>
+                    <td>Chat (採用チームスペース)</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">DASHBOARD PROMPT</div>
+        <h2 class="section-title">日次ダッシュボード生成プロンプト</h2>
+
+        <div class="code-block">You are an HR analytics assistant creating a daily recruiting summary.
+
+Candidate data from sheet:
+{sheet_data}
+
+Today's interviews from calendar:
+{today_interviews}
+
+Generate a daily recruiting dashboard including:
+
+1. Pipeline Overview (count by status)
+2. Today's Interview Schedule
+3. Candidates requiring follow-up (3+ days no contact)
+4. This Week's Metrics (applications, interviews, offers)
+
+Format as a Chat message, use Japanese.
+Keep it scannable and actionable.
+
+Output format:
+---
+【採用パイプライン日次サマリー】
+
+■ パイプライン概況
+・応募受付: {count_応募受付}名
+・書類選考中: {count_書類選考中}名
+・面接予定: {count_面接予定}名
+・評価待ち: {count_評価待ち}名
+・内定: {count_内定}名
+
+■ 本日の面接予定
+{today_interviews}
+
+■ 要フォロー（3日以上連絡なし）
+{delayed_candidates}
+
+■ 今週の採用活動
+・新規応募: {week_applications}名
+・面接実施: {week_interviews}件
+・内定承諾: {week_acceptances}名
+---</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">CHAT TEMPLATE</div>
+        <h2 class="section-title">日次サマリーテンプレート</h2>
+
+        <div class="code-block">【採用パイプライン日次サマリー】
+
+■ パイプライン概況
+・応募受付: {count_応募受付}名
+・書類選考中: {count_書類選考中}名
+・面接予定: {count_面接予定}名
+・評価待ち: {count_評価待ち}名
+・内定: {count_内定}名
+
+■ 本日の面接予定
+{today_interviews}
+
+■ 要フォロー（3日以上連絡なし）
+{delayed_candidates}
+
+■ 今週の採用活動
+・新規応募: {week_applications}名
+・面接実施: {week_interviews}件
+・内定承諾: {week_acceptances}名
+
+■ 注目ポイント
+{highlights}</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STATUS DEFINITION</div>
+        <h2 class="section-title">ステータス定義</h2>
+
+        <table class="status-table">
+            <thead>
+                <tr>
+                    <th>ステータス</th>
+                    <th>意味</th>
+                    <th>トリガー</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>応募受付</td>
+                    <td>応募書類受領</td>
+                    <td>応募メール受信</td>
+                </tr>
+                <tr>
+                    <td>書類選考中</td>
+                    <td>履歴書確認中</td>
+                    <td>手動</td>
+                </tr>
+                <tr>
+                    <td>一次面接予定</td>
+                    <td>面接日程確定</td>
+                    <td>Calendar登録</td>
+                </tr>
+                <tr>
+                    <td>一次面接完了</td>
+                    <td>評価待ち</td>
+                    <td>Calendarイベント終了</td>
+                </tr>
+                <tr>
+                    <td>二次面接予定</td>
+                    <td>次面接確定</td>
+                    <td>Calendar登録</td>
+                </tr>
+                <tr>
+                    <td>最終面接完了</td>
+                    <td>採否判定中</td>
+                    <td>Calendarイベント終了</td>
+                </tr>
+                <tr>
+                    <td>内定</td>
+                    <td>オファー提示</td>
+                    <td>手動</td>
+                </tr>
+                <tr>
+                    <td>内定承諾</td>
+                    <td>入社確定</td>
+                    <td>手動</td>
+                </tr>
+                <tr>
+                    <td>辞退</td>
+                    <td>候補者辞退</td>
+                    <td>手動</td>
+                </tr>
+                <tr>
+                    <td>不採用</td>
+                    <td>選考終了</td>
+                    <td>手動</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">AUTO UPDATE</div>
+        <h2 class="section-title">ステータス自動更新クエリ</h2>
+
+        <div class="code-block">Update Google Sheets:
+- Sheet: 候補者管理
+- Row: {candidate_row}
+- Column: ステータス
+- Value: "{new_status}"
+- Column: 最終連絡日
+- Value: =TODAY()
+- Column: 更新者
+- Value: "Agent: {agent_name}"</div>
+
+        <table class="status-table">
+            <thead>
+                <tr>
+                    <th>アクション</th>
+                    <th>更新タイミング</th>
+                    <th>担当</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>応募受付</td>
+                    <td>応募メール受信時</td>
+                    <td>自動</td>
+                </tr>
+                <tr>
+                    <td>面接設定</td>
+                    <td>Calendar登録時</td>
+                    <td>自動</td>
+                </tr>
+                <tr>
+                    <td>面接完了</td>
+                    <td>イベント終了時</td>
+                    <td>自動</td>
+                </tr>
+                <tr>
+                    <td>評価完了</td>
+                    <td>フォーム送信時</td>
+                    <td>自動</td>
+                </tr>
+                <tr>
+                    <td>次ステップ決定</td>
+                    <td>マネージャー判断後</td>
+                    <td>手動</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">OPERATIONS</div>
+        <h2 class="section-title">運用ルール</h2>
+
+        <div class="points-grid">
+            <div class="point-card">
+                <div class="point-number">RULE 01</div>
+                <h3>命名規則の統一</h3>
+                <p><strong>Calendar:</strong> 「面接：[候補者名]（[ポジション]）」<br>
+                <strong>Drive:</strong> 「[候補者名]_[応募日]」<br>
+                <strong>評価シート:</strong> 「評価_[候補者名]_[面接日]」</p>
+            </div>
+            <div class="point-card">
+                <div class="point-number">RULE 02</div>
+                <h3>ステータス更新タイミング</h3>
+                <p><strong>自動:</strong> 応募受付・面接設定・面接完了・評価完了<br>
+                <strong>手動:</strong> 次ステップ決定・内定・辞退</p>
+            </div>
+            <div class="point-card">
+                <div class="point-number">RULE 03</div>
+                <h3>エスカレーションフロー</h3>
+                <p><strong>24h:</strong> 評価未提出 → リマインド<br>
+                <strong>48h:</strong> 評価未提出 → 再リマインド<br>
+                <strong>72h:</strong> 評価未提出 → マネージャー通知<br>
+                <strong>3日:</strong> 候補者連絡停滞 → 直接通知</p>
+            </div>
+            <div class="point-card">
+                <div class="point-number">RULE 04</div>
+                <h3>例外処理</h3>
+                <p><strong>エージェントエラー:</strong> Chatでエラー通知<br>
+                <strong>候補者辞退:</strong> 手動でステータス更新<br>
+                <strong>お見送り:</strong> 下書き作成→人間確認</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">WEEKLY REPORT</div>
+        <h2 class="section-title">週次レポートプロンプト（拡張用）</h2>
+
+        <div class="code-block">You are an HR analytics assistant creating a weekly recruiting report.
+
+This week's data:
+- New applications: {week_applications}
+- Interviews conducted: {week_interviews}
+- Offers extended: {week_offers}
+- Offers accepted: {week_acceptances}
+- Candidates declined: {week_declines}
+
+Generate a weekly report including:
+1. Key metrics summary
+2. Conversion rates (application to interview, interview to offer, offer to accept)
+3. Notable trends or concerns
+4. Recommendations for next week
+
+Output format:
+---
+【週次採用レポート】{week_start}〜{week_end}
+
+■ 主要指標
+・新規応募: {week_applications}名
+・面接実施: {week_interviews}件
+・オファー: {week_offers}件
+・内定承諾: {week_acceptances}名
+・辞退: {week_declines}名
+
+■ コンバージョン率
+・応募→面接: {app_to_interview}%
+・面接→オファー: {interview_to_offer}%
+・オファー→承諾: {offer_to_accept}%
+
+■ 傾向分析
+{trends_analysis}
+
+■ 来週の推奨アクション
+{recommendations}
+---
+
+Output in Japanese.</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">Before / After</h2>
+
+        <div class="comparison-grid">
+            <div class="comparison-card before">
+                <div class="comparison-header">BEFORE（導入前）</div>
+                <ul>
+                    <li>連絡業務2〜3時間/日</li>
+                    <li>面接準備10分/件</li>
+                    <li>評価収集は手動依頼</li>
+                    <li>連絡漏れが月に数件</li>
+                    <li>ステータス管理が属人的</li>
+                    <li>全体把握に時間がかかる</li>
+                </ul>
+            </div>
+            <div class="comparison-card after">
+                <div class="comparison-header">AFTER（導入後）</div>
+                <ul>
+                    <li>連絡業務30分以下/日</li>
+                    <li>面接準備は自動配信</li>
+                    <li>評価は自動リマインド</li>
+                    <li>連絡漏れほぼゼロ</li>
+                    <li>ステータスは自動更新</li>
+                    <li>日次ダッシュボードで即座に把握</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">FUTURE</div>
+        <h2 class="section-title">今後の展開</h2>
+
+        <div class="future-grid">
+            <div class="future-card">
+                <div class="future-badge">拡張1</div>
+                <h3>候補者へのメール自動返信</h3>
+                <p>応募確認、日程確定通知を自動化。さらなるCX向上を実現</p>
+            </div>
+            <div class="future-card">
+                <div class="future-badge">拡張2</div>
+                <h3>面接評価のAI分析</h3>
+                <p>評価傾向の可視化、バイアス検出で採用品質を向上</p>
+            </div>
+            <div class="future-card">
+                <div class="future-badge">拡張3</div>
+                <h3>採用予測</h3>
+                <p>過去データから内定承諾率を予測し、採用計画を最適化</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SUMMARY</div>
+        <h2 class="section-title">今日のポイント</h2>
+
+        <div class="highlight-box">
+            <h4>まとめ</h4>
+            <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                <li>候補者管理シートを中心に全エージェントを統合</li>
+                <li>ステータス自動更新でデータの一貫性を確保</li>
+                <li>日次ダッシュボードで全体を可視化</li>
+                <li>運用ルールの設計で持続的な運用を実現</li>
+                <li>6つのエージェントで採用業務の70%を自動化</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="complete-banner">
+        <h3>コース完了</h3>
+        <p>CX向上型採用オペレーションフローの構築が完了しました！<br>
+        自社の採用プロセスに合わせてカスタマイズし、CX向上を実現してください。</p>
+    </div>
+
+    <nav class="lesson-nav">
+        <a href="lesson4.html" class="nav-prev">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            前のレッスン
+        </a>
+        <a href="index.html" class="nav-next">
+            コース一覧へ
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </nav>
+</body>
+</html>

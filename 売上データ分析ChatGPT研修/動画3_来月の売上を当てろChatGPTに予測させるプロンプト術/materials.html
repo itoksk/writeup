@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>来月の売上を当てろ：ChatGPTに予測させるプロンプト術</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--electric);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateX(10px);
+            border-color: var(--electric);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+            background: none;
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-size: inherit;
+            line-height: inherit;
+            color: inherit;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: 'PYTHON CODE';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .list {
+            text-align: left;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▶';
+            color: var(--electric);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .prompt-example {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        .prompt-example pre {
+            background: rgba(0, 240, 255, 0.05);
+            border: none;
+            padding: 0;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: inherit;
+            font-style: inherit;
+            color: inherit;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--electric);
+            color: var(--ink);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 1rem;
+            font-family: 'Arial', sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .navigation {
+                right: 1rem;
+            }
+
+            .content-section {
+                padding: 4rem 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+        <div class="nav-pill" data-section="7"></div>
+    </div>
+
+    <div class="container">
+        <!-- Section 1: タイトル -->
+        <section class="content-section visible" id="section-0">
+            <h1 class="section-title">来月の売上を当てろ</h1>
+            <div class="section-content">
+                <p style="font-size: 1.8rem; margin-bottom: 2rem; color: var(--electric);">
+                    ChatGPTに予測させるプロンプト術
+                </p>
+                <div class="card">
+                    <h3>学習目標</h3>
+                    <p>過去の売上データを基に、ChatGPTを活用して将来の売上を予測する高度なプロンプト技術を習得し、ビジネス意思決定に活用できるスキルを身につけます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: 予測分析の基礎 -->
+        <section class="content-section" id="section-1">
+            <h2 class="section-title">予測分析の基礎</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">時系列分析</span></h3>
+                        <p>過去のデータのトレンド、季節性、周期性を分析し、将来の値を予測する統計手法です。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">回帰分析</span></h3>
+                        <p>複数の要因（変数）が売上にどう影響するかを分析し、その関係性を数式化して予測に活用します。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">機械学習</span></h3>
+                        <p>AI技術を使って複雑なパターンを学習し、従来手法よりも高精度な予測を実現します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: データ準備プロンプト -->
+        <section class="content-section" id="section-2">
+            <h2 class="section-title">データ準備プロンプト</h2>
+            <div class="section-content">
+                <div class="prompt-example">
+                    <h3>データ前処理の基本プロンプト</h3>
+                    <p><span class="step-number">1</span><strong>データクレンジング</strong>：欠損値の補完と外れ値の処理</p>
+                    <p><span class="step-number">2</span><strong>時系列変換</strong>：日付データの正規化と期間集計</p>
+                    <p><span class="step-number">3</span><strong>季節調整</strong>：季節性を考慮した時系列分解</p>
+                    <p><span class="step-number">4</span><strong>特徴量作成</strong>：ラグ変数や移動平均の生成</p>
+                </div>
+                <div class="code-block">
+                    <pre>import pandas as pd
+import numpy as np
+from scipy import stats
+
+# データの読み込みと前処理
+df = pd.read_csv('sales_data.csv')
+df['日付'] = pd.to_datetime(df['日付'])
+df.set_index('日付', inplace=True)
+
+# 欠損値の補完（線形補間）
+df['売上'] = df['売上'].interpolate(method='linear')
+
+# 外れ値の検出と処理（Zスコア方式）
+z_scores = np.abs(stats.zscore(df['売上']))
+df_clean = df[z_scores < 3]
+
+# 月別データへの集計
+monthly_sales = df_clean['売上'].resample('M').sum()</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: 予測モデル構築 -->
+        <section class="content-section" id="section-3">
+            <h2 class="section-title">予測モデル構築</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">ARIMAモデル</span></h3>
+                        <p>自己回帰統合移動平均モデル。トレンドと季節性を考慮した伝統的な時系列予測手法です。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">指数平滑法</span></h3>
+                        <p>直近のデータに高い重みを置く予測手法。実装が簡単で短期予測に効果的です。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">Random Forest</span></h3>
+                        <p>複数の決定木を組み合わせた機械学習手法。非線形パターンの捕捉に優れています。</p>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>ARIMAモデル構築プロンプト</h3>
+                    <pre>前処理済みの月別売上データを使って、ARIMAモデルで6ヶ月先の売上予測を行うPythonコードを書いてください。モデルの精度評価（MAE、RMSE）と信頼区間も含めてください。</pre>
+                </div>
+                <div class="code-block">
+                    <pre>from statsmodels.tsa.arima.model import ARIMA
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+# 訓練・テストデータの分割
+train_size = int(len(monthly_sales) * 0.8)
+train_data = monthly_sales[:train_size]
+test_data = monthly_sales[train_size:]
+
+# ARIMAモデルの構築
+model = ARIMA(train_data, order=(1,1,1))
+fitted_model = model.fit()
+
+# 予測の実行
+forecast = fitted_model.forecast(steps=6)
+conf_int = fitted_model.get_forecast(steps=6).conf_int()
+
+# 精度評価
+mae = mean_absolute_error(test_data, fitted_model.forecast(len(test_data)))
+rmse = np.sqrt(mean_squared_error(test_data, fitted_model.forecast(len(test_data))))
+
+print(f"予測精度 - MAE: {mae:.2f}, RMSE: {rmse:.2f}")</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: 高度な予測技術 -->
+        <section class="content-section" id="section-4">
+            <h2 class="section-title">高度な予測技術</h2>
+            <div class="section-content">
+                <div class="list">
+                    <h3>予測精度向上のテクニック</h3>
+                    <li><strong>アンサンブル予測</strong>：複数モデルの結果を組み合わせて精度向上</li>
+                    <li><strong>外部変数の活用</strong>：天気、イベント、経済指標などの追加情報</li>
+                    <li><strong>ハイパーパラメータ最適化</strong>：グリッドサーチによるパラメータ調整</li>
+                    <li><strong>クロスバリデーション</strong>：時系列対応の検証手法で過学習を防止</li>
+                </div>
+                <div class="prompt-example">
+                    <h3>アンサンブル予測プロンプト</h3>
+                    <pre>ARIMA、指数平滑法、Random Forestの3つのモデルで予測を行い、過去の精度に基づいて重み付き平均でアンサンブルするコードを書いてください。</pre>
+                </div>
+                <div class="code-block">
+                    <pre>from sklearn.ensemble import RandomForestRegressor
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
+# 特徴量の作成
+def create_features(data, lag=12):
+    features = pd.DataFrame()
+    features['lag1'] = data.shift(1)
+    features['lag12'] = data.shift(12)
+    features['rolling_mean'] = data.rolling(window=3).mean()
+    features['month'] = data.index.month
+    return features.dropna()
+
+# 3つのモデルで予測
+# 1. ARIMA予測
+arima_forecast = fitted_model.forecast(steps=6)
+
+# 2. 指数平滑法
+exp_model = ExponentialSmoothing(train_data, seasonal='add', seasonal_periods=12)
+exp_forecast = exp_model.fit().forecast(6)
+
+# 3. Random Forest
+rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+X_train = create_features(train_data)
+y_train = train_data[X_train.index]
+rf_model.fit(X_train, y_train)
+
+# アンサンブル予測（重み付き平均）
+weights = [0.4, 0.3, 0.3]  # 精度に基づく重み
+ensemble_forecast = (weights[0] * arima_forecast + 
+                    weights[1] * exp_forecast + 
+                    weights[2] * rf_forecast)</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: 予測結果の解釈 -->
+        <section class="content-section" id="section-5">
+            <h2 class="section-title">予測結果の解釈</h2>
+            <div class="section-content">
+                <div class="card">
+                    <h3><span class="highlight">予測結果の表示例</span></h3>
+                    <p><strong>来月の予測売上：</strong> 1,250万円（信頼区間：1,100～1,400万円）</p>
+                    <p><strong>前年同月比：</strong> +15.2%の増加予想</p>
+                    <p><strong>予測精度：</strong> MAE 50万円、RMSE 75万円</p>
+                </div>
+                <div class="prompt-example">
+                    <h3>可視化プロンプト</h3>
+                    <pre>予測結果を分かりやすくグラフ化してください。過去データ、予測値、信頼区間を一つのグラフに表示し、重要なポイントに注釈を付けてください。</pre>
+                </div>
+                <div class="code-block">
+                    <pre>import matplotlib.pyplot as plt
+
+# 予測結果の可視化
+plt.figure(figsize=(15, 8))
+
+# 過去データの表示
+plt.plot(train_data.index, train_data, label='実績', color='blue', linewidth=2)
+
+# 予測データの表示
+forecast_index = pd.date_range(start=train_data.index[-1], periods=7, freq='M')[1:]
+plt.plot(forecast_index, ensemble_forecast, label='予測', color='red', 
+         linewidth=2, marker='o', markersize=6)
+
+# 信頼区間の表示
+lower_bound = ensemble_forecast * 0.9
+upper_bound = ensemble_forecast * 1.1
+plt.fill_between(forecast_index, lower_bound, upper_bound, 
+                 alpha=0.3, color='red', label='信頼区間')
+
+# グラフの装飾
+plt.title('売上予測結果', fontsize=16, fontweight='bold')
+plt.xlabel('時期')
+plt.ylabel('売上（万円）')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: ビジネス活用 -->
+        <section class="content-section" id="section-6">
+            <h2 class="section-title">ビジネス活用</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">在庫計画</span></h3>
+                        <p>売上予測に基づいた適切な在庫量の計算と発注タイミングの最適化。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">予算策定</span></h3>
+                        <p>予測売上から必要な人員配置や設備投資計画の立案。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">リスク管理</span></h3>
+                        <p>予測の不確実性を考慮したシナリオ分析とリスク対策の策定。</p>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>シナリオ分析プロンプト</h3>
+                    <pre>売上予測結果を基に、楽観的・標準的・悲観的の3つのシナリオを作成し、それぞれの対策を提案するビジネスレポートを自動生成してください。</pre>
+                </div>
+                <div class="code-block">
+                    <pre># シナリオ分析の実装
+scenarios = {
+    '楽観的': ensemble_forecast * 1.15,
+    '標準的': ensemble_forecast,
+    '悲観的': ensemble_forecast * 0.85
+}
+
+print("=== 売上予測シナリオ分析レポート ===\n")
+for scenario_name, values in scenarios.items():
+    total_forecast = values.sum()
+    print(f"{scenario_name}シナリオ:")
+    print(f"  6ヶ月合計予測売上: {total_forecast:.0f}万円")
+    print(f"  月平均売上: {total_forecast/6:.0f}万円")
+    
+    # シナリオ別の推奨アクション
+    if scenario_name == '悲観的':
+        print("  推奨対策: コスト削減、マーケティング強化")
+    elif scenario_name == '楽観的':
+        print("  推奨対策: 在庫増強、生産能力拡大検討")
+    else:
+        print("  推奨対策: 現状維持、継続的市場監視")
+    print()</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: まとめと実践 -->
+        <section class="content-section" id="section-7">
+            <h2 class="section-title">まとめと実践</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">習得したスキル</span></h3>
+                        <ul class="list">
+                            <li>時系列データの前処理技術</li>
+                            <li>複数予測モデルの構築と比較</li>
+                            <li>アンサンブル予測手法</li>
+                            <li>予測結果の可視化と解釈</li>
+                            <li>ビジネス活用のフレームワーク</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">継続改善のポイント</span></h3>
+                        <ul class="list">
+                            <li>予測精度の定期的な検証</li>
+                            <li>新しい外部データの追加</li>
+                            <li>モデルの継続的な再学習</li>
+                            <li>ビジネス環境変化への対応</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>実践課題</h3>
+                    <p>実際のビジネスデータを使って、今回学んだ予測技術を実装し、6ヶ月後の売上予測レポートを作成してみましょう。ChatGPTに経営陣向けの分析レポート自動生成も依頼すると、より実践的なスキルが身につきます。</p>
+                </div>
+                <div class="card" style="background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(0, 240, 255, 0.05)); border: 2px dashed var(--electric); margin-top: 2rem;">
+                    <h3><span class="highlight">🚀 上級テクニック：GPTsで予測モデルを標準化</span></h3>
+                    <p>ChatGPT GPTs機能を使えば、予測分析を更に効率化できます：</p>
+                    <ul style="list-style: none; margin-top: 1rem;">
+                        <li>▶ 売上予測専用GPTを作成</li>
+                        <li>▶ ARIMAやProphetモデルのコードを事前登録</li>
+                        <li>▶ 過去の予測精度データを学習</li>
+                        <li>▶ 毎月同じ手順で予測レポート自動生成</li>
+                        <li>▶ シナリオ分析テンプレートも組み込み</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>メリット：</strong>属人化を防ぎ、チーム全体で同じ品質の予測分析が可能に</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Intersection Observer for fade-in animation
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '-10% 0px -10% 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Update navigation
+                    const sectionIndex = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, index) => {
+                        pill.classList.toggle('active', index === sectionIndex);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Navigation click handlers
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

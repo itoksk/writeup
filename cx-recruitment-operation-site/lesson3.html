@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：面接後作業をゼロにする！ | CX向上型採用オペレーションフロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #EC4899;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+            --green: #22C55E;
+            --red: #EF4444;
+            --amber: #F59E0B;
+        }
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .nav-back:hover { opacity: 0.7; }
+        .nav-lesson {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            color: var(--violet);
+            font-weight: 700;
+        }
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 60px;
+            background: linear-gradient(135deg, var(--ink) 0%, #1a1f3a 100%);
+            color: var(--paper);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
+            opacity: 0.15;
+        }
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-label {
+            display: inline-block;
+            background: var(--violet);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.5em;
+            margin-top: 0.5em;
+        }
+        .hero-desc {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--violet);
+            display: inline-block;
+        }
+        .goal-card {
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            padding: 2rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        .config-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+        }
+        .config-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .config-table tr:hover {
+            background: rgba(124, 58, 237, 0.03);
+        }
+        .step-list {
+            margin: 2rem 0;
+        }
+        .step-item {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .step-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+        .step-content p {
+            font-size: 0.95rem;
+            color: var(--gray);
+        }
+        .code-block {
+            background: var(--ink);
+            color: #00F0FF;
+            padding: 1.5rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+        .branch-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .branch-card {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .branch-card.proceed { border-color: var(--green); }
+        .branch-card.hold { border-color: var(--amber); }
+        .branch-card.decline { border-color: var(--red); }
+        .branch-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+        }
+        .branch-card.proceed .branch-label { background: var(--green); color: white; }
+        .branch-card.hold .branch-label { background: var(--amber); color: white; }
+        .branch-card.decline .branch-label { background: var(--red); color: white; }
+        .branch-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+        }
+        .branch-card p {
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-align: left;
+        }
+        .info-box {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .info-box h4 {
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .points-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .point-card {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 1.5rem;
+        }
+        .point-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--electric);
+            margin-bottom: 0.5rem;
+        }
+        .point-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+        .point-card p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .checklist {
+            background: rgba(124, 58, 237, 0.05);
+            border: 2px solid var(--violet);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .checklist h3 {
+            color: var(--violet);
+            margin-bottom: 1rem;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+        .checklist-item:last-child { border-bottom: none; }
+        .checklist-item svg { color: var(--violet); flex-shrink: 0; }
+        .variable-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.9rem;
+        }
+        .variable-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .variable-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .variable-table code {
+            background: rgba(124, 58, 237, 0.1);
+            padding: 0.2rem 0.5rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+        }
+        .flow-diagram {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .flow-box {
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--violet);
+            background: white;
+            text-align: center;
+            font-weight: 500;
+        }
+        .flow-box.trigger { background: var(--violet); color: white; border-color: var(--violet); }
+        .flow-box.action { background: var(--electric); color: white; border-color: var(--electric); }
+        .flow-box.gemini { background: var(--ink); color: #00F0FF; border-color: var(--ink); }
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: var(--violet);
+        }
+        .template-section {
+            background: rgba(10, 14, 39, 0.03);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .template-section h3 {
+            color: var(--violet);
+            margin-bottom: 1rem;
+        }
+        .highlight-box {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .highlight-box h4 {
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .next-preview {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1));
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        .next-preview h3 {
+            color: var(--gray);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .next-preview p {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--violet);
+        }
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 1rem;
+        }
+        .nav-prev, .nav-next {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--ink);
+            border: 2px solid var(--ink);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-prev:hover, .nav-next:hover {
+            background: var(--ink);
+            color: var(--paper);
+        }
+        .nav-next {
+            background: var(--violet);
+            color: white;
+            border-color: var(--violet);
+        }
+        .nav-next:hover {
+            background: #6D28D9;
+            border-color: #6D28D9;
+        }
+        @media (max-width: 768px) {
+            .branch-grid { grid-template-columns: 1fr; }
+            .points-grid { grid-template-columns: 1fr; }
+            .lesson-nav { flex-direction: column; }
+            .flow-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 3 / 5</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第3回 / 全5回</div>
+            <h1 class="hero-title">
+                面接後作業をゼロにする！
+                <span>要約＆評価ポイントをGmail・Chatへ自動送信するフローを作る</span>
+            </h1>
+            <p class="hero-desc">
+                面接終了をトリガーに、評価依頼の自動送信と次ステップの条件分岐処理を実装します。
+                Proceed / Hold / Decline の3パターンで自動処理を設計しましょう。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">GOAL</div>
+        <h2 class="section-title">学習目標</h2>
+        <div class="goal-card">
+            面接終了をトリガーに、評価依頼の自動送信と次ステップの条件分岐処理を実装する
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">AGENT DESIGN</div>
+        <h2 class="section-title">Post-Interview Workflow エージェント設計</h2>
+
+        <table class="config-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>設定値</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>エージェント名</td>
+                    <td>Post-Interview Workflow</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>Automates post-interview tasks including feedback collection and team notification</td>
+                </tr>
+                <tr>
+                    <td>スターター</td>
+                    <td>Calendar event ends (面接イベント終了時)</td>
+                </tr>
+                <tr>
+                    <td>評価依頼送信</td>
+                    <td>Gmail (面接終了直後)</td>
+                </tr>
+                <tr>
+                    <td>評価検知</td>
+                    <td>Forms response trigger</td>
+                </tr>
+                <tr>
+                    <td>結果共有</td>
+                    <td>Chat (採用チームスペース)</td>
+                </tr>
+                <tr>
+                    <td>次ステップ</td>
+                    <td>条件分岐で自動提案</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">FLOW</div>
+        <h2 class="section-title">フロー全体像</h2>
+
+        <div class="flow-diagram">
+            <div class="flow-row">
+                <div class="flow-box trigger">Calendar イベント終了</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-row">
+                <div class="flow-box action">Gmail 評価依頼送信</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-row">
+                <div class="flow-box trigger">Forms 回答受信</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-row">
+                <div class="flow-box gemini">Gemini 評価要約</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-row">
+                <div class="flow-box action">Chat 結果共有</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-row">
+                <div class="flow-box" style="background: var(--green); color: white; border-color: var(--green);">Proceed</div>
+                <div class="flow-box" style="background: var(--amber); color: white; border-color: var(--amber);">Hold</div>
+                <div class="flow-box" style="background: var(--red); color: white; border-color: var(--red);">Decline</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEPS</div>
+        <h2 class="section-title">エージェント作成手順</h2>
+
+        <div class="step-list">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>新規エージェント作成</h3>
+                    <p>Google Workspace Studio → 「Create agent」→ エージェント名「Post-Interview Workflow」とDescriptionを入力</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Calendar イベントトリガー設定</h3>
+                    <p>「Add starter」→「Calendar event ends」を選択<br>
+                    <strong>Event filter:</strong> Title contains '面接' / <strong>Calendar:</strong> Primary calendar</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Gmail 評価依頼送信</h3>
+                    <p>「Add step」→「Send Gmail」を選択 → 面接官へ評価シート記入依頼を送信<br>
+                    Calendarイベントの参加者情報から面接官メールアドレスを取得</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>フォーム回答トリガー</h3>
+                    <p>「Add trigger」→「Form response received」を選択<br>
+                    <strong>Form:</strong> 面接評価シート（Google Forms）を指定</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Gemini 要約</h3>
+                    <p>「Add step」→「Generate with Gemini」→ 評価内容を構造化して要約<br>
+                    総合評価・強み・懸念点・推奨アクションを抽出</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <h3>Chat 結果共有</h3>
+                    <p>「Add step」→「Send Chat message」→ 採用チームスペースに面接結果速報を通知</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">7</div>
+                <div class="step-content">
+                    <h3>条件分岐設定</h3>
+                    <p>「Add condition」→ Geminiの判定結果（Proceed/Hold/Decline）に応じてアクションを分岐</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">EMAIL TEMPLATE</div>
+        <h2 class="section-title">Gmail評価依頼テンプレート</h2>
+
+        <div class="code-block">件名：【評価シート記入依頼】{candidate_name}さん面接
+
+{interviewer}さん
+
+お疲れ様です。
+先ほどの {candidate_name}さんの面接、ありがとうございました。
+
+評価シートへの記入をお願いいたします。
+記入期限：{deadline}（面接翌日17時）
+
+■ 評価シートリンク
+{evaluation_sheet_link}
+
+■ 評価項目（5段階評価）
+・総合評価
+・スキル評価
+・カルチャーフィット
+
+■ 記述項目
+・候補者の強み
+・懸念点（あれば）
+・推奨アクション（Proceed / Hold / Decline）
+
+ご不明点があればお知らせください。
+
+採用チーム</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">GEMINI PROMPT</div>
+        <h2 class="section-title">評価フィードバック要約プロンプト</h2>
+
+        <div class="code-block">You are an HR coordinator summarizing interview feedback.
+
+Interview details:
+- Candidate: {candidate_name}
+- Position: {position}
+- Interviewer: {interviewer_name}
+- Date: {interview_date}
+
+Evaluation form responses:
+{form_responses}
+
+Please organize:
+1. Overall impression (Positive/Neutral/Negative)
+2. Key strengths identified (3 bullets max)
+3. Areas of concern (if any)
+4. Recommended next step: Proceed to next round / Hold / Decline
+5. Summary for hiring manager (2-3 sentences)
+
+Also extract:
+- Skill rating (1-5): {skill_rating}
+- Culture fit rating (1-5): {culture_rating}
+- Overall rating (1-5): {overall_rating}
+
+Output format:
+---
+OVERALL_IMPRESSION: [Positive/Neutral/Negative]
+STRENGTHS:
+- [strength 1]
+- [strength 2]
+- [strength 3]
+CONCERNS:
+- [concern 1 if any]
+RECOMMENDATION: [Proceed/Hold/Decline]
+SUMMARY: [2-3 sentences for hiring manager]
+RATINGS:
+- Skill: [1-5]
+- Culture: [1-5]
+- Overall: [1-5]
+---
+
+Output in Japanese.</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">CHAT TEMPLATE</div>
+        <h2 class="section-title">Chat結果共有テンプレート</h2>
+
+        <div class="code-block">【面接結果速報】
+
+■ 候補者: {candidate_name}
+■ ポジション: {position}
+■ 面接官: {interviewer_name}
+■ 面接日: {interview_date}
+
+■ 総合評価: {overall_impression}
+■ 評価スコア:
+  スキル {skill_rating}/5 | カルチャー {culture_rating}/5 | 総合 {overall_rating}/5
+
+■ 評価サマリー
+{feedback_summary}
+
+■ 強み
+{strengths}
+
+■ 懸念点
+{concerns}
+
+■ 推奨次ステップ: {next_step_recommendation}
+
+詳細は評価シートをご確認ください：
+{evaluation_sheet_link}</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BRANCHING</div>
+        <h2 class="section-title">条件分岐ロジック</h2>
+
+        <div class="branch-grid">
+            <div class="branch-card proceed">
+                <div class="branch-label">PROCEED</div>
+                <h3>次に進む</h3>
+                <p>
+                    → 次の面接官にCalendar招待を自動作成<br>
+                    → 候補者に次ステップ案内メール下書きを作成<br>
+                    → 候補者管理シートのステータスを更新
+                </p>
+            </div>
+            <div class="branch-card hold">
+                <div class="branch-label">HOLD</div>
+                <h3>保留</h3>
+                <p>
+                    → 採用マネージャーに判断依頼通知を送信<br>
+                    → 追加情報の収集を依頼<br>
+                    → 候補者管理シートのステータスを「検討中」に更新
+                </p>
+            </div>
+            <div class="branch-card decline">
+                <div class="branch-label">DECLINE</div>
+                <h3>不採用</h3>
+                <p>
+                    → お見送りメールの下書きを作成<br>
+                    ※送信は人間が確認<br>
+                    → 候補者管理シートのステータスを更新
+                </p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h4>重要ポイント</h4>
+            <p>最終判断は人間が行う設計です。エージェントは「準備」と「提案」を行い、実際の送信は人間が確認してから行います。特にお見送りメールは必ず人間がレビューしてから送信します。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">CONDITION LOGIC</div>
+        <h2 class="section-title">条件分岐の設定方法</h2>
+
+        <div class="code-block">IF RECOMMENDATION == "Proceed":
+    → Create Calendar invite for next interviewer
+    → Draft next-step email for candidate
+    → Update Sheets status to "次面接予定"
+    → Notify hiring manager via Chat
+
+ELSE IF RECOMMENDATION == "Hold":
+    → Send decision request to hiring manager
+    → Update Sheets status to "検討中"
+    → Set reminder for 48h follow-up
+
+ELSE IF RECOMMENDATION == "Decline":
+    → Draft rejection email (DO NOT SEND automatically)
+    → Update Sheets status to "見送り予定"
+    → Flag for human review</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">NEXT STEP PROMPT</div>
+        <h2 class="section-title">次ステップ提案プロンプト</h2>
+
+        <div class="code-block">Based on the interview feedback:
+- Overall impression: {overall_impression}
+- Strengths: {strengths}
+- Concerns: {concerns}
+- Interviewer recommendation: {interviewer_recommendation}
+- Skill rating: {skill_rating}/5
+- Culture rating: {culture_rating}/5
+
+Suggest the most appropriate next step:
+
+1. If "Proceed" (ratings >= 4, no major concerns):
+   - Draft calendar invite for next interview round
+   - Suggest appropriate next interviewer based on role
+
+2. If "Hold" (ratings 3-4, some concerns):
+   - Draft message requesting hiring manager decision
+   - List specific points requiring clarification
+
+3. If "Decline" (ratings < 3, major concerns):
+   - Draft polite rejection email
+   - Summarize key reasons (internal use only)
+
+Provide:
+- Recommended action
+- Draft message content
+- Any special considerations
+
+Output in Japanese.</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">EMAIL TEMPLATES</div>
+        <h2 class="section-title">メールテンプレート集</h2>
+
+        <div class="template-section">
+            <h3>次ステップ案内メール（Proceed時・下書き）</h3>
+            <div class="code-block">件名：次回面接のご案内【{company_name}】
+
+{candidate_name}様
+
+この度は、弊社の採用選考にご参加いただき、誠にありがとうございます。
+
+先日の面接の結果、次のステップにお進みいただきたく、ご連絡いたしました。
+
+■ 次回面接について
+・面接官: {next_interviewer_name}（{next_interviewer_role}）
+・所要時間: 約{duration}分
+・形式: {interview_format}
+
+つきましては、以下の日程候補からご都合の良い日時をお知らせください。
+{date_options}
+
+ご質問がございましたら、お気軽にお問い合わせください。
+
+{company_name}
+採用チーム</div>
+        </div>
+
+        <div class="template-section">
+            <h3>マネージャー判断依頼（Hold時）</h3>
+            <div class="code-block">【判断依頼】{candidate_name}さんの選考について
+
+以下の候補者について、面接官の評価が「保留」となっています。
+次のステップについてご判断をお願いいたします。
+
+■ 候補者情報
+・氏名: {candidate_name}
+・ポジション: {position}
+・面接日: {interview_date}
+・面接官: {interviewer_name}
+
+■ 評価サマリー
+{feedback_summary}
+
+■ 保留理由
+{hold_reasons}
+
+■ 選択肢
+1. 次の面接に進める
+2. 追加の情報収集を行う
+3. 見送りとする
+
+ご判断をお願いいたします。</div>
+        </div>
+
+        <div class="template-section">
+            <h3>お見送りメール（Decline時・下書き）</h3>
+            <div class="code-block">件名：選考結果のご連絡【{company_name}】
+
+{candidate_name}様
+
+この度は、弊社の採用選考にご応募いただき、誠にありがとうございました。
+
+慎重に検討を重ねました結果、誠に残念ながら今回は採用を見送らせていただくこととなりました。
+
+ご期待に沿えない結果となり、大変恐縮ではございますが、何卒ご理解賜りますようお願い申し上げます。
+
+{candidate_name}様の今後のご活躍を心よりお祈り申し上げます。
+
+{company_name}
+採用チーム</div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">EVALUATION FORM</div>
+        <h2 class="section-title">評価シートの標準項目（推奨）</h2>
+
+        <table class="config-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>形式</th>
+                    <th>説明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>総合評価</td>
+                    <td>5段階</td>
+                    <td>1=不採用〜5=強く推薦</td>
+                </tr>
+                <tr>
+                    <td>スキル評価</td>
+                    <td>5段階</td>
+                    <td>職務に必要なスキルレベル</td>
+                </tr>
+                <tr>
+                    <td>カルチャーフィット</td>
+                    <td>5段階</td>
+                    <td>企業文化との適合性</td>
+                </tr>
+                <tr>
+                    <td>コミュニケーション力</td>
+                    <td>5段階</td>
+                    <td>受け答えの明確さ、論理性</td>
+                </tr>
+                <tr>
+                    <td>強み</td>
+                    <td>自由記述</td>
+                    <td>候補者の強みポイント（必須）</td>
+                </tr>
+                <tr>
+                    <td>懸念点</td>
+                    <td>自由記述</td>
+                    <td>採用にあたっての懸念事項（任意）</td>
+                </tr>
+                <tr>
+                    <td>質問メモ</td>
+                    <td>自由記述</td>
+                    <td>面接中の質問と回答の要点</td>
+                </tr>
+                <tr>
+                    <td>推奨アクション</td>
+                    <td>選択式</td>
+                    <td>Proceed / Hold / Decline</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">VARIABLES</div>
+        <h2 class="section-title">変数一覧</h2>
+
+        <table class="variable-table">
+            <thead>
+                <tr>
+                    <th>変数名</th>
+                    <th>内容</th>
+                    <th>取得元</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>{interview_end_time}</code></td>
+                    <td>面接終了時刻</td>
+                    <td>Calendar</td>
+                </tr>
+                <tr>
+                    <td><code>{interviewer}</code></td>
+                    <td>面接官</td>
+                    <td>Calendarイベント参加者</td>
+                </tr>
+                <tr>
+                    <td><code>{candidate_name}</code></td>
+                    <td>候補者名</td>
+                    <td>Calendarイベントタイトル</td>
+                </tr>
+                <tr>
+                    <td><code>{position}</code></td>
+                    <td>応募ポジション</td>
+                    <td>候補者管理シート</td>
+                </tr>
+                <tr>
+                    <td><code>{form_responses}</code></td>
+                    <td>評価シート回答</td>
+                    <td>Google Forms</td>
+                </tr>
+                <tr>
+                    <td><code>{feedback_summary}</code></td>
+                    <td>フィードバック要約</td>
+                    <td>Gemini生成</td>
+                </tr>
+                <tr>
+                    <td><code>{next_step_recommendation}</code></td>
+                    <td>次ステップ提案</td>
+                    <td>Gemini生成</td>
+                </tr>
+                <tr>
+                    <td><code>{skill_rating}</code></td>
+                    <td>スキル評価</td>
+                    <td>Google Forms</td>
+                </tr>
+                <tr>
+                    <td><code>{culture_rating}</code></td>
+                    <td>カルチャーフィット</td>
+                    <td>Google Forms</td>
+                </tr>
+                <tr>
+                    <td><code>{overall_rating}</code></td>
+                    <td>総合評価</td>
+                    <td>Google Forms</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEST PRACTICES</div>
+        <h2 class="section-title">運用のポイント</h2>
+
+        <div class="points-grid">
+            <div class="point-card">
+                <div class="point-number">POINT 01</div>
+                <h3>評価シートの標準化</h3>
+                <p>Geminiが正確に解析できるよう、評価シートの項目を統一。5段階評価と自由記述の組み合わせが推奨</p>
+            </div>
+            <div class="point-card">
+                <div class="point-number">POINT 02</div>
+                <h3>記入期限の設定</h3>
+                <p>面接翌日17時を期限とし、未記入の場合はリマインドを送信（第4回で設定）。CX向上のために迅速な対応を</p>
+            </div>
+            <div class="point-card">
+                <div class="point-number">POINT 03</div>
+                <h3>プライバシー配慮</h3>
+                <p>評価内容は採用チーム内のみで共有。Chatスペースへのアクセス権限を適切に設定すること</p>
+            </div>
+            <div class="point-card">
+                <div class="point-number">POINT 04</div>
+                <h3>人間の最終判断</h3>
+                <p>お見送りメールは下書きのみ作成し、送信は必ず人間が確認。誤送信を防ぐための重要なセーフガード</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TESTING</div>
+        <h2 class="section-title">テスト確認ポイント</h2>
+
+        <div class="checklist">
+            <h3>動作確認チェックリスト</h3>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>Calendarイベント終了時にトリガーが発動するか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>Gmailで評価依頼が正しい面接官に送信されるか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>フォーム回答時にGemini要約が動作するか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>条件分岐（Proceed/Hold/Decline）が正しく動作するか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>Chat通知が採用チームスペースに届くか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>候補者管理シートのステータスが自動更新されるか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>お見送りメールが自動送信されず下書きに留まるか</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SUMMARY</div>
+        <h2 class="section-title">今日のポイント</h2>
+
+        <div class="highlight-box">
+            <h4>まとめ</h4>
+            <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                <li>Calendar終了トリガーで面接官に評価依頼を自動送信</li>
+                <li>Formsの回答をGeminiが自動要約して構造化</li>
+                <li>Proceed / Hold / Decline の3段階で条件分岐処理</li>
+                <li>Chat通知で採用チーム全体に結果を即座に共有</li>
+                <li>お見送りメールは下書きのみ作成（人間が最終確認）</li>
+                <li>評価シートの標準化でGemini解析精度を向上</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="next-preview">
+        <h3>次回予告</h3>
+        <p>遅延しない採用運用！面接リマインド・評価提出リマインドを自動化する</p>
+    </div>
+
+    <nav class="lesson-nav">
+        <a href="lesson2.html" class="nav-prev">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            前のレッスン
+        </a>
+        <a href="lesson4.html" class="nav-next">
+            次のレッスン
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </nav>
+</body>
+</html>

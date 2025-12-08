@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画1：保育士の残業をなくす！1日の振り返りをAIが手助け！</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --border-width: 2px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+        
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--electric);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateX(10px);
+            border-color: var(--electric);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+        
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: 'EXAMPLE / CODE';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+        }
+        
+        .list {
+            text-align: left;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .success {
+            color: var(--electric);
+            font-weight: 700;
+        }
+
+        .warning {
+            color: #FF6B6B;
+            font-weight: 700;
+        }
+
+        strong {
+            color: var(--electric);
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .navigation {
+                display: none;
+            }
+
+            .content-section {
+                padding: 3rem 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+        <div class="nav-pill" data-section="7"></div>
+    </div>
+
+    <div class="container">
+        <section class="content-section visible">
+            <h1 class="section-title">保育士の残業をなくす！<br>1日の振り返りをAIが手助け！</h1>
+            <div class="section-content">
+                <p>保育現場の働き方革命へようこそ。<br>
+                日誌作成の時短で、子どもたちと向き合う時間を取り戻します</p>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>時短効果</h3>
+                    <p>30分の作業が5分に短縮</p>
+                </div>
+                <div class="card">
+                    <h3>残業削減</h3>
+                    <p>月15時間から3時間へ</p>
+                </div>
+                <div class="card">
+                    <h3>質の向上</h3>
+                    <p>温かく自然な文章表現</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">現状の課題と解決</h2>
+            <div class="section-content">
+                <p>保育士の日誌作成における課題をAIで解決します</p>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>Before（現状）</h3>
+                    <ul class="list">
+                        <li>日誌作成：<span class="warning">毎日30分以上</span></li>
+                        <li>月間残業：<span class="warning">15時間以上</span></li>
+                        <li>文章表現：マンネリ化</li>
+                        <li>退勤時間：18:30以降</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>After（AI導入後）</h3>
+                    <ul class="list">
+                        <li>日誌作成：<span class="success">5分で完了</span></li>
+                        <li>月間残業：<span class="success">3時間以下</span></li>
+                        <li>文章表現：豊かで自然</li>
+                        <li>退勤時間：17:30</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">AIで実現できること</h2>
+            <div class="section-content">
+                <p>保育日誌作成における具体的な改善点</p>
+            </div>
+            <div class="card">
+                <h3>主な機能</h3>
+                <ul class="list">
+                    <li>簡単なメモから自然な文章を自動生成</li>
+                    <li>子どもの成長を捉えた教育的視点の追加</li>
+                    <li>保護者に伝わりやすい温かい表現</li>
+                    <li>園の方針に合わせたカスタマイズ</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">実際のデモ</h2>
+            <div class="section-content">
+                <p>簡単な入力からプロ品質の日誌が完成します</p>
+            </div>
+            <div class="code-block">今日は公園で鬼ごっこをしました。子どもたちは元気いっぱいで...</div>
+            <div class="card">
+                <h3>AI出力例（完成した日誌）</h3>
+                <p>本日は公園で鬼ごっこを行いました。子どもたちは元気いっぱいで、
+                友達との関わりも活発に見られました。走り回ることで体力づくりにもつながり、
+                ルールを守って遊ぶ社会性の成長も確認できました。</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">APIキー取得方法</h2>
+            <div class="section-content">
+                <p>Google AI Studioで無料APIキーを取得</p>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>Google AI Studioのメリット</h3>
+                    <ul class="list">
+                        <li><span class="success">完全無料</span>でAPIキー取得</li>
+                        <li><span class="success">毎分15回</span>まで無料利用</li>
+                        <li><span class="success">クレジットカード不要</span></li>
+                        <li>Googleアカウントですぐ利用可</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>取得手順</h3>
+                    <ul class="list">
+                        <li><strong>1.</strong> Google AI Studioにアクセス</li>
+                        <li><strong>2.</strong> 「Get API key」をクリック</li>
+                        <li><strong>3.</strong> 「Create API key」を選択</li>
+                        <li><strong>4.</strong> APIキーをコピーして保存</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card" style="border-color: #FF6B6B; background: rgba(255, 107, 107, 0.1);">
+                <h3>⚠️ 重要：APIキーの管理</h3>
+                <ul class="list">
+                    <li><span class="warning">APIキーは一度しか表示されません</span></li>
+                    <li>パスワード同様に安全に管理</li>
+                    <li>他人に教えない</li>
+                    <li>Dify設定時に必須</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">導入ステップ</h2>
+            <div class="section-content">
+                <p>簡単4ステップで導入完了</p>
+            </div>
+            <div class="card">
+                <h3>導入手順</h3>
+                <ul class="list">
+                    <li><strong>Google AI StudioでAPIキー取得</strong>（今日完了）</li>
+                    <li><strong>Difyアカウント作成</strong>（5分）</li>
+                    <li><strong>チャットボット設定</strong>（10分）</li>
+                    <li><strong>プロンプト調整</strong>（園に合わせてカスタマイズ）</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">注意事項</h2>
+            <div class="section-content">
+                <p>個人情報保護を最優先に安全な運用を</p>
+            </div>
+            <div class="card">
+                <h3>個人情報保護のルール</h3>
+                <ul class="list">
+                    <li>子どもの実名は入力しない</li>
+                    <li>イニシャルや番号で管理</li>
+                    <li>住所・電話番号などの個人情報は記載しない</li>
+                    <li>活動内容と観察記録のみ入力</li>
+                    <li><span class="warning">APIキーを他人に教えない</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">今日のポイント</h2>
+            <div class="section-content">
+                <p>保育現場でのAI活用の核心</p>
+            </div>
+            <div class="card">
+                <h3>重要なポイント</h3>
+                <ul class="list">
+                    <li>AIは保育士の「文章化の負担」を大幅に削減</li>
+                    <li>30分の作業が5分に短縮（<span class="highlight">85%削減</span>）</li>
+                    <li>浮いた時間で子どもと向き合える</li>
+                    <li>プログラミング知識は不要</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">次のステップへ</h2>
+            <div class="section-content">
+                <p>次回は実際にDifyでチャットボットを作成します</p>
+            </div>
+            <div class="card">
+                <h3>動画2：Difyで作る！保育日誌チャットボットの基本設定</h3>
+                <p>実際にDifyで、あなたの園専用のチャットボットを作成します。</p>
+                <p>10分で完成する簡単設定をステップバイステップで解説！</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    const index = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, i) => {
+                        pill.classList.toggle('active', i === index);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+
+    <!-- Dify Chatbot Integration with Smooth Animation -->
+    <script>
+        window.difyChatbotConfig = {
+            token: 'HSyxRjvTBSe8NFRF',
+            inputs: {
+                // You can define the inputs from the Start node here
+                // key is the variable name
+                // e.g.
+                // name: "NAME"
+            },
+            systemVariables: {
+                // user_id: 'YOU CAN DEFINE USER ID HERE',
+                // conversation_id: 'YOU CAN DEFINE CONVERSATION ID HERE, IT MUST BE A VALID UUID',
+            },
+            userVariables: {
+                // avatar_url: 'YOU CAN DEFINE USER AVATAR URL HERE',
+                // name: 'YOU CAN DEFINE USER NAME HERE',
+            },
+        }
+    </script>
+    <script
+        src="https://udify.app/embed.min.js"
+        id="HSyxRjvTBSe8NFRF"
+        defer>
+    </script>
+    <style>
+        #dify-chatbot-bubble-button {
+            background-color: #1C64F2 !important;
+            position: fixed !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            z-index: 9999 !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            animation: smoothFloat 3s ease-in-out infinite !important;
+        }
+        
+        #dify-chatbot-bubble-button:hover {
+            transform: scale(1.1) !important;
+            box-shadow: 0 8px 30px rgba(28, 100, 242, 0.4) !important;
+        }
+        
+        #dify-chatbot-bubble-window {
+            width: 24rem !important;
+            height: 40rem !important;
+            position: fixed !important;
+            bottom: 80px !important;
+            right: 20px !important;
+            z-index: 9998 !important;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+            animation: slideInUp 0.5s ease-out !important;
+        }
+        
+        @keyframes smoothFloat {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,104 @@
+{
+  "app_name": "保育日誌AI",
+  "app_type": "chatbot",
+  "model_config": {
+    "provider": "openai",
+    "model": "gpt-3.5-turbo",
+    "temperature": 0.7,
+    "max_tokens": 500,
+    "top_p": 0.9
+  },
+  "system_prompt": "あなたは保育園の日誌作成を支援するアシスタントです。\n入力された活動内容をもとに、以下の形式で日誌を作成してください：\n\n【今日の活動】\n- 活動内容を2〜3文で具体的に記載\n- 子どもたちの反応や様子を含める\n\n【子どもの様子】\n- 個別の観察記録を含める\n- 成長や変化を具体的に記載\n- ポジティブな表現を心がける\n\n【明日への連携】\n- 継続観察ポイントを1文で\n- 次の活動への展開を意識\n\n文体は温かく、保護者が読んで安心する表現を使用してください。",
+  "variables": [
+    {
+      "key": "activity",
+      "name": "活動内容",
+      "type": "text",
+      "required": true,
+      "description": "今日の活動を簡単に入力"
+    }
+  ],
+  "conversation_config": {
+    "introduction": "保育日誌作成AIへようこそ！\n今日の活動内容を簡単に教えてください。\n箇条書きやメモ書きでOKです。",
+    "suggested_questions": [
+      "今日は外遊びをしました",
+      "製作活動で工作をしました",
+      "絵本の読み聞かせをしました",
+      "プール遊びを楽しみました"
+    ],
+    "empty_response": "活動内容を入力してください。\n例：「砂場遊び。山を作った。みんな楽しそう。」"
+  },
+  "features": {
+    "citation": false,
+    "file_upload": false,
+    "suggested_questions_after_answer": true,
+    "speech_to_text": true,
+    "text_to_speech": false
+  },
+  "privacy_settings": {
+    "data_collection": false,
+    "improvement_program": false
+  },
+  "advanced_settings": {
+    "response_format": "text",
+    "enable_memory": false,
+    "context_window": 4000
+  },
+  "prompts_library": {
+    "templates": [
+      {
+        "name": "標準版",
+        "prompt": "上記のシステムプロンプト"
+      },
+      {
+        "name": "簡潔版",
+        "prompt": "保育日誌を150字以内で簡潔にまとめてください。"
+      },
+      {
+        "name": "詳細版",
+        "prompt": "保育日誌を300字程度で、発達心理学的観点も含めて作成してください。"
+      }
+    ]
+  },
+  "test_cases": [
+    {
+      "input": "積み木遊び。Bくんが高いタワーを作った。みんなで拍手。",
+      "expected_output_contains": [
+        "積み木",
+        "Bくん",
+        "タワー",
+        "拍手",
+        "達成感"
+      ]
+    },
+    {
+      "input": "プール遊び。水が怖いCちゃんも参加。",
+      "expected_output_contains": [
+        "プール",
+        "Cちゃん",
+        "水",
+        "勇気",
+        "成長"
+      ]
+    }
+  ],
+  "deployment": {
+    "environment": "production",
+    "api_endpoint": "https://api.dify.ai/v1/chat/completions",
+    "authentication": "api_key",
+    "rate_limit": {
+      "requests_per_minute": 60,
+      "requests_per_day": 1000
+    }
+  },
+  "monitoring": {
+    "log_conversations": true,
+    "track_usage": true,
+    "alert_on_errors": true
+  },
+  "backup_settings": {
+    "auto_backup": true,
+    "backup_frequency": "daily",
+    "retention_days": 30
+  }
+}

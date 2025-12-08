@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：Google Workspace Studioの機能と活用事例 | Google Workspace Studioの活用</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --ink: #0A0E27; --paper: #FEFEF8; --electric: #00F0FF; --coral: #FF6B6B; --violet: #7C3AED; --gray: #4A5568; --google-blue: #4285F4; --google-green: #34A853; }
+        body { font-family: 'Zen Kaku Gothic New', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.7; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(10, 14, 39, 0.01) 2px, rgba(10, 14, 39, 0.01) 4px); pointer-events: none; z-index: 1; }
+        nav { position: fixed; top: 0; width: 100%; background: rgba(254, 254, 248, 0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 1.5rem 0; box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1); }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .nav-back { display: flex; align-items: center; gap: 0.5rem; color: var(--gray); text-decoration: none; font-size: 0.9rem; transition: color 0.3s ease; }
+        .nav-back:hover { color: var(--google-blue); }
+        .nav-menu { display: flex; gap: 2rem; }
+        .nav-menu a { color: var(--ink); text-decoration: none; font-size: 0.9rem; position: relative; transition: color 0.3s ease; }
+        .nav-menu a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--electric); transition: width 0.3s ease; }
+        .nav-menu a:hover::after { width: 100%; }
+        .hero { min-height: 100vh; display: flex; align-items: center; padding: 0 2rem; margin-top: 80px; }
+        .hero-content { max-width: 1400px; margin: 0 auto; width: 100%; }
+        .hero-label { display: inline-block; background: var(--ink); color: var(--paper); padding: 0.5rem 1.5rem; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; margin-bottom: 2rem; transform: rotate(-1deg); }
+        .hero-title { font-size: clamp(2.5rem, 7vw, 5rem); font-weight: 900; line-height: 0.9; margin-bottom: 2rem; letter-spacing: -0.03em; }
+        .hero-title span { display: block; color: var(--google-blue); font-size: 0.6em; margin-top: 0.2em; }
+        .hero-description { font-size: 1.25rem; max-width: 800px; margin-bottom: 3rem; line-height: 1.8; font-weight: 300; }
+        .section { max-width: 1400px; margin: 80px auto; padding: 0 2rem; }
+        .section-label { font-family: 'Space Grotesk', monospace; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.2em; opacity: 0.5; margin-bottom: 1rem; text-transform: uppercase; }
+        .section-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 3rem; position: relative; padding-bottom: 1rem; }
+        .section-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 60px; height: 3px; background: var(--electric); }
+        .grid { display: grid; gap: 2rem; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+        .card { background: var(--paper); border: 2px solid var(--ink); padding: 2rem; position: relative; transition: all 0.3s ease; cursor: pointer; }
+        .card::before { content: ''; position: absolute; top: 4px; left: 4px; width: 100%; height: 100%; background: var(--ink); z-index: -1; transition: all 0.3s ease; }
+        .card:hover { transform: translate(-4px, -4px); background: var(--ink); color: var(--paper); }
+        .card:hover::before { top: 8px; left: 8px; }
+        .card:hover .card-number { background: var(--paper); color: var(--ink); }
+        .card-number { display: inline-block; width: 40px; height: 40px; background: var(--electric); color: var(--ink); font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; transition: all 0.3s ease; }
+        .card-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.2; }
+        .card-description { font-size: 0.95rem; opacity: 0.8; line-height: 1.7; }
+        .phase-card { background: linear-gradient(to right, var(--paper) 50%, transparent 50%); background-size: 20px 1px; background-repeat: repeat-x; background-position: 0 100%; padding-bottom: 2rem; margin-bottom: 3rem; }
+        .phase-header { display: flex; align-items: baseline; gap: 2rem; margin-bottom: 2rem; }
+        .phase-number { font-family: 'Space Grotesk', monospace; font-size: 5rem; font-weight: 700; line-height: 1; color: var(--violet); opacity: 0.2; }
+        .phase-title { font-size: 1.8rem; font-weight: 700; }
+        .schedule-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 2rem; }
+        .schedule-table th { background: var(--ink); color: var(--paper); padding: 1rem; text-align: left; font-weight: 500; font-size: 0.9rem; letter-spacing: 0.05em; }
+        .schedule-table td { padding: 1.25rem 1rem; border-bottom: 1px solid rgba(0,0,0,0.1); vertical-align: top; }
+        .schedule-table tr:hover { background: rgba(0,240,255,0.05); }
+        .schedule-session { font-family: 'Space Grotesk', monospace; font-weight: 700; color: var(--electric); }
+        ul { list-style-position: inside; margin-left: 1rem; }
+        ul li { margin-bottom: 0.5rem; }
+        .note { background: rgba(124, 58, 237, 0.05); border-left: 4px solid var(--violet); padding: 1.5rem; margin: 2rem 0; }
+        .note-title { font-weight: 700; margin-bottom: 0.5rem; }
+        .case-study { background: linear-gradient(135deg, rgba(66, 133, 244, 0.1), rgba(124, 58, 237, 0.1)); border: 2px solid var(--google-blue); border-radius: 8px; padding: 2rem; margin: 2rem 0; }
+        .case-study h3 { color: var(--google-blue); font-size: 1.5rem; margin-bottom: 1rem; }
+        .case-study-scenario { background: rgba(255, 255, 255, 0.5); padding: 1rem; border-radius: 4px; margin: 1rem 0; }
+        .flow-diagram { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin: 1.5rem 0; }
+        .flow-step { background: var(--ink); color: var(--paper); padding: 0.75rem 1.25rem; border-radius: 4px; font-size: 0.9rem; }
+        .flow-arrow { color: var(--electric); font-size: 1.5rem; }
+        .stat-highlight { background: var(--ink); color: var(--paper); padding: 2rem; text-align: center; margin: 2rem 0; }
+        .stat-number { font-family: 'Space Grotesk', monospace; font-size: 4rem; font-weight: 700; color: var(--electric); line-height: 1; }
+        .stat-label { font-size: 1.1rem; margin-top: 1rem; }
+        .integration-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 2rem 0; }
+        .integration-item { background: var(--paper); border: 1px solid rgba(0,0,0,0.1); padding: 1rem; text-align: center; font-weight: 500; }
+        .lesson-nav { display: flex; justify-content: space-between; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.1); }
+        .lesson-nav a { display: flex; align-items: center; gap: 0.5rem; padding: 1rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; }
+        .nav-prev { color: var(--gray); background: rgba(0,0,0,0.05); }
+        .nav-prev:hover { background: rgba(0,0,0,0.1); }
+        .nav-next { background: var(--ink); color: var(--paper); }
+        .nav-next:hover { transform: translateX(4px); }
+        @media (max-width: 768px) { .nav-menu { display: none; } .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } .hero-title { font-size: 2rem; } .phase-header { flex-direction: column; gap: 1rem; } .phase-number { font-size: 3rem; } .card { padding: 1.5rem; } .flow-diagram { flex-direction: column; } .flow-arrow { transform: rotate(90deg); } }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-menu">
+                <a href="#starters">スターター</a>
+                <a href="#gemini">Gemini</a>
+                <a href="#integrations">連携</a>
+                <a href="#cases">活用事例</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第3回 / 全4回</div>
+            <h1 class="hero-title">
+                Google Workspace Studioの機能と活用事例
+                <span>ビジネスシーンで使える自動化パターン</span>
+            </h1>
+            <p class="hero-description">
+                スターターの種類、Geminiステップの活用、サードパーティ連携、
+                そして実践的な活用事例4選を学びます。
+            </p>
+        </div>
+    </div>
+
+    <section class="section" id="starters">
+        <div class="section-label">Starters</div>
+        <h2 class="section-title">スターターの種類と使い分け</h2>
+
+        <div class="grid grid-2">
+            <div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--violet);">イベントベース</h3>
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h4 class="card-title">Gmail</h4>
+                    <p class="card-description">特定の人からのメール受信時、特定の件名のメール受信時</p>
+                </div>
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h4 class="card-title">Google Forms</h4>
+                    <p class="card-description">フォーム回答送信時、特定のフォームへの回答時</p>
+                </div>
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h4 class="card-title">Google Drive</h4>
+                    <p class="card-description">特定フォルダへのファイルアップロード時</p>
+                </div>
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h4 class="card-title">Google Chat</h4>
+                    <p class="card-description">Chatスペースでメンションされたとき</p>
+                </div>
+                <div class="card">
+                    <h4 class="card-title">Google Calendar</h4>
+                    <p class="card-description">会議開始の指定時間前（30分前など）</p>
+                </div>
+            </div>
+            <div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--google-blue);">スケジュールベース</h3>
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h4 class="card-title">時間指定</h4>
+                    <p class="card-description">毎日午前8時、毎週月曜日午前9時など</p>
+                </div>
+                <div class="card">
+                    <h4 class="card-title">頻度指定</h4>
+                    <p class="card-description">1時間ごと、毎日など</p>
+                </div>
+            </div>
+        </div>
+
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>ユースケース</th>
+                    <th>推奨スターター</th>
+                    <th>理由</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="schedule-session">緊急メール通知</td>
+                    <td>イベント（メール受信時）</td>
+                    <td>即座に対応が必要なため</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">定期レポート</td>
+                    <td>スケジュール（毎日/毎週）</td>
+                    <td>定期的な集計・報告のため</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">フォーム回答処理</td>
+                    <td>イベント（回答時）</td>
+                    <td>リアルタイム対応が求められるため</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">ファイル要約</td>
+                    <td>イベント（アップロード時）</td>
+                    <td>新規ファイルを即座に処理するため</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">会議準備</td>
+                    <td>イベント（会議前）</td>
+                    <td>会議に間に合うタイミングで通知</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section" id="gemini">
+        <div class="section-label">Gemini Steps</div>
+        <h2 class="section-title">Geminiステップの活用</h2>
+
+        <div class="grid grid-4">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">要約・抽出</h3>
+                <p class="card-description">
+                    ドキュメント要約、メール要点抽出、議事録作成、アクションアイテム抽出
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">分析・分類</h3>
+                <p class="card-description">
+                    感情分析、カテゴリ分類、優先順位付け、トピック識別
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">コンテンツ生成</h3>
+                <p class="card-description">
+                    メール返信下書き、ドキュメント作成、レポート生成、翻訳
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">意思決定支援</h3>
+                <p class="card-description">
+                    条件判断、次のアクション提案、推奨事項の提示
+                </p>
+            </div>
+        </div>
+
+        <div class="note">
+            <div class="note-title">効果的なプロンプトのコツ</div>
+            <ul>
+                <li><strong>具体的に指示</strong>：「要約して」→「3つの箇条書きで要約して」</li>
+                <li><strong>出力形式を指定</strong>：「以下の形式で出力して」</li>
+                <li><strong>言語を指定</strong>：「日本語で回答して」または「Please respond in Japanese.」</li>
+                <li><strong>条件を明確に</strong>：「緊急のものは先頭に」</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="integrations">
+        <div class="section-label">Integrations</div>
+        <h2 class="section-title">サードパーティ連携</h2>
+
+        <div class="integration-grid">
+            <div class="integration-item">Asana</div>
+            <div class="integration-item">Jira</div>
+            <div class="integration-item">Mailchimp</div>
+            <div class="integration-item">Salesforce</div>
+            <div class="integration-item">Slack *</div>
+            <div class="integration-item">Teams *</div>
+        </div>
+        <p style="font-size: 0.9rem; opacity: 0.7;">* Webhook経由での連携</p>
+
+        <div class="grid grid-2" style="margin-top: 2rem;">
+            <div class="case-study">
+                <h3>Asana連携例</h3>
+                <div class="flow-diagram">
+                    <div class="flow-step">Gmailでタスク依頼</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-step">Geminiがタスク抽出</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-step">Asanaにタスク作成</div>
+                </div>
+            </div>
+
+            <div class="case-study">
+                <h3>Jira連携例</h3>
+                <div class="flow-diagram">
+                    <div class="flow-step">フォーム（バグ報告）</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-step">Geminiが内容整理</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-step">Jiraにチケット作成</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="cases">
+        <div class="section-label">Use Cases</div>
+        <h2 class="section-title">実践的な活用事例4選</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">フォーム回答の自動通知とスプレッドシート記録</div>
+            </div>
+            <div class="case-study-scenario">
+                <strong>シナリオ：</strong>問い合わせフォームの回答を即座にチームに通知し、スプレッドシートに記録
+            </div>
+            <div class="flow-diagram">
+                <div class="flow-step">Formに回答送信</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Geminiで要約・分類</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Chatに通知</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Sheetsに記録</div>
+            </div>
+            <p><strong>効果：</strong>手動通知が不要になり、対応漏れを防止</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">Driveファイルの自動要約と共有</div>
+            </div>
+            <div class="case-study-scenario">
+                <strong>シナリオ：</strong>共有フォルダにアップロードされた資料を自動で要約してチームに通知
+            </div>
+            <div class="flow-diagram">
+                <div class="flow-step">Driveにファイルアップロード</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Geminiで要約</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Chatに要約+リンク通知</div>
+            </div>
+            <p><strong>効果：</strong>資料確認の時間を大幅削減、重要資料の見落とし防止</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">会議前の自動ブリーフィング</div>
+            </div>
+            <div class="case-study-scenario">
+                <strong>シナリオ：</strong>会議30分前に、参加者情報と関連資料をGeminiが整理して通知
+            </div>
+            <div class="flow-diagram">
+                <div class="flow-step">会議30分前</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">参加者・議題を収集</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Geminiで要約</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Chatに通知</div>
+            </div>
+            <p><strong>効果：</strong>会議準備時間をゼロに、生産的な会議を実現</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">04</div>
+                <div class="phase-title">サポート問い合わせのトリアージ</div>
+            </div>
+            <div class="case-study-scenario">
+                <strong>シナリオ：</strong>サポートメールをGeminiが分析し、優先度と担当者を自動判定
+            </div>
+            <div class="flow-diagram">
+                <div class="flow-step">サポートメール受信</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Geminiで分析・優先度判定</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">担当者Chatに通知</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Sheetsにログ</div>
+            </div>
+            <p><strong>効果：</strong>対応時間短縮、優先順位に基づく効率的な対応</p>
+        </div>
+
+        <div class="stat-highlight">
+            <div class="stat-number">90%</div>
+            <div class="stat-label">Kärcher社の作業時間削減実績<br>従来数時間の作業が2分に短縮</div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Think</div>
+        <h2 class="section-title">自分の業務に当てはめる</h2>
+
+        <div class="note">
+            <div class="note-title">考えてみましょう</div>
+            <ul>
+                <li>毎日繰り返している作業は？</li>
+                <li>手動で通知している作業は？</li>
+                <li>誰かを待たせている作業は？</li>
+                <li>確認や要約に時間がかかっている作業は？</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="lesson-nav">
+            <a href="lesson2.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson4.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+</body>
+</html>

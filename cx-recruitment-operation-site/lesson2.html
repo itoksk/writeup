@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回:面接前準備を自動化！ | CX向上型採用オペレーションフロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #EC4899;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+            --green: #22C55E;
+            --red: #EF4444;
+        }
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .nav-back:hover { opacity: 0.7; }
+        .nav-lesson {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            color: var(--violet);
+            font-weight: 700;
+        }
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 60px;
+            background: linear-gradient(135deg, var(--ink) 0%, #1a1f3a 100%);
+            color: var(--paper);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
+            opacity: 0.15;
+        }
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-label {
+            display: inline-block;
+            background: var(--violet);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.5em;
+            margin-top: 0.5em;
+        }
+        .hero-desc {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--violet);
+            display: inline-block;
+        }
+        .goal-card {
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            padding: 2rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        .flow-steps {
+            display: grid;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .flow-step {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            gap: 1.5rem;
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 2rem;
+        }
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .step-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+        .step-content p {
+            color: var(--gray);
+            line-height: 1.8;
+        }
+        .step-content ul {
+            margin-top: 0.75rem;
+            padding-left: 1.5rem;
+            color: var(--gray);
+        }
+        .step-content li {
+            margin-bottom: 0.5rem;
+        }
+        .code-block {
+            background: var(--ink);
+            color: #00F0FF;
+            padding: 2rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        .config-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+        }
+        .config-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .config-table tr:hover {
+            background: rgba(124, 58, 237, 0.03);
+        }
+        .highlight-box {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .highlight-box h4 {
+            color: var(--violet);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .tip-card {
+            background: white;
+            border: 2px solid var(--violet);
+            padding: 1.5rem;
+        }
+        .tip-card h4 {
+            font-size: 1rem;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .tip-card p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .checklist {
+            background: rgba(124, 58, 237, 0.05);
+            border: 2px solid var(--violet);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .checklist h3 {
+            color: var(--violet);
+            margin-bottom: 1rem;
+        }
+        .checklist li {
+            margin-bottom: 0.75rem;
+            padding-left: 2rem;
+            position: relative;
+            list-style: none;
+        }
+        .checklist li::before {
+            content: '☐';
+            position: absolute;
+            left: 0;
+            color: var(--violet);
+        }
+        .summary-box {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .summary-box h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        .summary-box ul {
+            list-style: none;
+        }
+        .summary-box li {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .summary-box li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: 700;
+        }
+        .next-preview {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1));
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        .next-preview h3 {
+            color: var(--gray);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .next-preview p {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--violet);
+        }
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 1rem;
+        }
+        .nav-prev, .nav-next {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--ink);
+            border: 2px solid var(--ink);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-prev:hover, .nav-next:hover {
+            background: var(--ink);
+            color: var(--paper);
+        }
+        .nav-next {
+            background: var(--violet);
+            color: white;
+            border-color: var(--violet);
+        }
+        .nav-next:hover {
+            background: #6D28D9;
+            border-color: #6D28D9;
+        }
+        @media (max-width: 768px) {
+            .tips-grid { grid-template-columns: 1fr; }
+            .lesson-nav { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 2 / 5</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第2回 / 全5回</div>
+            <h1 class="hero-title">
+                面接前準備を自動化！
+                <span>Calendar×Gemini×Chatで候補者へ必要情報を自動送信する</span>
+            </h1>
+            <p class="hero-desc">
+                面接予定をCalendarから自動検知し、Geminiで候補者情報を要約、面接官へChat通知するエージェントを作成します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">GOAL</div>
+        <h2 class="section-title">学習目標</h2>
+        <div class="goal-card">
+            面接予定をCalendarから検知し、Geminiで候補者情報を要約、
+            面接官へChat通知するエージェントを作成する
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">AGENT FLOW</div>
+        <h2 class="section-title">エージェントのフロー</h2>
+
+        <div class="flow-steps">
+            <div class="flow-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Schedule Trigger</h3>
+                    <p>毎朝9時に自動実行されるスケジュールトリガーを設定します。</p>
+                    <ul>
+                        <li>実行頻度：Daily（毎日）</li>
+                        <li>実行時刻：9:00 AM</li>
+                        <li>対象日：Weekdays（平日のみ）</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Calendar イベント取得</h3>
+                    <p>Google Calendarから当日の面接予定を取得します。</p>
+                    <ul>
+                        <li>Calendar: Primary calendar</li>
+                        <li>Time range: Today</li>
+                        <li>Filter: Title contains '面接' or 'Interview'</li>
+                        <li>取得データ: イベントタイトル、時刻、参加者、候補者名</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Drive ファイル検索</h3>
+                    <p>候補者名を使ってGoogle Driveから履歴書を検索・取得します。</p>
+                    <ul>
+                        <li>Search query: {candidate_name} + '履歴書'</li>
+                        <li>Folder: 採用書類フォルダ</li>
+                        <li>File types: PDF, DOCX</li>
+                        <li>取得データ: ファイルリンク、ファイル内容</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Gemini 要約生成</h3>
+                    <p>履歴書の内容をGeminiが解析し、面接官向けサマリーを生成します。</p>
+                    <ul>
+                        <li>入力: 履歴書テキスト、候補者情報、応募ポジション</li>
+                        <li>出力: 主要スキル、経験ハイライト、面接で確認すべき点</li>
+                        <li>文字数: 200語以内の簡潔な要約</li>
+                        <li>言語: 日本語</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Chat 通知送信</h3>
+                    <p>面接10分前に面接官のGoogle Chatへ自動配信します。</p>
+                    <ul>
+                        <li>送信先: 面接官（Calendarイベント参加者）</li>
+                        <li>送信タイミング: 面接10分前</li>
+                        <li>内容: 候補者サマリー、履歴書リンク、面接情報</li>
+                        <li>フォールバック: 履歴書が見つからない場合の対応</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">AGENT SETTINGS</div>
+        <h2 class="section-title">エージェント設定</h2>
+
+        <table class="config-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>設定値</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>エージェント名</td>
+                    <td>Interview Prep Notification</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>Sends interview preparation summary to interviewers before meetings</td>
+                </tr>
+                <tr>
+                    <td>スターター</td>
+                    <td>Schedule (Daily, 9:00 AM, Weekdays)</td>
+                </tr>
+                <tr>
+                    <td>Calendar検索</td>
+                    <td>Today's events with '面接' in title</td>
+                </tr>
+                <tr>
+                    <td>Drive検索</td>
+                    <td>候補者名 + 履歴書</td>
+                </tr>
+                <tr>
+                    <td>Chat送信タイミング</td>
+                    <td>面接10分前</td>
+                </tr>
+                <tr>
+                    <td>出力言語</td>
+                    <td>Japanese</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">GEMINI PROMPT</div>
+        <h2 class="section-title">Geminiプロンプト</h2>
+
+        <div class="code-block">You are an HR assistant preparing interview briefings.
+
+Candidate: {candidate_name}
+Position: {position}
+Resume content: {resume_content}
+
+Create a brief summary for the interviewer including:
+1. Key qualifications (3 bullet points)
+2. Relevant experience highlights
+3. Suggested interview focus areas
+4. Any notable points or concerns
+
+Keep the summary concise (under 200 words).
+Output in Japanese.</div>
+
+        <div class="highlight-box">
+            <h4>プロンプト設計のポイント</h4>
+            <p><strong>役割定義:</strong> 「HR assistant preparing interview briefings」で明確に役割を定義</p>
+            <p><strong>出力形式:</strong> 4つの項目を箇条書きで構造化</p>
+            <p><strong>文字数制限:</strong> 「under 200 words」で簡潔さを担保</p>
+            <p><strong>言語指定:</strong> 「Output in Japanese」で日本語出力を明示</p>
+        </div>
+
+        <div class="tips-grid">
+            <div class="tip-card">
+                <h4>入力変数の設定</h4>
+                <p>{candidate_name}: Calendarイベントタイトルから抽出<br>
+                {position}: イベント説明文から取得<br>
+                {resume_content}: Drive検索で取得したファイル内容</p>
+            </div>
+            <div class="tip-card">
+                <h4>要約の品質向上</h4>
+                <p>「Key qualifications」「Relevant experience」など、具体的な出力項目を指定することで、一貫性のある要約が生成されます</p>
+            </div>
+            <div class="tip-card">
+                <h4>面接官への配慮</h4>
+                <p>「Suggested interview focus areas」で面接の準備を支援し、「notable points or concerns」でリスク管理を促進</p>
+            </div>
+            <div class="tip-card">
+                <h4>簡潔性の担保</h4>
+                <p>200語制限により、面接直前でもサッと読める情報量に調整。面接官の負担を最小化</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">CHAT MESSAGE</div>
+        <h2 class="section-title">Chatメッセージテンプレート</h2>
+
+        <div class="code-block">【面接準備情報】
+
+本日 {interview_time} からの面接情報です。
+
+■ 候補者: {candidate_name}
+■ 応募ポジション: {position}
+
+■ 候補者サマリー
+{resume_summary}
+
+■ 履歴書リンク
+{resume_link}
+
+面接頑張ってください！</div>
+
+        <div class="highlight-box">
+            <h4>履歴書が見つからない場合のフォールバック</h4>
+            <div class="code-block">【面接準備情報 - 要確認】
+
+本日 {interview_time} からの面接があります。
+
+■ 候補者: {candidate_name}
+■ 応募ポジション: {position}
+
+⚠️ 候補者の履歴書が自動取得できませんでした。
+以下のフォルダを手動でご確認ください：
+{folder_link}
+
+お手数をおかけしますが、よろしくお願いいたします。</div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">CALENDAR FILTER</div>
+        <h2 class="section-title">Calendarイベント検索フィルター</h2>
+
+        <p style="margin-bottom: 1rem;">イベントタイトルに以下のキーワード（いずれか）が含まれる予定を検索します：</p>
+
+        <div class="tips-grid">
+            <div class="tip-card">
+                <h4>面接</h4>
+                <p>最も一般的な面接イベントの命名。「面接：候補者名」などで使用</p>
+            </div>
+            <div class="tip-card">
+                <h4>Interview</h4>
+                <p>英語表記の面接予定。グローバル採用で使用</p>
+            </div>
+            <div class="tip-card">
+                <h4>採用面談</h4>
+                <p>カジュアル面談などで使用される表記</p>
+            </div>
+            <div class="tip-card">
+                <h4>選考</h4>
+                <p>「一次選考」「最終選考」などで使用</p>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <h4>推奨：Calendar命名規則</h4>
+            <p>イベントタイトル: <strong>「面接：[候補者名]（[ポジション]）」</strong></p>
+            <p>例: 「面接：山田太郎（エンジニア）」</p>
+            <p>この形式により、候補者名とポジション情報を自動抽出できます。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">DRIVE SEARCH</div>
+        <h2 class="section-title">Driveファイル検索クエリ</h2>
+
+        <div class="code-block">title contains '{candidate_name}' and
+(title contains '履歴書' or title contains '職務経歴書' or title contains 'Resume' or title contains 'CV')</div>
+
+        <div class="highlight-box">
+            <h4>推奨：フォルダ構造</h4>
+            <div class="code-block">採用書類/
+├── [候補者名A]_[日付]/
+│   ├── 履歴書_[候補者名].pdf
+│   └── 職務経歴書_[候補者名].pdf
+├── [候補者名B]_[日付]/
+│   └── 履歴書_[候補者名].pdf
+└── [候補者名C]_[日付]/
+    └── ...</div>
+        </div>
+
+        <div class="tips-grid">
+            <div class="tip-card">
+                <h4>フォルダ命名規則</h4>
+                <p>「[候補者名]_[応募日付]」形式で統一すると、検索精度が向上します。</p>
+            </div>
+            <div class="tip-card">
+                <h4>ファイル命名規則</h4>
+                <p>「履歴書_[候補者名].pdf」形式で統一。候補者名を含めることで検索しやすくなります。</p>
+            </div>
+            <div class="tip-card">
+                <h4>対応ファイル形式</h4>
+                <p>PDF、DOCX形式に対応。Geminiがテキストを抽出して要約します。</p>
+            </div>
+            <div class="tip-card">
+                <h4>複数ファイル対応</h4>
+                <p>履歴書と職務経歴書が別ファイルの場合、両方を取得して統合要約を生成できます。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">OPERATION TIPS</div>
+        <h2 class="section-title">運用のポイント</h2>
+
+        <div class="tips-grid">
+            <div class="tip-card">
+                <h4>通知タイミング調整</h4>
+                <p>デフォルトは面接10分前ですが、チームの好みに応じて15分前、30分前に調整可能です。</p>
+            </div>
+            <div class="tip-card">
+                <h4>エラー対応</h4>
+                <p>履歴書が見つからない場合はフォールバックメッセージで手動確認を促し、面接が滞らないよう配慮します。</p>
+            </div>
+            <div class="tip-card">
+                <h4>プライバシー保護</h4>
+                <p>候補者情報は面接官のみに送信。採用チーム全体への配信は避け、情報管理を徹底します。</p>
+            </div>
+            <div class="tip-card">
+                <h4>フォルダ権限設定</h4>
+                <p>採用書類フォルダへのアクセス権限を適切に設定し、エージェントがファイルを読み取れるようにします。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TEST CHECKLIST</div>
+        <h2 class="section-title">テスト確認ポイント</h2>
+
+        <div class="checklist">
+            <h3>エージェント動作確認</h3>
+            <ul>
+                <li>Calendarからイベントが正しく取得できているか</li>
+                <li>イベントタイトルから候補者名とポジションが抽出できているか</li>
+                <li>Driveから履歴書が正しく取得できているか</li>
+                <li>Geminiの要約が適切な長さ・内容か</li>
+                <li>Chatメッセージが正しい宛先（面接官）に送信されるか</li>
+                <li>履歴書が見つからない場合のフォールバックが動作するか</li>
+                <li>送信タイミングが面接10分前に設定されているか</li>
+                <li>複数の面接がある日でも各面接官に個別通知が届くか</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">VARIABLES</div>
+        <h2 class="section-title">変数一覧</h2>
+
+        <table class="config-table">
+            <thead>
+                <tr>
+                    <th>変数名</th>
+                    <th>内容</th>
+                    <th>取得元</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{interview_time}</td>
+                    <td>面接時刻</td>
+                    <td>Calendar（イベント開始時刻）</td>
+                </tr>
+                <tr>
+                    <td>{candidate_name}</td>
+                    <td>候補者名</td>
+                    <td>Calendarイベントタイトルから抽出</td>
+                </tr>
+                <tr>
+                    <td>{interviewer}</td>
+                    <td>面接官</td>
+                    <td>Calendarイベント参加者</td>
+                </tr>
+                <tr>
+                    <td>{position}</td>
+                    <td>応募ポジション</td>
+                    <td>Calendarイベントタイトルまたは説明から抽出</td>
+                </tr>
+                <tr>
+                    <td>{resume_content}</td>
+                    <td>履歴書の内容</td>
+                    <td>Drive（ファイル内容をテキスト化）</td>
+                </tr>
+                <tr>
+                    <td>{resume_summary}</td>
+                    <td>履歴書要約</td>
+                    <td>Gemini生成（プロンプトに基づく）</td>
+                </tr>
+                <tr>
+                    <td>{resume_link}</td>
+                    <td>履歴書リンク</td>
+                    <td>Drive（ファイルの共有URL）</td>
+                </tr>
+                <tr>
+                    <td>{folder_link}</td>
+                    <td>採用書類フォルダリンク</td>
+                    <td>Drive（フォールバック用）</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SUMMARY</div>
+        <h2 class="section-title">今日のポイント</h2>
+
+        <div class="summary-box">
+            <h3>まとめ</h3>
+            <ul>
+                <li>Schedule Triggerで毎朝9時に自動実行</li>
+                <li>Calendar連携で当日の面接予定を自動検知</li>
+                <li>Drive連携で候補者の履歴書を自動取得</li>
+                <li>Geminiで面接官向けサマリーを自動生成（200語以内）</li>
+                <li>Chat通知で面接10分前に自動配信</li>
+                <li>履歴書が見つからない場合のフォールバック対応</li>
+                <li>命名規則の統一で検索精度を向上</li>
+                <li>面接官の負担を最小化し、準備時間を10分→0分に短縮</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="next-preview">
+        <h3>次回予告</h3>
+        <p>面接後作業をゼロにする！評価依頼自動送信とProceed/Hold/Decline条件分岐</p>
+    </div>
+
+    <nav class="lesson-nav">
+        <a href="lesson1.html" class="nav-prev">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            前のレッスン
+        </a>
+        <a href="lesson3.html" class="nav-next">
+            次のレッスン
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </nav>
+</body>
+</html>

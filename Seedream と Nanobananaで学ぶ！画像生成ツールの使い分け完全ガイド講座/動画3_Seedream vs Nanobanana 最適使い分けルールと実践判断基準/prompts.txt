@@ -1,0 +1,462 @@
+# デモ用プロンプト集 - 動画3
+# Seedream vs Nanobanana 最適使い分けルールと実践判断基準
+
+---
+
+## 🔰 初心者向け：まずはこれだけ！（超簡単な判断ルール）
+
+### 3秒で決める判断フローチャート
+
+```
+質問1：写真のようにリアルな画像が必要ですか？
+  ↓ YES → **Seedream** を使う
+  ↓ NO
+  ↓
+質問2：イラストやアート風の個性的な画像が必要ですか？
+  ↓ YES → **Nanobanana** を使う
+  ↓ NO
+  ↓
+迷ったら → **Seedream** から試す（汎用性が高い）
+```
+
+### 具体例で覚える
+
+| あなたが作りたいもの | 使うツール | 理由 |
+|------------------|----------|------|
+| ECサイトの商品写真 | **Seedream** | 本物っぽさが必要 |
+| SNSの投稿画像 | **Nanobanana** | 目を引く個性が必要 |
+| プロフィール写真 | **Seedream** | リアルな人物写真 |
+| ブログのイラスト | **Nanobanana** | アート風の雰囲気 |
+| プレゼン背景（風景） | **Seedream** | プロフェッショナル |
+| ゲームキャラクター | **Nanobanana** | 表現力・個性 |
+| 不動産物件の写真 | **Seedream** | 正確な見た目 |
+| ポスターのビジュアル | **Nanobanana** | インパクト |
+
+**💡 ポイント:**
+- 迷ったら → まず**Seedream**を試す（無難）
+- 写真が必要 → **Seedream**
+- イラストが必要 → **Nanobanana**
+
+---
+
+## 📝 ステップバイステップガイド（初めての方へ）
+
+### ステップ1：「写真」か「イラスト」かを決める
+
+**まず最初に考えること：**
+- あなたが作りたいのは「写真のようにリアルな画像」ですか？
+- それとも「イラスト・アート風の画像」ですか？
+
+**例：**
+- カフェの商品写真（コーヒー、ケーキ） → **写真のようにリアル** → **Seedream**
+- カフェのイラスト（SNS投稿用） → **イラスト・アート風** → **Nanobanana**
+
+### ステップ2：用途を考える
+
+**用途別の推奨ツール：**
+
+#### Seedreamが向いている用途
+- ✅ 商品写真（ECサイト、カタログ）
+- ✅ プロフィール写真
+- ✅ 風景写真（プレゼン背景、ウェブサイト）
+- ✅ 不動産写真
+- ✅ ビジネス写真（会議室、オフィス）
+
+#### Nanobananaが向いている用途
+- ✅ SNS投稿（目を引くビジュアル）
+- ✅ キャラクターイラスト（ゲーム、創作）
+- ✅ ブランドイメージ（個性的なビジュアル）
+- ✅ ポスター・チラシ（アート風）
+- ✅ 絵本・教育教材（親しみやすいイラスト）
+
+### ステップ3：迷ったら両方試す
+
+**時間があれば：**
+1. 同じ内容で、SeedreamとNanobanana両方で画像を生成
+2. 比較して、目的に合う方を選ぶ
+3. 「なぜその方が良かったか」を記録する（次回の参考に）
+
+**時間がなければ：**
+1. まず**Seedream**を試す（汎用性が高い）
+2. イメージと違ったら、Nanobananaを試す
+
+---
+
+## ❓ よくある質問（FAQ）
+
+### Q1: SeedreamとNanobanana、どっちを使えばいいか迷った時は？
+A: **まずSeedreamを試してください。** Seedreamの方が汎用性が高く、ビジネス用途では無難です。結果が期待と違う場合に、Nanobananaを試してみてください。
+
+### Q2: 同じプロンプトで両方試したら、全然違う画像が出た。どっちが正解？
+A: **どっちも正解**です。SeedreamとNanobananaは目的が違うツールなので、画像の雰囲気が全く異なります。あなたの目的に合う方を選んでください。
+
+### Q3: 商品写真だけど、イラスト風にしたい場合は？
+A: **Nanobanana**を使ってください。例えば、カフェのメニューをイラスト風にしたい場合は、Nanobananaが適しています。「商品写真=Seedream」と決めつけず、「写真風かイラスト風か」で判断してください。
+
+### Q4: 両方の良いところを取ることはできる？
+A: できますが、上級者向けです。まずは基本の使い分けをマスターしてから挑戦してください。ハイブリッド利用については、このファイルの後半で説明します。
+
+### Q5: クライアントの好みが分からない時は？
+A: **両方のパターンを作成して提案**するのが安全です。Seedream（写実的）とNanobanana（スタイリッシュ）の2パターンを見せれば、クライアントの好みが明確になります。
+
+---
+
+## 📊 比較デモ：同じ内容でSeedream vs Nanobanana
+
+### シチュエーション1：商品写真（腕時計）
+
+**Seedream用プロンプト（推奨）:**
+```
+Luxury wristwatch on marble surface, soft studio lighting, shallow depth of field, metallic details visible, professional product photography, high resolution, photorealistic
+```
+
+**結果イメージ:** 写真のようにリアルな腕時計。金属の質感、反射、細部がくっきり。
+
+---
+
+**Nanobanana用プロンプト（比較用）:**
+```
+Luxury wristwatch on marble surface, illustrated style, elegant design, modern aesthetic
+```
+
+**結果イメージ:** イラスト風の腕時計。芸術的だが、細部はぼやける。
+
+---
+
+**判断理由:**
+商品写真はリアルな質感・細部の描写が重要なため、**Seedreamが適切**。ECサイトやカタログに使うなら、Seedreamで作りましょう。
+
+---
+
+### シチュエーション2：キャラクターイラスト（エルフ）
+
+**Seedream用プロンプト（比較用）:**
+```
+Fantasy elf character with flowing silver hair, magical forest background, photorealistic, detailed
+```
+
+**結果イメージ:** リアルすぎて怖い。ファンタジー感が薄い。
+
+---
+
+**Nanobanana用プロンプト（推奨）:**
+```
+Fantasy elf character with flowing silver hair, magical forest background, anime style, soft pastel colors, dreamy aesthetic, illustrated
+```
+
+**結果イメージ:** アニメ風の可愛いエルフ。ファンタジー感があり、個性的。
+
+---
+
+**判断理由:**
+キャラクターイラストは表現力・スタイル性が重要なため、**Nanobananaが適切**。ゲームやファンタジー小説の挿絵に使うなら、Nanobananaで作りましょう。
+
+---
+
+### シチュエーション3：プレゼン背景（山の風景）
+
+**Seedream用プロンプト（推奨）:**
+```
+Mountain landscape at sunrise, professional photography style, clean and simple composition, suitable for presentation background, photorealistic
+```
+
+**結果イメージ:** 写真のような落ち着いた風景。文字を重ねやすい。
+
+---
+
+**Nanobanana用プロンプト（比較用）:**
+```
+Mountain landscape at sunrise, illustrated style, artistic interpretation, vibrant colors
+```
+
+**結果イメージ:** イラスト風の派手な風景。主張が強すぎて、文字が読みにくい。
+
+---
+
+**判断理由:**
+プレゼン背景は落ち着いた写実的な表現が適切なため、**Seedreamが推奨**。ビジネスプレゼンで使うなら、Seedreamで作りましょう。
+
+---
+
+## 💡 用途別：おすすめプロンプト集
+
+### 1. ECサイト・商品カタログ（Seedream推奨）
+
+**テンプレート:**
+```
+[商品名] on [背景], professional product photography, clean background, sharp focus, high detail, studio lighting, photorealistic
+```
+
+**使用例:**
+```
+Modern smartphone on clean white desk, professional product photography, clean background, sharp focus, high detail, studio lighting, photorealistic
+```
+
+**💡 ポイント:** `professional product photography`, `photorealistic` で写真らしさを強調
+
+---
+
+### 2. SNS投稿（Nanobanana推奨）
+
+**テンプレート:**
+```
+[被写体], vibrant colors, eye-catching composition, illustrated style, [スタイルキーワード], social media ready, engaging aesthetic
+```
+
+**使用例:**
+```
+Coffee and pastries on wooden table, vibrant colors, eye-catching composition, illustrated style, cozy aesthetic, social media ready, engaging look
+```
+
+**💡 ポイント:** `vibrant colors`, `eye-catching` で目を引く画像に
+
+---
+
+### 3. 企業プレゼン（Seedream推奨）
+
+**テンプレート:**
+```
+[シーンの説明], clean composition, professional photography style, neutral tones, suitable for text overlay, photorealistic, high quality
+```
+
+**使用例:**
+```
+Modern office workspace with natural light, clean composition, professional photography style, neutral tones, suitable for text overlay, photorealistic
+```
+
+**💡 ポイント:** `neutral tones`, `suitable for text overlay` で文字を重ねやすく
+
+---
+
+### 4. ブランディング（Nanobanana推奨）
+
+**テンプレート:**
+```
+[コンセプト], [ブランドスタイル], unique aesthetic, memorable visual, artistic interpretation, [色の雰囲気]
+```
+
+**使用例:**
+```
+Sustainable lifestyle concept, minimalist design, eco-friendly aesthetic, unique visual, artistic interpretation, natural earth tones
+```
+
+**💡 ポイント:** `unique aesthetic`, `artistic interpretation` で個性を強調
+
+---
+
+## 🚀 判断フロー実践例
+
+### 例1：「企業サイトのトップ画像を作りたい」
+
+**ステップ1：写真かイラストか？**
+→ 企業サイトは信頼感が大事 → **写真のようにリアル**
+
+**ステップ2：用途は？**
+→ プロフェッショナルなイメージ → **Seedream**
+
+**推奨プロンプト:**
+```
+Modern corporate office with large windows, city view, professional business environment, natural daylight, architectural photography style, clean composition, photorealistic
+```
+
+---
+
+### 例2：「子供向けアプリのキャラクターを作りたい」
+
+**ステップ1：写真かイラストか？**
+→ キャラクターなので → **イラスト風**
+
+**ステップ2：用途は？**
+→ 子供向け、親しみやすさ → **Nanobanana**
+
+**推奨プロンプト:**
+```
+Cute animal character for children, friendly expression, colorful and cheerful, illustrated style, children's book aesthetic, playful design
+```
+
+---
+
+### 例3：「不動産物件の写真を作りたい」
+
+**ステップ1：写真かイラストか？**
+→ 正確な見た目が必要 → **写真のようにリアル**
+
+**ステップ2：用途は？**
+→ 不動産は正確さが命 → **Seedream**
+
+**推奨プロンプト:**
+```
+Luxurious modern living room interior, large windows, comfortable furniture, natural lighting, real estate photography style, photorealistic, high detail
+```
+
+---
+
+### 例4：「音楽イベントのポスターを作りたい」
+
+**ステップ1：写真かイラストか？**
+→ インパクトが欲しい → **イラスト風**
+
+**ステップ2：用途は？**
+→ イベントの雰囲気、個性 → **Nanobanana**
+
+**推奨プロンプト:**
+```
+Music festival poster design, vibrant energy, dynamic composition, pop art style, bold colors, illustrated aesthetic, eye-catching visual
+```
+
+---
+
+### 例5：「料理レシピサイトの写真を作りたい」
+
+**ステップ1：写真かイラストか？**
+→ **サイトの雰囲気による**（両方試す）
+
+**パターンA：写真風（Seedream）**
+```
+Gourmet plated dish, professional food photography, natural light, appetizing presentation, photorealistic, high detail
+```
+
+**パターンB：イラスト風（Nanobanana）**
+```
+Gourmet plated dish, illustrated style, colorful food illustration, hand-drawn aesthetic, cozy cookbook feel
+```
+
+**判断:** サイトのトーン・マナーに合わせて選択。写真風のレシピサイトならSeedream、イラスト風のレシピサイトならNanobanana。
+
+---
+
+## 🚨 よくある間違いと解決策
+
+### 間違い1：「商品写真だから全部Seedream」と決めつける
+
+**問題:** カフェのメニューをイラスト風にしたいのに、Seedreamを使ってしまう。
+
+**解決:** 「商品写真」でも、イラスト風が欲しいならNanobanana。目的に合わせて柔軟に判断する。
+
+---
+
+### 間違い2：「キャラクターだから全部Nanobanana」と決めつける
+
+**問題:** リアルな人物写真が欲しいのに、Nanobananaを使ってしまう。
+
+**解決:** 「キャラクター」でも、リアルな人物写真が欲しいならSeedream。プロフィール写真はSeedream。
+
+---
+
+### 間違い3：迷ったまま何もしない
+
+**問題:** どっちを使うか迷って、結局何も作らない。
+
+**解決:** **まずSeedreamを試す**。迷ったらSeedreamから始める習慣をつけると、決断が早くなります。
+
+---
+
+## 💡 使いこなしのコツ
+
+### コツ1：両方試して記録する
+
+最初のうちは、同じ内容でSeedreamとNanobanana両方を試してみてください。そして、「なぜそっちを選んだか」を記録しておくと、次回からの判断が速くなります。
+
+**記録例：**
+```
+【プロジェクト】: カフェのメニュー写真
+【試したツール】: Seedream, Nanobanana
+【選んだツール】: Nanobanana
+【理由】: SNSで目を引くイラスト風が欲しかったから
+【学び】: カフェ系はイラスト風の方が温かみがある
+```
+
+### コツ2：「迷ったらSeedream」をデフォルトにする
+
+判断に迷ったら、**まずSeedreamを試す**習慣をつけてください。Seedreamの方が汎用性が高く、ビジネス用途では無難です。
+
+### コツ3：チームで判断基準を共有する
+
+チームで画像生成AIを使う場合は、「どんな時にどっちを使うか」の基準をチーム内で共有してください。例えば、「ECサイトの商品写真は全部Seedream」と決めておくと、判断が統一されます。
+
+---
+
+## 🎓 上級者向け：ハイブリッド利用
+
+### パターン1：Seedream → Nanobanana
+
+**使い方:**
+1. まずSeedreamでリアルな画像を作る
+2. その画像を参照画像として、Nanobananaでスタイルを追加
+
+**例：**
+**ステップ1（Seedream）:** リアルな都市の夜景を作成
+```
+Modern city street at night, photorealistic base, detailed architecture
+```
+
+**ステップ2（Nanobanana）:** サイバーパンク風に変換
+```
+Based on reference image, add neon aesthetic, cyberpunk style, vibrant colors
+```
+
+---
+
+### パターン2：Nanobanana → Seedream
+
+**使い方:**
+1. まずNanobananaでコンセプトスケッチを作る
+2. それを参考に、Seedreamでリアル化
+
+**例：**
+**ステップ1（Nanobanana）:** 商品のコンセプトイラスト
+```
+Product concept sketch, illustrated style, creative interpretation
+```
+
+**ステップ2（Seedream）:** リアルな商品画像に変換
+```
+Based on concept, create photorealistic product render, professional quality
+```
+
+---
+
+## 📋 使い分けチェックリスト
+
+プロジェクト開始前に、以下をチェック：
+
+- [ ] **目的は何か？**（商品紹介、ブランディング、SNS、プレゼン など）
+- [ ] **写真かイラストか？**（リアル → Seedream / イラスト → Nanobanana）
+- [ ] **対象物は何か？**（商品、人物、風景、キャラクター）
+- [ ] **用途・媒体は？**（Web、印刷、SNS、プレゼン）
+- [ ] **迷った時の対応は？**（両方試す / Seedreamから / チーム相談）
+
+---
+
+## 📝 成功事例の記録フォーマット
+
+以下の形式で、成功事例を記録することをおすすめします：
+
+```
+【プロジェクト名】: _______________
+【用途】: _______________
+【選択ツール】: Seedream / Nanobanana
+【プロンプト】: _______________
+【成功要因】: _______________
+【学び・改善点】: _______________
+【次回への活用】: _______________
+```
+
+---
+
+## 講師用メモ
+
+### デモのポイント
+1. 同じ内容で、SeedreamとNanobanana両方で画像を生成し、違いを見せる
+2. 「写真かイラストか」の判断基準をシンプルに説明
+3. 迷ったらSeedreamから試すことを強調
+
+### 受講者への問いかけ例
+- 「みなさん、どっちを使うか迷った経験ありませんか？」
+- 「実は、判断基準はシンプルです。写真かイラストか、それだけです」
+- 「迷ったらSeedreamから試してみてください。無難で汎用性が高いです」
+
+### 注意点
+- 「絶対にこっち」と決めつけず、柔軟に判断することを伝える
+- 両方試して比較することの大切さを強調
+- 判断基準をチーム内で共有することを推奨

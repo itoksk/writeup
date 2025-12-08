@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回:チーム全員で使える仕組みに変える！自動化フローのテンプレート化と共有術 | Google Workspace Flows自動化講座</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+            --success: #10B981;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.9rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--electric);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 900;
+            line-height: 0.9;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.7em;
+            margin-top: 0.2em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .phase-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-left: calc(5rem + 2rem);
+        }
+
+        .comparison-box {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .comparison-box.after {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+        }
+
+        .comparison-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style-position: inside;
+            margin-left: 1rem;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .note {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .warning-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--coral);
+        }
+
+        .success-box {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 4px solid var(--success);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .success-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--success);
+        }
+
+        .lesson-card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .lesson-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+
+        .lesson-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .lesson-items {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .phase-description {
+                margin-left: 0;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">Google Workspace Flows 自動化講座</div>
+            <div class="nav-menu">
+                <a href="#overview">概要</a>
+                <a href="#sharing">共有方法</a>
+                <a href="#best-practices">ベストプラクティス</a>
+                <a href="#course-summary">講座総括</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第5回（最終回） / 全5回</div>
+            <h1 class="hero-title">
+                チーム全員で使える仕組みに変える！
+                <span>自動化エージェントのテンプレート化と共有術</span>
+            </h1>
+            <p class="hero-description">
+                作成したエージェントをチームメンバーと共有する方法を学び、組織全体のDXを推進します。
+                エージェントの共有方法、権限設定、チーム展開のベストプラクティスを習得します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section" id="overview">
+        <div class="section-label">Overview</div>
+        <h2 class="section-title">Before / After</h2>
+
+        <div class="comparison-box">
+            <div class="comparison-title">Before：属人化されたエージェント</div>
+            <ul>
+                <li>作成者しか使えない</li>
+                <li>同じエージェントを各自が再作成（時間の無駄）</li>
+                <li>メンテナンスも個別対応（管理が煩雑）</li>
+                <li>ナレッジが共有されない</li>
+                <li>組織全体の生産性向上につながらない</li>
+            </ul>
+        </div>
+
+        <div class="comparison-box after">
+            <div class="comparison-title">After：共有テンプレートで組織全体が活用</div>
+            <ul>
+                <li>チーム全員が同じエージェントをコピーして再利用</li>
+                <li>一度作成すれば、組織全体で活用可能</li>
+                <li>ベストプラクティスの共有</li>
+                <li><strong>チーム全体の生産性が向上</strong></li>
+                <li><strong>組織のAI活用文化</strong>が醸成される</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="sharing">
+        <div class="section-label">Sharing</div>
+        <h2 class="section-title">エージェント共有の手順（6ステップ）</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">共有したいエージェントを開く</div>
+            </div>
+            <p class="phase-description">
+                Flowsホーム画面で「My agents」をクリックし、共有したいエージェントを開きます。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">「Get link」をクリック</div>
+            </div>
+            <p class="phase-description">
+                エージェント編集画面の上部にある「Get link」ボタンをクリックします。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">共有範囲を「Organization」に変更</div>
+            </div>
+            <p class="phase-description">
+                デフォルトでは「Private」になっています。「Private」をクリックし、「Organization」（組織）を選択します。
+                これで、組織内の誰でも、このリンクからエージェントをコピーできるようになります。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">04</div>
+                <div class="phase-title">「Copy link」でリンクをコピー</div>
+            </div>
+            <p class="phase-description">
+                「Copy link」ボタンをクリックして、リンクをコピーします。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">05</div>
+                <div class="phase-title">リンクを共有</div>
+            </div>
+            <p class="phase-description">
+                コピーしたリンクを、Google Chat、Gmail、Google Docsなどで共有します。
+                使い方の説明も添えると、受け取った側がスムーズに活用できます。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">06</div>
+                <div class="phase-title">受け取った側がコピーを作成</div>
+            </div>
+            <p class="phase-description">
+                リンクを受け取った人がクリックすると、エージェントの<strong>現在のバージョンのコピー</strong>が自動的に作成されます。
+                コピーされたエージェントは、各自が独立して編集・有効化できます。
+            </p>
+        </div>
+
+        <div class="note">
+            <div class="note-title">💡 共有の基本概念</div>
+            <p><strong>重要なポイント</strong>：</p>
+            <ul>
+                <li><strong>アクセス権限は付与されない</strong>：リンクを共有しても、フォームやDriveフォルダへのアクセス権限は付与されません</li>
+                <li><strong>コピーが作成される</strong>：リンクをクリックすると、エージェントの現在のバージョンのコピーが作成されます</li>
+                <li><strong>各自がカスタマイズ可能</strong>：コピーされたエージェントは、各自が独立して編集・有効化できます</li>
+            </ul>
+        </div>
+
+        <div class="success-box">
+            <div class="success-title">✅ 共有メッセージの例</div>
+            <pre style="background: rgba(0,0,0,0.05); padding: 1rem; border-radius: 4px; margin-top: 1rem; overflow-x: auto; font-size: 0.9rem;">
+📢 新しい自動化エージェントを作成しました！
+
+【エージェント名】
+フォーム回答→Chat通知エージェント
+
+【概要】
+フォームに回答が送信されたら、自動でChatに通知します。
+
+【使い方】
+1. 下記のリンクをクリック
+2. 自分のフォームとChatスペースを設定
+3. テストして有効化
+
+リンク: [コピーしたリンクを貼り付け]
+            </pre>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Notes</div>
+        <h2 class="section-title">共有時の注意点</h2>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">アクセス権限は自動付与されない</h3>
+                <p class="card-description">
+                    エージェントのリンクを共有しても、フォーム、Driveフォルダ、Chatスペースへのアクセス権限は自動的には付与されません。
+                    <br><br>
+                    <strong>対応方法</strong>：共有する際、必要なフォームやDriveフォルダへのアクセス権限を、別途付与してください。
+                    または、受け取った側が、自分のフォームやフォルダを設定し直してください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">Gemini権限の確認</h3>
+                <p class="card-description">
+                    エージェントにGeminiを使用するステップがある場合、受け取った側も Gemini for Workspace のアクセス権限が必要です。
+                    <br><br>
+                    <strong>対応方法</strong>：組織全体でGeminiが有効化されているか、管理者に確認してください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">サードパーティ統合の再接続</h3>
+                <p class="card-description">
+                    エージェントにAsana、Salesforceなどのサードパーティ統合ステップがある場合、受け取った側は、各サービスとの接続を設定し直す必要があります。
+                    <br><br>
+                    <strong>対応方法</strong>：共有時に、サードパーティサービスの接続方法を説明してください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">エージェントの更新</h3>
+                <p class="card-description">
+                    エージェントを共有した後、元のエージェントを更新しても、すでにコピーされたエージェントには反映されません。
+                    <br><br>
+                    <strong>対応方法</strong>：大きな変更がある場合は、新しいリンクを再度共有してください。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="best-practices">
+        <div class="section-label">Best Practices</div>
+        <h2 class="section-title">チーム展開のベストプラクティス</h2>
+
+        <div class="grid grid-4">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">ドキュメント化</h3>
+                <p class="card-description">
+                    エージェントを共有する際は、使い方をドキュメント化しましょう。
+                    Google Docsで、エージェントの目的、設定手順、よくあるエラーと解決方法を説明します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">テンプレート集の作成</h3>
+                <p class="card-description">
+                    組織でよく使うエージェントを、テンプレート集としてまとめましょう。
+                    Google Sitesで、各テンプレートにリンクと説明を追加します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">定期的なレビュー</h3>
+                <p class="card-description">
+                    チームで定期的に、エージェントの活用状況をレビューしましょう。
+                    どのエージェントが最も効果的か、新しい自動化アイデアはないか、エラーや改善点はないかを確認します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">成功事例の共有</h3>
+                <p class="card-description">
+                    エージェントで業務が効率化された事例を、チーム全体で共有しましょう。
+                    成功事例を共有することで、組織全体のAI活用が加速します。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Unsharing</div>
+        <h2 class="section-title">共有解除の方法</h2>
+
+        <div class="note">
+            <div class="note-title">📌 共有解除の手順</div>
+            <ul>
+                <li>エージェントを開く</li>
+                <li>「Get link」をクリック</li>
+                <li>「Organization」を「Private」に変更</li>
+            </ul>
+            <p style="margin-top: 1rem;">
+                これで、新しい人はリンクからコピーできなくなります。
+                <br>
+                <strong>注意</strong>：すでにコピーされたエージェントは、そのまま使用可能です。共有解除しても、既存のコピーには影響しません。
+            </p>
+        </div>
+    </section>
+
+    <section class="section" id="course-summary">
+        <div class="section-label">Course Summary</div>
+        <h2 class="section-title">全5回の総括</h2>
+
+        <div class="lesson-card">
+            <div class="lesson-number">第1回</div>
+            <div class="lesson-title">Google Workspace Flowsで何が自動化できるかを一気につかむ</div>
+            <div class="lesson-items">
+                エージェントの構成要素（スターター・ステップ・変数）、3つの作成方法（AIで作成・テンプレート・手動）、Geminiのソース設定
+            </div>
+        </div>
+
+        <div class="lesson-card">
+            <div class="lesson-number">第2回</div>
+            <div class="lesson-title">フォーム入力を"瞬時に届ける"自動Chat通知エージェントのつくり方</div>
+            <div class="lesson-items">
+                スターターとステップの設定、変数の使い方とベストプラクティス、Chatスペースは候補から選択
+            </div>
+        </div>
+
+        <div class="lesson-card">
+            <div class="lesson-number">第3回</div>
+            <div class="lesson-title">Driveアップロードが合図になる！Gemini要約×Chat連携の方法</div>
+            <div class="lesson-items">
+                AIステップの種類と使い分け（Summarize, Ask Gemini, Extract, Decide）、Geminiのソース設定、プロンプトのベストプラクティス
+            </div>
+        </div>
+
+        <div class="lesson-card">
+            <div class="lesson-number">第4回</div>
+            <div class="lesson-title">もう迷わない！Chatスペース連携エラーを確実に解消する方法</div>
+            <div class="lesson-items">
+                Chatスペース連携の3つのエラーパターン、内部統合とWebhookの違い、トラブルシューティング
+            </div>
+        </div>
+
+        <div class="lesson-card">
+            <div class="lesson-number">第5回</div>
+            <div class="lesson-title">チーム全員で使える仕組みに変える！自動化エージェントのテンプレート化と共有術</div>
+            <div class="lesson-items">
+                エージェントの共有方法（Get link → Organization → Copy link）、チーム展開のベストプラクティス
+            </div>
+        </div>
+
+        <div class="success-box" style="margin-top: 3rem;">
+            <div class="success-title">🎉 おめでとうございます！</div>
+            <p>
+                これで、あなたは「<strong>ノーコードAI自動化</strong>」のスキルを習得しました！
+                <br><br>
+                Google Workspace Flowsを使って、組織全体のDXを推進していきましょう。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Next Steps</div>
+        <h2 class="section-title">次のステップ</h2>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">条件分岐</h3>
+                <p class="card-description">
+                    「Decide」や「Check if」ステップで、条件に応じた処理を実行できます。
+                    例えば、緊急度の高いフォーム回答だけを通知したり、ファイル形式に応じて異なる処理を適用できます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">複数AIステップの組み合わせ</h3>
+                <p class="card-description">
+                    Extract→Ask Gemini→Emailなど、複数のAIステップを組み合わせて、
+                    高度な自動化を実現できます。変数を使ってステップをつなげることで、無限の可能性が広がります。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">サードパーティ統合</h3>
+                <p class="card-description">
+                    Asana、Salesforce、Mailchimpなどのサードパーティサービスとの連携で、
+                    さらに幅広い自動化が可能になります。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">スケジュール実行</h3>
+                <p class="card-description">
+                    毎週月曜9時に未読メールを要約、毎日18時にタスクリストを作成など、
+                    時間ベースのスターターで定期的な自動化を実現できます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Summary</div>
+        <h2 class="section-title">今日のポイント</h2>
+
+        <div class="note">
+            <div class="note-title">✅ 今日学んだこと</div>
+            <ul>
+                <li>エージェントは<strong>リンクを作成して共有</strong></li>
+                <li><strong>Organization</strong>に設定すると、組織内で共有可能</li>
+                <li>リンクをクリックすると、<strong>コピーが作成</strong>される</li>
+                <li><strong>アクセス権限は自動付与されない</strong>（別途設定が必要）</li>
+                <li>ドキュメント化とテンプレート集でチーム展開を促進</li>
+            </ul>
+        </div>
+
+        <div class="success-box" style="margin-top: 2rem;">
+            <div class="success-title">🚀 この講座が、あなたの業務効率化と、組織のDX推進のお役に立てれば幸いです。</div>
+            <p style="margin-top: 1rem;">
+                Google Workspace Flowsで、さらなる自動化の世界を楽しんでください！
+                <br><br>
+                ご受講、ありがとうございました！
+            </p>
+        </div>
+    </section>
+</body>
+</html>

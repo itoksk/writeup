@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：優先度と緊急度をAIで判断！1日のタスクを自動で整列する方法 | 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku+Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .card-description {
+            opacity: 0.8;
+        }
+
+        .phase-card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-number {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--electric) 0%, var(--violet) 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 0;
+            margin-top: 3rem;
+            border: 2px solid var(--ink);
+            position: relative;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .prompt-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            position: relative;
+            border: 2px solid var(--ink);
+            overflow-x: auto;
+        }
+
+        .prompt-box::before {
+            content: 'プロンプト（コピーして使用）';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.25rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--paper);
+            transform: scale(1.05);
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            padding: 1rem 0 1rem 3rem;
+            position: relative;
+            border-left: 2px solid var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        .step-list li::before {
+            content: attr(data-step);
+            position: absolute;
+            left: -20px;
+            top: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--ink);
+            color: var(--paper);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .highlight-box {
+            background: var(--electric);
+            color: var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--paper);
+            border: 2px solid var(--ink);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid var(--gray);
+        }
+
+        th {
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .prompt-box {
+                font-size: 0.8rem;
+                padding: 1.5rem;
+            }
+
+            .copy-button {
+                position: static;
+                display: block;
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">AIタスク整理マスター講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第1回 / 全3回</div>
+            <h1 class="hero-title">
+                優先度と緊急度を<br>
+                AIで判断！<br>
+                1日のタスクを自動で整列
+            </h1>
+            <p class="hero-description">
+                アイゼンハワーマトリクスをChatGPTで自動化。タスクの優先順位付けから、<br>
+                最適な実行順序まで、AIが瞬時に提案します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">この回で学ぶこと</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">アイゼンハワーマトリクスの理解</h3>
+                <p class="card-description">
+                    優先度と緊急度の2軸でタスクを分類する「アイゼンハワーマトリクス」の基本を学びます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">ChatGPTでタスク分類</h3>
+                <p class="card-description">
+                    タスクリストをChatGPTに入力し、優先度と緊急度を自動判定させる方法を習得します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">実行順序の最適化</h3>
+                <p class="card-description">
+                    分類されたタスクを、実行すべき順番に並び替え、1日の行動計画を立てます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">何が変わるのか</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">Before</div>
+                <div class="phase-title">手作業で優先順位付け</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✗ タスクが多すぎて、どれから手をつければいいか迷う</li>
+                <li>✗ 緊急なタスクに追われて、重要なタスクが後回し</li>
+                <li>✗ 優先順位付けに毎朝10〜15分かかる</li>
+                <li>✗ 主観的な判断で、後から「これを先にやるべきだった」と後悔</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">After</div>
+                <div class="phase-title">AIが30秒で分類・整列</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ ChatGPTがタスクを4象限に自動分類</li>
+                <li>✓ 優先度と緊急度が明確になり、実行順序が一目瞭然</li>
+                <li>✓ 優先順位付けが30秒で完了、すぐに実行開始</li>
+                <li>✓ 客観的な基準で判断され、判断の迷いがゼロに</li>
+            </ul>
+        </div>
+
+        <div class="stats-card">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">アイゼンハワーマトリクスの4象限</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
+                <div>
+                    <div style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem;">第1象限</div>
+                    <div style="opacity: 0.9;">緊急かつ重要<br>（すぐにやる）</div>
+                </div>
+                <div>
+                    <div style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem;">第2象限</div>
+                    <div style="opacity: 0.9;">重要だが緊急でない<br>（計画的にやる）</div>
+                </div>
+                <div>
+                    <div style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem;">第3象限</div>
+                    <div style="opacity: 0.9;">緊急だが重要でない<br>（委任する）</div>
+                </div>
+                <div>
+                    <div style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem;">第4象限</div>
+                    <div style="opacity: 0.9;">緊急でも重要でもない<br>（やらない）</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP BY STEP</div>
+        <h2 class="section-title">実践ステップ</h2>
+
+        <ul class="step-list">
+            <li data-step="1">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">タスクリストを作成</h3>
+                <p>1日のタスクをリストアップします。メール返信、会議準備、資料作成など、思いつく限り書き出しましょう。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>例：</strong><br><br>
+                    1. 緊急の顧客対応メール返信<br>
+                    2. 来週のプレゼン資料作成<br>
+                    3. 定例会議の準備<br>
+                    4. SNSのチェック<br>
+                    5. 新規プロジェクトの企画書作成<br>
+                    6. 経費精算<br>
+                    7. チームメンバーへのフィードバック
+                </div>
+            </li>
+
+            <li data-step="2">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">ChatGPTにタスク分類を依頼</h3>
+                <p>作成したタスクリストをChatGPTに入力し、アイゼンハワーマトリクスで分類してもらいます。</p>
+
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt(this)">コピー</button>以下のタスクを、アイゼンハワーマトリクス（優先度×緊急度）で分類してください。
+
+【タスクリスト】
+1. 緊急の顧客対応メール返信
+2. 来週のプレゼン資料作成
+3. 定例会議の準備
+4. SNSのチェック
+5. 新規プロジェクトの企画書作成
+6. 経費精算
+7. チームメンバーへのフィードバック
+
+【分類基準】
+- 第1象限：緊急かつ重要（今すぐやる）
+- 第2象限：重要だが緊急でない（計画的にやる）
+- 第3象限：緊急だが重要でない（委任or後回し）
+- 第4象限：緊急でも重要でもない（やらない）
+
+【出力形式】
+- 各象限ごとにタスクをリスト化
+- 各タスクの分類理由を簡潔に説明</div>
+            </li>
+
+            <li data-step="3">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">ChatGPTの出力を確認</h3>
+                <p>ChatGPTがタスクを4象限に分類した結果を確認します。</p>
+
+                <table style="margin-top: 1rem;">
+                    <thead>
+                        <tr>
+                            <th>象限</th>
+                            <th>タスク</th>
+                            <th>理由</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: #FFCDD2;">
+                            <td><strong>第1象限<br>（緊急＋重要）</strong></td>
+                            <td>・緊急の顧客対応メール返信<br>・定例会議の準備</td>
+                            <td>顧客対応は即応が必要。会議は今日中に準備必須。</td>
+                        </tr>
+                        <tr style="background: #C8E6C9;">
+                            <td><strong>第2象限<br>（重要だが緊急でない）</strong></td>
+                            <td>・来週のプレゼン資料作成<br>・新規プロジェクトの企画書作成<br>・チームメンバーへのフィードバック</td>
+                            <td>重要だが期限に余裕あり。計画的に実施すべき。</td>
+                        </tr>
+                        <tr style="background: #FFF9C4;">
+                            <td><strong>第3象限<br>（緊急だが重要でない）</strong></td>
+                            <td>・経費精算</td>
+                            <td>期限はあるが、重要度は低い。委任可能。</td>
+                        </tr>
+                        <tr style="background: #E0E0E0;">
+                            <td><strong>第4象限<br>（緊急でも重要でもない）</strong></td>
+                            <td>・SNSのチェック</td>
+                            <td>業務に直接関係なく、緊急性もない。削除推奨。</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </li>
+
+            <li data-step="4">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">実行順序を決定</h3>
+                <p>分類結果を基に、今日実行すべきタスクの順番を決めます。基本的には第1象限 → 第2象限の順で実行します。</p>
+
+                <div style="margin-top: 1rem; padding: 1.5rem; background: rgba(0, 0, 0, 0.02); border: 1px solid var(--gray);">
+                    <strong>推奨実行順序：</strong><br><br>
+                    1. 緊急の顧客対応メール返信（第1象限）<br>
+                    2. 定例会議の準備（第1象限）<br>
+                    3. チームメンバーへのフィードバック（第2象限）<br>
+                    4. 来週のプレゼン資料作成の一部（第2象限）<br>
+                    5. 新規プロジェクトの企画書作成の一部（第2象限）<br>
+                    <br>
+                    <em>※第3象限・第4象限のタスクは、時間があれば、または委任・削除</em>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">注意点・活用ポイント</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">第2象限を最優先</h3>
+                <p class="card-description">
+                    第1象限は緊急対応ですが、第2象限（重要だが緊急でない）を計画的に実施することで、将来の第1象限タスクを減らせます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">毎朝5分のルーチン化</h3>
+                <p class="card-description">
+                    毎朝、タスクリストをChatGPTで分類する習慣をつけましょう。判断の迷いがなくなり、1日が高速化します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">AIの判断を鵜呑みにしない</h3>
+                <p class="card-description">
+                    ChatGPTの分類は参考にし、自分の状況や文脈を考慮して最終判断してください。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">NEXT STEP</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">第2回</div>
+                <div class="phase-title">AIが所要時間を見積もる</div>
+            </div>
+            <p style="font-size: 1.1rem; line-height: 1.8;">
+                次回は、各タスクの所要時間をAIに見積もらせる方法を学びます。<br><br>
+                「自分の仕事速度」をChatGPTに学習させることで、より正確な時間管理が可能になります。お楽しみに！
+            </p>
+        </div>
+    </section>
+
+    <script>
+        function copyPrompt(button) {
+            const promptBox = button.parentElement;
+            const text = promptBox.innerText.replace('コピー', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerText;
+                button.innerText = 'コピーしました！';
+                setTimeout(() => {
+                    button.innerText = originalText;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：Google Workspace Studioとは | Google Workspace Studioの活用</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+            --google-blue: #4285F4;
+            --google-green: #34A853;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-back:hover {
+            color: var(--google-blue);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.9rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--electric);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            line-height: 0.9;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--google-blue);
+            font-size: 0.7em;
+            margin-top: 0.2em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .release-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--google-blue), var(--violet));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 3rem;
+        }
+
+        .schedule-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .schedule-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            vertical-align: top;
+        }
+
+        .schedule-table tr:hover {
+            background: rgba(0,240,255,0.05);
+        }
+
+        .schedule-session {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            color: var(--electric);
+        }
+
+        .comparison-box {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .comparison-box.after {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+        }
+
+        .comparison-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style-position: inside;
+            margin-left: 1rem;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .note {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-highlight {
+            background: linear-gradient(135deg, rgba(66, 133, 244, 0.1), rgba(124, 58, 237, 0.1));
+            border: 2px solid var(--google-blue);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-highlight h3 {
+            color: var(--google-blue);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--electric);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .lesson-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-prev {
+            color: var(--gray);
+            background: rgba(0,0,0,0.05);
+        }
+
+        .nav-prev:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .nav-next {
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .nav-next:hover {
+            transform: translateX(4px);
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-menu">
+                <a href="#overview">概要</a>
+                <a href="#features">特徴</a>
+                <a href="#structure">構成要素</a>
+                <a href="#usecases">活用例</a>
+                <a href="#requirements">利用条件</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第1回 / 全4回</div>
+            <div class="release-badge">2025年12月3日 正式リリース</div>
+            <h1 class="hero-title">
+                Google Workspace Studioとは
+                <span>AIエージェントで業務自動化を実現</span>
+            </h1>
+            <p class="hero-description">
+                プログラミング不要で、Gemini 3搭載のAIエージェントを作成。
+                Gmail、Drive、Chat、Formsなど、Google Workspaceの各サービスを横断して業務を自動化できます。
+            </p>
+        </div>
+    </div>
+
+    <section class="section" id="overview">
+        <div class="section-label">Overview</div>
+        <h2 class="section-title">Before / After</h2>
+
+        <div class="comparison-box">
+            <div class="comparison-title">Before：現状の課題</div>
+            <ul>
+                <li>フォーム回答が来るたび、手動でChatに通知（1件5分×日10件=50分/日）</li>
+                <li>Driveの資料を確認し、要点を整理してチームに共有（1件10分×週5件=50分/週）</li>
+                <li>毎朝30分かけて未読メールを確認・優先順位付け</li>
+                <li>GASやプログラミングの知識がないため、自動化に手が出せない</li>
+                <li>外部ツール（Zapier等）は費用やセキュリティの懸念がある</li>
+            </ul>
+        </div>
+
+        <div class="comparison-box after">
+            <div class="comparison-title">After：Studio導入後</div>
+            <ul>
+                <li>フォーム送信→即座にChat通知（<strong>作業時間0秒</strong>）</li>
+                <li>Driveアップロード→Geminiが要約→Chat通知（<strong>作業時間0秒</strong>）</li>
+                <li>毎朝、Geminiが未読メールを要約してChat通知（<strong>作業時間0秒</strong>）</li>
+                <li>プログラミング不要、<strong>自然言語でAIエージェント完成</strong></li>
+                <li>Google Workspace内で完結、<strong>追加費用なし</strong>（プランに含まれる）</li>
+            </ul>
+        </div>
+
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-number">90%</div>
+                <div class="stat-label">作業時間削減（Kärcher社実績）</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2分</div>
+                <div class="stat-label">数時間の作業が2分に</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">20M+</div>
+                <div class="stat-label">アルファ期間中の実行タスク</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="features">
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Studioの3つの特徴</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">Gemini 3搭載</h3>
+                <p class="card-description">
+                    最新AIモデル「Gemini 3」が頭脳。推論能力・マルチモーダル理解・文脈把握に優れ、状況を判断して最適なアクションを実行します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">ノーコード</h3>
+                <p class="card-description">
+                    プログラミング不要。自然言語で「何をいつ自動化したいか」を説明するだけで、Geminiが自動的にエージェントを組み立てます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">Google Workspace深層統合</h3>
+                <p class="card-description">
+                    Gmail、Drive、Chat、Calendar、Forms、Sheetsと深く連携。さらにAsana、Jira、Salesforce等の外部サービスとも接続可能です。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="structure">
+        <div class="section-label">Structure</div>
+        <h2 class="section-title">エージェントの3つの構成要素</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">スターター（Starter）</div>
+            </div>
+            <p>エージェントを起動するイベント（フォーム送信、ファイルアップロード、メール受信など）またはスケジュール（毎週月曜9時など）を設定します。これがエージェントの「きっかけ」になります。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">ステップ（Steps）</div>
+            </div>
+            <p>スターターが発動したら、エージェントが実行する一連のアクション。Geminiへの指示、Chat通知、スプレッドシート記録など、複数のステップを組み合わせて複雑なワークフローを構築できます。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">変数（Variables）</div>
+            </div>
+            <p>各ステップが生成する情報（Geminiの要約、フォーム回答者名、ファイル名など）を、後のステップで使うための動的なプレースホルダー。エージェントが状況に応じて柔軟に動作できます。</p>
+        </div>
+    </section>
+
+    <section class="section" id="usecases">
+        <div class="section-label">Use Cases</div>
+        <h2 class="section-title">何が自動化できるか</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">メールを常に把握</h3>
+                <p class="card-description">
+                    未読メールの毎日の要約を自動取得。Geminiが重要なメールを判別し、優先順位をつけてChatで通知します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">会議前の情報を入手</h3>
+                <p class="card-description">
+                    会議の前にゲストと議題をGeminiが要約。Chatで概要を自動的に受け取り、準備時間をゼロにします。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">フォーム回答を通知</h3>
+                <p class="card-description">
+                    新しいフォームの回答があったら、即座にチームに通知。顧客リクエストに素早く対応できます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">タスクを自動作成</h3>
+                <p class="card-description">
+                    メールにアクションアイテムが送信されたら、Geminiが自動でタスクを抽出して通知。やるべきことを見逃しません。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">05</div>
+                <h3 class="card-title">よくある質問に自動返信</h3>
+                <p class="card-description">
+                    ドキュメントとGeminiを使用して、顧客の質問へのメール返信を自動作成。対応時間を大幅に削減。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">06</div>
+                <h3 class="card-title">サポート課題のトリアージ</h3>
+                <p class="card-description">
+                    受信したサポートメールを分析し、カテゴリ分類と優先順位付けを自動で行い、適切な担当者に割り当てます。
+                </p>
+            </div>
+        </div>
+
+        <div class="feature-highlight">
+            <h3>サードパーティ連携も可能</h3>
+            <p>Google Workspace内の自動化だけでなく、Asana、Jira、Mailchimp、Salesforceなどの外部サービスとも連携可能。ビジネス全体のワークフローを自動化できます。</p>
+        </div>
+    </section>
+
+    <section class="section" id="requirements">
+        <div class="section-label">Requirements</div>
+        <h2 class="section-title">利用条件と展開スケジュール</h2>
+
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>内容</th>
+                    <th>備考</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="schedule-session">対象エディション</td>
+                    <td>Business / Enterprise / Essentials / Frontline / Education</td>
+                    <td>個人Googleアカウントは利用不可</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">Rapid Release</td>
+                    <td>2025年12月3日から段階的に展開開始</td>
+                    <td>即時リリースドメイン向け</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">Scheduled Release</td>
+                    <td>2026年1月5日以降に利用可能</td>
+                    <td>計画的リリースドメイン向け</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">言語対応</td>
+                    <td>英語のみ（日本語プロンプト入力は可能）</td>
+                    <td>公式では英語指示を推奨</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">必要な設定</td>
+                    <td>Gemini for Workspaceの有効化</td>
+                    <td>管理者がStudioの使用を許可する必要あり</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="note">
+            <div class="note-title">Workspace Flowsからのリブランディング</div>
+            <p>Google Workspace Studioは、以前「Google Workspace Flows」という名前でアルファ版として公開されていました。2025年12月3日に「Google Workspace Studio」として正式リリースされ、テンプレートライブラリの強化や機能改善が行われています。</p>
+        </div>
+
+        <div class="note">
+            <div class="note-title">アクセス方法</div>
+            <p>Studioにアクセスするには、ブラウザで <strong>studio.workspace.google.com</strong> にアクセスします。Google Workspaceアカウントでサインインすると、「Discover」ページでテンプレート一覧が表示されます。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="lesson-nav">
+            <a href="index.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <a href="lesson2.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+</body>
+</html>

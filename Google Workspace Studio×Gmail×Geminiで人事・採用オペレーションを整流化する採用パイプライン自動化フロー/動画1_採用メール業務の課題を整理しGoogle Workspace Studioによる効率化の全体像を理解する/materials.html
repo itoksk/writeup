@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：採用メール業務の課題を整理 | 採用パイプライン自動化フロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --hr-blue: #2196F3;
+            --hr-green: #4CAF50;
+        }
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-title { font-size: 1.2rem; font-weight: 700; }
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            margin-bottom: 2rem;
+        }
+        .course-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--hr-blue), var(--violet));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 0.95;
+            margin-bottom: 2rem;
+        }
+        .hero-title span {
+            display: block;
+            color: var(--hr-blue);
+            font-size: 0.6em;
+            margin-top: 0.2em;
+        }
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--hr-blue);
+            display: inline-block;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .stat-card {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .stat-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--hr-blue);
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+        .comparison-box {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .comparison-box.after {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+        }
+        .comparison-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .phase-card {
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px dashed rgba(0,0,0,0.1);
+        }
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--hr-blue);
+            opacity: 0.2;
+        }
+        .phase-title { font-size: 1.5rem; font-weight: 700; }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+        .card-number {
+            width: 40px;
+            height: 40px;
+            background: var(--hr-blue);
+            color: white;
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .checklist {
+            background: rgba(124, 58, 237, 0.05);
+            border: 2px solid var(--violet);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .checklist h3 {
+            color: var(--violet);
+            margin-bottom: 1rem;
+        }
+        .next-preview {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 3rem;
+            margin-top: 4rem;
+        }
+        .next-preview h2 {
+            color: var(--hr-blue);
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .phase-header { flex-direction: column; gap: 0.5rem; }
+            .phase-number { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">採用パイプライン自動化フロー</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第1回 / 全5回</div>
+            <div class="course-badge">採用パイプライン自動化フロー</div>
+            <h1 class="hero-title">
+                採用メール業務の課題を整理
+                <span>Google Workspace Studioで効率化の全体像を理解する</span>
+            </h1>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">Problem</div>
+        <h2 class="section-title">採用メール業務の課題</h2>
+
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-number">30-80</div>
+                <div class="stat-label">1日あたりの受信メール</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1時間+</div>
+                <div class="stat-label">メール確認・仕分け時間</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2-3日</div>
+                <div class="stat-label">応募者への返信遅延</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">15-30分</div>
+                <div class="stat-label">面接日程調整/件</div>
+            </div>
+        </div>
+
+        <div class="comparison-box">
+            <div class="comparison-title">Before：現状の課題</div>
+            <ul>
+                <li>応募メールが埋もれて対応が遅れる</li>
+                <li>優秀な候補者ほど他社に取られる</li>
+                <li>履歴書・職務経歴書がDriveに散在して探せない</li>
+                <li>面接日程調整のやりとりが煩雑</li>
+                <li>選考ステータスが把握しづらい</li>
+            </ul>
+        </div>
+
+        <div class="comparison-box after">
+            <div class="comparison-title">After：Studio導入後</div>
+            <ul>
+                <li>応募メールをGeminiが自動スクリーニング（<strong>確認時間80%削減</strong>）</li>
+                <li>優秀な候補者は即座にアラート（<strong>対応スピード向上</strong>）</li>
+                <li>履歴書・職務経歴書は候補者フォルダに自動整理（<strong>探す時間ゼロ</strong>）</li>
+                <li>Calendar連携で面接日程を自動調整（<strong>調整時間90%削減</strong>）</li>
+                <li>選考ステータス自動更新とKPIレポート（<strong>採用業務の見える化</strong>）</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Breakdown</div>
+        <h2 class="section-title">採用メール業務の5つの要素</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">スクリーニング・評価</div>
+            </div>
+            <ul>
+                <li>応募メールから履歴書・職務経歴書を確認</li>
+                <li>募集要件との適合度を判断</li>
+                <li>一次スクリーニングで優先候補を選定</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">候補者コミュニケーション</div>
+            </div>
+            <ul>
+                <li>応募受付の返信</li>
+                <li>書類選考結果の連絡</li>
+                <li>面接案内・日程調整</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">面接調整</div>
+            </div>
+            <ul>
+                <li>候補者と面接官のスケジュール確認</li>
+                <li>日程の提案と調整</li>
+                <li>カレンダー登録と会議室予約</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">04</div>
+                <div class="phase-title">書類管理</div>
+            </div>
+            <ul>
+                <li>履歴書・職務経歴書の保存</li>
+                <li>候補者ごとのフォルダ整理</li>
+                <li>選考資料の共有</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">05</div>
+                <div class="phase-title">進捗管理・レポート</div>
+            </div>
+            <ul>
+                <li>選考ステータスの更新</li>
+                <li>採用KPIの集計</li>
+                <li>週次・月次レポート作成</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Agents</div>
+        <h2 class="section-title">この講座で作る4つのエージェント</h2>
+
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">応募者スクリーニング</h3>
+                <p>Geminiが自動スクリーニング、募集要件との適合度を評価、優先候補は即座にアラート</p>
+            </div>
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">面接日程自動調整</h3>
+                <p>Calendar連携で空き時間を取得、候補者に日程候補を自動提案、確定後にカレンダー登録</p>
+            </div>
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">採用書類自動整理</h3>
+                <p>履歴書・職務経歴書をDriveに自動保存、候補者フォルダに分類、サマリ自動作成</p>
+            </div>
+            <div class="card">
+                <div class="card-number">05</div>
+                <h3 class="card-title">採用KPIレポート</h3>
+                <p>選考ステータス自動更新、週次でKPI集計、Chatにレポート送信</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Preparation</div>
+        <h2 class="section-title">事前準備</h2>
+
+        <div class="checklist">
+            <h3>次回までに準備するもの</h3>
+            <ul>
+                <li><strong>募集要件リスト</strong>：必須スキル、歓迎スキル、NG条件</li>
+                <li><strong>選考ステージ定義</strong>：応募受付〜内定/不採用の各ステージ</li>
+                <li><strong>面接官カレンダー</strong>：面接可能な時間帯の設定</li>
+                <li><strong>アクセス確認</strong>：studio.workspace.google.com</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="next-preview">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+            <div class="section-label" style="color: rgba(255,255,255,0.5);">NEXT</div>
+            <h2>次回予告</h2>
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">第2回：応募者スクリーニングを自動化</h3>
+            <p>一次評価と優先対応候補を即座に抽出する</p>
+        </div>
+    </section>
+</body>
+</html>

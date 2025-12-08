@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：選考ステータス自動更新とKPIレポート | 採用パイプライン自動化フロー</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --ink: #0A0E27; --paper: #FEFEF8; --electric: #00F0FF; --hr-blue: #2196F3; --chat-green: #00AC47; }
+        body { font-family: 'Zen Kaku Gothic New', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.7; }
+        nav { position: fixed; top: 0; width: 100%; background: rgba(254,254,248,0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 1.5rem 0; }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+        .nav-title { font-size: 1.2rem; font-weight: 700; }
+        .hero { min-height: 70vh; display: flex; align-items: center; padding: 0 2rem; margin-top: 80px; }
+        .hero-content { max-width: 1400px; margin: 0 auto; width: 100%; }
+        .hero-label { display: inline-block; background: var(--ink); color: var(--paper); padding: 0.5rem 1.5rem; font-size: 0.8rem; margin-bottom: 2rem; }
+        .hero-title { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900; line-height: 1; margin-bottom: 2rem; }
+        .hero-title span { display: block; color: var(--chat-green); font-size: 0.5em; margin-top: 0.5em; }
+        .section { max-width: 1400px; margin: 60px auto; padding: 0 2rem; }
+        .section-label { font-family: 'Space Grotesk', monospace; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.2em; opacity: 0.5; margin-bottom: 1rem; }
+        .section-title { font-size: 2rem; font-weight: 700; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 3px solid var(--chat-green); display: inline-block; }
+        .dual-agent { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin: 2rem 0; }
+        .agent-card { background: white; border: 2px solid var(--ink); padding: 2rem; }
+        .agent-card h3 { font-size: 1.3rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--chat-green); }
+        .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin: 1.5rem 0; padding: 1.5rem; background: rgba(0,0,0,0.02); }
+        .flow-item { background: white; border: 2px solid var(--ink); padding: 0.8rem 1.2rem; font-weight: 500; text-align: center; font-size: 0.9rem; }
+        .flow-item.chat { border-color: var(--chat-green); background: rgba(0,172,71,0.1); }
+        .flow-arrow { font-size: 1.2rem; color: var(--chat-green); }
+        .code-block { background: var(--ink); color: var(--electric); padding: 1.5rem; font-family: 'Space Grotesk', monospace; font-size: 0.85rem; overflow-x: auto; margin: 1rem 0; white-space: pre-wrap; }
+        .kpi-example { background: var(--ink); color: var(--paper); padding: 2rem; font-family: 'Space Grotesk', monospace; font-size: 0.9rem; margin: 2rem 0; white-space: pre-wrap; line-height: 1.8; }
+        .highlight-box { background: rgba(0,172,71,0.1); border-left: 4px solid var(--chat-green); padding: 1.5rem; margin: 1.5rem 0; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+        .summary-card { background: var(--ink); color: var(--paper); padding: 1.5rem; text-align: center; }
+        .summary-number { font-family: 'Space Grotesk', monospace; font-size: 2.5rem; font-weight: 700; color: var(--chat-green); }
+        .summary-label { font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem; }
+        .comparison-table { width: 100%; border-collapse: collapse; margin: 2rem 0; }
+        .comparison-table th { background: var(--ink); color: var(--paper); padding: 1rem; text-align: left; }
+        .comparison-table td { padding: 1rem; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .final-section { background: var(--ink); color: var(--paper); padding: 3rem; margin-top: 4rem; }
+        .final-section h2 { color: var(--chat-green); margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+    <nav><div class="nav-container"><div class="nav-title">採用パイプライン自動化フロー</div></div></nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第5回（最終回） / 全5回</div>
+            <h1 class="hero-title">選考ステータス自動更新とKPIレポート<span>採用業務を見える化する</span></h1>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">AGENTS</div>
+        <h2 class="section-title">2つのエージェント</h2>
+        <div class="dual-agent">
+            <div class="agent-card">
+                <h3>1. ステータス自動更新</h3>
+                <div class="flow-diagram">
+                    <div class="flow-item">面接結果メール</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item">Gemini抽出</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item">Sheets更新</div>
+                </div>
+                <p>面接結果メールを検知し、選考ステータスを自動でスプレッドシートに反映</p>
+            </div>
+            <div class="agent-card">
+                <h3>2. 週次KPIレポート</h3>
+                <div class="flow-diagram">
+                    <div class="flow-item">週次トリガー</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item">Gemini集計</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-item chat">Chat送信</div>
+                </div>
+                <p>毎週月曜9時にKPIを集計し、採用チームのChatスペースに自動送信</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROMPT</div>
+        <h2 class="section-title">ステータス抽出プロンプト</h2>
+        <div class="code-block">Extract status update from this email:
+
+Email content: {email_body}
+
+Extract:
+1. Candidate name
+2. New status (書類選考中/一次面接済/二次面接済/最終面接済/内定/不採用/辞退)
+3. Date of status change
+4. Notes
+
+Output as JSON format.</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">OUTPUT</div>
+        <h2 class="section-title">KPIレポート出力例</h2>
+        <div class="kpi-example">【採用KPIレポート】2025年1月第3週
+
+■ 今週の応募
+新規応募：12件（前週比 +3件）
+
+■ パイプライン状況
+├ 書類選考中：8名
+├ 一次面接済：5名
+├ 二次面接済：3名
+├ 最終面接済：2名
+├ 内定：1名
+└ 合計アクティブ：19名
+
+■ 転換率
+書類通過率：75%
+一次通過率：60%
+内定承諾率：100%
+
+■ 注目ポイント
+・エンジニア職の応募が増加傾向
+・一次→二次の移行に時間がかかっている</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SUMMARY</div>
+        <h2 class="section-title">講座全体のまとめ</h2>
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-number">80%</div>
+                <div class="summary-label">評価時間削減</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-number">90%</div>
+                <div class="summary-label">日程調整時間削減</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-number">0分</div>
+                <div class="summary-label">書類整理時間</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-number">30h</div>
+                <div class="summary-label">月間削減時間</div>
+            </div>
+        </div>
+
+        <table class="comparison-table">
+            <thead><tr><th>回</th><th>エージェント</th><th>効果</th></tr></thead>
+            <tbody>
+                <tr><td>2</td><td>応募者スクリーニング</td><td>評価時間80%削減</td></tr>
+                <tr><td>3</td><td>面接日程自動調整</td><td>調整時間90%削減</td></tr>
+                <tr><td>4</td><td>採用書類自動整理</td><td>探す時間ゼロ</td></tr>
+                <tr><td>5</td><td>KPIレポート自動送信</td><td>レポート作成自動化</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="final-section">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+            <div class="section-label" style="color: rgba(255,255,255,0.5);">COMPLETE</div>
+            <h2>講座完了</h2>
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">採用パイプライン自動化フロー 全5回</h3>
+            <p>Google Workspace Studioを活用して、採用業務全体を自動化する方法を学びました。</p>
+            <div class="highlight-box" style="margin-top: 2rem; background: rgba(255,255,255,0.1);">
+                <h4 style="color: var(--chat-green);">次のステップ</h4>
+                <ul style="margin-top: 1rem;">
+                    <li>各エージェントを自社の採用フローに合わせてカスタマイズ</li>
+                    <li>ラベルやフォルダ名を実運用に合わせて調整</li>
+                    <li>他の採用業務（オファー作成、入社手続き等）への展開</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

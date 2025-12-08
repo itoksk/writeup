@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：ChatGPTで一括生成！抜け漏れゼロのリスク台帳づくり入門 - 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.01) 2px,
+                    rgba(10, 14, 39, 0.01) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.6em;
+            margin-top: 0.2em;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .phase-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-left: calc(4rem + 2rem);
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 3rem;
+        }
+
+        .schedule-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .schedule-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            vertical-align: top;
+        }
+
+        .schedule-table tr:hover {
+            background: rgba(0,240,255,0.05);
+        }
+
+        .schedule-session {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            color: var(--electric);
+        }
+
+        .comparison-box {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        .highlight-box {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .tip-box {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .phase-description {
+                margin-left: 0;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">リスクマネジメント実践講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第1回 / 全4回</div>
+            <h1 class="hero-title">
+                ChatGPTで一括生成！
+                <span>抜け漏れゼロのリスク台帳づくり入門</span>
+            </h1>
+            <p class="hero-description">
+                プロジェクトの説明文を入力するだけで、リスクの洗い出しから分類まで一気に自動化。
+                従来3時間かかっていた作業を、たった10分で完成させる方法を実演します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">学習目標</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">網羅的リスク洗い出し</h3>
+                <p class="card-description">
+                    ChatGPTにプロジェクト概要を入力するだけで、50項目以上のリスクを自動生成できる
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">カテゴリ別整理</h3>
+                <p class="card-description">
+                    技術・コスト・スケジュール・人的リスクなど、カテゴリ別に自動分類される
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">作業時間80%削減</h3>
+                <p class="card-description">
+                    スプレッドシートに貼り付けて整形すれば、10分でリスク台帳が完成
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">劇的な変化</h2>
+
+        <div class="comparison-box">
+            <div class="comparison-title">Before（導入前）</div>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li>リスク洗い出しに3時間かかる</li>
+                <li>属人化：ベテランメンバーに依存</li>
+                <li>抜け漏れ多数：技術リスクは詳しいが法務リスクは抜ける</li>
+                <li>毎回フォーマットがバラバラ</li>
+                <li>過去の知見が活かせない</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin: 2rem 0;">
+            <div style="font-size: 3rem; color: var(--electric);">↓</div>
+        </div>
+
+        <div class="comparison-box" style="border-left-color: var(--coral);">
+            <div class="comparison-title">After（導入後）</div>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li>リスク洗い出しが10分で完了（80%削減）</li>
+                <li>AIによる自動生成で誰でも使える</li>
+                <li>網羅性95%以上：法務・セキュリティリスクも自動で洗い出し</li>
+                <li>統一フォーマットで管理しやすい</li>
+                <li>過去プロジェクトの知見も自動反映</li>
+            </ul>
+        </div>
+
+        <table class="schedule-table" style="margin-top: 3rem;">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>Before</th>
+                    <th>After</th>
+                    <th>改善率</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="schedule-session">作業時間</td>
+                    <td>3時間</td>
+                    <td>10分</td>
+                    <td style="color: var(--coral); font-weight: 700;">▼ 80%削減</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">洗い出し項目数</td>
+                    <td>20〜30項目（偏りあり）</td>
+                    <td>50項目（網羅的）</td>
+                    <td style="color: var(--electric); font-weight: 700;">+ 67%増加</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">属人化リスク</td>
+                    <td>高（特定メンバーに依存）</td>
+                    <td>低（AIが自動生成）</td>
+                    <td style="color: var(--coral); font-weight: 700;">大幅改善</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">WORKFLOW</div>
+        <h2 class="section-title">実装手順</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">プロジェクト概要を整理</div>
+            </div>
+            <p class="phase-description">
+                プロジェクト名、目的、スコープ、期間、予算、チーム構成、ステークホルダーを明記する。
+                抽象的な説明だと出力精度が落ちるため、具体的に記載することが重要。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">ChatGPTにプロンプトを入力</div>
+            </div>
+            <p class="phase-description">
+                用意されたプロンプトテンプレートにプロジェクト概要を記入し、ChatGPTに送信。
+                カテゴリ別（技術・スケジュール・コスト・人的・セキュリティなど）にリスクを自動生成。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">スプレッドシートへ貼り付け</div>
+            </div>
+            <p class="phase-description">
+                ChatGPTの出力結果をコピーし、スプレッドシートに貼り付け。
+                「テキストを列に分割」機能を使い、カテゴリ・リスク名・説明を整形。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">04</div>
+                <div class="phase-title">カスタマイズと共有</div>
+            </div>
+            <p class="phase-description">
+                プロジェクト固有の事情を追加し、不要な項目を削除。
+                チーム全体で共有し、リアルタイムで更新できる体制を構築。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROMPT EXAMPLE</div>
+        <h2 class="section-title">プロンプト例</h2>
+
+        <div class="code-block">
+あなたはプロジェクトマネジメントの専門家です。
+以下のプロジェクトにおいて、考えられるリスクをカテゴリ別に網羅的にリストアップしてください。
+
+【プロジェクト概要】
+- プロジェクト名: 新ECサイト構築
+- 目的: 既存のECサイトをリニューアルし、売上を30%向上させる
+- スコープ: フロントエンド刷新、決済システム統合、在庫管理システム連携
+- 期間: 6ヶ月（2025年6月〜12月）
+- 予算: 5,000万円
+- チーム構成: PM 1名、エンジニア 5名、デザイナー 2名、外部ベンダー 1社
+- 主要ステークホルダー: 営業部、カスタマーサポート部、情報システム部
+
+【出力形式】
+以下のカテゴリごとに、リスクを箇条書きで出力してください。
+1. 技術的リスク
+2. スケジュールリスク
+3. コストリスク
+4. 人的リスク
+5. 外部依存リスク
+6. セキュリティリスク
+7. 法務・コンプライアンスリスク
+8. ステークホルダーリスク
+9. 運用・保守リスク
+10. その他のリスク
+
+各リスクは「リスク名: 簡潔な説明（1行）」の形式で記載してください。
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">注意点・活用ポイント</h2>
+
+        <div class="highlight-box">
+            <h3 style="font-weight: 700; margin-bottom: 1rem;">⚠️ 注意点</h3>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li><strong>抽象的なプロンプトは避ける：</strong> 「リスクを教えて」だけでは不十分。プロジェクトのスコープ・関係者・納期を明記すること。</li>
+                <li><strong>出力結果はベースとして使う：</strong> そのままコピペせず、プロジェクト固有の事情を追加・調整すること。</li>
+                <li><strong>定期的に見直す：</strong> リスク台帳は作って終わりではなく、プロジェクト進行に応じて更新し続けること。</li>
+            </ul>
+        </div>
+
+        <div class="tip-box">
+            <h3 style="font-weight: 700; margin-bottom: 1rem;">💡 活用ポイント</h3>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li><strong>チーム全体で共有：</strong> Googleスプレッドシートを使えば、リアルタイムで複数人が編集可能。</li>
+                <li><strong>過去プロジェクトの知見を蓄積：</strong> リスク台帳を保存しておき、次回プロジェクトの参考資料として活用。</li>
+                <li><strong>会議の議事録として活用：</strong> リスク検討会議で発言された内容を直接台帳に追記。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" style="margin-bottom: 120px;">
+        <div class="section-label">NEXT STEP</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div style="background: var(--ink); color: var(--paper); padding: 3rem; border-radius: 4px;">
+            <h3 style="font-size: 2rem; margin-bottom: 1rem; color: var(--electric);">第2回：発生前に防ぐ</h3>
+            <p style="font-size: 1.2rem; line-height: 1.8;">
+                次回は、この台帳をベースに、発生前に手を打つ「予兆→防止策→対応手順」の自動連鎖を実演します。
+                リスクを"点"でなく"線"で管理する方法をお見せします。
+            </p>
+        </div>
+    </section>
+</body>
+</html>

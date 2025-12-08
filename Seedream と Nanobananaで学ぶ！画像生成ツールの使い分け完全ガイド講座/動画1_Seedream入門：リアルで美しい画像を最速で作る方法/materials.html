@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seedream入門：リアルで美しい画像を最速で作る方法 - 学習教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* カラーパレット - 紙とインクの質感 */
+            --ink: #0A0E27;        /* 濃紺のインク色 */
+            --paper: #FEFEF8;      /* オフホワイトの紙色 */
+            --electric: #00F0FF;   /* 電気的な水色アクセント */
+            --coral: #FF6B6B;      /* コーラルピンク */
+            --violet: #7C3AED;     /* 紫 */
+            --gray: #4A5568;       /* グレー */
+            --success: #10B981;    /* 成功カラー */
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        /* 紙の質感を演出する背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.01) 2px,
+                    rgba(10, 14, 39, 0.01) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ナビゲーション */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-label {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-left: 1rem;
+        }
+
+        /* ヒーローセクション */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.6em;
+            margin-top: 0.3em;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* セクション基本スタイル */
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        /* グリッドレイアウト */
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        /* カード - 白黒反転ホバー効果付き */
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        /* Before/After 比較テーブル */
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 3rem 0;
+        }
+
+        .comparison-table th {
+            padding: 1.5rem 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-bottom: 3px solid var(--ink);
+        }
+
+        .comparison-table th:first-child {
+            width: 30%;
+        }
+
+        .comparison-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            vertical-align: top;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(0,240,255,0.05);
+        }
+
+        .before-badge {
+            display: inline-block;
+            background: var(--coral);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .after-badge {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        /* フェーズカード */
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.3;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .phase-content {
+            padding-left: 0;
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .phase-content ul {
+            list-style-type: none;
+            padding-left: 1.5rem;
+        }
+
+        .phase-content li {
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+
+        .phase-content li::before {
+            content: '→';
+            position: absolute;
+            left: -1.5rem;
+            color: var(--electric);
+            font-weight: 700;
+        }
+
+        /* コードブロック風スタイル */
+        .code-block {
+            background: var(--ink);
+            color: var(--electric);
+            padding: 1.5rem;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .comparison-table {
+                font-size: 0.9rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 1rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーション -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">
+                画像生成ツール使い分け講座
+                <span class="nav-label">動画1/3</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ヒーローセクション -->
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">LESSON 01</div>
+            <h1 class="hero-title">
+                Seedream入門
+                <span>リアルで美しい画像を最速で作る方法</span>
+            </h1>
+            <p class="hero-description">
+                「AIで画像を作りたいけど、調整に時間がかかりすぎる」<br>
+                そんな悩みを解決する、Seedreamの基本操作と効率的な活用法を学びます。
+            </p>
+        </div>
+    </div>
+
+    <!-- Before/After Section -->
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">現状の課題と理想の状態</h2>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>Before（現状）</th>
+                    <th>After（理想）</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>意思決定時間</strong></td>
+                    <td>
+                        <div class="before-badge">BEFORE</div>
+                        <p>どのツールを使うか迷う時間：1画像あたり平均3〜5分</p>
+                    </td>
+                    <td>
+                        <div class="after-badge">AFTER</div>
+                        <p>判断基準が明確化され、平均30秒以内に</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>試行錯誤回数</strong></td>
+                    <td>
+                        <div class="before-badge">BEFORE</div>
+                        <p>満足できる結果まで10回以上の調整が必要</p>
+                    </td>
+                    <td>
+                        <div class="after-badge">AFTER</div>
+                        <p>3〜5回程度で満足できるクオリティに到達</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>運用の安定性</strong></td>
+                    <td>
+                        <div class="before-badge">BEFORE</div>
+                        <p>担当者ごとに使い方・質にばらつきが出る</p>
+                    </td>
+                    <td>
+                        <div class="after-badge">AFTER</div>
+                        <p>ガイドラインに沿って誰でも安定した使い方ができる</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>心理状態</strong></td>
+                    <td>
+                        <div class="before-badge">BEFORE</div>
+                        <p>「使ってみたいけど不安」「選び方が分からない」</p>
+                    </td>
+                    <td>
+                        <div class="after-badge">AFTER</div>
+                        <p>「場面に応じて使い分けできる」「自信を持って使える」</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Seedreamの特徴 -->
+    <section class="section">
+        <div class="section-label">FEATURES</div>
+        <h2 class="section-title">Seedreamの3つの強み</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">写実性</h3>
+                <p class="card-description">
+                    リアルで自然な画像生成に特化。商品写真、風景、人物など、
+                    写真のような仕上がりを求める場面で真価を発揮します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">スピード</h3>
+                <p class="card-description">
+                    最初の出力から高品質な結果が得られるため、
+                    調整の回数が少なく、時間を大幅に短縮できます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">安定性</h3>
+                <p class="card-description">
+                    同じプロンプトでも、生成のたびにばらつきが少なく、
+                    安定したクオリティを維持できます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3ステップ構成 -->
+    <section class="section">
+        <div class="section-label">WORKFLOW</div>
+        <h2 class="section-title">Seedream活用の3ステップ</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">準備</div>
+            </div>
+            <div class="phase-content">
+                <ul>
+                    <li>Seedreamにログイン</li>
+                    <li>新規画像生成画面を開く</li>
+                    <li>基本設定を確認</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">プロンプト作成</div>
+            </div>
+            <div class="phase-content">
+                <p><strong>効果的なプロンプトの構成：</strong></p>
+                <ul>
+                    <li><strong>主題</strong>：何を描くか（例：mountain lake）</li>
+                    <li><strong>環境・背景</strong>：どこで、どんな状況か（例：at sunrise, with mist）</li>
+                    <li><strong>スタイル指示</strong>：どのような表現で（例：photorealistic, high detail）</li>
+                </ul>
+                <div class="code-block">
+A serene mountain lake at sunrise, with mist rising from the water,
+surrounded by pine trees, photorealistic, high detail
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">調整と改善</div>
+            </div>
+            <div class="phase-content">
+                <ul>
+                    <li>解像度の選択（推奨：1024x1024）</li>
+                    <li>モデルの選択（最新：Seedream v3）</li>
+                    <li>スタイル：Photorealisticを選択</li>
+                    <li>生成後の微調整（補正指示機能を活用）</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 注意点とTips -->
+    <section class="section">
+        <div class="section-label">TIPS & CAUTIONS</div>
+        <h2 class="section-title">注意点と活用ポイント</h2>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <div class="card-number">⚠️</div>
+                <h3 class="card-title">注意すべきポイント</h3>
+                <div class="card-description">
+                    <ul style="list-style-type: disc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>ノイズの発生</strong>：高解像度では時々ノイズが入る
+                            → 解像度を一段階下げて再生成
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>顔・手の破綻</strong>：人物の細部は苦手
+                            → 複数枚生成して選ぶ
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>細部の不自然さ</strong>：拡大すると気になる部分
+                            → トリミング・補正を併用
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-number">💡</div>
+                <h3 class="card-title">活用のコツ</h3>
+                <div class="card-description">
+                    <ul style="list-style-type: disc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>プロンプトの長さ</strong>：50〜100単語が適切
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>語彙の選択</strong>：具体的な形容詞を使う
+                            （majestic、serene、dramatic など）
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>バッチ生成</strong>：4枚同時生成で良い結果を選ぶ
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>参照画像</strong>：既存画像をアップロードして雰囲気を伝える
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- まとめ -->
+    <section class="section">
+        <div class="section-label">SUMMARY</div>
+        <h2 class="section-title">今回のまとめ</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">Seedreamの強み</h3>
+                <p class="card-description">
+                    写実的でリアルな画像生成に特化。
+                    最初の出力から高品質な結果が得られ、
+                    生成スピードも速い。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">基本的な使い方</h3>
+                <p class="card-description">
+                    プロンプト構成は「主題 → 環境 → スタイル指示」。
+                    パラメータ設定と微調整機能を活用する。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">適した用途</h3>
+                <p class="card-description">
+                    商品写真、風景画像、プレゼン資料用のビジュアルなど、
+                    リアルさを求める場面で第一選択に。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 次回予告 -->
+    <section class="section" style="padding-bottom: 4rem;">
+        <div class="section-label">NEXT LESSON</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <div class="card-number">02</div>
+            <h3 class="card-title">Nanobanana入門：個性・表現力で差がつく画像生成術</h3>
+            <p class="card-description" style="margin-bottom: 1rem;">
+                次回は、Seedreamとは対照的に「個性・表現力」を重視したツール
+                「Nanobanana」を学びます。
+            </p>
+            <p class="card-description">
+                アーティスティックな画像、スタイル性の高いビジュアル、
+                独自の世界観を表現したい時に活躍するツールです。
+            </p>
+        </div>
+    </section>
+</body>
+</html>

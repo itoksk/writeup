@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プロンプト最適化術総まとめ - 実務で使えるAIマスタリー</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--electric);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateX(10px);
+            border-color: var(--electric);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: 'WORKFLOW';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .list {
+            text-align: left;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        .review-card {
+            background: rgba(254, 254, 248, 0.9);
+            border: 3px solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .review-card.technique1 {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), var(--paper));
+        }
+
+        .review-card.technique2 {
+            border-color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), var(--paper));
+        }
+
+        .review-card.technique3 {
+            border-color: var(--coral);
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), var(--paper));
+        }
+
+        .review-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .review-card:hover::before {
+            left: 100%;
+        }
+
+        .review-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .technique-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-family: 'Arial', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .technique-badge.dialogue {
+            background: #3b82f6;
+            color: var(--paper);
+        }
+
+        .technique-badge.model {
+            background: #10b981;
+            color: var(--paper);
+        }
+
+        .technique-badge.parameter {
+            background: var(--coral);
+            color: var(--paper);
+        }
+
+        .mastery-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .matrix-item {
+            background: var(--paper);
+            border: 3px solid var(--ink);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .matrix-item.basic {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), var(--paper));
+            border-color: #3b82f6;
+        }
+
+        .matrix-item.intermediate {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), var(--paper));
+            border-color: #10b981;
+        }
+
+        .matrix-item.advanced {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), var(--paper));
+            border-color: var(--coral);
+        }
+
+        .matrix-item.expert {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), var(--paper));
+            border-color: var(--gold);
+        }
+
+        .matrix-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(10, 14, 39, 0.2);
+        }
+
+        .process-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+
+        .process-step {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .process-step::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: var(--electric);
+        }
+
+        .process-step:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .checklist {
+            background: rgba(245, 245, 240, 0.9);
+            border: 2px solid var(--ink);
+            padding: 3rem;
+            border-radius: 12px;
+            margin: 3rem 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: var(--paper);
+            border-radius: 8px;
+            border: 1px solid var(--ink);
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-right: 1rem;
+            transform: scale(1.5);
+        }
+
+        .checklist-item label {
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .future-stats {
+            background: linear-gradient(135deg, var(--electric), var(--coral));
+            padding: 3px;
+            border-radius: 12px;
+            margin: 3rem 0;
+        }
+
+        .future-content {
+            background: var(--paper);
+            padding: 3rem;
+            border-radius: 9px;
+        }
+
+        .final-message {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), var(--paper));
+            border: 3px solid var(--gold);
+            padding: 4rem;
+            border-radius: 16px;
+            margin: 4rem 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .navigation {
+                display: none;
+            }
+
+            .content-section {
+                padding: 3rem 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mastery-matrix {
+                grid-template-columns: 1fr;
+            }
+
+            .process-flow {
+                flex-direction: column;
+            }
+
+            .process-step::after {
+                content: '↓';
+                right: 50%;
+                top: 100%;
+                transform: translateX(50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+        <div class="nav-pill" data-section="7"></div>
+        <div class="nav-pill" data-section="8"></div>
+    </div>
+
+    <div class="container">
+        <section class="content-section visible">
+            <h1 class="section-title">🎯 プロンプト最適化術総まとめ<br>実務で使えるAIマスタリー</h1>
+            <div class="section-content">
+                <p>3つの核心技術を統合し、AIを完全にマスターする</p>
+            </div>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <p>核心技術</p>
+                    <p style="font-size: 0.9rem; color: #666;">対話・モデル・パラメータ</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10倍</div>
+                    <p>効率UP</p>
+                    <p style="font-size: 0.9rem; color: #666;">統合活用による相乗効果</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">∞</div>
+                    <p>応用可能</p>
+                    <p style="font-size: 0.9rem; color: #666;">すべてのビジネス領域で</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🗺️ 学習の道のり</h2>
+            <div class="section-content">
+                <p>これまでの学習を振り返り、技術を統合しよう</p>
+            </div>
+            <div class="grid">
+                <div class="review-card technique1">
+                    <span class="technique-badge dialogue">動画1</span>
+                    <h4>対話型プロンプト</h4>
+                    <p>1往復で終わらず、深く質問を続ける技術</p>
+                    <ul class="list">
+                        <li>なぜ？を3回</li>
+                        <li>条件追加で精緻化</li>
+                        <li>ステップ分解で実践的に</li>
+                    </ul>
+                </div>
+                <div class="review-card technique2">
+                    <span class="technique-badge model">動画2</span>
+                    <h4>モデル選択最適化</h4>
+                    <p>Gemini ProとFlashを戦略的に使い分ける</p>
+                    <ul class="list">
+                        <li>Flash First原則</li>
+                        <li>Pro for Critical判断</li>
+                        <li>段階的アプローチ</li>
+                    </ul>
+                </div>
+                <div class="review-card technique3">
+                    <span class="technique-badge parameter">動画3</span>
+                    <h4>創造性パラメータ</h4>
+                    <p>TemperatureとTop-Pで出力を自在にコントロール</p>
+                    <ul class="list">
+                        <li>タスクに応じた設定</li>
+                        <li>段階的微調整</li>
+                        <li>組み合わせマトリックス</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">⚡ 統合活用による相乗効果</h2>
+            <div class="section-content">
+                <p>3つの技術を組み合わせることで実現される飛躍的な効果</p>
+            </div>
+            <div class="mastery-matrix">
+                <div class="matrix-item basic">
+                    <h4 style="color: #3b82f6; margin-bottom: 1rem;">基本レベル</h4>
+                    <p><strong>単発質問 + Pro固定</strong></p>
+                    <p style="font-size: 0.9rem;">一般的な使い方<br>非効率・高コスト</p>
+                </div>
+                <div class="matrix-item intermediate">
+                    <h4 style="color: #10b981; margin-bottom: 1rem;">中級レベル</h4>
+                    <p><strong>対話継続 + モデル選択</strong></p>
+                    <p style="font-size: 0.9rem;">効率3倍UP<br>コスト70%削減</p>
+                </div>
+                <div class="matrix-item advanced">
+                    <h4 style="color: var(--coral); margin-bottom: 1rem;">上級レベル</h4>
+                    <p><strong>全技術活用</strong></p>
+                    <p style="font-size: 0.9rem;">効率10倍UP<br>品質・速度・コスト最適化</p>
+                </div>
+                <div class="matrix-item expert">
+                    <h4 style="color: var(--gold); margin-bottom: 1rem;">マスターレベル</h4>
+                    <p><strong>自動判断・最適選択</strong></p>
+                    <p style="font-size: 0.9rem;">直感的AI活用<br>ビジネス価値最大化</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">💼 実務での統合ワークフロー</h2>
+            <div class="section-content">
+                <p>3つの技術を統合した実践的なワークフロー</p>
+            </div>
+            <div class="process-flow">
+                <div class="process-step" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), var(--paper));">
+                    <div class="step-number">1️⃣</div>
+                    <h4>タスク分析</h4>
+                    <p>重要度・複雑度・創造性<br>の3軸で判断</p>
+                </div>
+                <div class="process-step" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), var(--paper));">
+                    <div class="step-number">2️⃣</div>
+                    <h4>モデル選択</h4>
+                    <p>Flash First原則<br>必要に応じてPro</p>
+                </div>
+                <div class="process-step" style="background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), var(--paper));">
+                    <div class="step-number">3️⃣</div>
+                    <h4>パラメータ設定</h4>
+                    <p>Temperature/Top-P<br>でアウトプット調整</p>
+                </div>
+                <div class="process-step" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), var(--paper));">
+                    <div class="step-number">4️⃣</div>
+                    <h4>対話継続</h4>
+                    <p>深掘り質問で<br>価値を最大化</p>
+                </div>
+            </div>
+            <div class="card" style="background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), var(--paper));">
+                <p style="text-align: center; font-weight: 700; font-size: 1.5rem; color: var(--electric);">
+                    💡 このワークフローを習慣化することで、AIを完全にマスターできる
+                </p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🏢 統合技術の実践例</h2>
+            <div class="section-content">
+                <p>企画書作成における全技術の統合活用</p>
+            </div>
+            <div class="code-block">【企画書作成の場合】
+
+1. Flash (T:0.3, P:0.4) → 企画概要の骨組み作成
+   「新サービスの企画書構成案を作成」
+
+2. 対話で深掘り → 「なぜこの構成？」「他の選択肢は？」
+
+3. Pro (T:0.5, P:0.5) → 戦略部分の精緻化
+   「競合分析と差別化戦略を詳細に検討」
+
+4. 継続対話 → 「リスクは？」「実行計画は？」
+
+5. Flash (T:0.2, P:0.3) → 最終文書化
+   「読みやすい形式に整理・調整」
+
+結果：高品質な企画書を15分で完成、コスト80%削減</div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🧠 エキスパート判断マトリックス</h2>
+            <div class="section-content">
+                <p>タスク別の最適な技術組み合わせ</p>
+            </div>
+            <div class="grid">
+                <div class="card" style="border-color: #3b82f6; background: rgba(59, 130, 246, 0.1);">
+                    <h4 style="color: #3b82f6;">📝 文書作成タスク</h4>
+                    <ul class="list">
+                        <li><strong>Flash(T:0.3)</strong> → 構造・下書き</li>
+                        <li><strong>Pro(T:0.5)</strong> → 内容充実</li>
+                        <li><strong>Flash(T:0.2)</strong> → 最終調整</li>
+                    </ul>
+                    <p style="font-size: 0.9rem; margin-top: 1rem;">
+                        💰 コスト効果：70%削減<br>⏱️ 時間効果：5倍高速
+                    </p>
+                </div>
+                
+                <div class="card" style="border-color: #10b981; background: rgba(16, 185, 129, 0.1);">
+                    <h4 style="color: #10b981;">💡 アイデア創出タスク</h4>
+                    <ul class="list">
+                        <li><strong>Pro(T:0.8)</strong> → 初期アイデア</li>
+                        <li><strong>対話継続</strong> → 深掘り・発展</li>
+                        <li><strong>Flash(T:0.5)</strong> → 整理・評価</li>
+                    </ul>
+                    <p style="font-size: 0.9rem; margin-top: 1rem;">
+                        🎯 品質効果：独創性UP<br>📈 量的効果：10倍のアイデア
+                    </p>
+                </div>
+                
+                <div class="card" style="border-color: var(--coral); background: rgba(255, 107, 107, 0.1);">
+                    <h4 style="color: var(--coral);">📊 分析・判断タスク</h4>
+                    <ul class="list">
+                        <li><strong>Flash(T:0.4)</strong> → データ整理</li>
+                        <li><strong>Pro(T:0.3)</strong> → 分析・洞察</li>
+                        <li><strong>対話継続</strong> → 多角的検証</li>
+                    </ul>
+                    <p style="font-size: 0.9rem; margin-top: 1rem;">
+                        🔍 精度効果：分析深度UP<br>⚡ 速度効果：3倍高速
+                    </p>
+                </div>
+                
+                <div class="card" style="border-color: var(--gold); background: rgba(255, 215, 0, 0.1);">
+                    <h4 style="color: var(--gold);">🎨 クリエイティブタスク</h4>
+                    <ul class="list">
+                        <li><strong>Pro(T:0.7, P:0.8)</strong> → 創造的発想</li>
+                        <li><strong>Flash(T:0.6)</strong> → バリエーション</li>
+                        <li><strong>対話継続</strong> → 改良・発展</li>
+                    </ul>
+                    <p style="font-size: 0.9rem; margin-top: 1rem;">
+                        ✨ 創造効果：予想外のアイデア<br>🔄 反復効果：継続的改善
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">✅ マスタリー・チェックリスト</h2>
+            <div class="section-content">
+                <p>AIマスタリーの到達度を確認しよう</p>
+            </div>
+            <div class="checklist">
+                <h4 style="margin-bottom: 2rem;">基本技術の習得</h4>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check1">
+                    <label for="check1">3往復以上の対話を継続できる</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check2">
+                    <label for="check2">FlashとProを意識的に使い分けている</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check3">
+                    <label for="check3">Temperature設定をタスクに応じて調整する</label>
+                </div>
+                
+                <h4 style="margin: 2rem 0;">実践レベルの確認</h4>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check4">
+                    <label for="check4">段階的アプローチ（Flash→Pro→Flash）を実践</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check5">
+                    <label for="check5">コスト・時間効率が明らかに向上した</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check6">
+                    <label for="check6">複数タスクでワークフローを活用している</label>
+                </div>
+                
+                <h4 style="margin: 2rem 0;">マスターレベル</h4>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check7">
+                    <label for="check7">直感的に最適な設定・手順を選択できる</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check8">
+                    <label for="check8">チーム・組織にこの技術を教えられる</label>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🚀 次のステップ：継続的成長</h2>
+            <div class="section-content">
+                <p>AIマスタリーを継続的に発展させるロードマップ</p>
+            </div>
+            <div class="process-flow">
+                <div class="process-step">
+                    <div class="step-number">Week 1</div>
+                    <h4>基本パターン確立</h4>
+                    <p>日常業務で<br>ワークフロー実践</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">Month 1</div>
+                    <h4>効果測定・改善</h4>
+                    <p>時間・コスト・品質<br>の定量的評価</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">Month 3</div>
+                    <h4>応用範囲拡大</h4>
+                    <p>新しいタスク・領域<br>での活用実験</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">Month 6</div>
+                    <h4>組織展開</h4>
+                    <p>チーム・部署での<br>標準化・共有</p>
+                </div>
+            </div>
+            
+            <div class="card" style="background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), var(--paper));">
+                <h4 style="text-align: center; margin-bottom: 1rem;">成長の指標</h4>
+                <ul style="text-align: left;">
+                    <li><strong>効率性</strong>：同じタスクの所要時間が半分以下に</li>
+                    <li><strong>品質性</strong>：アウトプットの精度・深さが明らかに向上</li>
+                    <li><strong>創造性</strong>：従来思いつかなかったアイデア・解決策を発見</li>
+                    <li><strong>再現性</strong>：他の人にも教えられる、システム化できる</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🔮 AIとの協働の未来</h2>
+            <div class="section-content">
+                <p>習得した技術が切り開く可能性</p>
+            </div>
+            <div class="future-stats">
+                <div class="future-content">
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <div class="stat-number" style="color: var(--electric);">2025</div>
+                            <p>AI活用の標準化</p>
+                            <p style="font-size: 0.9rem; color: #666;">今学んだスキルが業界標準に</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" style="color: var(--electric);">2027</div>
+                            <p>真のパートナーシップ</p>
+                            <p style="font-size: 0.9rem; color: #666;">AIとの完全な協働体制</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" style="color: var(--electric);">∞</div>
+                            <p>限界なき創造性</p>
+                            <p style="font-size: 0.9rem; color: #666;">人間×AIの無限の可能性</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid" style="margin-top: 3rem;">
+                        <div class="card">
+                            <h4>今、身につけた技術が...</h4>
+                            <ul class="list">
+                                <li>明日の業務効率を革命的に向上させ</li>
+                                <li>来年のキャリアに決定的な差をつけ</li>
+                                <li>将来のビジネス成功の基盤となる</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>AIマスタリーの価値</h4>
+                            <ul class="list">
+                                <li><strong>時間効率</strong>：業務時間50%削減</li>
+                                <li><strong>コスト効率</strong>：外注費70%削減</li>
+                                <li><strong>価値創出</strong>：新しいアイデア・解決策</li>
+                                <li><strong>競争優位</strong>：他者との明確な差別化</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🎯 最後のメッセージ</h2>
+            <div class="section-content">
+                <p class="highlight" style="font-size: 2rem; font-weight: 900; margin: 2rem 0;">
+                    あなたは今、AIマスターです
+                </p>
+            </div>
+            <div class="final-message">
+                <h3 style="margin-bottom: 2rem; font-size: 2rem; color: var(--gold);">
+                    🏆 完全習得おめでとうございます！
+                </h3>
+                
+                <div class="stats-cards" style="margin: 3rem 0;">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: var(--electric);">3つ</div>
+                        <p>の核心技術を習得</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: var(--electric);">∞</div>
+                        <p>の応用可能性</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: var(--electric);">未来</div>
+                        <p>への準備完了</p>
+                    </div>
+                </div>
+                
+                <div class="grid" style="margin-top: 3rem;">
+                    <div class="card" style="text-align: center; border-color: var(--electric);">
+                        <h4 style="color: var(--electric);">今日から実践</h4>
+                        <p>学んだ技術を<br>明日の業務で活用</p>
+                    </div>
+                    <div class="card" style="text-align: center; border-color: var(--electric);">
+                        <h4 style="color: var(--electric);">継続的成長</h4>
+                        <p>経験を積み重ね<br>更なる高みへ</p>
+                    </div>
+                    <div class="card" style="text-align: center; border-color: var(--electric);">
+                        <h4 style="color: var(--electric);">価値創造</h4>
+                        <p>AIとの協働で<br>無限の可能性を実現</p>
+                    </div>
+                </div>
+                
+                <p style="font-size: 1.75rem; font-weight: 900; color: var(--electric); margin-top: 3rem; line-height: 1.4;">
+                    🚀 新しいAI時代のリーダーとして、<br>今、飛躍の時です！
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    const index = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, i) => {
+                        pill.classList.toggle('active', i === index);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

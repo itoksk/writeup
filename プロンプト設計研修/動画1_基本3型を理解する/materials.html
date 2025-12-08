@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：ゼロショット vs ワンショット vs フューショット - プロンプト指示の基本3型</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap');
+        
+        :root {
+            /* Literary Editorial Design System Colors */
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --paper-shadow: #F5F5F0;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+            
+            /* Typography */
+            --font-primary: 'Zen Kaku Gothic New', sans-serif;
+            --font-secondary: 'Space Grotesk', monospace;
+            --font-serif: 'Noto Serif JP', serif;
+            
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(10, 14, 39, 0.1);
+            --shadow-md: 0 4px 16px rgba(10, 14, 39, 0.15);
+            --shadow-lg: 0 8px 32px rgba(10, 14, 39, 0.2);
+            --shadow-xl: 0 16px 48px rgba(10, 14, 39, 0.25);
+            
+            /* Border */
+            --border-width: 2px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+            padding: var(--space-lg) 0;
+        }
+        
+        /* Paper Texture Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.03) 2px,
+                    rgba(10, 14, 39, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.02) 2px,
+                    rgba(10, 14, 39, 0.02) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 3px solid var(--ink);
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-sm);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+        
+        .subtitle {
+            font-family: var(--font-secondary);
+            font-size: 1.25rem;
+            color: var(--ink);
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Navigation */
+        nav {
+            margin-bottom: var(--space-lg);
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .nav-pill {
+            padding: var(--space-xs) var(--space-md);
+            background: var(--paper);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 50px;
+            font-family: var(--font-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+        
+        .nav-pill:hover::before {
+            left: 0;
+        }
+        
+        .nav-pill:hover {
+            color: var(--paper);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn {
+            background: transparent;
+            color: var(--paper);
+            border: 2px solid var(--paper);
+            padding: var(--space-xs) var(--space-md);
+            font-family: var(--font-secondary);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--electric);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover::before {
+            width: 200px;
+            height: 200px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--electric);
+            z-index: 1;
+        }
+        
+        .btn span {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn.active {
+            background: var(--electric);
+            border-color: var(--electric);
+            color: var(--ink);
+        }
+        
+        /* Content Section */
+        .content-section {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .content-section:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .section-number {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--electric);
+            background: var(--ink);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            z-index: 10;
+        }
+        
+        /* Content Typography */
+        .content-section h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            margin-bottom: var(--space-lg);
+            color: var(--ink);
+            position: relative;
+            line-height: 1.2;
+        }
+        
+        .content-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+        
+        .content-section h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            color: var(--ink);
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+        }
+        
+        .content-section p {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-md);
+        }
+        
+        .content-section ul {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-md) 0;
+        }
+        
+        .content-section li {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-sm);
+            padding-left: var(--space-lg);
+            position: relative;
+        }
+        
+        .content-section li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        /* Card in Slide */
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .card-number {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-family: var(--font-secondary);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--electric);
+            opacity: 0.3;
+        }
+        
+        /* Code Block */
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: var(--space-md);
+            border-radius: 8px;
+            font-family: var(--font-secondary);
+            font-size: 0.9rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 350px;
+            margin: var(--space-md) 0;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .code-block::before {
+            content: 'PROMPT';
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--electric);
+            opacity: 0.5;
+        }
+        
+        /* Highlight Box */
+        .highlight {
+            background: linear-gradient(135deg, var(--electric), var(--coral));
+            padding: 3px;
+            border-radius: 8px;
+            margin: var(--space-md) 0;
+        }
+        
+        .highlight-content {
+            background: var(--paper);
+            padding: var(--space-md);
+            border-radius: 5px;
+        }
+        
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+        
+        .grid-item {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-sm);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 120px;
+        }
+        
+        .grid-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--electric), var(--coral));
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .grid-item:hover::after {
+            transform: translateY(0);
+        }
+        
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Edit Mode */
+        .edit-mode .slide {
+            cursor: text;
+        }
+        
+        .editable {
+            outline: none;
+            position: relative;
+        }
+        
+        .editable:focus {
+            background: rgba(0, 240, 255, 0.05);
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+        
+        /* Slide Counter */
+        .slide-counter {
+            font-family: var(--font-secondary);
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--paper);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: var(--space-lg) 0;
+            border-top: 3px solid var(--ink);
+            margin-top: var(--space-xl);
+            font-family: var(--font-secondary);
+            letter-spacing: 0.05em;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1320px) {
+            .slide-container {
+                width: 95%;
+            }
+            
+            .slide {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 16/9;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls-bar {
+                flex-direction: column;
+                gap: var(--space-md);
+                position: static;
+            }
+            
+            .slide h2 {
+                font-size: 2rem;
+            }
+            
+            .slide h3 {
+                font-size: 1.5rem;
+            }
+            
+            .slide p, .slide li {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Dark Mode Styles - Using CSS Variables for better control */
+        .dark-mode {
+            --ink: #FEFEF8;
+            --paper: #0A0E27;
+            --paper-shadow: #1A1E37;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+            background: var(--paper);
+            color: var(--ink);
+        }
+        
+        /* Update shadow colors in dark mode */
+        .dark-mode {
+            --shadow-sm: 0 2px 8px rgba(255, 255, 255, 0.1);
+            --shadow-md: 0 4px 16px rgba(255, 255, 255, 0.15);
+            --shadow-lg: 0 8px 32px rgba(255, 255, 255, 0.2);
+            --shadow-xl: 0 16px 48px rgba(255, 255, 255, 0.25);
+        }
+        
+        /* Preserve media content colors */
+        .dark-mode img,
+        .dark-mode video,
+        .dark-mode iframe {
+            opacity: 0.9;
+        }
+        
+        /* Special handling for code blocks - they already have dark backgrounds */
+        .dark-mode .code-block {
+            background: #1a1a2e;
+            color: #eee;
+            border: 1px solid #444;
+        }
+        
+        /* Update section numbers in dark mode */
+        .dark-mode .section-number {
+            background: var(--paper);
+            color: var(--electric);
+            border: 1px solid var(--electric);
+        }
+        
+        /* Card hover effects in dark mode - simplified without color inversion */
+        .dark-mode .card:hover {
+            border-color: var(--electric);
+        }
+        
+        .dark-mode .content-section:hover {
+            border-color: var(--electric);
+        }
+        
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background: var(--ink);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 2px solid var(--ink);
+        }
+        
+        .dark-mode-toggle::before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: var(--paper);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        
+        .dark-mode-toggle.active {
+            background: var(--electric);
+            border-color: var(--electric);
+        }
+        
+        .dark-mode-toggle.active::before {
+            transform: translateX(30px);
+            background: var(--ink);
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            body::before {
+                display: none;
+            }
+            
+            .controls-bar {
+                display: none;
+            }
+            
+            .slide-container {
+                border: 1px solid black;
+                box-shadow: none;
+                page-break-after: always;
+            }
+            
+            .slide {
+                display: block !important;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle" id="darkModeToggle"></div>
+    <div class="container">
+        <header class="header">
+            <h1>プロンプト設計研修</h1>
+            <p class="subtitle">第1回：ゼロショット vs ワンショット vs フューショット - プロンプト指示の基本3型</p>
+        </header>
+        
+        <nav>
+            <div class="nav-pill">概要</div>
+            <div class="nav-pill">ゼロショット</div>
+            <div class="nav-pill">ワンショット</div>
+            <div class="nav-pill">フューショット</div>
+            <div class="nav-pill">実践</div>
+        </nav>
+        
+        <main>
+            <!-- Title Section -->
+            <div class="content-section">
+                <span class="section-number">01</span>
+                <h2>プロンプト指示の基本3型</h2>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <p>AIへの指示方法を体系的に理解し、<br>最適なプロンプト設計を実現する</p>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>ゼロショット</h4>
+                        <p>例示なしの直接指示</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>ワンショット</h4>
+                        <p>1つの例による学習</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>フューショット</h4>
+                        <p>複数例による精度向上</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Zero-shot Section -->
+            <div class="content-section">
+                <span class="section-number">02</span>
+                <h3>ゼロショットプロンプト</h3>
+                <p>例示を使わず、直接的な指示のみでタスクを実行させる手法</p>
+                
+                <div class="card">
+                    <span class="card-number">01</span>
+                    <h4>特徴</h4>
+                    <ul>
+                        <li>シンプルで素早い実装</li>
+                        <li>一般的なタスクに有効</li>
+                        <li>AIの基本能力に依存</li>
+                    </ul>
+                </div>
+                
+                <div class="code-block">【プロンプト例】
+次の文章を要約してください：
+「顧客満足度調査の結果、製品品質に関しては90%以上の
+高評価を得ていますが、配送時間については改善の余地が
+あることが判明しました。」
+
+【期待される出力】
+→ 製品品質は高評価だが、配送時間に課題あり</div>
+            </div>
+            
+            <!-- One-shot Section -->
+            <div class="content-section">
+                <span class="section-number">03</span>
+                <h3>ワンショットプロンプト</h3>
+                <p>1つの入出力例を示してから、新しい入力に対する処理を要求</p>
+                
+                <div class="card">
+                    <span class="card-number">02</span>
+                    <h4>活用場面</h4>
+                    <ul>
+                        <li>特定のフォーマットが必要な場合</li>
+                        <li>独自の処理パターンを示したい場合</li>
+                        <li>出力の品質を安定させたい場合</li>
+                    </ul>
+                </div>
+                
+                <div class="code-block">【プロンプト例】
+感情分析をしてください。
+
+例：
+入力：「素晴らしい製品でした！」
+出力：ポジティブ
+
+新規入力：「期待外れだった」
+出力：？
+
+【期待される出力】
+→ ネガティブ</div>
+            </div>
+            
+            <!-- Few-shot Section -->
+            <div class="content-section">
+                <span class="section-number">04</span>
+                <h3>フューショットプロンプト</h3>
+                <p>複数の例を提示して、パターンを学習させる高精度な手法</p>
+                
+                <div class="card">
+                    <span class="card-number">03</span>
+                    <h4>メリット</h4>
+                    <ul>
+                        <li>複雑なパターンの学習が可能</li>
+                        <li>エッジケースへの対応力向上</li>
+                        <li>一貫性のある高品質な出力</li>
+                    </ul>
+                </div>
+                
+                <div class="code-block">【プロンプト例】
+天気を絵文字に変換してください。
+
+例1：晴れ → ☀️
+例2：雨 → 🌧️  
+例3：曇り → ☁️
+例4：雪 → ❄️
+
+新規：雷雨 → ？
+
+【期待される出力】
+→ ⛈️</div>
+            </div>
+            
+            <!-- Comparison Section -->
+            <div class="content-section">
+                <span class="section-number">05</span>
+                <h3>3つの手法の比較</h3>
+                
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>ゼロショット</h4>
+                        <p>速度: ⭐⭐⭐⭐⭐</p>
+                        <p>精度: ⭐⭐⭐</p>
+                        <p>準備: ⭐</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>ワンショット</h4>
+                        <p>速度: ⭐⭐⭐⭐</p>
+                        <p>精度: ⭐⭐⭐⭐</p>
+                        <p>準備: ⭐⭐</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>フューショット</h4>
+                        <p>速度: ⭐⭐⭐</p>
+                        <p>精度: ⭐⭐⭐⭐⭐</p>
+                        <p>準備: ⭐⭐⭐⭐</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <p>💡 タスクの複雑さと要求精度に応じて最適な手法を選択</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 6: Use Cases -->
+            <div class="slide">
+                <span class="slide-number">6 / 10</span>
+                <h3 class="editable">実践的な使い分け</h3>
+                
+                <div class="card">
+                    <h4>ゼロショットが適している場合</h4>
+                    <ul>
+                        <li class="editable">一般的な要約や翻訳タスク</li>
+                        <li class="editable">素早いプロトタイピング</li>
+                        <li class="editable">汎用的な質問応答</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h4>ワンショットが適している場合</h4>
+                    <ul>
+                        <li class="editable">特定フォーマットへの変換</li>
+                        <li class="editable">簡単な分類タスク</li>
+                        <li class="editable">基本的なパターン適用</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h4>フューショットが適している場合</h4>
+                    <ul>
+                        <li class="editable">複雑な分類や判定</li>
+                        <li class="editable">独自ルールの適用</li>
+                        <li class="editable">高精度が要求される業務</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Business Example Section -->
+            <div class="content-section">
+                <span class="section-number">07</span>
+                <h3>ビジネス実装例：カスタマーサポート</h3>
+                
+                <div class="code-block">【実装例：カスタマーサポート自動分類】
+
+▼学習データ（3つの例）
+┌─────────────────────────────────────────┐
+│例1：「商品が届きません」                           │
+│ → 配送 / 優先度：高 / 部署：物流                  │
+│                                                     │
+│例2：「パスワードを忘れました」                     │
+│ → アカウント / 優先度：中 / 部署：IT              │
+│                                                     │
+│例3：「返品したいです」                             │
+│ → 返品交換 / 優先度：中 / 部署：カスタマー        │
+└─────────────────────────────────────────┘
+
+▼新規問い合わせ
+「支払い方法を変更したい」
+
+▼AIの分類結果
+→ 決済 / 優先度：中 / 部署：経理</div>
+                
+                <p>→ AIが例から学習し、適切な分類を自動実行</p>
+            </div>
+            
+            <!-- Tips Section -->
+            <div class="content-section">
+                <span class="section-number">08</span>
+                <h3>効果的な実装のコツ</h3>
+                
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>例の選び方</h4>
+                        <p>代表的かつ多様性のあるサンプルを選択</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>例の数</h4>
+                        <p>3-5個が最適、多すぎると逆効果</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>フォーマット統一</h4>
+                        <p>すべての例で同じ構造を維持</p>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h4>プロのテクニック</h4>
+                        <p>「思考の連鎖（Chain of Thought）」を組み合わせることで、<br>
+                        AIの推論過程を可視化し、精度をさらに向上させることが可能</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Workshop Section -->
+            <div class="content-section">
+                <span class="section-number">09</span>
+                <h3>ワークショップ：実践演習</h3>
+                
+                <div class="card">
+                    <h4>課題</h4>
+                    <p>自社の業務に合わせて、以下を作成してください：</p>
+                    <ul>
+                        <li>ゼロショットプロンプト 1つ</li>
+                        <li>ワンショットプロンプト 1つ</li>
+                        <li>フューショットプロンプト 1つ</li>
+                    </ul>
+                </div>
+                
+                <div class="code-block">【実践用テンプレート】
+
+━━━ ゼロショット ━━━
+[タスクの説明を明確に記述]
+入力：[処理したいデータ]
+
+━━━ ワンショット ━━━  
+[タスクの説明]
+例：[入力例] → [出力例]
+入力：[新規データ]
+
+━━━ フューショット ━━━
+[タスクの説明]
+例1：[入力1] → [出力1]
+例2：[入力2] → [出力2]
+例3：[入力3] → [出力3]
+入力：[新規データ]</div>
+            </div>
+            
+            <!-- Summary Section -->
+            <div class="content-section">
+                <span class="section-number">10</span>
+                <h3>まとめ：次のステップへ</h3>
+                
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h4>本日学んだこと</h4>
+                        <ul>
+                            <li>プロンプトの基本3型の特徴と使い分け</li>
+                            <li>各手法の実装方法とベストプラクティス</li>
+                            <li>ビジネスシーンでの活用方法</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4>次回予告</h4>
+                    <p>「Chain of Thoughtプロンプト」<br>
+                    AIの思考プロセスを制御する高度なテクニック</p>
+                </div>
+                
+                <p style="text-align: center; margin-top: var(--space-lg);">
+                    <strong>実践あるのみ！今日から使ってみましょう</strong>
+                </p>
+            </div>
+        </main>
+        
+        <footer>
+            <p>© 2024 プロンプト設計研修 - Literary Editorial Design System</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Navigation pills functionality
+        document.querySelectorAll('.nav-pill').forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                // Remove active class from all pills
+                document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                
+                // Scroll to corresponding section
+                const sections = document.querySelectorAll('.content-section');
+                if (sections[index]) {
+                    sections[index].scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add fade-in animation to content sections on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    
+                    // Update active nav pill based on current section
+                    const sectionIndex = Array.from(document.querySelectorAll('.content-section')).indexOf(entry.target);
+                    const navPills = document.querySelectorAll('.nav-pill');
+                    
+                    navPills.forEach(pill => pill.classList.remove('active'));
+                    if (navPills[sectionIndex]) {
+                        navPills[sectionIndex].classList.add('active');
+                    }
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all content sections and cards
+        document.querySelectorAll('.content-section, .card, .grid-item').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add fade animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            .fade-in {
+                animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            
+            .content-section {
+                scroll-margin-top: 2rem;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Set first nav pill as active initially
+        const firstNavPill = document.querySelector('.nav-pill');
+        if (firstNavPill) {
+            firstNavPill.classList.add('active');
+        }
+        
+        // Dark Mode Toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            body.classList.add('dark-mode');
+            darkModeToggle.classList.add('active');
+        }
+        
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            darkModeToggle.classList.toggle('active');
+            
+            // Save preference
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', null);
+            }
+        });
+    </script>
+</body>
+</html>

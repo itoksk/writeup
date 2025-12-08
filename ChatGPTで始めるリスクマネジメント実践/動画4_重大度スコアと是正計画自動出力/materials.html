@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：たった5分で！重大度スコア×是正計画を自動出力するリスクレビュー術 - 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+            --gold: #FFD700;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.01) 2px,
+                    rgba(10, 14, 39, 0.01) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--ink);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+            box-shadow: 4px 4px 0 var(--ink);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--coral);
+            font-size: 0.6em;
+            margin-top: 0.2em;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .phase-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-left: calc(4rem + 2rem);
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 3rem;
+        }
+
+        .schedule-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .schedule-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            vertical-align: top;
+        }
+
+        .schedule-table tr:hover {
+            background: rgba(0,240,255,0.05);
+        }
+
+        .schedule-session {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            color: var(--electric);
+        }
+
+        .comparison-box {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        .highlight-box {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .tip-box {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .matrix-container {
+            margin: 3rem 0;
+            overflow-x: auto;
+        }
+
+        .risk-matrix {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        .risk-matrix th,
+        .risk-matrix td {
+            width: 20%;
+            height: 80px;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: 700;
+            border: 2px solid var(--ink);
+        }
+
+        .risk-matrix th {
+            background: var(--ink);
+            color: var(--paper);
+            font-size: 0.9rem;
+        }
+
+        .risk-low {
+            background: #A8E6CF;
+            color: var(--ink);
+        }
+
+        .risk-medium {
+            background: #FFD93D;
+            color: var(--ink);
+        }
+
+        .risk-high {
+            background: #FF8C42;
+            color: var(--paper);
+        }
+
+        .risk-critical {
+            background: #E63946;
+            color: var(--paper);
+        }
+
+        .series-summary {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 4rem 3rem;
+            border-radius: 4px;
+            margin-top: 4rem;
+        }
+
+        .series-summary h3 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--gold);
+        }
+
+        .series-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .series-item {
+            border-left: 3px solid var(--electric);
+            padding-left: 1.5rem;
+        }
+
+        .series-item-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            color: var(--electric);
+            margin-bottom: 0.5rem;
+        }
+
+        .series-item-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .series-item-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .final-cta {
+            background: linear-gradient(135deg, var(--electric) 0%, var(--violet) 100%);
+            color: var(--paper);
+            padding: 4rem 3rem;
+            text-align: center;
+            border-radius: 4px;
+            margin-top: 4rem;
+        }
+
+        .final-cta h3 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .final-cta p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .phase-description {
+                margin-left: 0;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .series-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">リスクマネジメント実践講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第4回 / 全4回【最終回】</div>
+            <h1 class="hero-title">
+                たった5分で！
+                <span>重大度スコア×是正計画を自動出力するリスクレビュー術</span>
+            </h1>
+            <p class="hero-description">
+                月次のリスクレビューが"作業"になっていませんか？ChatGPTを使えば、重大度スコアの算出と是正計画の提案を、わずか5分で自動化。月次レビューを『作業』から『意思決定』に変える最終ステップを実演します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">学習目標</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">重大度の自動算出</h3>
+                <p class="card-description">
+                    発生確率×影響度から重大度スコアを自動算出し、リスクを優先順位でランク付け
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">是正計画の自動提案</h3>
+                <p class="card-description">
+                    上位リスクに対する具体的な是正計画を、即座・短期・中長期の3段階で自動生成
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">月次レビュー時間75%削減</h3>
+                <p class="card-description">
+                    従来1〜2時間かかっていた月次レビューを、5〜15分に短縮し、意思決定に集中
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">劇的な変化</h2>
+
+        <div class="comparison-box">
+            <div class="comparison-title">Before（導入前）</div>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li>月次レビューに1〜2時間かかる</li>
+                <li>リスクの優先順位が不明確（経験頼み）</li>
+                <li>是正案が場当たり的で抽象的</li>
+                <li>レポート作成だけで精一杯、具体的な対策まで考える時間がない</li>
+                <li>経営陣に「で、どうするの？」と聞かれて困る</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin: 2rem 0;">
+            <div style="font-size: 3rem; color: var(--electric);">↓</div>
+        </div>
+
+        <div class="comparison-box" style="border-left-color: var(--coral);">
+            <div class="comparison-title">After（導入後）</div>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li>月次レビューが5〜15分で完了（75%削減）</li>
+                <li>重大度スコアで優先順位が明確（客観的評価）</li>
+                <li>是正案が具体的で実現可能（コスト・リソースを考慮）</li>
+                <li>意思決定に時間を使える（レポート作成は自動化）</li>
+                <li>経営陣に即座に対策を説明できる</li>
+            </ul>
+        </div>
+
+        <table class="schedule-table" style="margin-top: 3rem;">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>Before</th>
+                    <th>After</th>
+                    <th>改善率</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="schedule-session">レビュー時間</td>
+                    <td>1〜2時間</td>
+                    <td>5〜15分</td>
+                    <td style="color: var(--coral); font-weight: 700;">▼ 75%削減</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">優先順位判断</td>
+                    <td>曖昧（経験頼み）</td>
+                    <td>明確（重大度スコアで自動ランク付け）</td>
+                    <td style="color: var(--electric); font-weight: 700;">大幅改善</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">是正計画の質</td>
+                    <td>抽象的</td>
+                    <td>具体的（実現可能性を考慮）</td>
+                    <td style="color: var(--electric); font-weight: 700;">大幅改善</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">判断スピード</td>
+                    <td>遅い（情報整理に時間）</td>
+                    <td>3倍速（すぐに意思決定可能）</td>
+                    <td style="color: var(--electric); font-weight: 700;">3倍向上</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">WORKFLOW</div>
+        <h2 class="section-title">実装手順</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">リスク台帳の準備</div>
+            </div>
+            <p class="phase-description">
+                これまで作成してきたリスク台帳の最新版を用意。全リスクのリストと、各リスクの説明を整理する。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">評価基準の設定</div>
+            </div>
+            <p class="phase-description">
+                発生確率と影響度の評価基準を明示。5段階評価（1=低、5=高）を使い、重大度は「発生確率×影響度」で算出する基準をプロンプトに記載。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">ChatGPTでスコア算出＋是正計画生成</div>
+            </div>
+            <p class="phase-description">
+                リスク台帳全体をChatGPTに投入し、重大度ランキングと上位5件の是正計画を自動生成。即座・短期・中長期の3段階で具体的な対策が提示される。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">04</div>
+                <div class="phase-title">月次レビュー報告書への統合</div>
+            </div>
+            <p class="phase-description">
+                出力結果をスプレッドシートに貼り付け、進捗追跡用の列（実施状況、完了予定日、担当者）を追加。前月との比較で改善効果を可視化。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROMPT EXAMPLE</div>
+        <h2 class="section-title">プロンプト例</h2>
+
+        <div class="code-block">
+あなたはプロジェクトマネジメントの専門家です。
+以下のリスク台帳について、各リスクの「発生確率」「影響度」「重大度」を評価し、
+重大度の高い上位5件に対する是正計画を具体的に提案してください。
+
+【評価基準】
+■ 発生確率（1〜5の5段階）
+1: 極めて低い（5%未満）
+2: 低い（5〜25%）
+3: 中程度（25〜50%）
+4: 高い（50〜75%）
+5: 極めて高い（75%以上）
+
+■ 影響度（1〜5の5段階）
+1: 軽微（影響なし〜微小）
+2: 小（一部調整で対応可能）
+3: 中（スケジュール1週間程度の遅延 or コスト5%増）
+4: 大（スケジュール1ヶ月以上の遅延 or コスト10%以上増）
+5: 致命的（プロジェクト中止レベル）
+
+■ 重大度の算出
+重大度 = 発生確率 × 影響度（最大25点）
+
+【出力形式】
+## 1. リスク重大度ランキング（全リスク）
+| 順位 | リスク名 | 発生確率 | 影響度 | 重大度 | 評価理由 |
+
+## 2. 上位5件の是正計画
+### 第1位: [リスク名]（重大度: [点数]）
+#### 是正目標
+#### 是正計画（3つの対策）
+1. 即座に実施すべき対策（1週間以内）
+2. 短期的対策（1ヶ月以内）
+3. 中長期的対策（3ヶ月以内）
+#### コスト・リソース見積もり
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">RISK MATRIX</div>
+        <h2 class="section-title">重大度スコアマトリクス</h2>
+
+        <div class="matrix-container">
+            <table class="risk-matrix">
+                <thead>
+                    <tr>
+                        <th>影響度 ↓<br>発生確率 →</th>
+                        <th>1<br>極低</th>
+                        <th>2<br>低</th>
+                        <th>3<br>中</th>
+                        <th>4<br>高</th>
+                        <th>5<br>極高</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>5<br>致命的</th>
+                        <td class="risk-medium">5</td>
+                        <td class="risk-high">10</td>
+                        <td class="risk-high">15</td>
+                        <td class="risk-critical">20</td>
+                        <td class="risk-critical">25</td>
+                    </tr>
+                    <tr>
+                        <th>4<br>大</th>
+                        <td class="risk-low">4</td>
+                        <td class="risk-medium">8</td>
+                        <td class="risk-high">12</td>
+                        <td class="risk-high">16</td>
+                        <td class="risk-critical">20</td>
+                    </tr>
+                    <tr>
+                        <th>3<br>中</th>
+                        <td class="risk-low">3</td>
+                        <td class="risk-medium">6</td>
+                        <td class="risk-medium">9</td>
+                        <td class="risk-high">12</td>
+                        <td class="risk-high">15</td>
+                    </tr>
+                    <tr>
+                        <th>2<br>小</th>
+                        <td class="risk-low">2</td>
+                        <td class="risk-low">4</td>
+                        <td class="risk-medium">6</td>
+                        <td class="risk-medium">8</td>
+                        <td class="risk-high">10</td>
+                    </tr>
+                    <tr>
+                        <th>1<br>軽微</th>
+                        <td class="risk-low">1</td>
+                        <td class="risk-low">2</td>
+                        <td class="risk-low">3</td>
+                        <td class="risk-low">4</td>
+                        <td class="risk-medium">5</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0,0,0,0.02); border-radius: 4px;">
+            <h4 style="font-weight: 700; margin-bottom: 1rem;">重大度スコアの読み方</h4>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li><strong style="color: #A8E6CF;">1〜4点（低リスク）：</strong> 日常的な監視で対応可能</li>
+                <li><strong style="color: #FFD93D;">5〜9点（中リスク）：</strong> 定期的なレビューと予防策が必要</li>
+                <li><strong style="color: #FF8C42;">10〜15点（高リスク）：</strong> 優先的に是正計画を実施すべき</li>
+                <li><strong style="color: #E63946;">16〜25点（致命的リスク）：</strong> 即座に対策を講じないとプロジェクト失敗の可能性</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">注意点・活用ポイント</h2>
+
+        <div class="highlight-box">
+            <h3 style="font-weight: 700; margin-bottom: 1rem;">⚠️ 注意点</h3>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li><strong>出力後に現場での対応可否を確認：</strong> ChatGPTの是正計画はあくまで提案。現場の実情に合わせて、実現可能性とコストを必ず確認すること。</li>
+                <li><strong>重大度の評価基準をチームで統一：</strong> 「発生確率×影響度」以外にも独自の基準を設定可能。重要なのは、チーム全体で同じ基準を使い続けること。</li>
+                <li><strong>前月との比較で改善効果を可視化：</strong> 月次レビューでは、前月と今月の重大度ランキングを比較し、是正計画の効果を測定すること。</li>
+            </ul>
+        </div>
+
+        <div class="tip-box">
+            <h3 style="font-weight: 700; margin-bottom: 1rem;">💡 活用ポイント</h3>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li><strong>月次リスクダッシュボードとして活用：</strong> 重大度ランキング、前月からの変化、是正計画の進捗の3点セットで経営陣に報告。</li>
+                <li><strong>プロンプトをテンプレート化：</strong> 月次レビュー用のプロンプトを保存しておけば、毎月5分で最新レビュー資料が作成可能。</li>
+                <li><strong>進捗追跡で改善サイクルを回す：</strong> 是正計画に「実施状況」「完了予定日」「担当者」を追加し、PDCAサイクルを回す。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SERIES REVIEW</div>
+        <h2 class="section-title">シリーズ全体の振り返り</h2>
+
+        <div class="series-summary">
+            <h3>ChatGPTで始めるリスクマネジメント実践 全4回</h3>
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem;">
+                このシリーズでは、ChatGPTを活用してリスクマネジメントを劇的に効率化する4つのステップを学びました。
+                従来何時間もかかっていた作業が、合計わずか30分で完了する体制が整います。
+            </p>
+
+            <div class="series-grid">
+                <div class="series-item">
+                    <div class="series-item-number">第1回</div>
+                    <div class="series-item-title">リスク台帳づくり入門</div>
+                    <div class="series-item-desc">
+                        プロジェクト概要から50項目以上のリスクを自動生成。作業時間を80%削減し、網羅性95%以上を実現。
+                    </div>
+                </div>
+
+                <div class="series-item">
+                    <div class="series-item-number">第2回</div>
+                    <div class="series-item-title">予兆から対応手順の自動連鎖</div>
+                    <div class="series-item-desc">
+                        各リスクに対して「予兆→防止策→対応手順」を自動生成。リスクを"点"でなく"線"で管理する体制を構築。
+                    </div>
+                </div>
+
+                <div class="series-item">
+                    <div class="series-item-number">第3回</div>
+                    <div class="series-item-title">スケジュール/コスト影響シナリオ比較</div>
+                    <div class="series-item-desc">
+                        リスク発生時のスケジュール/コスト影響を3パターンで自動シミュレーション。「もしも」に備える力を強化。
+                    </div>
+                </div>
+
+                <div class="series-item">
+                    <div class="series-item-number">第4回</div>
+                    <div class="series-item-title">重大度スコア×是正計画自動出力</div>
+                    <div class="series-item-desc">
+                        月次レビューで重大度スコアを自動算出し、上位リスクの是正計画を生成。判断スピードを3倍向上。
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; padding: 2rem; background: rgba(255,255,255,0.05); border-radius: 4px;">
+                <h4 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--gold);">シリーズ全体の成果</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--electric);">80%</div>
+                        <div style="font-size: 0.9rem;">リスク洗い出し時間削減</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--electric);">95%</div>
+                        <div style="font-size: 0.9rem;">リスク網羅性向上</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--electric);">75%</div>
+                        <div style="font-size: 0.9rem;">月次レビュー時間削減</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--electric);">3倍</div>
+                        <div style="font-size: 0.9rem;">判断スピード向上</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="margin-bottom: 120px;">
+        <div class="final-cta">
+            <h3>リスクマネジメントを『負担』から『武器』に</h3>
+            <p>
+                このシリーズで学んだ4つのステップを実践すれば、リスクマネジメントの質が劇的に向上し、プロジェクトの成功確率が格段に上がります。
+                月次レビューの質を上げ、判断スピードを高めることで、プロジェクトの成功を最大化してください。
+                皆さんのプロジェクトが大きな成功を収めることを願っています！
+            </p>
+        </div>
+    </section>
+</body>
+</html>

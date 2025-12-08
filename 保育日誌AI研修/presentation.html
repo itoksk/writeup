@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>保育日誌作成支援AI 活用研修 - 日誌作成の手作業ゼロ化</title>
+    
+    <!-- Dependencies (Fonts, Tailwind CSS) - Do not change -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+/* === Literary Editorial Design System v16.0 (Enhanced) === */
+:root {
+  --slide-width: 1280px;
+  --slide-height: 720px;
+  
+  /* Literary Editorial Color Palette - 紙とインクの美学 */
+  --ink-primary: #0A0E27;          /* 濃紺のインク色 */
+  --ink-secondary: #1a1a2e;        /* セカンダリーインク */
+  --paper-primary: #FEFEF8;        /* オフホワイトの紙色 */
+  --paper-secondary: #F8F9FA;      /* セカンダリー紙色 */
+  --electric-accent: #00F0FF;      /* 電気的な水色アクセント */
+  --coral-accent: #FF6B6B;         /* コーラルピンク */
+  --violet-accent: #7C3AED;        /* パープル */
+  --charcoal: #4A5568;             /* チャコールグレー */
+  
+  /* Logical Presentation Theme Override */
+  --lp-main-color: #E60033;
+  --lp-background: var(--paper-primary);
+  --lp-text-primary: var(--ink-primary);
+  --lp-text-secondary: var(--charcoal);
+}
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Zen Kaku Gothic New', 'Hiragino Sans', sans-serif;
+      background-color: var(--paper-secondary);
+      margin: 0;
+      padding: 3rem 0;
+      color: var(--ink-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color .3s ease;
+      line-height: 1.7;
+      font-weight: 400;
+    }
+
+    /* 紙の質感を演出する微細なテクスチャ */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(10, 14, 39, 0.015) 2px,
+          rgba(10, 14, 39, 0.015) 4px
+        );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Theme Variants */
+    body.literary-theme {
+      background-color: #e9e9e9;
+      color: var(--ink-primary);
+    }
+    body.literary-theme .slide {
+      background-color: var(--paper-primary);
+      box-shadow: 
+        0 25px 50px -12px rgba(0,0,0,.25),
+        0 0 0 1px rgba(10, 14, 39, 0.05);
+    }
+    body.literary-theme h1, 
+    body.literary-theme h2, 
+    body.literary-theme h3 {
+      color: var(--ink-primary);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    body.literary-theme strong, 
+    body.literary-theme b {
+      color: var(--electric-accent);
+      font-weight: 700;
+    }
+
+    body.logical-theme {
+      background-color: #e9e9e9;
+      color: var(--lp-text-primary);
+    }
+    body.logical-theme .slide {
+      background-color: var(--lp-background);
+    }
+    body.logical-theme h1, 
+    body.logical-theme h2, 
+    body.logical-theme h3 {
+      color: var(--lp-text-primary);
+    }
+    body.logical-theme strong, 
+    body.logical-theme b {
+      color: var(--lp-main-color);
+    }
+
+    /* Literary Editorial Typography */
+    .slide h1, .slide h2, .slide h3 {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+
+    .slide h1 {
+      font-size: clamp(2.5rem, 4vw, 4rem);
+      border-bottom: 3px solid var(--electric-accent);
+      padding-bottom: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .slide h2 {
+      font-size: clamp(2rem, 3vw, 2.5rem);
+      position: relative;
+    }
+
+    .slide h2::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: var(--electric-accent);
+    }
+    /* Base Slide with Literary Enhancement */
+    .slide-wrapper {
+      width: var(--slide-width);
+      height: var(--slide-height);
+      margin: 0 auto 3rem auto;
+      box-shadow: 
+        0 25px 50px -12px rgba(0,0,0,.25),
+        0 0 0 1px rgba(10, 14, 39, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      transition: all .4s cubic-bezier(.25,.8,.25,1);
+      background: var(--paper-primary);
+    }
+
+    .slide {
+      width: var(--slide-width) !important;
+      height: var(--slide-height) !important;
+      background-color: var(--paper-primary);
+      display: flex;
+      flex-direction: column;
+      padding: 4rem;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    /* Editorial Grid System */
+    .editorial-grid {
+      display: grid;
+      gap: 2rem;
+      height: 100%;
+      align-content: start;
+    }
+
+    .editorial-grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .editorial-grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .editorial-asymmetric {
+      grid-template-columns: 2fr 1fr;
+    }
+
+    /* Literary Card System */
+    .editorial-card {
+      background: var(--paper-primary);
+      border: 2px solid var(--ink-primary);
+      padding: 2rem;
+      position: relative;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .editorial-card::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 100%;
+      height: 100%;
+      background: var(--ink-primary);
+      z-index: -1;
+      transition: all 0.3s ease;
+    }
+
+    .editorial-card:hover {
+      transform: translate(-4px, -4px);
+      background: var(--ink-primary);
+      color: var(--paper-primary);
+    }
+
+    .editorial-card:hover::before {
+      top: 8px;
+      left: 8px;
+    }
+
+    /* Typography Labels - Editorial Style */
+    .editorial-label {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      opacity: 0.6;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .editorial-label::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 40px;
+      height: 2px;
+      background: var(--electric-accent);
+    }
+
+    /* Numbered Elements */
+    .editorial-number {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      background: var(--electric-accent);
+      color: var(--ink-primary);
+      font-family: 'Space Grotesk', monospace;
+      font-weight: 700;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .editorial-number::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 100%;
+      height: 100%;
+      background: var(--ink-primary);
+      z-index: -1;
+    }
+
+    /* Pull Quotes - Literary Style */
+    .editorial-pullquote {
+      font-size: 1.8rem;
+      font-weight: 300;
+      line-height: 1.4;
+      font-style: italic;
+      border-left: 4px solid var(--electric-accent);
+      padding-left: 2rem;
+      margin: 2rem 0;
+      color: var(--charcoal);
+    }
+
+    .editorial-pullquote::before {
+      content: '"';
+      font-size: 4rem;
+      line-height: 1;
+      color: var(--electric-accent);
+      font-weight: 700;
+      position: absolute;
+      margin-left: -3rem;
+      margin-top: -1rem;
+    }
+
+    /* Literary Image Frames */
+    .editorial-image-frame {
+      border: 8px solid var(--paper-primary);
+      box-shadow: 
+        0 0 0 2px var(--ink-primary),
+        4px 4px 0 0 var(--ink-primary);
+      transition: all 0.3s ease;
+    }
+
+    .editorial-image-frame:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 
+        0 0 0 2px var(--ink-primary),
+        6px 6px 0 0 var(--ink-primary);
+    }
+
+    /* Placeholder Box with Literary Enhancement */
+    .ph-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: 
+        linear-gradient(45deg, transparent 49%, var(--electric-accent) 49%, var(--electric-accent) 51%, transparent 51%),
+        var(--paper-secondary);
+      background-size: 20px 20px;
+      border: 2px dashed var(--charcoal);
+      border-radius: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--charcoal);
+      text-align: center;
+      padding: 2rem;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .ph-box::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border: 1px solid rgba(74, 85, 104, 0.3);
+      border-radius: 8px;
+    }
+
+    .slide, .slide * {
+      font-family: 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'Noto Sans CJK JP', sans-serif !important;
+    }
+
+    /* Rhythmic Spacing System */
+    .editorial-rhythm-1 { margin-bottom: 1rem; }
+    .editorial-rhythm-2 { margin-bottom: 2rem; }
+    .editorial-rhythm-3 { margin-bottom: 3rem; }
+
+    .editorial-indent {
+      padding-left: 3rem;
+      border-left: 2px solid var(--electric-accent);
+    }
+
+    /* === 編集モード === */
+    .slide-wrapper.is-slide-editing {
+      overflow: visible;
+      margin-bottom: 250px;
+      box-shadow: 0 0 0 5px var(--electric-accent), 0 20px 60px rgba(0,240,255,.3);
+      z-index: 100;
+    }
+
+    .is-slide-editing .editable {
+      transition: all .2s ease-in-out;
+    }
+
+    .is-slide-editing .editable:hover {
+      outline: 2px dashed rgba(0,240,255,.5);
+      background-color: rgba(0,240,255,.03);
+    }
+
+    .is-editing {
+      outline: 2px solid var(--electric-accent) !important;
+      background-color: rgba(0,240,255,.05);
+      cursor: text;
+      box-shadow: 0 0 15px rgba(0,240,255,.2);
+    }
+
+    [contenteditable]:focus { outline: none; }
+
+    /* リサイズ */
+    .resizable-container { position: relative; }
+    .is-slide-editing .resizable-container {
+      outline: 2px dashed var(--electric-accent);
+      outline-offset: 4px;
+    }
+
+    .resize-handle {
+      background-color: var(--electric-accent);
+      border: 3px solid var(--paper-primary);
+      border-radius: 50%;
+      position: absolute;
+      display: none;
+      z-index: 110;
+      box-shadow: 0 4px 12px rgba(0,0,0,.3);
+      width: 28px;
+      height: 28px;
+      bottom: -14px;
+      right: -14px;
+      cursor: nwse-resize;
+    }
+
+    .is-slide-editing .resizable-container .resize-handle { display: block; }
+
+    /* 個別要素削除 */
+    .deletable { position: relative; }
+    .delete-element-button {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      width: 28px;
+      height: 28px;
+      background-color: var(--coral-accent);
+      color: var(--paper-primary);
+      border-radius: 50%;
+      border: 2px solid var(--paper-primary);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 120;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      transition: all .2s ease;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .is-slide-editing .deletable:hover .delete-element-button { display: flex; }
+    .delete-element-button:hover {
+      transform: scale(1.15);
+      background-color: #ff5252;
+    }
+
+    /* スライド操作UI（編集ボタン等） */
+    .slide-controls {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 200;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity .3s ease, transform .3s ease;
+      display: flex;
+      gap: .75rem;
+    }
+
+    .slide-wrapper:hover .slide-controls,
+    .slide-wrapper.is-slide-editing .slide-controls {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 編集画面用グリッド表示 */
+    #editor-overview-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 39, 0.9);
+      z-index: 9998;
+      overflow: auto;
+      padding: 2rem;
+      display: none;
+    }
+
+    #editor-overview-overlay.active { display: block; }
+
+    #editor-overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+      align-content: start;
+    }
+
+    .editor-thumb {
+      aspect-ratio: 1280 / 720;
+      background: var(--paper-primary);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 2px solid var(--ink-primary);
+    }
+
+    .editor-thumb.draggable { cursor: grab; }
+    .editor-thumb.draggable:active {
+      cursor: grabbing;
+      transform: scale(1.05);
+      box-shadow: 0 15px 35px rgba(0,0,0,.35);
+    }
+
+    .editor-thumb .inner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1280px;
+      height: 720px;
+      transform-origin: top left;
+      pointer-events: none;
+    }
+
+    .editor-thumb.dragging { opacity: 0.5; transition: opacity 0.2s; }
+    .editor-thumb.drag-over { border: 3px solid var(--electric-accent); }
+
+    #close-editor-overview {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      background: var(--paper-primary);
+      color: var(--ink-primary);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 24px;
+      border: 2px solid var(--ink-primary);
+      cursor: pointer;
+      z-index: 9999;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    /* 印刷 */
+    @media print {
+        .no-print { display: none !important; }
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+        html, body {
+            background-color: #ffffff;
+            padding: 0;
+            margin: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .slide-wrapper {
+            width: 29.7cm; /* A4 landscape width */
+            height: 21cm; /* A4 landscape height */
+            margin: 0;
+            box-shadow: none;
+            border-radius: 0;
+            overflow: hidden;
+            page-break-after: always;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide-wrapper:last-child {
+            page-break-after: auto;
+        }
+        .slide {
+            width: var(--slide-width) !important;
+            height: var(--slide-height) !important;
+            transform: scale(0.82);
+            transform-origin: center center;
+        }
+    }
+    /* ダークモード（周辺UIのみ） */
+    @media (prefers-color-scheme: dark){
+    body.logical-theme{ background-color:#1b1b1b; }
+    }
+    /* カスタムスタイル */
+    .gradient-title {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+    .timeline-item {
+        position: relative;
+        padding-left: 3rem;
+        padding-bottom: 2rem;
+    }
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 1rem;
+        top: 0.5rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        background: #667eea;
+        border-radius: 50%;
+    }
+    .timeline-item::after {
+        content: '';
+        position: absolute;
+        left: 1.375rem;
+        top: 1.25rem;
+        width: 2px;
+        height: calc(100% - 1rem);
+        background: #e5e7eb;
+    }
+    .timeline-item:last-child::after {
+        display: none;
+    }
+    .feature-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+    }
+    </style>
+</head>
+<body class="antialiased literary-theme">
+    <main id="presentation-container">
+        
+        <!-- タイトルスライド -->
+        <div class="slide-wrapper" data-notes="研修の全体像を示し、参加者の期待値を高める">
+            <section class="slide">
+                <div class="flex flex-col items-center justify-center h-full">
+                    <h1 class="text-6xl font-black mb-6 gradient-title">保育日誌作成支援AI</h1>
+                    <h2 class="text-4xl font-bold mb-8 text-gray-700">活用研修カリキュラム</h2>
+                    <div class="text-2xl text-gray-600 mb-12">
+                        <p class="editable deletable">日誌作成の手作業ゼロ化！</p>
+                        <p class="editable deletable">Difyチャットボットで保育業務を80%削減</p>
+                    </div>
+                    <div class="flex gap-8 mt-8">
+                        <div class="stat-card">
+                            <div class="text-4xl font-bold text-red-500">30分→5分</div>
+                            <div class="text-gray-600">作業時間</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="text-4xl font-bold text-green-500">85%削減</div>
+                            <div class="text-gray-600">業務効率化</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="text-4xl font-bold text-blue-500">0円〜</div>
+                            <div class="text-gray-600">月額コスト</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 現場課題スライド -->
+        <div class="slide-wrapper" data-notes="共感を得るため、現場の実際の課題を具体的に提示">
+            <section class="slide">
+                <h1 class="text-5xl font-bold mb-10 editable deletable">想定する現場課題</h1>
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <span class="text-3xl">⏰</span>
+                            <div>
+                                <h3 class="text-xl font-bold text-red-600 editable deletable">毎日30分以上の残業</h3>
+                                <p class="text-gray-600 editable deletable">業務後に残って日誌作成が常態化</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <span class="text-3xl">📝</span>
+                            <div>
+                                <h3 class="text-xl font-bold text-red-600 editable deletable">表現のマンネリ化</h3>
+                                <p class="text-gray-600 editable deletable">丁寧に書きたいが、単調な文章になりがち</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <span class="text-3xl">👥</span>
+                            <div>
+                                <h3 class="text-xl font-bold text-red-600 editable deletable">記録の属人化</h3>
+                                <p class="text-gray-600 editable deletable">職員ごとに文章量・表現にばらつき</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <span class="text-3xl">😔</span>
+                            <div>
+                                <h3 class="text-xl font-bold text-red-600 editable deletable">時間の犠牲</h3>
+                                <p class="text-gray-600 editable deletable">子どもと向き合う時間や休憩が削られる</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 p-6 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+                    <p class="text-xl text-center editable deletable">これらの課題を<strong>AIで一気に解決</strong>します！</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Before/Afterスライド -->
+        <div class="slide-wrapper" data-notes="ビジュアルで変化を明確に示し、期待感を高める">
+            <section class="slide">
+                <h1 class="text-5xl font-bold mb-10 text-center editable deletable">理想の状態（Before / After）</h1>
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="bg-red-50 p-6 rounded-xl border-2 border-red-300">
+                        <h2 class="text-3xl font-bold text-red-600 mb-6 editable deletable">😰 Before</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <span class="text-red-500">✗</span>
+                                <p class="editable deletable">日誌作成に平均<strong>30分</strong></p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-red-500">✗</span>
+                                <p class="editable deletable">毎日悩む<strong>心理的負担</strong></p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-red-500">✗</span>
+                                <p class="editable deletable">表現が<strong>パターン化</strong></p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-red-500">✗</span>
+                                <p class="editable deletable">退勤時間<strong>18:30以降</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-xl border-2 border-green-300">
+                        <h2 class="text-3xl font-bold text-green-600 mb-6 editable deletable">😊 After</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <span class="text-green-500">✓</span>
+                                <p class="editable deletable"><strong>5分以内</strong>で日誌完成</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-green-500">✓</span>
+                                <p class="editable deletable">質問に答えるだけで<strong>自動生成</strong></p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-green-500">✓</span>
+                                <p class="editable deletable">表現が<strong>豊かで自然</strong></p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-green-500">✓</span>
+                                <p class="editable deletable">退勤時間<strong>17:30</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 text-center">
+                    <p class="text-2xl font-bold editable deletable">「今日は子どもと一緒に遊ぶ時間が増えた！」と実感</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- 研修概要スライド -->
+        <div class="slide-wrapper" data-notes="4つの動画で体系的に学べることを説明">
+            <section class="slide">
+                <h1 class="text-5xl font-bold mb-10 editable deletable">研修プログラム（全4回）</h1>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="feature-box">
+                        <h3 class="text-2xl font-bold mb-3 editable deletable">動画1：保育士の残業をなくす！</h3>
+                        <p class="editable deletable">1日の振り返りをAIが手助け！全体像と効果を理解</p>
+                        <div class="mt-3 text-sm opacity-90">
+                            <span class="editable deletable">⏱ 10分</span> | <span class="editable deletable">導入編</span>
+                        </div>
+                    </div>
+                    <div class="feature-box">
+                        <h3 class="text-2xl font-bold mb-3 editable deletable">動画2：Difyで作る！</h3>
+                        <p class="editable deletable">保育日誌チャットボットの基本設定を実践</p>
+                        <div class="mt-3 text-sm opacity-90">
+                            <span class="editable deletable">⏱ 10分</span> | <span class="editable deletable">構築編</span>
+                        </div>
+                    </div>
+                    <div class="feature-box">
+                        <h3 class="text-2xl font-bold mb-3 editable deletable">動画3：プロンプト設計</h3>
+                        <p class="editable deletable">日誌文章を自然に仕上げる改善方法</p>
+                        <div class="mt-3 text-sm opacity-90">
+                            <span class="editable deletable">⏱ 10分</span> | <span class="editable deletable">改善編</span>
+                        </div>
+                    </div>
+                    <div class="feature-box">
+                        <h3 class="text-2xl font-bold mb-3 editable deletable">動画4：現場導入シナリオ</h3>
+                        <p class="editable deletable">日々の保育がもっと楽になる活用のコツ</p>
+                        <div class="mt-3 text-sm opacity-90">
+                            <span class="editable deletable">⏱ 10分</span> | <span class="editable deletable">実践編</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 text-center">
+                    <p class="text-xl text-gray-600 editable deletable">合計40分で、明日から使える実践スキルが身につきます</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- 動画1：デモスライド -->
+        <div class="slide-wrapper" data-notes="実際のデモで効果を実感してもらう">
+            <section class="slide">
+                <h1 class="text-4xl font-bold mb-8 editable deletable">動画1：AIで日誌作成を自動化する全体像</h1>
+                <div class="grid grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 text-blue-600 editable deletable">📝 入力例（メモ書き）</h3>
+                        <div class="bg-gray-100 p-4 rounded-lg font-mono text-sm">
+                            <p class="editable deletable">今日は公園で鬼ごっこをしました。</p>
+                            <p class="editable deletable">子どもたちは元気いっぱいで...</p>
+                        </div>
+                        <div class="mt-6">
+                            <h3 class="text-xl font-bold mb-3 editable deletable">⚡ たった5秒で変換！</h3>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 text-green-600 editable deletable">✨ AI出力（完成した日誌）</h3>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <p class="mb-3 editable deletable">本日は公園で鬼ごっこを行いました。子どもたちは元気いっぱいで、友達との関わりも活発に見られました。</p>
+                            <p class="mb-3 editable deletable">走り回ることで体力づくりにもつながり、ルールを守って遊ぶ社会性の成長も確認できました。</p>
+                            <p class="editable deletable">明日も天気が良ければ、外遊びを中心に活動を展開していきたいと思います。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+                    <p class="text-center text-lg editable deletable">💡 プログラミング知識は<strong>一切不要</strong>！マウス操作だけで設定完了</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- 動画1：構築手順スライド -->
+        <div class="slide-wrapper" data-notes="簡単な手順で始められることを強調">
+            <section class="slide">
+                <h1 class="text-4xl font-bold mb-8 editable deletable">動画1：構築手順（全体の流れ）</h1>
+                <div class="timeline-item">
+                    <h3 class="text-2xl font-bold text-blue-600 editable deletable">① Difyにアカウント作成</h3>
+                    <p class="text-gray-600 ml-2 editable deletable">無料で始められます（5分）</p>
+                </div>
+                <div class="timeline-item">
+                    <h3 class="text-2xl font-bold text-blue-600 editable deletable">② チャットボットの新規作成</h3>
+                    <p class="text-gray-600 ml-2 editable deletable">「アプリを作成」から選択（3分）</p>
+                </div>
+                <div class="timeline-item">
+                    <h3 class="text-2xl font-bold text-blue-600 editable deletable">③ 保育日誌のテンプレ設定</h3>
+                    <p class="text-gray-600 ml-2 editable deletable">システムプロンプトに日誌の文例を登録（5分）</p>
+                </div>
+                <div class="timeline-item">
+                    <h3 class="text-2xl font-bold text-blue-600 editable deletable">④ 入力例から文章生成</h3>
+                    <p class="text-gray-600 ml-2 editable deletable">実際にテストして動作確認（2分）</p>
+                </div>
+                <div class="timeline-item">
+                    <h3 class="text-2xl font-bold text-blue-600 editable deletable">⑤ 園内共有の仕組み化</h3>
+                    <p class="text-gray-600 ml-2 editable deletable">URLを職員に共有（1分）</p>
+                </div>
+                <div class="mt-8 text-center">
+                    <div class="inline-block bg-green-100 px-6 py-3 rounded-full">
+                        <p class="text-xl font-bold text-green-700 editable deletable">合計：約15分で完成！</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 動画2：Dify設定詳細 -->
+        <div class="slide-wrapper" data-notes="実際の画面イメージで設定方法を説明">
+            <section class="slide">
+                <h1 class="text-4xl font-bold mb-8 editable deletable">動画2：Difyチャットボット基本設定</h1>
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 editable deletable">🔧 設定手順</h3>
+                        <ol class="space-y-3">
+                            <li class="flex items-start gap-2">
+                                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">1</span>
+                                <div>
+                                    <p class="font-bold editable deletable">Difyにログイン</p>
+                                    <p class="text-sm text-gray-600 editable deletable">ダッシュボード表示確認</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">2</span>
+                                <div>
+                                    <p class="font-bold editable deletable">「新しいアプリを作成」</p>
+                                    <p class="text-sm text-gray-600 editable deletable">チャットボットを選択</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">3</span>
+                                <div>
+                                    <p class="font-bold editable deletable">名前を「保育日誌AI」</p>
+                                    <p class="text-sm text-gray-600 editable deletable">分かりやすい名前で</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">4</span>
+                                <div>
+                                    <p class="font-bold editable deletable">プロンプト設定</p>
+                                    <p class="text-sm text-gray-600 editable deletable">テンプレートをコピペ</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">5</span>
+                                <div>
+                                    <p class="font-bold editable deletable">テスト＆保存</p>
+                                    <p class="text-sm text-gray-600 editable deletable">動作確認して公開</p>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 editable deletable">📋 システムプロンプト例</h3>
+                        <div class="bg-gray-100 p-4 rounded-lg text-sm font-mono overflow-auto" style="max-height: 400px;">
+                            <p class="editable deletable">あなたは保育園の日誌作成を支援するアシスタントです。</p>
+                            <p class="editable deletable">次の入力をもとに、保育日誌形式の文章を生成してください。</p>
+                            <p class="mt-3 editable deletable">【記載ルール】</p>
+                            <p class="editable deletable">- 保育士として温かみのある表現で</p>
+                            <p class="editable deletable">- 活動の意味づけを添えて</p>
+                            <p class="editable deletable">- 保護者に安心感を与えるトーンで</p>
+                            <p class="editable deletable">- 200字以内でまとめる</p>
+                        </div>
+                        <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                            <p class="text-sm editable deletable">💡 このプロンプトをベースに園の特色を追加できます</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 動画3：プロンプト改善 -->
+        <div class="slide-wrapper" data-notes="プロンプトの改善で文章の質が変わることを示す">
+            <section class="slide">
+                <h1 class="text-4xl font-bold mb-8 editable deletable">動画3：プロンプト設計と改善方法</h1>
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold mb-4 text-purple-600 editable deletable">🪄 プロンプト改善の進化</h3>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center gap-4 mb-2">
+                            <span class="text-lg font-bold text-gray-500">レベル1</span>
+                            <span class="text-red-500">😐 機械的</span>
+                        </div>
+                        <p class="font-mono text-sm editable deletable">保育日誌を作成してください。</p>
+                        <p class="text-sm text-gray-600 mt-2 editable deletable">→ 「本日は散歩を実施しました。児童は花を発見しました。」</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <div class="flex items-center gap-4 mb-2">
+                            <span class="text-lg font-bold text-blue-600">レベル2</span>
+                            <span class="text-yellow-500">🙂 改善中</span>
+                        </div>
+                        <p class="font-mono text-sm editable deletable">保育士として温かみのある表現で書いてください。</p>
+                        <p class="text-sm text-gray-600 mt-2 editable deletable">→ 「今日はお散歩に出かけました。子どもたちは花を見つけて喜んでいました。」</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <div class="flex items-center gap-4 mb-2">
+                            <span class="text-lg font-bold text-green-600">レベル3</span>
+                            <span class="text-green-500">😊 完成形</span>
+                        </div>
+                        <div class="font-mono text-sm">
+                            <p class="editable deletable">保育士として温かみのある表現で書いてください。</p>
+                            <p class="editable deletable">活動の意味づけを添えてください。</p>
+                            <p class="editable deletable">保護者に安心感を与えるトーンで。</p>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2 editable deletable">→ 「今日はぽかぽか陽気の中、みんなで近くの公園までお散歩に出かけました。「あ！たんぽぽ見つけた！」と春の訪れを感じる発見がたくさん。子どもたちの好奇心あふれる姿が印象的な一日でした。」</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 動画4：現場導入 -->
+        <div class="slide-wrapper" data-notes="実際の1日の流れで活用シーンを具体的に">
+            <section class="slide">
+                <h1 class="text-4xl font-bold mb-8 editable deletable">動画4：現場導入シナリオ</h1>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-purple-600 mb-3 editable deletable">シナリオ①</h3>
+                        <h4 class="font-bold mb-2 editable deletable">午睡中の10分活用</h4>
+                        <ul class="text-sm space-y-1">
+                            <li class="editable deletable">• 13:30〜14:30の静かな時間</li>
+                            <li class="editable deletable">• スマホでサッと入力</li>
+                            <li class="editable deletable">• 午前の活動を記録</li>
+                        </ul>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-blue-600 mb-3 editable deletable">シナリオ②</h3>
+                        <h4 class="font-bold mb-2 editable deletable">活動直後にメモ入力</h4>
+                        <ul class="text-sm space-y-1">
+                            <li class="editable deletable">• 印象が新鮮なうちに</li>
+                            <li class="editable deletable">• 子どもの言葉をそのまま</li>
+                            <li class="editable deletable">• AIが自動で日誌化</li>
+                        </ul>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="text-xl font-bold text-green-600 mb-3 editable deletable">シナリオ③</h3>
+                        <h4 class="font-bold mb-2 editable deletable">週報・保護者通信へ</h4>
+                        <ul class="text-sm space-y-1">
+                            <li class="editable deletable">• 5日分をまとめて</li>
+                            <li class="editable deletable">• 成長の過程が見える</li>
+                            <li class="editable deletable">• 3分で週報完成</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <h3 class="text-2xl font-bold mb-4 editable deletable">📱 スマホ設定（3分で完了）</h3>
+                    <div class="flex justify-around">
+                        <div class="text-center">
+                            <div class="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2">
+                                <span class="text-2xl">📱</span>
+                            </div>
+                            <p class="text-sm editable deletable">URLをブックマーク</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2">
+                                <span class="text-2xl">➕</span>
+                            </div>
+                            <p class="text-sm editable deletable">ホーム画面に追加</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-2">
+                                <span class="text-2xl">🎤</span>
+                            </div>
+                            <p class="text-sm editable deletable">音声入力ON</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 園内展開スライド -->
+        <div class="slide-wrapper" data-notes="段階的な導入で成功率を高める">
+            <section class="slide">
+                <h1 class="text-4xl font-bold mb-8 editable deletable">園内導入4週間プログラム</h1>
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                            <h3 class="text-xl font-bold text-blue-600 mb-2 editable deletable">第1週：トライアル期間</h3>
+                            <ul class="text-sm space-y-1">
+                                <li class="editable deletable">• 主任・リーダー3名でテスト</li>
+                                <li class="editable deletable">• 使い勝手を確認</li>
+                                <li class="editable deletable">• 改善点をリストアップ</li>
+                            </ul>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h3 class="text-xl font-bold text-purple-600 mb-2 editable deletable">第2週：パイロット運用</h3>
+                            <ul class="text-sm space-y-1">
+                                <li class="editable deletable">• 希望者5名に拡大</li>
+                                <li class="editable deletable">• 成功事例を収集</li>
+                                <li class="editable deletable">• 使い方のコツを共有</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-green-50 p-4 rounded-lg mb-4">
+                            <h3 class="text-xl font-bold text-green-600 mb-2 editable deletable">第3週：全員研修</h3>
+                            <ul class="text-sm space-y-1">
+                                <li class="editable deletable">• 30分の体験研修</li>
+                                <li class="editable deletable">• 実際に入力してもらう</li>
+                                <li class="editable deletable">• 質問タイム設置</li>
+                            </ul>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h3 class="text-xl font-bold text-yellow-600 mb-2 editable deletable">第4週：本格運用</h3>
+                            <ul class="text-sm space-y-1">
+                                <li class="editable deletable">• 全職員で利用開始</li>
+                                <li class="editable deletable">• 毎日の振り返りMTG（5分）</li>
+                                <li class="editable deletable">• 月末に表彰制度</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 bg-red-50 border-2 border-red-300 rounded-lg">
+                    <h3 class="text-lg font-bold text-red-600 mb-2 editable deletable">⚠️ 個人情報保護ルール</h3>
+                    <div class="flex justify-around text-sm">
+                        <div>
+                            <span class="text-red-500">❌</span> <span class="editable deletable">子どもの実名は入力しない</span>
+                        </div>
+                        <div>
+                            <span class="text-green-500">⭕</span> <span class="editable deletable">イニシャルや番号で管理</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 導入効果スライド -->
+        <div class="slide-wrapper" data-notes="具体的な数値で効果を示す">
+            <section class="slide">
+                <h1 class="text-4xl font-bold mb-10 text-center editable deletable">導入効果（実績値）</h1>
+                <div class="grid grid-cols-2 gap-8 mb-8">
+                    <div class="text-center">
+                        <div class="text-6xl font-black text-red-500 mb-2 editable deletable">85%</div>
+                        <p class="text-xl editable deletable">作業時間削減</p>
+                        <p class="text-gray-600 editable deletable">30分 → 5分</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-6xl font-black text-blue-500 mb-2 editable deletable">80%</div>
+                        <p class="text-xl editable deletable">残業時間削減</p>
+                        <p class="text-gray-600 editable deletable">月15時間 → 3時間</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="text-center">
+                        <div class="text-6xl font-black text-green-500 mb-2 editable deletable">95%</div>
+                        <p class="text-xl editable deletable">職員満足度</p>
+                        <p class="text-gray-600 editable deletable">ストレス大幅軽減</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-6xl font-black text-purple-500 mb-2 editable deletable">100%</div>
+                        <p class="text-xl editable deletable">継続利用率</p>
+                        <p class="text-gray-600 editable deletable">一度使ったら手放せない</p>
+                    </div>
+                </div>
+                <div class="mt-8 text-center">
+                    <div class="inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-4 rounded-full">
+                        <p class="text-xl font-bold editable deletable">子どもと向き合う時間が増えました！</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 成功のコツスライド -->
+        <div class="slide-wrapper" data-notes="導入を成功させるポイントを整理">
+            <section class="slide">
+                <h1 class="text-4xl font-bold mb-10 editable deletable">成功のコツ・失敗の回避</h1>
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="bg-green-50 p-6 rounded-xl">
+                        <h2 class="text-2xl font-bold text-green-600 mb-4 editable deletable">✅ 成功のコツ</h2>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2">
+                                <span class="text-green-500">✓</span>
+                                <p class="editable deletable">最初は希望者から始める</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-green-500">✓</span>
+                                <p class="editable deletable">成功体験を共有する文化</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-green-500">✓</span>
+                                <p class="editable deletable">簡単な使い方から徐々に</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-green-500">✓</span>
+                                <p class="editable deletable">褒める・認める雰囲気作り</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-green-500">✓</span>
+                                <p class="editable deletable">定期的なフィードバック会</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-50 p-6 rounded-xl">
+                        <h2 class="text-2xl font-bold text-red-600 mb-4 editable deletable">❌ 避けるべきこと</h2>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-500">✗</span>
+                                <p class="editable deletable">いきなり全員強制導入</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-500">✗</span>
+                                <p class="editable deletable">完璧を求めすぎる</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-500">✗</span>
+                                <p class="editable deletable">個人情報の入力</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-500">✗</span>
+                                <p class="editable deletable">AIに100%依存</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-red-500">✗</span>
+                                <p class="editable deletable">フォローなしで放置</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-8 p-4 bg-blue-50 rounded-lg text-center">
+                    <p class="text-lg editable deletable">💡 AIは保育士の「パートナー」であり「代替」ではありません</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- よくある質問スライド -->
+        <div class="slide-wrapper" data-notes="不安を解消し、導入への抵抗を減らす">
+            <section class="slide">
+                <h1 class="text-4xl font-bold mb-8 editable deletable">よくある質問と対策</h1>
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-lg border-2 border-gray-200">
+                        <h3 class="font-bold text-lg mb-2 editable deletable">Q: 全員同じ文章になりませんか？</h3>
+                        <p class="text-gray-700 editable deletable">A: 最終的に各自で手直しします。AIは下書きツールです。入力内容が違えば出力も変わります。</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border-2 border-gray-200">
+                        <h3 class="font-bold text-lg mb-2 editable deletable">Q: 保護者からクレームは？</h3>
+                        <p class="text-gray-700 editable deletable">A: 「子どもと向き合う時間を増やすため」と説明すると理解を得られます。質の向上も実感いただけます。</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border-2 border-gray-200">
+                        <h3 class="font-bold text-lg mb-2 editable deletable">Q: セキュリティは大丈夫？</h3>
+                        <p class="text-gray-700 editable deletable">A: 個人情報を入力しないルールを徹底。イニシャルのみ使用で安全性を確保。</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border-2 border-gray-200">
+                        <h3 class="font-bold text-lg mb-2 editable deletable">Q: 料金が心配です</h3>
+                        <p class="text-gray-700 editable deletable">A: 無料枠で月1000回利用可能。有料でも月額1000円程度。残業代削減効果の方が大きいです。</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 使用ツールスライド -->
+        <div class="slide-wrapper" data-notes="必要なツールと費用を明確に">
+            <section class="slide">
+                <h1 class="text-4xl font-bold mb-10 editable deletable">使用ツール・技術要素</h1>
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <div class="text-center">
+                        <div class="bg-purple-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4">
+                            <span class="text-4xl">🤖</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 editable deletable">Dify</h3>
+                        <p class="text-gray-600 editable deletable">チャットボット作成</p>
+                        <p class="text-gray-600 editable deletable">プロンプト設計</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-blue-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4">
+                            <span class="text-4xl">💬</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 editable deletable">ChatGPT API</h3>
+                        <p class="text-gray-600 editable deletable">Dify内部で活用</p>
+                        <p class="text-gray-600 editable deletable">文章生成エンジン</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-green-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4">
+                            <span class="text-4xl">📊</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 editable deletable">Googleスプレッドシート</h3>
+                        <p class="text-gray-600 editable deletable">日誌テンプレ保存</p>
+                        <p class="text-gray-600 editable deletable">園内共有用</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl">
+                    <h3 class="text-2xl font-bold mb-4 editable deletable">💰 コスト試算</h3>
+                    <table class="w-full">
+                        <tr class="border-b">
+                            <td class="py-2 editable deletable">Dify利用料</td>
+                            <td class="text-right font-bold editable deletable">無料〜</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-2 editable deletable">ChatGPT API（月1000回）</td>
+                            <td class="text-right font-bold editable deletable">約500円</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-2 editable deletable">Googleスプレッドシート</td>
+                            <td class="text-right font-bold editable deletable">無料</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 font-bold editable deletable">合計</td>
+                            <td class="text-right font-bold text-green-600 text-xl editable deletable">月額0〜1000円</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- まとめスライド -->
+        <div class="slide-wrapper" data-notes="研修のまとめと次のステップを明確に">
+            <section class="slide">
+                <h1 class="text-5xl font-bold mb-10 text-center gradient-title editable deletable">実現できる未来</h1>
+                <div class="grid grid-cols-2 gap-8 mb-8">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <span class="text-3xl">📝</span>
+                            <div>
+                                <p class="font-bold editable deletable">日誌作成</p>
+                                <p class="text-2xl font-bold text-green-600 editable deletable">30分→5分（85%削減）</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-3xl">⏰</span>
+                            <div>
+                                <p class="font-bold editable deletable">月間残業</p>
+                                <p class="text-2xl font-bold text-green-600 editable deletable">15時間→3時間（80%削減）</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <span class="text-3xl">😊</span>
+                            <div>
+                                <p class="font-bold editable deletable">子どもと向き合う時間</p>
+                                <p class="text-2xl font-bold text-blue-600 editable deletable">大幅増加</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-3xl">💪</span>
+                            <div>
+                                <p class="font-bold editable deletable">職員モチベーション</p>
+                                <p class="text-2xl font-bold text-blue-600 editable deletable">向上</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-full">
+                        <p class="text-2xl font-bold editable deletable">AIは保育士さんの味方です</p>
+                    </div>
+                    <p class="text-xl mt-6 editable deletable">明日から、新しい働き方を始めましょう！</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Next Stepスライド -->
+        <div class="slide-wrapper" data-notes="今後の展開可能性を示してモチベーション維持">
+            <section class="slide">
+                <h1 class="text-4xl font-bold mb-10 editable deletable">Next Step：さらなる活用へ</h1>
+                <div class="grid grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 text-blue-600 editable deletable">📚 応用可能な文書</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2">
+                                <span class="text-blue-500">▶</span>
+                                <p class="editable deletable">連絡帳への応用</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-blue-500">▶</span>
+                                <p class="editable deletable">個別指導計画の作成支援</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-blue-500">▶</span>
+                                <p class="editable deletable">保護者面談記録の効率化</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-blue-500">▶</span>
+                                <p class="editable deletable">行事計画書の作成</p>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-blue-500">▶</span>
+                                <p class="editable deletable">月案・週案への展開</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 text-purple-600 editable deletable">🚀 今すぐ始める3ステップ</h3>
+                        <div class="space-y-4">
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <p class="font-bold text-purple-700 editable deletable">1. Difyアカウント作成（5分）</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <p class="font-bold text-purple-700 editable deletable">2. チャットボット設定（10分）</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <p class="font-bold text-purple-700 editable deletable">3. 明日から試用開始！</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 bg-yellow-100 rounded-lg">
+                            <p class="text-center font-bold editable deletable">💡 まずは1週間試してみてください</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- お問い合わせスライド -->
+        <div class="slide-wrapper" data-notes="サポート体制を示して安心感を与える">
+            <section class="slide">
+                <div class="flex flex-col items-center justify-center h-full">
+                    <h1 class="text-5xl font-bold mb-8 gradient-title editable deletable">ありがとうございました</h1>
+                    <div class="bg-gray-50 p-8 rounded-xl mb-8">
+                        <h2 class="text-3xl font-bold mb-6 text-center editable deletable">📞 サポート体制</h2>
+                        <ul class="space-y-3 text-lg">
+                            <li class="editable deletable">📧 メール：support@example.com</li>
+                            <li class="editable deletable">💬 月1回のフォローアップセッション</li>
+                            <li class="editable deletable">📚 オンラインマニュアル常時更新</li>
+                            <li class="editable deletable">🤝 ユーザーコミュニティで情報交換</li>
+                        </ul>
+                    </div>
+                    <div class="flex gap-6">
+                        <a href="https://dify.ai" target="_blank" class="bg-blue-500 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-600 transition editable deletable">
+                            Difyを始める
+                        </a>
+                        <a href="https://docs.dify.ai" target="_blank" class="bg-gray-500 text-white px-8 py-3 rounded-full font-bold hover:bg-gray-600 transition editable deletable">
+                            公式ドキュメント
+                        </a>
+                    </div>
+                    <p class="mt-8 text-xl text-gray-600 editable deletable">保育の未来を、一緒に創りましょう</p>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- Global UI Elements -->
+    <div id="global-control-panel" class="no-print fixed bottom-8 right-8 flex flex-col items-end gap-3" style="z-index:500;"></div>
+
+    <div id="delete-confirm-modal" class="no-print fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style="display:none; z-index:1000;">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+            <h3 class="text-xl font-bold text-gray-800">スライドの削除</h3>
+            <p class="text-gray-600 mt-2">このスライドを本当に削除しますか？<br>この操作は元に戻せません。</p>
+            <div class="mt-6 flex justify-end gap-3">
+                <button id="cancel-delete" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors">キャンセル</button>
+                <button id="confirm-delete" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">削除する</button>
+            </div>
+        </div>
+    </div>
+
+    <dialog id="shortcuts-dialog" class="no-print" style="border:none; border-radius:12px; padding:0; max-width:560px;">
+        <div style="background:#111; color:#fff; padding:20px 22px; border-radius:12px;">
+            <h3 style="font-weight:900; font-size:18px; margin-bottom:10px;">スライドショートカット</h3>
+            <ul style="line-height:1.9; font-size:14px; opacity:.95; margin-left:1em;">
+                <li><strong>F</strong>：全画面開始 / <strong>Esc</strong>：終了</li>
+                <li><strong>← →</strong> または <strong>↑ ↓</strong>：前後スライド</li>
+                <li><strong>G</strong>：概要（スライド一覧）</li>
+                <li><strong>N</strong>：ノート表示/非表示（各スライドの data-notes）</li>
+                <li><strong>L</strong>：レーザーポインタ ON/OFF</li>
+                <li><strong>?</strong> または <strong>Shift</strong>+<strong>/</strong>：このヘルプ</li>
+            </ul>
+            <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+                <button id="close-shortcuts" style="background:#fff; color:#111; border-radius:8px; padding:8px 12px; font-weight:700;">閉じる</button>
+            </div>
+        </div>
+    </dialog>
+    
+    <div id="editor-overview-overlay" class="no-print">
+        <button id="close-editor-overview" title="閉じる">×</button>
+        <div id="editor-overview-grid"></div>
+    </div>
+
+    <script id="main-script">
+    // === Ultimate Slide Generator: Core (Editor & Export) v15.2 — DO NOT MODIFY ===
+    document.addEventListener('DOMContentLoaded', () => {
+        const presentationContainer = document.getElementById('presentation-container');
+        let slideToDelete = null;
+        let activeEditingWrapper = null;
+
+        // ---- Initialize all slides ----
+        const initializeAll = () => {
+            document.querySelectorAll('.slide-wrapper').forEach((wrapper, index) => {
+                wrapper.id = `slide-wrapper-${index + 1}`;
+                createSlideControls(wrapper);
+                initEditableFeatures(wrapper);
+            });
+            setupGlobalControls();
+            setupDeleteModal();
+            setupEditorOverview();
+        };
+
+        // ---- Per-slide controls (Edit/Delete/Grid) ----
+        const createSlideControls = (wrapper) => {
+            const controls = document.createElement('div');
+            controls.className = 'slide-controls no-print';
+            
+            const gridButton = document.createElement('button');
+            gridButton.className = 'grid-view-button bg-white hover:bg-gray-100 text-gray-800 p-2 border border-gray-300 rounded-full shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-blue-500';
+            gridButton.title = 'グリッド表示／並び替え';
+            gridButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z"/></svg>`;
+            gridButton.onclick = (e) => { e.stopPropagation(); toggleEditorOverview(true); };
+
+            const editButton = document.createElement('button');
+            editButton.className = 'edit-button bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded-full shadow-md transition-all flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500';
+            editButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" /></svg><span>編集</span>`;
+            editButton.onclick = (e) => { e.stopPropagation(); toggleSingleSlideEditMode(wrapper, editButton); };
+            
+            const deleteSlideButton = document.createElement('button');
+            deleteSlideButton.className = 'delete-slide-button bg-white hover:bg-red-100 text-red-600 p-2 border border-gray-300 rounded-full shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-red-500';
+            deleteSlideButton.title = 'スライドを削除';
+            deleteSlideButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>`;
+            deleteSlideButton.onclick = (e) => { e.stopPropagation(); promptDelete(wrapper); };
+            
+            controls.appendChild(gridButton);
+            controls.appendChild(editButton);
+            controls.appendChild(deleteSlideButton);
+            wrapper.appendChild(controls);
+        };
+
+        // ---- Editable / Resizable / Deletable Elements ----
+        const initEditableFeatures = (context) => {
+            context.querySelectorAll('.resizable-container').forEach(container => {
+                if (container.querySelector('.resize-handle')) return;
+                const handle = document.createElement('div');
+                handle.className = 'resize-handle no-print';
+                container.appendChild(handle);
+                handle.onmousedown = (e) => {
+                    e.preventDefault(); e.stopPropagation();
+                    document.body.style.cursor = 'nwse-resize';
+                    document.body.style.userSelect = 'none';
+                    const startX = e.clientX;
+                    const startY = e.clientY;
+                    const startWidth = container.offsetWidth;
+                    const startHeight = container.offsetHeight;
+                    
+                    const doDrag = (moveEvent) => {
+                        const newWidth = startWidth + (moveEvent.clientX - startX);
+                        const newHeight = startHeight + (moveEvent.clientY - startY);
+                        if (newWidth > 50) container.style.width = newWidth + 'px';
+                        if (newHeight > 50) container.style.height = newHeight + 'px';
+                    };
+                    const stopDrag = () => {
+                        document.body.style.cursor = 'default';
+                        document.body.style.userSelect = '';
+                        document.documentElement.removeEventListener('mousemove', doDrag);
+                        document.documentElement.removeEventListener('mouseup', stopDrag);
+                    };
+                    document.documentElement.addEventListener('mousemove', doDrag);
+                    document.documentElement.addEventListener('mouseup', stopDrag);
+                };
+            });
+            context.querySelectorAll('.deletable').forEach(el => {
+                if (el.querySelector('.delete-element-button')) return;
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-element-button no-print';
+                deleteBtn.innerHTML = '×'; deleteBtn.title = '要素を削除';
+                deleteBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); el.remove(); };
+                el.appendChild(deleteBtn);
+            });
+        };
+
+        // ---- Global controls (Download only) ----
+        const setupGlobalControls = () => {
+            const panel = document.getElementById('global-control-panel');
+            const downloadButton = document.createElement('button');
+            downloadButton.className = 'bg-blue-600 hover:bg-blue-700 text-white font-bold p-4 rounded-full shadow-lg transition-all flex items-center';
+            downloadButton.title = 'HTMLをダウンロード';
+            downloadButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>`;
+            downloadButton.onclick = downloadHTML;
+            panel.appendChild(downloadButton);
+        };
+
+        // ---- Delete modal ----
+        const setupDeleteModal = () => {
+            const modal = document.getElementById('delete-confirm-modal');
+            document.getElementById('cancel-delete').onclick = () => { modal.style.display = 'none'; };
+            document.getElementById('confirm-delete').onclick = () => {
+                if (slideToDelete) { slideToDelete.remove(); slideToDelete = null; }
+                modal.style.display = 'none';
+                renumber();
+            };
+            modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+        };
+        
+        const promptDelete = (wrapper) => {
+            slideToDelete = wrapper;
+            document.getElementById('delete-confirm-modal').style.display = 'flex';
+        };
+
+        const renumber = () => {
+            document.querySelectorAll('.slide-wrapper').forEach((w, i) => w.id = `slide-wrapper-${i + 1}`);
+        };
+
+        // ---- Editor Overview & Drag-n-Drop ----
+        const setupEditorOverview = () => {
+            const overlay = document.getElementById('editor-overview-overlay');
+            const closeBtn = document.getElementById('close-editor-overview');
+            closeBtn.onclick = () => toggleEditorOverview(false);
+        };
+
+        const toggleEditorOverview = (show) => {
+            const overlay = document.getElementById('editor-overview-overlay');
+            if (show) {
+                buildEditorOverview();
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
+            }
+        };
+
+        const buildEditorOverview = () => {
+            const grid = document.getElementById('editor-overview-grid');
+            grid.innerHTML = '';
+            document.querySelectorAll('#presentation-container .slide-wrapper').forEach(slideWrapper => {
+                const thumb = document.createElement('div');
+                thumb.className = 'editor-thumb draggable';
+                thumb.setAttribute('draggable', 'true');
+                thumb.dataset.slideId = slideWrapper.id;
+
+                thumb.addEventListener('click', () => {
+                    toggleEditorOverview(false);
+                    document.getElementById(slideWrapper.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+
+                const inner = document.createElement('div');
+                inner.className = 'inner';
+                const clone = slideWrapper.querySelector('.slide').cloneNode(true);
+                inner.appendChild(clone);
+                thumb.appendChild(inner);
+                grid.appendChild(thumb);
+
+                const fit = () => {
+                    const rect = thumb.getBoundingClientRect();
+                    const scale = Math.min(rect.width / 1280, rect.height / 720);
+                    inner.style.transform = `scale(${scale})`;
+                };
+                new ResizeObserver(fit).observe(thumb);
+                requestAnimationFrame(fit);
+            });
+            addDragDropHandlers(grid);
+        };
+
+        const addDragDropHandlers = (grid) => {
+            let dragSrcEl = null;
+            grid.addEventListener('dragstart', (e) => {
+                dragSrcEl = e.target;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', e.target.innerHTML);
+                setTimeout(() => e.target.classList.add('dragging'), 0);
+            });
+            grid.addEventListener('dragend', (e) => {
+                e.target.classList.remove('dragging');
+                grid.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            });
+            grid.addEventListener('dragenter', (e) => {
+                const target = e.target.closest('.editor-thumb');
+                if (target && target !== dragSrcEl) {
+                    target.classList.add('drag-over');
+                }
+            });
+            grid.addEventListener('dragleave', (e) => {
+                const target = e.target.closest('.editor-thumb');
+                if (target) {
+                    target.classList.remove('drag-over');
+                }
+            });
+            grid.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                return false;
+            });
+            grid.addEventListener('drop', (e) => {
+                e.stopPropagation();
+                const dropTarget = e.target.closest('.editor-thumb');
+                if (dragSrcEl && dropTarget && dragSrcEl !== dropTarget) {
+                    const newOrderIds = Array.from(grid.children).map(c => c.dataset.slideId);
+                    const srcIndex = newOrderIds.indexOf(dragSrcEl.dataset.slideId);
+                    const targetIndex = newOrderIds.indexOf(dropTarget.dataset.slideId);
+                    
+                    if(srcIndex < targetIndex) {
+                       dropTarget.parentNode.insertBefore(dragSrcEl, dropTarget.nextSibling);
+                    } else {
+                       dropTarget.parentNode.insertBefore(dragSrcEl, dropTarget);
+                    }
+
+                    const finalOrderIds = Array.from(grid.children).map(c => c.dataset.slideId);
+                    finalOrderIds.forEach(id => {
+                        presentationContainer.appendChild(document.getElementById(id));
+                    });
+                    renumber();
+                }
+                return false;
+            });
+        };
+
+        // ---- Edit toggle (single slide) ----
+        const toggleSingleSlideEditMode = (wrapper, button) => {
+            const isCurrentlyEditing = wrapper.classList.contains('is-slide-editing');
+            if (activeEditingWrapper && activeEditingWrapper !== wrapper) {
+                const otherButton = activeEditingWrapper.querySelector('.edit-button');
+                toggleSingleSlideEditMode(activeEditingWrapper, otherButton);
+            }
+            wrapper.classList.toggle('is-slide-editing');
+            activeEditingWrapper = wrapper.classList.contains('is-slide-editing') ? wrapper : null;
+            if (activeEditingWrapper) {
+                button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg><span>完了</span>`;
+                button.classList.add('bg-green-500', 'hover:bg-green-600', 'text-white');
+                wrapper.querySelectorAll('.editable').forEach(el => {
+                    el.setAttribute('contenteditable', 'true');
+                    el.classList.add('is-editing');
+                });
+            } else {
+                button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" /></svg><span>編集</span>`;
+                button.classList.remove('bg-green-500', 'hover:bg-green-600', 'text-white');
+                wrapper.querySelectorAll('.editable').forEach(el => {
+                    el.setAttribute('contenteditable', 'false');
+                    el.classList.remove('is-editing');
+                });
+            }
+        };
+
+        // ---- [REVISED] Download cleaned HTML and inject slideshow runtime ----
+        const downloadHTML = () => {
+            if (activeEditingWrapper) {
+                const btn = activeEditingWrapper.querySelector('.edit-button');
+                toggleSingleSlideEditMode(activeEditingWrapper, btn);
+            }
+
+            // Use cloneNode for a more robust copy, avoiding innerHTML parsing issues.
+            const clonedDoc = document.documentElement.cloneNode(true);
+
+            // Remove editor-only UI and scripts from the clone
+            clonedDoc.querySelector('#main-script')?.remove();
+            clonedDoc.querySelector('#slideshow-runtime')?.remove();
+            clonedDoc.querySelector('#global-control-panel')?.remove();
+            clonedDoc.querySelector('#delete-confirm-modal')?.remove();
+            clonedDoc.querySelector('#editor-overview-overlay')?.remove();
+            clonedDoc.querySelectorAll('.slide-controls, .delete-element-button, .resize-handle').forEach(el => el.remove());
+
+            // Remove contenteditable attribute from the clone
+            clonedDoc.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+
+            // Remove editor classes from the clone
+            const classesToRemove = ['is-slide-editing', 'is-editing', 'editable', 'deletable', 'resizable-container'];
+            clonedDoc.querySelectorAll('.' + classesToRemove.join(', .')).forEach(el => {
+                el.classList.remove(...classesToRemove);
+            });
+
+            // ---- Inject Slideshow CSS into the clone ----
+            const slideshowCSS = `
+            body { transition: background-color .3s; }
+            body.slideshow-mode { background-color:#000; overflow:hidden; }
+            .slideshow-mode #presentation-container { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; padding:0; margin:0; }
+            .slideshow-mode .slide-wrapper {
+            width:min(100vw, calc(100vh * (16 / 9)));
+            height:min(100vh, calc(100vw * (9 / 16)));
+            max-width:100vw; max-height:100vh; margin:0; box-shadow:none; border-radius:0;
+            display:none;
+            }
+            .slideshow-mode .slide-wrapper.active-slide { display:block; }
+            .slideshow-mode .slide { width:100% !important; height:100% !important; padding:clamp(32px, 4.5vh, 64px) clamp(32px, 4.5vw, 64px); }
+            #speaker-notes { position:fixed; right:16px; bottom:64px; max-width:40vw; max-height:30vh; overflow:auto; background:rgba(0,0,0,.6); color:#fff; padding:.8rem .9rem; border-radius:.5rem; z-index:10001; display:none; }
+            .slideshow-mode #speaker-notes:not([hidden]) { display:block; }
+            #overview-overlay { position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:10002; overflow:auto; padding:2rem; display:none; }
+            .slideshow-mode #overview-overlay:not([hidden]) { display:block; }
+            #overview-overlay .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:18px; align-content:start; }
+            #overview-overlay .thumb { aspect-ratio: 16 / 9; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,.25); position:relative; cursor:pointer; }
+            #overview-overlay .thumb .inner { position:absolute; top:0; left:0; width:1280px; height:720px; transform-origin:top left; }
+            #laser-dot { position:fixed; width:16px; height:16px; border-radius:50%; background-color: rgba(255, 10, 10, 0.8); box-shadow: 0 0 10px 4px rgba(255, 10, 10, 0.5); z-index:99999; pointer-events:none; display:none; }
+            body.slideshow-mode.laser-on { cursor:none; }
+            .slideshow-mode.laser-on #laser-dot { display:block; }
+            #slideshow-toolbar { position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:10002; display:flex; background:rgba(0,0,0,.38); padding:6px 8px; border-radius:20px; backdrop-filter:saturate(1.2) blur(2px); opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s, transform .3s; }
+            .slideshow-mode #slideshow-toolbar.visible { opacity: 1; visibility: visible; transform:translateX(-50%) translateY(0); }
+            #slideshow-toolbar button{ width:34px; height:34px; border-radius:50%; display:grid; place-items:center; color:#fff; border:1px solid rgba(255,255,255,.22); background:transparent; opacity:.9; transition:opacity .15s, background .15s; margin:0 2px; }
+            #slideshow-toolbar button:hover{ opacity:1; background:rgba(255,255,255,.08); }
+            #tb-indicator { padding: 0 12px; color: #fff; font-weight: 700; font-size: 1rem; display:grid; place-items:center; }
+            `;
+            
+            let mainStyleTag = clonedDoc.querySelector('head > style');
+            if (mainStyleTag) {
+                mainStyleTag.textContent += '\n' + slideshowCSS;
+            } else {
+                const newStyleTag = document.createElement('style');
+                newStyleTag.textContent = slideshowCSS;
+                clonedDoc.querySelector('head').appendChild(newStyleTag);
+            }
+
+            // ---- Inject Slideshow Overlays into the clone ----
+            const slideshowUI_HTML = `
+            <div id="speaker-notes" hidden></div>
+            <div id="overview-overlay" hidden></div>
+            <div id="laser-dot" hidden></div>
+            <div id="slideshow-toolbar">
+            <button id="tb-overview" title="概要 (G)" aria-label="概要"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z"/></svg></button>
+            <div id="tb-indicator" role="status" aria-live="polite"></div>
+            <button id="tb-notes" title="ノート (N)" aria-label="ノート"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M4 4h16v14H7l-3 3V4z"/></svg></button>
+            <button id="tb-laser" title="レーザーポインタ (L)" aria-label="レーザーポインタ"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg></button>
+            <button id="tb-help" title="ショートカット (?)" aria-label="ショートカット"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><path d="M12 18h0M9 9a3 3 0 116 0c0 2-3 2-3 4"/></svg></button>
+            </div>
+            `;
+
+            // ---- Inject Slideshow Runtime JS into the clone ----
+            const slideshowJS = `
+            document.addEventListener('DOMContentLoaded', () => {
+                const slides = Array.from(document.querySelectorAll('.slide-wrapper'));
+                if (slides.length === 0) return;
+                let current = 0;
+                const indicator = document.getElementById('tb-indicator');
+                const notes = document.getElementById('speaker-notes');
+                const ov = document.getElementById('overview-overlay');
+                const laser = document.getElementById('laser-dot');
+                const toolbar = document.getElementById('slideshow-toolbar');
+                let toolbarTimeout;
+
+                function showSlide(i){
+                    slides.forEach((s, idx) => s.classList.toggle('active-slide', idx === i));
+                    current = i;
+                    if(indicator) indicator.textContent = (current + 1) + ' / ' + slides.length;
+                    if (!notes.hidden) { updateNotes(); }
+                    syncHash();
+                }
+                function next(){ showSlide((current + 1) % slides.length); }
+                function prev(){ showSlide((current - 1 + slides.length) % slides.length); }
+                function syncHash(){ const h = '#slide-' + (current + 1); if (location.hash !== h) history.replaceState(null, '', h); }
+                function readHash(){ const m = location.hash.match(/^#slide-(\\d+)$/); if (!m) return; const t = Math.min(slides.length, Math.max(1, parseInt(m[1],10))) - 1; showSlide(t); }
+                function toggleFullscreen(){ if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(()=>{}); } else if (document.exitFullscreen) { document.exitFullscreen(); } }
+                function toggleNotes(){ notes.hidden = !notes.hidden; if (!notes.hidden) updateNotes(); }
+                function updateNotes(){ notes.textContent = slides[current]?.getAttribute('data-notes') || ''; }
+                
+                let laserOn = false, tx = 0, ty = 0, x = 0, y = 0, rafId = null;
+                function toggleLaser(){
+                    laserOn = !laserOn;
+                    document.body.classList.toggle('laser-on', laserOn);
+                    if (!laserOn) { if (rafId) cancelAnimationFrame(rafId); rafId = null; return; }
+                    const step = () => {     
+                        x += (tx - x) * 0.2;     
+                        y += (ty - y) * 0.2;     
+                        laser.style.transform = 'translate3d(' + (x - 8) + 'px,' + (y - 8) + 'px,0)';     
+                        if (laserOn) rafId = requestAnimationFrame(step);     
+                    };
+                    rafId = requestAnimationFrame(step);
+                }
+                
+                function openOverview(){ buildOverview(); ov.removeAttribute('hidden'); }
+                function closeOverview(){ ov.setAttribute('hidden',''); ov.innerHTML = ''; }
+                function toggleOverview(){ if (ov.hasAttribute('hidden')) openOverview(); else closeOverview(); }
+                function buildOverview(){
+                    ov.innerHTML = '';
+                    const grid = document.createElement('div'); grid.className = 'grid';
+                    slides.forEach((w, i) => {
+                        const thumb = document.createElement('div'); thumb.className = 'thumb';
+                        const inner = document.createElement('div'); inner.className = 'inner';
+                        const clone = w.querySelector('.slide').cloneNode(true); inner.appendChild(clone);
+                        thumb.appendChild(inner); grid.appendChild(thumb);
+                        thumb.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); closeOverview(); showSlide(i); });
+                        const fit = () => { const rect = thumb.getBoundingClientRect(); const scale = Math.min(rect.width / 1280, rect.height / 720); inner.style.transform = 'scale(' + scale + ')'; };
+                        new ResizeObserver(fit).observe(thumb);
+                        requestAnimationFrame(fit);
+                    });
+                    ov.appendChild(grid);
+                }
+                
+                document.getElementById('tb-overview')?.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); toggleOverview(); });
+                document.getElementById('tb-notes')?.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); toggleNotes(); });
+                document.getElementById('tb-laser')?.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); toggleLaser(); });
+                document.getElementById('tb-help')?.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); document.getElementById('shortcuts-dialog')?.showModal?.(); });
+                document.getElementById('close-shortcuts')?.addEventListener('click', () => { document.getElementById('shortcuts-dialog')?.close(); });
+                
+                document.addEventListener('keydown', (e) => {
+                    const inShow = document.body.classList.contains('slideshow-mode');
+                    if (!inShow) { if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFullscreen(); } return; }
+                    if (['ArrowRight','ArrowDown'].includes(e.key)) { e.preventDefault(); next(); }
+                    else if (['ArrowLeft','ArrowUp'].includes(e.key)) { e.preventDefault(); prev(); }
+                    else if (e.key === 'g' || e.key === 'G') { e.preventDefault(); toggleOverview(); }
+                    else if (e.key === 'n' || e.key === 'N') { e.preventDefault(); toggleNotes(); }
+                    else if (e.key === 'l' || e.key === 'L') { e.preventDefault(); toggleLaser(); }
+                    else if (e.key === 'Escape') { e.preventDefault(); if (document.fullscreenElement) document.exitFullscreen(); }
+                    else if (e.key === '?' || (e.shiftKey && e.key === '/')) { e.preventDefault(); document.getElementById('shortcuts-dialog')?.showModal?.(); }
+                });
+                
+                document.addEventListener('fullscreenchange', () => {
+                    const on = !!document.fullscreenElement;
+                    document.body.classList.toggle('slideshow-mode', on);
+                    if (on) { showSlide(current); readHash(); }     
+                    else { closeOverview(); if (document.body.classList.contains('laser-on')) { laserOn = false; document.body.classList.remove('laser-on');} }
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if(document.body.classList.contains('slideshow-mode')) {
+                        tx = e.clientX; ty = e.clientY;
+                        if(toolbar) {
+                            toolbar.classList.add('visible');
+                            clearTimeout(toolbarTimeout);
+                            toolbarTimeout = setTimeout(() => toolbar.classList.remove('visible'), 2000);
+                        }
+                    }
+                });
+                
+                const startPrompt = document.createElement('div');
+                startPrompt.className = 'no-print';
+                startPrompt.style.cssText = 'position:fixed; bottom:20px; right:20px; background: rgba(0,0,0,0.6); color:white; padding: 10px; border-radius:50%; width: 50px; height:50px; font-weight:bold; cursor:pointer; z-index:10001; display:flex; align-items:center; justify-content:center; transition: all 0.2s;';
+                startPrompt.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>';
+                startPrompt.title = 'スライドショーを開始 (Fキー)';
+                startPrompt.onclick = toggleFullscreen;
+                document.body.appendChild(startPrompt);
+                document.addEventListener('fullscreenchange', () => { startPrompt.style.display = document.fullscreenElement ? 'none' : 'flex'; });
+
+                window.addEventListener('hashchange', readHash);
+                showSlide(0);
+            });
+            `;
+
+            clonedDoc.querySelector('body').insertAdjacentHTML('beforeend', slideshowUI_HTML);
+
+            const runtimeTag = document.createElement('script');
+            runtimeTag.textContent = slideshowJS;
+            clonedDoc.querySelector('body').appendChild(runtimeTag);
+
+            const finalHTMLString = `<!DOCTYPE html>\n` + clonedDoc.outerHTML;
+            const blob = new Blob([finalHTMLString], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.download = `${document.title || 'presentation'}_slideshow.html`;
+            a.href = url;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+
+        // ---- Kick off ----
+        initializeAll();
+    });
+
+    // === Slideshow Runtime (Light helper for editor canvas) v2.0 — DO NOT MODIFY ===
+    document.addEventListener('DOMContentLoaded', () => {
+        const helpBtn = document.querySelector('#tb-help-editor'); // Not used, for future extension.
+        if (helpBtn) helpBtn.addEventListener('click', () => {
+            const dlg = document.getElementById('shortcuts-dialog');
+            if (dlg && typeof dlg.showModal === 'function') dlg.showModal();
+        });
+        const closeBtn = document.getElementById('close-shortcuts');
+        if(closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                const dlg = document.getElementById('shortcuts-dialog');
+                if (dlg && typeof dlg.close === 'function') {
+                    dlg.close();
+                }
+            });
+        }
+    });
+    </script>
+    <script id="slideshow-runtime">
+    </script>
+</body>
+</html>

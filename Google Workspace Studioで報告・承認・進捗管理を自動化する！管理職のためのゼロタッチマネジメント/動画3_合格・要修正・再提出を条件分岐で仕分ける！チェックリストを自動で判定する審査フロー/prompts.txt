@@ -1,0 +1,207 @@
+# ゼロタッチマネジメント - 第3回 プロンプト集
+
+## 品質チェックプロンプト
+
+```
+You are a quality control assistant checking submissions against a checklist.
+
+Submission content:
+---
+{submission_content}
+---
+
+Checklist:
+1. 業務内容: 具体的な作業が記載されているか (Required)
+2. 進捗状況: 数値や達成率が含まれているか (Required)
+3. 課題: 課題がある場合に記載されているか (Optional)
+4. 翌日予定: 翌日の計画が記載されているか (Required)
+5. 文字数: 最低100文字以上か (Required)
+
+For each item, output:
+- Status: OK / NG / N/A
+- Comment (if NG): specific issue found
+
+Then provide overall judgment:
+- APPROVED: All required items OK, minor issues 0-1
+- NEEDS_REVISION: All required items OK, minor issues 2+
+- RESUBMIT: Any required item NG
+
+Output format:
+---
+CHECKLIST_RESULT:
+1. 業務内容: [OK/NG] - [comment if NG]
+2. 進捗状況: [OK/NG] - [comment if NG]
+3. 課題: [OK/NG/N/A] - [comment if NG]
+4. 翌日予定: [OK/NG] - [comment if NG]
+5. 文字数: [OK/NG] - [comment if NG]
+
+JUDGMENT: [APPROVED/NEEDS_REVISION/RESUBMIT]
+FEEDBACK: [具体的なフィードバック（日本語）]
+---
+```
+
+---
+
+## 合格通知メールテンプレート
+
+```
+件名：【承認】{submission_type}が承認されました
+
+{submitter_name}さん
+
+お疲れ様です。
+提出いただいた{submission_type}を確認し、承認しました。
+
+■ 確認結果
+{checklist_result}
+
+■ コメント
+{feedback}
+
+引き続きよろしくお願いいたします。
+```
+
+---
+
+## 要修正通知メールテンプレート
+
+```
+件名：【要修正】{submission_type}の修正をお願いします
+
+{submitter_name}さん
+
+お疲れ様です。
+提出いただいた{submission_type}を確認しました。
+
+以下の点について修正をお願いします。
+
+■ 修正が必要な項目
+{revision_points}
+
+■ 修正のポイント
+{feedback}
+
+修正後、再度提出をお願いします。
+期限: {deadline}
+
+ご不明点があればお知らせください。
+```
+
+---
+
+## 再提出通知メールテンプレート
+
+```
+件名：【再提出】{submission_type}の再提出をお願いします
+
+{submitter_name}さん
+
+お疲れ様です。
+提出いただいた{submission_type}を確認しましたが、
+必須項目に不備があるため、再提出をお願いします。
+
+■ 不備内容
+{issues}
+
+■ 再提出時のチェックポイント
+{checklist_reminder}
+
+内容を確認の上、再度提出をお願いします。
+期限: {deadline}
+
+ご質問があれば、遠慮なくお問い合わせください。
+```
+
+---
+
+## 経費申請チェック用プロンプト（拡張例）
+
+```
+You are a finance assistant checking expense reports.
+
+Expense report:
+---
+{expense_content}
+---
+
+Checklist:
+1. 申請者情報: 氏名、部署、社員番号が記載されているか (Required)
+2. 経費区分: 適切な経費区分が選択されているか (Required)
+3. 金額: 金額が明記されているか (Required)
+4. 日付: 発生日が記載されているか (Required)
+5. 目的: 経費の目的・用途が明確か (Required)
+6. 領収書: 領収書が添付されているか (Required)
+7. 承認者: 事前承認の有無（高額の場合）(Conditional)
+
+Judgment criteria:
+- APPROVED: All items OK, ready for processing
+- NEEDS_REVISION: Minor issues (purpose unclear, date format, etc.)
+- RESUBMIT: Missing required items (no receipt, no amount, etc.)
+- ESCALATE: Amount over 50,000 JPY without prior approval
+
+Output in the same format as before, in Japanese.
+```
+
+---
+
+## 稟議書チェック用プロンプト（拡張例）
+
+```
+You are a business assistant checking approval requests.
+
+Approval request content:
+---
+{request_content}
+---
+
+Checklist:
+1. 件名: 案件が明確に記載されているか (Required)
+2. 背景・目的: なぜこの案件が必要か説明されているか (Required)
+3. 内容詳細: 具体的な内容が記載されているか (Required)
+4. 金額・予算: 費用が明記されているか (Required if applicable)
+5. スケジュール: 実施時期が記載されているか (Required)
+6. 効果・メリット: 期待される効果が説明されているか (Required)
+7. リスク: 想定されるリスクと対策が記載されているか (Optional)
+8. 代替案: 他の選択肢の検討があるか (Optional)
+
+Output judgment and detailed feedback in Japanese.
+```
+
+---
+
+## エージェント設定サマリー
+
+### Quality Check Agent
+
+| 項目 | 設定値 |
+|------|--------|
+| Name | Quality Check Agent |
+| Description | Automatically checks submission quality and routes to appropriate action |
+| Trigger | Gmail (Subject contains 提出/報告) or Forms |
+| Process | Gemini checklist evaluation |
+| Conditions | APPROVED / NEEDS_REVISION / RESUBMIT |
+| Output | Gmail (submitter) + Sheets (status) + Chat (manager) |
+
+### 判定基準テーブル
+
+| 判定 | 条件 | アクション |
+|------|------|-----------|
+| APPROVED | 全必須項目OK、軽微な指摘0〜1件 | 承認通知、ステータス更新 |
+| NEEDS_REVISION | 必須項目OK、軽微な指摘2件以上 | 修正依頼、具体的フィードバック |
+| RESUBMIT | 必須項目に不備あり | 再提出依頼、管理者通知 |
+
+---
+
+## Chat通知テンプレート（管理者向け）
+
+```
+📋 **提出物チェック結果**
+
+■ 提出者: {submitter_name}
+■ 種類: {submission_type}
+■ 判定: {judgment}
+
+{judgment_emoji} {feedback_summary}
+
+{if RESUBMIT: "⚠️ 要フォロー: 必須項目に不備があります"}
+```

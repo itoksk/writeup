@@ -1,0 +1,143 @@
+# 採用パイプライン自動化フロー 第2回：応募者スクリーニングエージェント
+# プロンプト集
+
+---
+
+## 1. メインスクリーニングプロンプト
+
+### 英語版（推奨）
+```
+Screen this job application and evaluate fit against requirements:
+
+Application:
+{email_content}
+
+Job Requirements:
+- Required: 3+ years software development, Python or Java
+- Preferred: Cloud experience (AWS/GCP), Team leadership
+- NG: No work authorization
+
+Provide evaluation in Japanese:
+
+【候補者名】Name from email
+【適合度】HIGH/MEDIUM/LOW
+【評価スコア】1-10
+【マッチする要件】
+【不足している要件】
+【強み】
+【懸念点】
+【推奨アクション】書類通過/追加確認/不採用
+【優先度】1-5（1が最優先）
+【サマリ】2-3文の要約
+```
+
+---
+
+## 2. Gmail検索クエリ
+
+### 応募メール検索
+```
+subject:(応募 OR エントリー OR 採用 OR 求人) OR from:(recruit OR career OR hr)
+```
+
+### 採用専用アドレス宛
+```
+to:recruit@yourcompany.com
+```
+
+---
+
+## 3. Chat通知テンプレート
+
+### 優先候補（HIGH）
+```
+🎯 優秀候補者を検知しました！
+
+{gemini_evaluation}
+
+📧 応募メール: {email_link}
+
+⚡ 優先的に対応してください！
+```
+
+### 検討候補（MEDIUM）
+```
+📋 新規応募者
+
+{gemini_evaluation}
+
+📧 応募メール: {email_link}
+```
+
+---
+
+## 4. 条件分岐
+
+### 適合度HIGH
+```
+{gemini_evaluation} contains "HIGH"
+→ Chat通知（優先アラート）
+→ ラベル「採用_優先候補」
+```
+
+### 適合度MEDIUM
+```
+{gemini_evaluation} contains "MEDIUM"
+→ Chat通知（通常）
+→ ラベル「採用_検討中」
+```
+
+### 適合度LOW
+```
+{gemini_evaluation} contains "LOW"
+→ ラベル「採用_不採用候補」
+→ 通知なし
+```
+
+---
+
+## 5. 返信テンプレート生成プロンプト
+
+### 面接案内（HIGH候補向け）
+```
+Generate a professional interview invitation email in Japanese:
+
+Candidate: {candidate_name}
+Position: {position}
+Evaluation: {gemini_evaluation}
+
+Include:
+- Thank for application
+- Positive evaluation mention
+- Request for interview availability
+- Next steps
+
+Keep it professional and warm.
+```
+
+---
+
+## 6. エージェント構成まとめ
+
+```
+エージェント名: 応募者スクリーニングエージェント
+
+Starter: Gmail - Email received
+  - Filter: subject:(応募 OR エントリー)
+
+Step 1: Gemini - Generate content
+  - Prompt: [スクリーニングプロンプト]
+  - Output: gemini_evaluation
+
+Step 2: Conditional (HIGH)
+  - Condition: contains "HIGH"
+  - True: Chat通知 + ラベル「採用_優先候補」
+
+Step 3: Conditional (MEDIUM)
+  - Condition: contains "MEDIUM"
+  - True: Chat通知 + ラベル「採用_検討中」
+
+Step 4: Conditional (LOW)
+  - Condition: contains "LOW"
+  - True: ラベル「採用_不採用候補」
+```

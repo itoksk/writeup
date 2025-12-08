@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：見積書をAIに作らせる！Docsテンプレート×GAS自動化 | 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            border-bottom: 2px dashed rgba(10, 14, 39, 0.2);
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 2rem;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: 700;
+        }
+
+        .stats-card {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .prompt-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            position: relative;
+            border: 2px solid var(--ink);
+            overflow-x: auto;
+        }
+
+        .prompt-box::before {
+            content: 'プロンプト（コピーして使用）';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.25rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+        }
+
+        .copy-button:hover {
+            background: var(--coral);
+            color: var(--paper);
+        }
+
+        @media (max-width: 768px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">GAS×AI 業務アプリ講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第4回 / 全5回</div>
+            <h1 class="hero-title">
+                見積書をAIに作らせる！<br>
+                Docsテンプレート×<br>
+                GAS自動化
+            </h1>
+            <p class="hero-description">
+                Google Docsテンプレートを作成し、GASで自動差し込み・PDF生成を実現します。
+                転記ミスゼロ、作成時間75%削減を体験しましょう。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">この回で学ぶこと</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">Docsテンプレート作成</h3>
+                <p class="card-description">
+                    Google Docsで見積書テンプレートを作成します。
+                    差し込み箇所を {{変数名}} 形式で定義します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">AIにコードを書いてもらう</h3>
+                <p class="card-description">
+                    ChatGPTに「データを差し込んでPDF生成」するコードを
+                    書いてもらいます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">PDF自動生成・保存</h3>
+                <p class="card-description">
+                    生成されたコードで、テンプレートにデータを差し込み、
+                    PDFに変換してDriveに保存します。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">何が変わるのか</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">Before</div>
+                <div class="phase-title">自動化前の状態</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✗ Wordテンプレートに手入力、コピペで顧客情報を転記</li>
+                <li>✗ 1件あたり平均20分かかる</li>
+                <li>✗ 転記ミスが月3件発生</li>
+                <li>✗ 過去の見積書を探すのに一苦労</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">After</div>
+                <div class="phase-title">自動化後の状態</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ Google Docsテンプレート＋GASで自動生成</li>
+                <li>✓ 1件あたり5分以内で完成</li>
+                <li>✓ 転記ミスゼロ</li>
+                <li>✓ PDF自動保存で、過去データも即検索可能</li>
+            </ul>
+        </div>
+
+        <div class="stats-card">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700;">業務改善の成果</h3>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li><strong>作成時間</strong>: 20分 → 5分 （75%削減）</li>
+                <li><strong>転記ミス</strong>: 月3件 → ゼロ</li>
+                <li><strong>過去データ検索</strong>: 10分 → 10秒</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">4 STEPS</div>
+        <h2 class="section-title">見積書自動生成の流れ</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">Google Docsでテンプレート作成</div>
+            </div>
+            <p>Google Docsで見積書のテンプレートを作成します。
+            差し込みたい箇所を {{変数名}} という形式で記述します。</p>
+            <div class="code-block" style="margin-top: 1rem;">
+見積書<br>
+<br>
+株式会社<span class="highlight">{{顧客名}}</span> 御中<br>
+<br>
+見積日: <span class="highlight">{{日付}}</span><br>
+見積番号: <span class="highlight">{{見積番号}}</span><br>
+<br>
+【見積内容】<br>
+商品名: <span class="highlight">{{商品名}}</span><br>
+数量: <span class="highlight">{{数量}}</span><br>
+単価: <span class="highlight">{{単価}}</span>円<br>
+合計金額: <span class="highlight">{{合計金額}}</span>円
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">テンプレートIDを取得</div>
+            </div>
+            <p>作成したDocsのURLから、ドキュメントIDをコピーします。<br>
+            URLの https://docs.google.com/document/d/<strong>【この部分】</strong>/edit がIDです。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">AIにGASコードを生成してもらう</div>
+            </div>
+            <p>ChatGPTに「テンプレートにデータを差し込んでPDF生成」するコードを依頼します。
+            テンプレートID、差し込み変数、保存先フォルダIDを指定します。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">04</div>
+                <div class="phase-title">実行してPDF生成</div>
+            </div>
+            <p>Apps Scriptエディタでコードを実行します。
+            テンプレートが複製され、データが差し込まれ、PDFに変換されてDriveに保存されます。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROMPT EXAMPLES</div>
+        <h2 class="section-title">実際に使うプロンプト</h2>
+
+        <p style="font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.8;">
+            このプロンプトをコピーして、ChatGPT・Claude・Geminiなどに貼り付けてください。<br>
+            AIが4つのファイル（GASコード、HTMLダイアログ、データベース設計、テンプレート設計）を生成してくれます。
+        </p>
+
+        <div class="prompt-box" id="mainPrompt">Google Apps Scriptで、スプレッドシートのデータベースを活用した見積書作成Webアプリを作成してください。
+
+以下の4つのファイルを作成してください：
+1. create_quotation.gs - メインのGASコード（ダイアログ表示、PDF生成機能）
+2. Dialog.html - 見積書作成フォームのHTML（Tailwind CSS使用）
+3. database_spreadsheet_layout.md - データベーススプレッドシートの構成説明
+4. template_layout.md - Google Docsテンプレートのレイアウト説明
+
+【技術仕様】
+- プラットフォーム: Google Apps Script
+- UI: HTMLダイアログ（Tailwind CSS）
+- データソース: スプレッドシート（顧客マスタ、商品マスタ）
+- 出力: PDF（Google Docsテンプレート使用）
+- 保存先: Google Drive指定フォルダ
+
+【機能要件】
+
+**1. ダイアログUI（Dialog.html）**
+- "既存の顧客・商品を選択" と "新規入力" の2つのモード
+- 既存選択モード: ドロップダウンで顧客・商品を選択
+- 新規入力モード: テキスト入力欄で新規情報を入力
+- 数量入力フィールド
+- リアルタイム金額計算表示（小計、消費税10%、合計）
+- 見積書生成ボタン
+- Tailwind CDN使用でモダンなデザイン
+
+**2. データベース構造（database_spreadsheet_layout.md）**
+スプレッドシート「見積データベース」に以下のシートを作成：
+
+シート1「顧客マスタ」:
+- A列: 顧客名
+- B列: 住所
+- C列: 電話番号
+
+シート2「商品マスタ」:
+- A列: 商品名
+- B列: 単価
+- C列: 説明
+
+シート3「見積作成履歴」:
+- A列: 作成日時
+- B列: 見積番号
+- C列: 顧客名
+- D列: 商品名
+- E列: 数量
+- F列: 合計金額
+- G列: PDFリンク
+
+**3. Google Docsテンプレート（template_layout.md）**
+以下のプレースホルダーを含むテンプレートを作成：
+
+【見積書】
+
+見積番号: {{見積番号}}
+作成日: {{作成日}}
+
+お客様情報:
+{{顧客名}} 様
+{{住所}}
+{{電話番号}}
+
+商品明細:
+商品名: {{商品名}}
+単価: ¥{{単価}}
+数量: {{数量}}
+小計: ¥{{小計}}
+消費税(10%): ¥{{消費税}}
+合計金額: ¥{{合計金額}}
+
+有効期限: {{有効期限}}
+
+**4. GASコード（create_quotation.gs）**
+
+必須関数:
+- `showQuotationDialog()` - ダイアログ表示
+- `getCustomerList()` - 顧客マスタから顧客リスト取得
+- `getProductList()` - 商品マスタから商品リスト取得
+- `getCustomerInfo(customerName)` - 顧客情報取得
+- `getProductInfo(productName)` - 商品情報取得
+- `createQuotation(data)` - 見積書PDF生成と履歴記録
+
+処理フロー:
+1. スプレッドシートから顧客・商品マスタを取得
+2. HTMLダイアログでデータ入力
+3. 入力データをバリデーション
+4. 金額計算（小計、消費税、合計）
+5. 見積番号自動生成（例: Q-20251025-001）
+6. Google Docsテンプレートに差し込み
+7. PDFに変換してDriveに保存
+8. 「見積作成履歴」シートに記録
+9. 成功メッセージ表示
+
+【コード要件】
+- エラーハンドリング実装
+- 日本語コメント付き
+- 初心者でも読みやすいコード
+- toLocaleString()で金額をカンマ区切り表示
+- Utilities.formatDateで日付フォーマット
+
+【設定が必要な項目】
+スクリプトエディタで以下を設定：
+- DATABASE_SPREADSHEET_ID: データベーススプレッドシートID
+- TEMPLATE_DOC_ID: Google DocsテンプレートID
+- OUTPUT_FOLDER_ID: PDF保存先フォルダID
+
+上記の仕様に従って、4つのファイルを作成してください。
+各ファイルには詳細なコメントと説明を含めてください。</div>
+        <button class="copy-button" onclick="copyPrompt('mainPrompt')">コピー</button>
+
+        <div style="margin-top: 3rem; padding: 2rem; background: rgba(0, 240, 255, 0.1); border-left: 4px solid var(--electric);">
+            <h3 style="font-size: 1.3rem; margin-bottom: 1rem; font-weight: 700;">💡 このプロンプトの特徴</h3>
+            <ul style="list-style: none; padding: 0; font-size: 1rem; line-height: 2;">
+                <li>✓ <strong>データベース活用</strong>：顧客・商品マスタで効率的な運用</li>
+                <li>✓ <strong>柔軟な入力</strong>：既存データ選択と新規入力の両対応</li>
+                <li>✓ <strong>履歴管理</strong>：見積作成履歴を自動記録</li>
+                <li>✓ <strong>モダンなUI</strong>：Tailwind CSSで美しいダイアログ</li>
+                <li>✓ <strong>実務対応</strong>：初心者でも実装可能な段階的な説明付き</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TEMPLATE VARIABLES</div>
+        <h2 class="section-title">テンプレート変数の仕組み</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">{{変数名}} 形式で定義</h3>
+                <p class="card-description">
+                    差し込みたい箇所を {{顧客名}} のように、二重波括弧で囲みます。
+                    この形式にすることで、GASが認識して置換できます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">変数名は分かりやすく</h3>
+                <p class="card-description">
+                    {{var1}} ではなく {{顧客名}} のように、
+                    日本語で分かりやすい名前にしましょう。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">計算は自動化</h3>
+                <p class="card-description">
+                    小計、消費税、合計金額など、計算が必要な項目は
+                    GASコード内で自動計算させます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROCESS FLOW</div>
+        <h2 class="section-title">PDF生成の処理フロー</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">テンプレート複製</div>
+            </div>
+            <p>元のテンプレートは保持したまま、複製を作成します。
+            複製したドキュメントに対してデータ差し込みを行います。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">データ置換</div>
+            </div>
+            <p>{{顧客名}} → 「ABC商事株式会社」のように、
+            変数を実際のデータに置き換えます。全ての変数を一括置換します。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">PDF変換</div>
+            </div>
+            <p>データ差し込みが完了したドキュメントを、PDFに変換します。
+            レイアウトやフォントはそのまま保持されます。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">04</div>
+                <div class="phase-title">Drive保存・元ドキュメント削除</div>
+            </div>
+            <p>PDFをDriveの指定フォルダに保存し、一時的に作成した複製ドキュメントを削除します。
+            ファイル名は「見積書_顧客名_日付.pdf」のように動的に生成します。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">注意点・活用ポイント</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">テンプレートIDの取得方法</h3>
+                <p class="card-description">
+                    DocsのURLから、https://docs.google.com/document/d/【この部分】/edit の
+                    【この部分】をコピーしてください。長い英数字の羅列です。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">フォルダ構成のルール化</h3>
+                <p class="card-description">
+                    見積書を大量に作る場合、「見積書/2025年/10月/」のように
+                    フォルダ構成とファイル名のルールを決めておくと管理が楽です。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">様々な書類に応用可能</h3>
+                <p class="card-description">
+                    この仕組みは、見積書だけでなく、請求書、契約書、発注書など、
+                    様々な定型書類に応用できます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="margin-bottom: 5rem;">
+        <div class="section-label">NEXT</div>
+        <h2 class="section-title">次回予告</h2>
+        <p style="font-size: 1.2rem; line-height: 1.8;">
+            次回は、いよいよ最終回です！<br>
+            これまで使ってきたClaude、Gemini、ChatGPTの3つのAIを徹底比較します。
+        </p>
+        <div style="margin-top: 2rem; padding: 2rem; background: rgba(0, 240, 255, 0.1); border-left: 4px solid var(--electric);">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700;">第5回：AIはどれが使いやすい？3ツール徹底比較でわかる実務活用の勘所</h3>
+            <p>それぞれの得意分野、使い分けのコツを整理して、実務での活用方法を解説します。</p>
+        </div>
+    </section>
+
+    <script>
+        function copyPrompt(id) {
+            const promptText = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'コピーしました！';
+                button.style.background = '#4ade80';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            }).catch(err => {
+                alert('コピーに失敗しました。手動でコピーしてください。');
+            });
+        }
+    </script>
+</body>
+</html>

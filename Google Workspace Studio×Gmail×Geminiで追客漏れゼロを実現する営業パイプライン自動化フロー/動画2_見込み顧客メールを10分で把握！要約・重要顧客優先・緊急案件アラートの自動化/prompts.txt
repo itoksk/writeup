@@ -1,0 +1,259 @@
+# 営業パイプライン自動化フロー 第2回：見込み顧客メール要約エージェント
+# プロンプト集
+
+---
+
+## 1. メイン要約プロンプト（Geminiステップ用）
+
+### 英語版（推奨）
+```
+Analyze the following sales emails and provide a summary in Japanese:
+
+{gmail_emails}
+
+For each email, provide:
+1. 【送信者】Sender name and company
+2. 【件名】Subject
+3. 【要約】3-sentence summary
+4. 【緊急度】HIGH/MEDIUM/LOW
+5. 【案件ステージ】Inquiry/Proposal/Quote/Negotiation
+6. 【推奨アクション】Recommended next action
+
+Sort by priority (HIGH first).
+Format output as a numbered list.
+```
+
+### 日本語版（代替）
+```
+以下の営業メールを分析し、要約してください：
+
+{gmail_emails}
+
+各メールについて以下の形式で出力：
+1. 【送信者】送信者名と会社名
+2. 【件名】件名
+3. 【要約】3文で要約
+4. 【緊急度】高/中/低
+5. 【案件ステージ】問い合わせ/提案中/見積もり/契約交渉
+6. 【推奨アクション】次に取るべきアクション
+
+緊急度が高い順にソートしてください。
+```
+
+---
+
+## 2. Gmail検索クエリ
+
+### 基本クエリ
+```
+newer_than:1d is:unread from:(@a-corp.co.jp OR @b-inc.com OR @c-group.jp)
+```
+
+### 重要顧客ドメイン指定
+```
+newer_than:1d is:unread from:(@重要顧客1.co.jp OR @重要顧客2.com OR @重要顧客3.jp)
+```
+
+### ラベル併用
+```
+newer_than:1d is:unread label:重要顧客
+```
+
+### 件名キーワード追加
+```
+newer_than:1d is:unread (subject:見積 OR subject:提案 OR subject:契約)
+```
+
+---
+
+## 3. Chat通知テンプレート
+
+### 通常通知
+```
+📬 本日の見込み顧客メール要約
+
+{gemini_summary}
+
+---
+対応漏れがないかご確認ください。
+緊急度HIGHの案件は優先対応をお願いします。
+```
+
+### 緊急アラート用
+```
+🚨 緊急案件があります！
+
+{gemini_summary}
+
+---
+至急確認してください。
+```
+
+### メール件数付き
+```
+📬 本日の見込み顧客メール要約
+
+受信件数: {email_count}件
+
+{gemini_summary}
+
+---
+確認時刻: {current_time}
+```
+
+---
+
+## 4. 条件分岐用プロンプト
+
+### 緊急度判定
+```
+Analyze this email content and determine urgency:
+
+{email_content}
+
+Respond with only one word:
+- HIGH: Immediate action required
+- MEDIUM: Action needed today
+- LOW: Can wait
+
+Response:
+```
+
+### VIP顧客判定
+```
+Check if this sender email matches VIP list:
+
+Sender: {sender_email}
+VIP List: {vip_list}
+
+Respond with only: MATCH or NO_MATCH
+```
+
+---
+
+## 5. 要約フォーマットバリエーション
+
+### 詳細版
+```
+Analyze the following sales emails in detail:
+
+{gmail_emails}
+
+For each email, provide:
+1. 【送信者】Name, Company, Position (if available)
+2. 【件名】Subject line
+3. 【受信日時】When received
+4. 【要約】Detailed 5-sentence summary
+5. 【キーポイント】3 key points as bullet list
+6. 【緊急度】HIGH/MEDIUM/LOW with reasoning
+7. 【案件ステージ】Current stage in sales pipeline
+8. 【リスク】Any risks or concerns
+9. 【推奨アクション】Specific next steps with deadline
+
+Output in Japanese.
+```
+
+### 簡潔版
+```
+Summarize these sales emails briefly in Japanese:
+
+{gmail_emails}
+
+For each email:
+- 送信者:
+- 要点:（1文）
+- 対応:（高/中/低）
+
+Keep it concise.
+```
+
+### 表形式
+```
+Analyze sales emails and output as a table in Japanese:
+
+{gmail_emails}
+
+| 送信者 | 件名 | 要約 | 緊急度 | アクション |
+|--------|------|------|--------|------------|
+
+Sort by urgency (HIGH first).
+```
+
+---
+
+## 6. エラーハンドリング
+
+### メールなしの場合
+```
+If no emails found, respond with:
+"本日は重要顧客からの新着メールはありませんでした。"
+
+Otherwise, analyze the emails as instructed.
+```
+
+### 長文メール対応
+```
+If email content exceeds 5000 characters, summarize only the first 3000 characters and note:
+"（メール本文が長いため、冒頭部分のみを要約しています）"
+```
+
+---
+
+## 7. 応用プロンプト
+
+### 返信ドラフト生成
+```
+Based on this email, draft a brief professional reply in Japanese:
+
+{email_content}
+
+Requirements:
+- Acknowledge their message
+- Address their main point
+- Propose next steps
+- Keep it under 100 words
+```
+
+### アクションアイテム抽出
+```
+Extract all action items from this email:
+
+{email_content}
+
+Format as checklist:
+□ Action item 1 (deadline if mentioned)
+□ Action item 2 (deadline if mentioned)
+
+Output in Japanese.
+```
+
+---
+
+## 8. 設定例まとめ
+
+### エージェント構成
+```
+エージェント名: 見込み顧客メール要約エージェント
+
+Starter: Scheduled
+  - Frequency: Daily
+  - Time: 9:00 AM
+  - Timezone: Asia/Tokyo
+
+Step 1: Gmail - Search emails
+  - Query: newer_than:1d is:unread from:(重要顧客ドメイン)
+  - Output variable: gmail_emails
+
+Step 2: Gemini - Generate content
+  - Prompt: [メイン要約プロンプト]
+  - Input: {gmail_emails}
+  - Output variable: gemini_summary
+
+Step 3: Google Chat - Send message
+  - Space: [通知先スペース]
+  - Message: [Chat通知テンプレート]
+
+(Optional) Step 4: Conditional
+  - Condition: {gemini_summary} contains "HIGH"
+  - True: 追加アラート送信
+```

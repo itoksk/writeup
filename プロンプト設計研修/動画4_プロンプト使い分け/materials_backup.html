@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：プロンプト設計の最適解 - 使い分けマスタークラス</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap');
+        
+        :root {
+            /* Literary Editorial Design System Colors */
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --paper-shadow: #F5F5F0;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+            
+            /* Typography */
+            --font-primary: 'Zen Kaku Gothic New', sans-serif;
+            --font-secondary: 'Space Grotesk', monospace;
+            --font-serif: 'Noto Serif JP', serif;
+            
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(10, 14, 39, 0.1);
+            --shadow-md: 0 4px 16px rgba(10, 14, 39, 0.15);
+            --shadow-lg: 0 8px 32px rgba(10, 14, 39, 0.2);
+            --shadow-xl: 0 16px 48px rgba(10, 14, 39, 0.25);
+            
+            /* Slide Dimensions */
+            --slide-width: 1280px;
+            --slide-height: 800px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+            padding: var(--space-lg) 0;
+        }
+        
+        /* Paper Texture Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.03) 2px,
+                    rgba(10, 14, 39, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.02) 2px,
+                    rgba(10, 14, 39, 0.02) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 3px solid var(--ink);
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-sm);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+        
+        .subtitle {
+            font-family: var(--font-secondary);
+            font-size: 1.25rem;
+            color: var(--ink);
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Controls Bar */
+        .controls-bar {
+            background: var(--ink);
+            color: var(--paper);
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+        }
+        
+        .btn {
+            background: transparent;
+            color: var(--paper);
+            border: 2px solid var(--paper);
+            padding: var(--space-xs) var(--space-md);
+            font-family: var(--font-secondary);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--electric);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover::before {
+            width: 200px;
+            height: 200px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--electric);
+            z-index: 1;
+        }
+        
+        .btn span {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn.active {
+            background: var(--electric);
+            border-color: var(--electric);
+            color: var(--ink);
+        }
+        
+        /* Slide Container */
+        .slide-container {
+            width: var(--slide-width);
+            max-width: 100%;
+            margin: 0 auto var(--space-lg);
+            background: var(--paper);
+            border: 3px solid var(--ink);
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Slide */
+        .slide {
+            width: var(--slide-width);
+            height: var(--slide-height);
+            max-width: 100%;
+            padding: var(--space-xl);
+            display: none;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+            background: var(--paper);
+            overflow-y: auto;
+        }
+        
+        .slide.active {
+            display: flex;
+        }
+        
+        .slide-number {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--electric);
+            background: var(--ink);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            z-index: 10;
+        }
+        
+        /* Slide Typography */
+        .slide h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: var(--space-lg);
+            color: var(--ink);
+            position: relative;
+            line-height: 1.2;
+        }
+        
+        .slide h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            color: var(--ink);
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+        }
+        
+        .slide h4 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            color: var(--ink);
+        }
+        
+        .slide p {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-md);
+        }
+        
+        .slide ul, .slide ol {
+            padding-left: var(--space-lg);
+            margin: var(--space-md) 0;
+        }
+        
+        .slide li {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-sm);
+        }
+        
+        /* Card in Slide */
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 0;
+        }
+        
+        .card:hover::before {
+            transform: translateX(0);
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .card:hover * {
+            color: var(--paper);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card.best {
+            border-color: var(--electric);
+            border-width: 3px;
+        }
+        
+        .card.best::before {
+            background: var(--electric);
+        }
+        
+        .card-number {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-family: var(--font-secondary);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--electric);
+            opacity: 0.3;
+            z-index: 10;
+        }
+        
+        /* Code Block / Template Box */
+        .code-block, .template-box, .prompt-example {
+            background: var(--ink);
+            color: var(--paper);
+            padding: var(--space-md);
+            border-radius: 8px;
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 350px;
+            margin: var(--space-md) 0;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            white-space: pre-wrap;
+        }
+        
+        .code-block::before, .template-box::before, .prompt-example::before {
+            content: 'PROMPT';
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--electric);
+            opacity: 0.5;
+        }
+        
+        /* Highlight Box */
+        .highlight {
+            background: linear-gradient(135deg, var(--electric), var(--coral));
+            padding: 3px;
+            border-radius: 8px;
+            margin: var(--space-md) 0;
+        }
+        
+        .highlight-content {
+            background: var(--paper);
+            padding: var(--space-md);
+            border-radius: 5px;
+        }
+        
+        /* Grid Layout */
+        .grid, .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+        
+        .grid-item, .comparison-card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            position: relative;
+            overflow: visible;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+        }
+        
+        .grid-item::after, .comparison-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--electric), var(--coral));
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .grid-item:hover::after, .comparison-card:hover::after {
+            transform: translateY(0);
+        }
+        
+        .grid-item:hover, .comparison-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Matrix Table */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--space-md) 0;
+            border: 2px solid var(--ink);
+            font-size: 1rem;
+        }
+        
+        .matrix-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: var(--space-sm);
+            text-align: left;
+            font-family: var(--font-secondary);
+            font-weight: 600;
+        }
+        
+        .matrix-table td {
+            border: 1px solid var(--ink);
+            padding: var(--space-sm);
+        }
+        
+        .matrix-table tr:nth-child(even) {
+            background: rgba(10, 14, 39, 0.05);
+        }
+        
+        /* Flowchart */
+        .flowchart {
+            background: var(--paper-shadow);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            border: 2px solid var(--ink);
+            text-align: center;
+            margin: var(--space-md) 0;
+        }
+        
+        /* Summary Cards */
+        .summary-card {
+            background: linear-gradient(135deg, var(--electric), var(--coral));
+            color: var(--paper);
+            padding: var(--space-md);
+            border-radius: 8px;
+            margin: var(--space-sm) 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .summary-card h3 {
+            color: var(--paper);
+            border: none;
+            padding: 0;
+            margin-bottom: var(--space-sm);
+        }
+        
+        /* Step Box */
+        .step-box {
+            background: var(--paper-shadow);
+            border-left: 4px solid var(--electric);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* Action Plan */
+        .action-plan {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px dashed var(--gold);
+            padding: var(--space-md);
+            border-radius: 8px;
+            margin: var(--space-md) 0;
+        }
+        
+        /* Team Sheet */
+        .team-sheet {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            border-radius: 8px;
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+        
+        /* Result Box */
+        .result-box {
+            background: rgba(0, 240, 255, 0.1);
+            padding: var(--space-sm);
+            border-radius: 8px;
+            margin: var(--space-sm) 0;
+            border: 1px solid var(--electric);
+        }
+        
+        /* Workflow Steps */
+        .workflow-step {
+            background: var(--paper);
+            border: 3px solid var(--electric);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--electric);
+            margin: 0 var(--space-sm);
+            font-family: var(--font-secondary);
+        }
+        
+        /* Hybrid Example */
+        .hybrid-example {
+            background: linear-gradient(135deg, var(--ink), var(--electric));
+            color: var(--paper);
+            padding: var(--space-lg);
+            border-radius: 8px;
+            margin: var(--space-md) 0;
+        }
+        
+        .hybrid-example h3 {
+            color: var(--paper);
+            border: none;
+            padding: 0;
+        }
+        
+        /* Edit Mode */
+        .edit-mode .slide {
+            cursor: text;
+        }
+        
+        .editable {
+            outline: none;
+            position: relative;
+        }
+        
+        .editable:focus {
+            background: rgba(0, 240, 255, 0.05);
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+        
+        /* Slide Counter */
+        .slide-counter {
+            font-family: var(--font-secondary);
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--paper);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: var(--space-lg) 0;
+            border-top: 3px solid var(--ink);
+            margin-top: var(--space-xl);
+            font-family: var(--font-secondary);
+            letter-spacing: 0.05em;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1320px) {
+            .slide-container {
+                width: 95%;
+            }
+            
+            .slide {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 16/9;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls-bar {
+                flex-direction: column;
+                gap: var(--space-md);
+                position: static;
+            }
+            
+            .slide h2 {
+                font-size: 2rem;
+            }
+            
+            .slide h3 {
+                font-size: 1.5rem;
+            }
+            
+            .slide p, .slide li {
+                font-size: 1rem;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            body::before {
+                display: none;
+            }
+            
+            .controls-bar {
+                display: none;
+            }
+            
+            .slide-container {
+                border: 1px solid black;
+                box-shadow: none;
+                page-break-after: always;
+            }
+            
+            .slide {
+                display: block !important;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>プロンプト設計研修</h1>
+            <p class="subtitle">第4回：プロンプト設計の最適解 - 使い分けマスタークラス</p>
+        </header>
+        
+        <div class="controls-bar">
+            <div class="control-group">
+                <button class="btn" onclick="previousSlide()"><span>← 前へ</span></button>
+                <span class="slide-counter">1 / 11</span>
+                <button class="btn" onclick="nextSlide()"><span>次へ →</span></button>
+            </div>
+            <div class="control-group">
+                <button class="btn" onclick="toggleEditMode()"><span>編集モード</span></button>
+                <button class="btn" onclick="togglePresentation()"><span>プレゼンテーション</span></button>
+                <button class="btn" onclick="exportSlides()"><span>エクスポート</span></button>
+            </div>
+        </div>
+        
+        <div class="slide-container">
+            <!-- Slide 1: Title -->
+            <div class="slide active">
+                <span class="slide-number">1 / 11</span>
+                <h2 class="editable">プロが使い分ける！</h2>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h3>メール作成におけるプロンプト設計の最適解</h3>
+                        <p class="editable">これまで学んだ手法を組み合わせ、状況に応じた最適な選択ができるようになります</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 2: Review -->
+            <div class="slide">
+                <span class="slide-number">2 / 11</span>
+                <h3 class="editable">これまでの振り返り</h3>
+                
+                <div style="display: flex; justify-content: center; margin: var(--space-lg) 0;">
+                    <div class="workflow-step">1</div>
+                    <div class="workflow-step">2</div>
+                    <div class="workflow-step">3</div>
+                </div>
+                
+                <div class="comparison-grid">
+                    <div class="summary-card">
+                        <h4>第1回：基本3型</h4>
+                        <ul>
+                            <li class="editable">ゼロショット（速い）</li>
+                            <li class="editable">ワンショット（バランス）</li>
+                            <li class="editable">フューショット（高品質）</li>
+                        </ul>
+                    </div>
+                    <div class="summary-card">
+                        <h4>第2回：Freeform</h4>
+                        <ul>
+                            <li class="editable">感情表現が得意</li>
+                            <li class="editable">自然な文章</li>
+                            <li class="editable">柔軟性が高い</li>
+                        </ul>
+                    </div>
+                    <div class="summary-card">
+                        <h4>第3回：Structured</h4>
+                        <ul>
+                            <li class="editable">品質が安定</li>
+                            <li class="editable">再現性が高い</li>
+                            <li class="editable">チーム共有に最適</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3: Matrix -->
+            <div class="slide">
+                <span class="slide-number">3 / 11</span>
+                <h3 class="editable">シーン別最適手法マトリクス</h3>
+                
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>業務シーン</th>
+                            <th>基本手法</th>
+                            <th>プロンプト型</th>
+                            <th>理由</th>
+                            <th>効果</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: rgba(255, 107, 107, 0.1);">
+                            <td><strong>クレーム対応</strong></td>
+                            <td>フューショット</td>
+                            <td>Structured + Freeform</td>
+                            <td>一貫性と共感の両立</td>
+                            <td>満足度30%向上</td>
+                        </tr>
+                        <tr>
+                            <td><strong>初回挨拶</strong></td>
+                            <td>ワンショット</td>
+                            <td>Freeform</td>
+                            <td>親しみやすさ重視</td>
+                            <td>返信率25%向上</td>
+                        </tr>
+                        <tr style="background: rgba(0, 240, 255, 0.1);">
+                            <td><strong>定例報告</strong></td>
+                            <td>フューショット</td>
+                            <td>Structured</td>
+                            <td>効率性と正確性</td>
+                            <td>作成時間50%削減</td>
+                        </tr>
+                        <tr>
+                            <td><strong>イベント案内</strong></td>
+                            <td>ワンショット</td>
+                            <td>Hybrid</td>
+                            <td>情報と魅力のバランス</td>
+                            <td>参加率20%向上</td>
+                        </tr>
+                        <tr style="background: rgba(255, 215, 0, 0.1);">
+                            <td><strong>緊急連絡</strong></td>
+                            <td>ゼロショット</td>
+                            <td>Structured</td>
+                            <td>スピード最優先</td>
+                            <td>対応時間70%短縮</td>
+                        </tr>
+                        <tr>
+                            <td><strong>お礼・感謝</strong></td>
+                            <td>ワンショット</td>
+                            <td>Freeform</td>
+                            <td>感情表現重視</td>
+                            <td>関係性向上</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Slide 4: Flowchart -->
+            <div class="slide">
+                <span class="slide-number">4 / 11</span>
+                <h3 class="editable">判断フローチャート</h3>
+                
+                <div class="flowchart">
+                    <svg width="100%" height="450" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+                        <!-- スタート -->
+                        <rect x="350" y="20" width="100" height="40" fill="var(--ink)" rx="5"/>
+                        <text x="400" y="45" text-anchor="middle" fill="var(--paper)" font-size="14" font-weight="bold">スタート</text>
+                        
+                        <!-- 時間的余裕の判断 -->
+                        <line x1="400" y1="60" x2="400" y2="100" stroke="var(--ink)" stroke-width="2"/>
+                        <rect x="325" y="100" width="150" height="40" fill="var(--paper-shadow)" rx="5" stroke="var(--ink)" stroke-width="2"/>
+                        <text x="400" y="125" text-anchor="middle" font-size="14">時間的余裕は？</text>
+                        
+                        <!-- なし（左側） -->
+                        <line x1="350" y1="140" x2="250" y2="200" stroke="var(--ink)" stroke-width="2"/>
+                        <text x="280" y="175" font-size="12">なし</text>
+                        
+                        <rect x="175" y="200" width="150" height="40" fill="var(--paper-shadow)" rx="5" stroke="var(--ink)" stroke-width="2"/>
+                        <text x="250" y="225" text-anchor="middle" font-size="14">緊急度で判断</text>
+                        
+                        <line x1="200" y1="240" x2="150" y2="300" stroke="var(--ink)" stroke-width="2"/>
+                        <text x="160" y="275" font-size="12">超緊急</text>
+                        <rect x="75" y="300" width="150" height="40" fill="var(--coral)" rx="5"/>
+                        <text x="150" y="325" text-anchor="middle" fill="var(--paper)" font-size="14">ゼロショット</text>
+                        
+                        <line x1="300" y1="240" x2="350" y2="300" stroke="var(--ink)" stroke-width="2"/>
+                        <text x="340" y="275" font-size="12">通常急ぎ</text>
+                        <rect x="275" y="300" width="150" height="40" fill="var(--gold)" rx="5"/>
+                        <text x="350" y="325" text-anchor="middle" fill="var(--ink)" font-size="14">ワンショット</text>
+                        
+                        <!-- あり（右側） -->
+                        <line x1="450" y1="140" x2="550" y2="200" stroke="var(--ink)" stroke-width="2"/>
+                        <text x="520" y="175" font-size="12">あり</text>
+                        
+                        <rect x="475" y="200" width="150" height="40" fill="var(--paper-shadow)" rx="5" stroke="var(--ink)" stroke-width="2"/>
+                        <text x="550" y="225" text-anchor="middle" font-size="14">用途で判断</text>
+                        
+                        <line x1="500" y1="240" x2="450" y2="300" stroke="var(--ink)" stroke-width="2"/>
+                        <text x="460" y="275" font-size="12">定型業務</text>
+                        <rect x="375" y="300" width="150" height="40" fill="var(--electric)" rx="5"/>
+                        <text x="450" y="318" text-anchor="middle" fill="var(--ink)" font-size="12">フュー +</text>
+                        <text x="450" y="332" text-anchor="middle" fill="var(--ink)" font-size="12">Structured</text>
+                        
+                        <line x1="550" y1="240" x2="550" y2="300" stroke="var(--ink)" stroke-width="2"/>
+                        <text x="570" y="275" font-size="12">感情重視</text>
+                        <rect x="475" y="300" width="150" height="40" fill="var(--sage)" rx="5"/>
+                        <text x="550" y="325" text-anchor="middle" fill="var(--ink)" font-size="14">Freeform</text>
+                        
+                        <line x1="600" y1="240" x2="650" y2="300" stroke="var(--ink)" stroke-width="2"/>
+                        <text x="640" y="275" font-size="12">バランス</text>
+                        <rect x="575" y="300" width="150" height="40" fill="var(--ink)" rx="5"/>
+                        <text x="650" y="325" text-anchor="middle" fill="var(--paper)" font-size="14">ハイブリッド</text>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Slide 5: Hybrid Demo -->
+            <div class="slide">
+                <span class="slide-number">5 / 11</span>
+                <h3 class="editable">ハイブリッド実演：セミナー参加お礼メール</h3>
+                
+                <h4>タスク設定</h4>
+                <div class="card">
+                    <ul>
+                        <li class="editable">宛先：セミナー参加者（100名）</li>
+                        <li class="editable">内容：参加への感謝と次回案内</li>
+                        <li class="editable">要件：温かみと情報の正確さの両立</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h4>方法1：Freeformのみ</h4>
+                        <div class="result-box">
+                            <strong>結果：</strong><br>
+                            ✓ 温かみがある<br>
+                            ✗ 構成にばらつき<br>
+                            ✗ 必要情報の漏れ
+                        </div>
+                        <p style="color: var(--coral);">評価：65点</p>
+                    </div>
+                    
+                    <div class="comparison-card">
+                        <h4>方法2：Structuredのみ</h4>
+                        <div class="result-box">
+                            <strong>結果：</strong><br>
+                            ✓ 構成が整っている<br>
+                            ✓ 情報漏れなし<br>
+                            ✗ やや機械的
+                        </div>
+                        <p style="color: var(--gold);">評価：75点</p>
+                    </div>
+                    
+                    <div class="comparison-card best">
+                        <h4>方法3：ハイブリッド型</h4>
+                        <div class="result-box">
+                            <strong>結果：</strong><br>
+                            ✓ 構成が整っている<br>
+                            ✓ 自然な表現<br>
+                            ✓ 感情と情報のバランス
+                        </div>
+                        <p style="color: var(--electric);">評価：95点</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 6: Hybrid Example -->
+            <div class="slide">
+                <span class="slide-number">6 / 11</span>
+                <h3 class="editable">ハイブリッドプロンプトの実例</h3>
+                
+                <div class="hybrid-example">
+                    <h4 style="color: var(--paper);">最強の組み合わせ：Structured + Freeform + Few-shot</h4>
+                </div>
+                
+                <div class="prompt-example editable">セミナー参加者へのお礼メールを作成してください。
+
+【基本情報】
+イベント：AI活用セミナー
+参加者：100名
+次回：3月20日
+
+【構成】← Structured要素
+1. 件名：感謝の気持ちが伝わるもの
+2. 導入：温かみのある挨拶 ← Freeform要素
+3. 本文：
+   - 参加への心からの感謝（Freeform的表現で）
+   - セミナーのハイライト（3点を箇条書き）
+   - 次回案内（期待感を持たせる表現）
+4. 締め：また会えることを楽しみにする言葉
+
+【トーン】← Freeform要素
+プロフェッショナルでありながら親しみやすく、
+次回も参加したくなるような前向きな雰囲気
+
+【参考例】← Few-shot要素
+（過去の成功例を1-2個提示）</div>
+            </div>
+            
+            <!-- Slide 7: Workflow -->
+            <div class="slide">
+                <span class="slide-number">7 / 11</span>
+                <h3 class="editable">プロのワークフロー：3ステップアプローチ</h3>
+                
+                <div class="step-box">
+                    <h4>Step 1：用途を判断</h4>
+                    <ul>
+                        <li class="editable">誰に送るか（社内/社外/VIP）</li>
+                        <li class="editable">何のためか（連絡/依頼/感謝/謝罪）</li>
+                        <li class="editable">重要度は（高/中/低）</li>
+                        <li class="editable">緊急度は（即時/今日中/今週中）</li>
+                    </ul>
+                </div>
+                
+                <div class="step-box">
+                    <h4>Step 2：基本型を選択</h4>
+                    <div style="margin-top: var(--space-md);">
+                        <p><strong>時間軸：</strong> ゼロ → ワン → フュー</p>
+                        <p><strong>品質軸：</strong> Freeform ← → Structured</p>
+                    </div>
+                </div>
+                
+                <div class="step-box">
+                    <h4>Step 3：カスタマイズ</h4>
+                    <ul>
+                        <li class="editable">必要に応じて要素を追加</li>
+                        <li class="editable">トーン調整（温度・距離感）</li>
+                        <li class="editable">チェック項目追加</li>
+                        <li class="editable">過去の成功例を参考に</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Slide 8: Team Management -->
+            <div class="slide">
+                <span class="slide-number">8 / 11</span>
+                <h3 class="editable">チーム展開：プロンプト管理シート</h3>
+                
+                <div class="team-sheet">
+                    <h4>📋 営業部プロンプト集 v2.0</h4>
+                    
+                    <table style="width: 100%; margin-top: var(--space-md); border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: var(--paper-shadow);">
+                                <th style="padding: var(--space-sm); border: 1px solid var(--ink);">No.</th>
+                                <th style="padding: var(--space-sm); border: 1px solid var(--ink);">用途</th>
+                                <th style="padding: var(--space-sm); border: 1px solid var(--ink);">手法</th>
+                                <th style="padding: var(--space-sm); border: 1px solid var(--ink);">テンプレート</th>
+                                <th style="padding: var(--space-sm); border: 1px solid var(--ink);">更新日</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">1</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">新規開拓メール</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">ワン + Freeform</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">[リンク]</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">2024/01</td>
+                            </tr>
+                            <tr style="background: rgba(10, 14, 39, 0.05);">
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">2</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">見積書送付</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">Structured</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">[リンク]</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">2024/01</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">3</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">クレーム対応</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">フュー + Hybrid</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">[リンク]</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">2023/12</td>
+                            </tr>
+                            <tr style="background: rgba(10, 14, 39, 0.05);">
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">4</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">契約更新案内</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">Structured</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">[リンク]</td>
+                                <td style="padding: var(--space-sm); border: 1px solid var(--ink);">2024/01</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="step-box" style="margin-top: var(--space-md);">
+                        <strong>共有ルール：</strong>
+                        <ul style="margin: var(--space-sm) 0;">
+                            <li class="editable">月1回の定期レビュー</li>
+                            <li class="editable">成功事例の追加・更新</li>
+                            <li class="editable">全員がアクセス可能な共有フォルダに保存</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 9: Learning Outcomes -->
+            <div class="slide">
+                <span class="slide-number">9 / 11</span>
+                <h3 class="editable">全4回の学習成果</h3>
+                
+                <div class="grid">
+                    <div class="summary-card">
+                        <h4>第1回：基本3型</h4>
+                        <p class="editable">ゼロ/ワン/フューショットの使い分けをマスター</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>第2回：Freeform</h4>
+                        <p class="editable">感情表現とニュアンスの伝え方を習得</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>第3回：Structured</h4>
+                        <p class="editable">品質管理とテンプレート活用を実践</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>第4回：ハイブリッド</h4>
+                        <p class="editable">最適な組み合わせと使い分けを体得</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 10: Action Plan -->
+            <div class="slide">
+                <span class="slide-number">10 / 11</span>
+                <h3 class="editable">実践へのアクションプラン</h3>
+                
+                <div class="action-plan">
+                    <h4>🎯 今すぐ始められる4ステップ</h4>
+                    
+                    <ol style="font-size: 1.1em; line-height: 2;">
+                        <li class="editable"><strong>自部署の主要メール10種類をリストアップ</strong><br>
+                            <span style="color: #666; font-size: 0.9em;">まずは頻度の高いものから</span></li>
+                        
+                        <li class="editable"><strong>それぞれに最適な手法を選定</strong><br>
+                            <span style="color: #666; font-size: 0.9em;">今日学んだマトリクスを活用</span></li>
+                        
+                        <li class="editable"><strong>テンプレートを作成</strong><br>
+                            <span style="color: #666; font-size: 0.9em;">1週間で3つずつ作成目標</span></li>
+                        
+                        <li class="editable"><strong>チームで共有・改善</strong><br>
+                            <span style="color: #666; font-size: 0.9em;">月1回のレビュー会を設定</span></li>
+                    </ol>
+                </div>
+                
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h4>📈 期待される効果</h4>
+                        <ul>
+                            <li class="editable">メール作成時間：<strong>40%削減</strong></li>
+                            <li class="editable">品質のばらつき：<strong>70%改善</strong></li>
+                            <li class="editable">顧客満足度：<strong>25%向上</strong></li>
+                            <li class="editable">チーム生産性：<strong>30%向上</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 11: Summary -->
+            <div class="slide">
+                <span class="slide-number">11 / 11</span>
+                <h3 class="editable">研修のまとめ</h3>
+                
+                <div class="hybrid-example">
+                    <h4 style="color: var(--paper); text-align: center;">プロンプト設計は「意図の明確化」が全て</h4>
+                    
+                    <p class="editable" style="text-align: center; font-size: 1.2em; margin: var(--space-md) 0;">
+                        何を優先するか ― スピードか、品質か、感情表現か ―<br>
+                        を明確にして、適切な手法を選びましょう。
+                    </p>
+                </div>
+                
+                <div class="card">
+                    <h4>最終チェックリスト</h4>
+                    <ul style="list-style-type: none; font-size: 1.1em;">
+                        <li class="editable">☐ 状況別の使い分けができる</li>
+                        <li class="editable">☐ ハイブリッド型を理解した</li>
+                        <li class="editable">☐ チーム展開の方法を学んだ</li>
+                        <li class="editable">☐ 実践プランを立てた</li>
+                    </ul>
+                </div>
+                
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h4 style="text-align: center;">🎉 研修完了おめでとうございます！</h4>
+                        <p class="editable">今回学んだパターンをベースに、皆さんの業務に合わせてカスタマイズしてください。<br>
+                        チームで共有すれば、AI活用の効果は更に高まります。</p>
+                        <p style="font-weight: bold; color: var(--electric); font-size: 1.2em; margin-top: var(--space-md); text-align: center;" class="editable">
+                            プロンプト設計をマスターして、業務効率を大幅に改善していきましょう！
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2024 プロンプト設計研修 - Literary Editorial Design System</p>
+        </footer>
+    </div>
+    
+    <script>
+        let currentSlide = 0;
+        let editMode = false;
+        let presentationMode = false;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            updateSlideCounter();
+            updateSlideNumbers();
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+        
+        function previousSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        }
+        
+        function updateSlideCounter() {
+            document.querySelector('.slide-counter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+        
+        function updateSlideNumbers() {
+            slides.forEach((slide, index) => {
+                const numberEl = slide.querySelector('.slide-number');
+                if (numberEl) {
+                    numberEl.textContent = `${index + 1} / ${totalSlides}`;
+                }
+            });
+        }
+        
+        function toggleEditMode() {
+            editMode = !editMode;
+            document.body.classList.toggle('edit-mode');
+            const editables = document.querySelectorAll('.editable');
+            editables.forEach(el => {
+                el.contentEditable = editMode;
+            });
+            
+            const btn = event.target.closest('.btn');
+            if (editMode) {
+                btn.classList.add('active');
+                showNotification('編集モードが有効になりました');
+            } else {
+                btn.classList.remove('active');
+                showNotification('編集モードが無効になりました');
+                saveContent();
+            }
+        }
+        
+        function togglePresentation() {
+            presentationMode = !presentationMode;
+            if (presentationMode) {
+                document.documentElement.requestFullscreen();
+                document.body.style.overflow = 'hidden';
+                showNotification('プレゼンテーションモード開始');
+            } else {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+                document.body.style.overflow = '';
+                showNotification('プレゼンテーションモード終了');
+            }
+        }
+        
+        function exportSlides() {
+            const content = document.documentElement.outerHTML;
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'prompt-optimization-masterclass.html';
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('プレゼンテーションをエクスポートしました');
+        }
+        
+        function saveContent() {
+            const content = [];
+            slides.forEach((slide, index) => {
+                const slideContent = {
+                    index: index,
+                    html: slide.innerHTML
+                };
+                content.push(slideContent);
+            });
+            localStorage.setItem('presentation-content', JSON.stringify(content));
+        }
+        
+        function loadContent() {
+            const saved = localStorage.getItem('presentation-content');
+            if (saved) {
+                try {
+                    const content = JSON.parse(saved);
+                    content.forEach(item => {
+                        if (slides[item.index]) {
+                            slides[item.index].innerHTML = item.html;
+                        }
+                    });
+                } catch (e) {
+                    console.error('Failed to load saved content', e);
+                }
+            }
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--ink);
+                color: var(--paper);
+                padding: var(--space-sm) var(--space-md);
+                border-radius: 25px;
+                font-family: var(--font-secondary);
+                font-weight: 600;
+                z-index: 1000;
+                animation: fadeIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!editMode) {
+                switch(e.key) {
+                    case 'ArrowRight':
+                    case ' ':
+                        nextSlide();
+                        break;
+                    case 'ArrowLeft':
+                        previousSlide();
+                        break;
+                    case 'Escape':
+                        if (presentationMode) {
+                            togglePresentation();
+                        }
+                        break;
+                    case 'e':
+                        toggleEditMode();
+                        break;
+                    case 'p':
+                        togglePresentation();
+                        break;
+                }
+            }
+        });
+        
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                nextSlide();
+            }
+            if (touchEndX > touchStartX + 50) {
+                previousSlide();
+            }
+        }
+        
+        // Auto-save when editing
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('editable')) {
+                saveContent();
+            }
+        });
+        
+        // Initialize
+        loadContent();
+        updateSlideNumbers();
+        
+        // Add fade animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(-10px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

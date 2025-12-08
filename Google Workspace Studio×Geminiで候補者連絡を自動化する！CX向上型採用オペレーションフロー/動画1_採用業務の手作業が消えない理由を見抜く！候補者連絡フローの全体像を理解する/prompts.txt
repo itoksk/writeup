@@ -1,0 +1,99 @@
+# CX向上型採用オペレーションフロー - 第1回 プロンプト集
+
+このファイルには、第1回で紹介する概念を理解するための参考プロンプトを記載しています。
+実際のエージェント構築は第2回以降で行います。
+
+---
+
+## 参考：候補者情報要約プロンプト（第2回で使用）
+
+```
+You are an HR assistant helping interview preparation.
+
+Summarize the following candidate information for the interviewer:
+
+Candidate Name: {candidate_name}
+Position: {position}
+Resume/CV content: {resume_content}
+Previous interview notes: {previous_notes}
+
+Provide:
+1. Key qualifications (3 bullet points)
+2. Relevant experience highlights
+3. Points to explore in interview
+4. Any concerns or gaps to address
+
+Format as a brief, scannable summary for the interviewer.
+Output in Japanese.
+```
+
+---
+
+## 参考：面接フィードバック整理プロンプト（第3回で使用）
+
+```
+You are an HR coordinator organizing interview feedback.
+
+Interview details:
+- Candidate: {candidate_name}
+- Position: {position}
+- Interviewer: {interviewer_name}
+- Date: {interview_date}
+
+Based on the interviewer's notes:
+{interviewer_notes}
+
+Please organize:
+1. Overall impression (Positive/Neutral/Negative)
+2. Strengths identified
+3. Areas of concern
+4. Recommended next step (Proceed/Hold/Decline)
+5. Summary for hiring manager (2-3 sentences)
+
+Output in Japanese.
+```
+
+---
+
+## 参考：候補者ステータス通知プロンプト（第5回で使用）
+
+```
+You are generating a candidate status update notification.
+
+Current status: {status}
+Candidate: {candidate_name}
+Position: {position}
+Last action: {last_action}
+Next step: {next_step}
+Due date: {due_date}
+
+Generate:
+1. Brief status summary for Chat notification
+2. Action items for recruiting team
+3. Any urgent flags
+
+Keep the message concise and actionable.
+Output in Japanese.
+```
+
+---
+
+## CX評価指標の参考
+
+採用CXを測定する主な指標：
+
+1. **応答時間（Response Time）**
+   - 候補者からの問い合わせへの返信時間
+   - 目標：24時間以内 → 自動化後：即時
+
+2. **プロセス透明性（Process Transparency）**
+   - 候補者が自分のステータスを把握できているか
+   - 目標：常に次のステップが明確
+
+3. **コミュニケーション品質（Communication Quality）**
+   - 連絡内容の一貫性と丁寧さ
+   - 目標：パーソナライズされた連絡
+
+4. **候補者NPS（Net Promoter Score）**
+   - 採用プロセスを他者に勧めるか
+   - 目標：+30以上

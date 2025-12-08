@@ -1,0 +1,132 @@
+# 採用パイプライン自動化フロー 第4回：採用書類自動整理エージェント
+# プロンプト集
+
+---
+
+## 1. 履歴書サマリ作成プロンプト
+
+```
+Analyze the attached resume and create a summary in Japanese:
+
+Document: {uploaded_file}
+Position applied: {position}
+
+Create a structured summary including:
+1. Basic Info (name, contact, education)
+2. Work Experience (companies, years, roles)
+3. Key Skills (technical skills, certifications)
+4. Relevance to Position (match level: High/Medium/Low)
+5. Notable Points (strengths and concerns)
+
+Keep the summary concise (within 300 characters).
+```
+
+---
+
+## 2. 職務経歴書分析プロンプト
+
+```
+Analyze this career history document in Japanese:
+
+Document: {career_document}
+Position: {position}
+Required skills: {required_skills}
+
+Extract and summarize:
+1. Total years of experience
+2. Industry experience breakdown
+3. Technical skills match (%)
+4. Leadership/Management experience
+5. Key achievements (top 3)
+6. Potential concerns or gaps
+
+Output in bullet points format.
+```
+
+---
+
+## 3. 適合度評価プロンプト
+
+```
+Evaluate candidate fit for the position:
+
+Position: {position}
+Required skills: {required_skills}
+Nice-to-have skills: {nice_to_have}
+
+Candidate profile:
+{summary}
+
+Rate the candidate:
+- Overall fit: High/Medium/Low
+- Technical match: X/10
+- Experience match: X/10
+- Culture fit indicators: List any
+
+Provide a 2-sentence recommendation.
+```
+
+---
+
+## 4. Drive設定
+
+### フォルダ構造
+```
+採用/
+├── 候補者/
+│   ├── {candidate_name}/
+│   │   ├── 履歴書_{date}.pdf
+│   │   └── 職務経歴書_{date}.pdf
+│   └── ...
+├── テンプレート/
+└── レポート/
+```
+
+### ファイル命名規則
+```
+{candidate_name}_{document_type}_{date}.{extension}
+
+例：山田太郎_履歴書_20250115.pdf
+```
+
+---
+
+## 5. スプレッドシート設定
+
+### 列構成
+```
+A: 応募日
+B: 候補者名
+C: 応募職種
+D: メールアドレス
+E: 書類リンク
+F: サマリ
+G: 適合度（High/Medium/Low）
+H: ステータス（新規/書類選考中/面接調整中/面接済/内定/不採用）
+I: 備考
+```
+
+---
+
+## 6. エージェント構成
+
+```
+エージェント名: 採用書類自動整理エージェント
+
+Starter: Gmail - When labeled email arrives
+  - Label: 応募_新規
+  - Has attachment: true
+
+Step 1: Google Drive - Upload file
+  - Source: Email attachment
+  - Folder: 採用/候補者/{candidate_name}
+  - Output: file_link
+
+Step 2: Gemini - Generate content
+  - Prompt: [履歴書サマリ作成プロンプト]
+  - Output: summary
+
+Step 3: Google Sheets - Append row
+  - Spreadsheet: 採用管理シート
+  - Data: [date, name, position, email, file_link, summary, fit_level, status]
+```

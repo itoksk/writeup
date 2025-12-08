@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>週次ビジネスレビュー（WBR）報告書</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.8;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+        }
+
+        header {
+            border-bottom: 3px solid #00BCD4;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #00BCD4;
+            margin-bottom: 0.5rem;
+        }
+
+        .period {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 300;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+            border-left: 4px solid #00BCD4;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .kpi-card h3 {
+            font-size: 0.9rem;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-change {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .kpi-change.positive {
+            color: #4caf50;
+        }
+
+        .kpi-change.negative {
+            color: #f44336;
+        }
+
+        .section {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #00BCD4;
+            margin-bottom: 1rem;
+        }
+
+        .section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .section li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .section li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #00BCD4;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .highlight {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .warning {
+            background: #fff3e0;
+            border-left: 4px solid #FF9800;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .action-item {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 1rem 1.5rem;
+            margin: 0.5rem 0;
+            font-weight: 500;
+        }
+
+        footer {
+            border-top: 1px solid #e0e0e0;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>週次ビジネスレビュー（WBR）</h1>
+            <p class="period">期間：2024年2月5日 〜 2024年2月12日</p>
+        </header>
+
+        <section>
+            <h2>📊 今週のKPIサマリー</h2>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <h3>売上</h3>
+                    <div class="kpi-value">¥1,650,000</div>
+                    <div class="kpi-change positive">+11.5% (+¥170,000)</div>
+                </div>
+                <div class="kpi-card">
+                    <h3>成約件数</h3>
+                    <div class="kpi-value">30件</div>
+                    <div class="kpi-change positive">+15.4% (+4件)</div>
+                </div>
+                <div class="kpi-card">
+                    <h3>問い合わせ数</h3>
+                    <div class="kpi-value">135件</div>
+                    <div class="kpi-change positive">+14.4% (+17件)</div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>✅ 今週のハイライト</h2>
+
+            <div class="section">
+                <h3>主要成果</h3>
+                <div class="highlight">
+                    <ul>
+                        <li><strong>B社プロジェクト（420万円）成約</strong>：競合2社に勝利した大口案件</li>
+                        <li><strong>ウェビナー開催（2/8）</strong>で新規リード25件獲得、問い合わせ数増加に寄与</li>
+                        <li><strong>新商品キャンペーン開始（2/11）</strong>、初動反響が好調</li>
+                        <li>既存顧客C社からのリピート発注（80万円）：顧客満足度の高さを示唆</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>注意すべき点</h3>
+                <div class="warning">
+                    <ul>
+                        <li>A社案件（250万円）はまだ商談中で、成約は次週以降</li>
+                        <li>展示会（2/3）からのリード転換率が低い（18件中、商談化は未確認）</li>
+                        <li>F社案件（150万円）は予算面で慎重な検討が続いている</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>💡 次週へのアクション</h2>
+            <div class="action-item">
+                <strong>1. B社のような大口案件の発掘強化</strong><br>
+                類似企業へのアプローチを優先し、商談パイプラインを充実
+            </div>
+            <div class="action-item">
+                <strong>2. ウェビナー参加者25件への迅速フォローアップ</strong><br>
+                目標：5件の商談化を目指す。早期アプローチで温度感が高いうちにコンタクト
+            </div>
+            <div class="action-item">
+                <strong>3. 展示会リード18件の再アプローチ</strong><br>
+                商談化率30%を目標に集中対応。ニーズヒアリングを徹底
+            </div>
+        </section>
+
+        <footer>
+            <p>このレポートはAIによって自動生成されました - 報告時間80%削減！AIが自動でKPIを回す仕組みづくり</p>
+            <p>© 2024 WBR Auto-Generator</p>
+        </footer>
+    </div>
+</body>
+</html>

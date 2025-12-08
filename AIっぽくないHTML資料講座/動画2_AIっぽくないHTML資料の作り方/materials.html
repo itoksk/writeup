@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>見せ方で損しない！“AIっぽくない”HTML資料の作り方</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gray: #4A4E6A;
+            --muted: rgba(10, 14, 39, 0.65);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            font-size: 18px;
+            line-height: 1.7;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(0, 240, 255, 0.08), transparent 45%),
+                        radial-gradient(circle at bottom left, rgba(255, 107, 107, 0.08), transparent 40%);
+            z-index: -1;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(12px);
+            background: rgba(254, 254, 248, 0.8);
+            color: var(--ink);
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 48px;
+            z-index: 10;
+        }
+
+        body.dark-mode header {
+            background: rgba(10, 14, 39, 0.8);
+            color: var(--paper);
+            border-bottom-color: rgba(254, 254, 248, 0.1);
+        }
+
+        .course-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .course-meta span {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.06em;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .dark-mode-toggle {
+            border: 1px solid currentColor;
+            background: transparent;
+            color: inherit;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            align-items: center;
+            padding: 48px clamp(32px, 5vw, 72px) 72px;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 32px 20px 56px;
+            }
+        }
+
+        .content-section {
+            width: min(1100px, 100%);
+            background: rgba(254, 254, 248, 0.92);
+            padding: clamp(32px, 4vw, 48px);
+            margin-bottom: 32px;
+            border-radius: 28px;
+            box-shadow: 0 20px 48px rgba(10, 14, 39, 0.08);
+        }
+
+        body.dark-mode .content-section {
+            background: rgba(10, 14, 39, 0.82);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+        }
+
+        .section-title {
+            font-size: 28px;
+            letter-spacing: 0.04em;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        body.dark-mode .section-subtitle {
+            color: rgba(254, 254, 248, 0.6);
+        }
+
+        .section-content p {
+            margin: 12px 0;
+        }
+
+        .section-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 16px 0;
+            border-left: 2px solid var(--electric);
+            padding-left: 18px;
+        }
+
+        body.dark-mode .section-content ul {
+            border-left-color: var(--coral);
+        }
+
+        .section-content li {
+            margin-bottom: 12px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .section-content li::before {
+            content: '•';
+            color: var(--electric);
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        body.dark-mode .section-content li::before {
+            color: var(--coral);
+        }
+
+        .code-block {
+            background: rgba(10, 14, 39, 0.85);
+            color: #F8F8FF;
+            padding: 18px;
+            border-radius: 16px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        body.dark-mode .code-block {
+            background: rgba(254, 254, 248, 0.12);
+            color: var(--paper);
+        }
+
+
+        .transformation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .prompt-card {
+            border: 1px solid rgba(10, 14, 39, 0.12);
+            border-radius: 24px;
+            padding: clamp(24px, 3vw, 36px);
+            background: rgba(254, 254, 248, 0.96);
+            line-height: 1.8;
+        }
+
+        body.dark-mode .prompt-card {
+            background: rgba(10, 14, 39, 0.86);
+            border-color: rgba(254, 254, 248, 0.16);
+        }
+
+        .prompt-card h3 {
+            margin-top: 0;
+            font-size: 18px;
+            letter-spacing: 0.04em;
+        }
+        
+        .transformation-card {
+            border: 1px solid rgba(10, 14, 39, 0.12);
+            border-radius: 24px;
+            padding: clamp(24px, 3.2vw, 36px);
+            background: rgba(254, 254, 248, 0.96);
+            line-height: 1.8;
+        }
+
+        body.dark-mode .transformation-card {
+            background: rgba(10, 14, 39, 0.86);
+            border-color: rgba(254, 254, 248, 0.16);
+        }
+        
+        .code-wrapper {
+            position: relative;
+            margin: 18px 0;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(254, 254, 248, 0.85);
+            color: var(--ink);
+            border: 1px solid rgba(10, 14, 39, 0.2);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .copy-button:hover {
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .copy-button {
+            background: rgba(10, 14, 39, 0.85);
+            color: var(--paper);
+            border-color: rgba(254, 254, 248, 0.2);
+        }
+    
+        .nav-dots {
+            position: fixed;
+            right: clamp(16px, 4vw, 48px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            z-index: 9;
+        }
+
+        @media (max-width: 1200px) {
+            .nav-dots {
+                display: none;
+            }
+        }
+
+        .nav-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.25);
+            border: 2px solid rgba(10, 14, 39, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        body.dark-mode .nav-dot {
+            background: rgba(254, 254, 248, 0.25);
+            border-color: rgba(254, 254, 248, 0.4);
+        }
+
+        .nav-dot.active {
+            transform: scale(1.2);
+            background: var(--electric);
+            border-color: var(--electric);
+        }
+
+        body.dark-mode .nav-dot.active {
+            background: var(--coral);
+            border-color: var(--coral);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 240, 255, 0.12);
+            color: var(--ink);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 12px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        body.dark-mode .badge {
+            background: rgba(255, 107, 107, 0.18);
+            color: var(--paper);
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid-two {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .grid-card {
+            border: 1px solid rgba(10, 14, 39, 0.12);
+            border-radius: 24px;
+            padding: clamp(24px, 3.2vw, 36px);
+            background: rgba(254, 254, 248, 0.96);
+            line-height: 1.8;
+        }
+
+        body.dark-mode .grid-card {
+            background: rgba(10, 14, 39, 0.86);
+            border-color: rgba(254, 254, 248, 0.16);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="course-meta">
+            <span>module 2</span>
+            <strong>見せ方で損しない！“AIっぽくない”HTML資料の作り方</strong>
+        </div>
+        <button class="dark-mode-toggle" type="button">Toggle Dark Mode</button>
+    </header>
+
+    <nav class="nav-dots" aria-label="セクションのショートカット">
+        <button class="nav-dot" data-target="intro" aria-label="イントロ"></button>
+        <button class="nav-dot" data-target="transformation" aria-label="ビフォーアフター"></button>
+        <button class="nav-dot" data-target="pitfalls" aria-label="課題"></button>
+        <button class="nav-dot" data-target="framework" aria-label="フレームワーク"></button>
+        <button class="nav-dot" data-target="prompts" aria-label="プロンプト集"></button>
+        <button class="nav-dot" data-target="prompt" aria-label="プロンプトデモ"></button>
+        <button class="nav-dot" data-target="bestpractices" aria-label="ベストプラクティス"></button>
+        <button class="nav-dot" data-target="review" aria-label="レビュー"></button>
+        <button class="nav-dot" data-target="action" aria-label="アクション"></button>
+    </nav>
+
+    <main>
+        <section class="content-section" id="intro" data-section>
+            <div class="section-subtitle">Kickoff</div>
+            <h2 class="section-title">見せ方で損しない！“AIっぽくない”HTML資料の作り方</h2>
+            <div class="section-content">
+                <p>前回整理した要件をもとに、AIへ具体的なデザイン指示を与えるステップへ進みます。今日のゴールは「AIに丸投げしても、“AIが作った”と気づかれないHTML」を量産できる状態になること。</p>
+                <div class="badge">Focus：5要素テンプレート</div>
+            </div>
+        </section>
+
+        <section class="content-section" id="transformation" data-section>
+            <div class="section-subtitle">Shift</div>
+            <h2 class="section-title">デザイン指示の質でこう変わる</h2>
+            <div class="section-content">
+                <div class="transformation-grid">
+                    <div class="transformation-card">
+                        <span class="badge">Before</span>
+                        <ul>
+                            <li>AIが生成したHTMLが絵文字・装飾過多で「AIっぽい」と指摘される</li>
+                            <li>セクション構造やナビゲーションが定まらず、閲覧フローが分かりづらい</li>
+                            <li>ダークモードやレスポンシブ対応を毎回手作業で修正している</li>
+                        </ul>
+                    </div>
+                    <div class="transformation-card">
+                        <span class="badge">After</span>
+                        <ul>
+                            <li>5要素テンプレートで配色・トーンが揃い、雑誌風の統一感あるHTMLを量産できる</li>
+                            <li>ドットナビ・セクション構成が事前に定義され、閲覧体験の揺らぎがなくなる</li>
+                            <li>ダークモードや`white-space: pre-wrap`などの要件がプロンプト段階で組み込まれ、手戻りが激減</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section class="content-section" id="pitfalls" data-section>
+            <div class="section-subtitle">Before / After</div>
+            <h2 class="section-title">AIっぽさを生むデザインの沼</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>絵文字祭り：</strong>「親しみやすく」と指示すると絵文字連打。→ Google Iconsに差し替える。</li>
+                    <li><strong>色が単調：</strong> モノトーンで終わらせがち。→ アクセントカラーとサブカラーをセットで指定。</li>
+                    <li><strong>レイアウトの詰め込み：</strong> 一段の長文で読みづらい。→ セクション単位の見出しと余白を必ず作る。</li>
+                </ul>
+                <p>AIに「やってほしくないこと」を先に指示するだけで仕上がりが大きく変わります。</p>
+            </div>
+        </section>
+
+        <section class="content-section" id="framework" data-section>
+            <div class="section-subtitle">Design Framework</div>
+            <h2 class="section-title">5要素プロンプトで指示の粒度を揃える</h2>
+            <div class="section-content">
+                <div class="grid-two">
+                    <div class="grid-card">
+                        <strong>テーマ</strong>
+                        <p>資料の世界観を決めるキーワード。受講者がワクワクする「煽りワード」を添えるとAIの表現が豊かになる（例：「限界を超えた」「プロ級の」）。</p>
+                    </div>
+                    <div class="grid-card">
+                        <strong>トーン</strong>
+                        <p>文章とビジュアルの温度感。複数モデルで試したい場合は「ClaudeとChatGPTにも同じ指示で比較してください」と追記してセカンドオピニオンを得る。</p>
+                    </div>
+                    <div class="grid-card">
+                        <strong>構造</strong>
+                        <p>セクション数・ナビゲーション形式・コンポーネントの種類。最初にMVP候補（必須2セクション＋追加案）を示し、不要な機能を削りやすくする。</p>
+                    </div>
+                    <div class="grid-card">
+                        <strong>アクセント</strong>
+                        <p>フォント・カラー・アイコンの指定。絵文字は禁止と明記し、Google Iconsなど具体的な素材先を提示して差し替えを徹底させる。</p>
+                    </div>
+                    <div class="grid-card">
+                        <strong>アクセシビリティ</strong>
+                        <p>レスポンシブ対応、ダークモード、`white-space: pre-wrap`など見やすさの要件。チェックリストで「抜け漏れがあれば質問してください」と追記し、AIに再確認させる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section" id="prompts" data-section>
+            <div class="section-subtitle">Sample Prompts</div>
+            <h2 class="section-title">デザイン指示プロンプトのバリエーション</h2>
+            <div class="section-content">
+                <p>狙いたいトーンや構成に応じて、テンプレートから派生させた指示文を用意しています。</p>
+                <div class="prompt-grid">
+                    <div class="prompt-card">
+                        <h3>雑誌風フルバージョン</h3>
+                        <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block">あなたは雑誌編集部のアートディレクターです。以下の条件でHTML教材を生成してください。
+- まず目的・ターゲット・成果物形式を確認し、不足があれば質問してから制作を開始
+- 背景は紙質感、アクセントは電気ブルー、見出しは全角日本語フォントを使用
+- セクション数は5つ（導入 / Before-After / 3ステップ解説 / チェックリスト / 実践タスク）
+- 右サイドに現在のセクションを示すドット型ナビゲーションを実装
+- ダークモード時は背景を#0A0E27、文字色を#FEFEF8へ切り替えるCSSを記述
+- コード例部分は`<pre class="code-block">`でラップし、`white-space: pre-wrap;`とコピー用ボタンをセット
+- 絵文字は禁止し、Google Iconsから相応しいアイコンを読み込んで差し替える</pre></div>
+                    </div>
+                    <div class="prompt-card">
+                        <h3>ミニマル構成</h3>
+                        <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block">あなたは社内広報チーム専属のUIデザイナーです。以下の条件で、シンプルで読みやすいHTML教材を生成してください。
+- セクションは4つ（イントロ / Before-After / 実践ステップ / チェックリスト）
+- 必要に応じて第二のAIモデルにもレビューを依頼する旨を提案し、差分があればまとめる
+- 余白を広めに取り、本文フォントサイズは18pxをデフォルトとする
+- 右側ドットナビを実装し、IntersectionObserverでアクティブ表示を切り替える
+- コードブロックは`<pre class="code-block">`で包み、`white-space: pre-wrap;`とコピー用ボタンを含める
+- ダークモード時は背景#0A0E27、本文#FEFEF8、アクセント#00F0FF→#FF6B6Bに切り替える
+- 絵文字は使用せず、アイコンをMaterial Symbolsから読み込むよう指示</pre></div>
+                    </div>
+                    <div class="prompt-card">
+                        <h3>ストーリーテリング</h3>
+                        <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block">あなたはストーリーテリングに強いプロダクトデザイナーです。以下の条件で、ナラティブ重視のHTML教材を作成してください。
+- セクションは5つ（序章 / 課題の発見 / 解決アーキテクチャ / 成功事例 / 次のアクション）
+- 各セクション冒頭で問いかけの一文を提案し、読者の感情を揺さぶる煽りワードを含める
+- スクロールに応じてフェードインするアニメーションをCSSで定義（prefers-reduced-motionには配慮）
+- ダーク/ライトテーマをCSS変数で管理し、`body`に`data-theme="dark"`の切り替えを実装
+- 表示フォントは「Zen Kaku Gothic New」「Space Grotesk」に加え、見出し用に「Bebas Neue」を読み込む
+- コードブロックと引用ブロックそれぞれに専用スタイルを適用し、引用には左線とアイコンを付ける
+- 最後に、MVPの観点から追加機能を提案しすぎないよう注意喚起のメモを入れる</pre></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section class="content-section" id="prompt" data-section>
+            <div class="section-subtitle">Prompt Demo</div>
+            <h2 class="section-title">プロンプト例：骨組み + 見た目を同時に依頼</h2>
+            <div class="section-content">
+                <p>要件シートを踏まえて以下のプロンプトを使うと、構造とデザインを一度に指定できます。</p>
+                <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block">あなたは雑誌風のHTML資料をデザインするUIデザイナー兼フロントエンドエンジニアです。
+以下の要件を必ず満たしながら、落ち着いた雑誌テイストでHTMLを生成してください。
+- ターゲット：事業企画部の新任マネージャー向け社内研修
+- テーマ：落ち着いた紙媒体の雑誌風。アクセントカラーは#00F0FF
+- セクション構成：導入 / Before-After / 3ステップ解説 / チェックリスト / 実践タスク
+- 制作前に不足情報がないかヒアリングし、必要なら確認質問を行う
+- 絵文字は使わず、Material Symbolsから適切なアイコンを読み込む
+- コードブロックには`white-space: pre-wrap;`とコピー用ボタンを組み込み
+- Google Fonts「Zen Kaku Gothic New」「Space Grotesk」を読み込み、レスポンシブとダークモードをCSS変数で管理する</pre></div>
+                <p>生成されたHTMLはVS Codeなどで整形し、不要なスタイルは次のセクションのガイドに沿って調整します。</p>
+            </div>
+        <section class="content-section" id="bestpractices" data-section>
+            <div class="section-subtitle">Best Practice</div>
+            <h2 class="section-title">プロンプトとデザインのベストプラクティス</h2>
+            <div class="section-content">
+                <div class="grid two">
+                    <div class="grid-card">
+                        <strong>プロンプト運用のコツ</strong>
+                        <ul>
+                            <li>AIにヒアリングさせて要件を引き出し、回答をGoogleドキュメントなどに保存してから制作に進む。</li>
+                            <li>「もっと煽って」や「限界を超えたUIで」など、強いワードで完成イメージを煽りつつNGワード（シンプル・普通）は避ける。</li>
+                            <li>1つのモデルの提案がしっくり来ない場合は、別のAIにも同じプロンプトを試し、良い部分を組み合わせる。</li>
+                            <li>出力後は「不足があれば質問してください」と追記し、AI自身に抜け漏れチェックをさせる。</li>
+                        </ul>
+                    </div>
+                    <div class="grid-card">
+                        <strong>デザイン改善のコツ</strong>
+                        <ul>
+                            <li>絵文字は禁止と明記し、Material Iconsなどの具体的な置換先を指示する。</li>
+                            <li>MVP思考を徹底し、必須2機能＋追加案にとどめる。機能過多を避け、段階的に改良する。</li>
+                            <li>完成後はGoogleサイトへ埋め込み、PC/モバイル/ダークモードでのプレビューを行ってから共有する。</li>
+                            <li>カラーやフォントの指示はCSS変数やGoogle Fontsなど標準機能で表現できる範囲にまとめておく。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        </section>
+
+        <section class="content-section" id="review" data-section>
+            <div class="section-subtitle">Refine</div>
+            <h2 class="section-title">完成チェックリストと微調整ポイント</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>レスポンシブ：</strong> `@media (max-width: 768px)`のブレークポイントが用意されているか。</li>
+                    <li><strong>ダークモード：</strong> `.dark-mode`や`[data-theme="dark"]`で背景・文字色が切り替わるか。</li>
+                    <li><strong>タイポグラフィ：</strong> 見出し・本文・補足のフォントサイズが段階的に整理されているか。</li>
+                    <li><strong>アクセント：</strong> 強調テキストにアクセントカラーが使われているか。</li>
+                </ul>
+                <p>細部が気になる場合は、AIに「このCSSを整理して」と追いプロンプトするか、手作業で調整しましょう。</p>
+            </div>
+        </section>
+
+        <section class="content-section" id="action" data-section>
+            <div class="section-subtitle">Next Action</div>
+            <h2 class="section-title">今日の仕上げタスク</h2>
+            <div class="section-content">
+                <ul>
+                    <li>要件シートを貼り付けたプロンプトを実際に実行する。</li>
+                    <li>出力されたHTMLをローカルで表示し、カラーと余白をチェックする。</li>
+                    <li>コードブロックや表などの要素を1つ追加し、デザインを馴染ませる。</li>
+                </ul>
+                <p>ここまで整えれば、Googleサイトへの埋め込み準備は完了です。次回は共有設定を最適化します。</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const navDots = document.querySelectorAll('.nav-dot');
+        const sections = document.querySelectorAll('[data-section]');
+        const toggle = document.querySelector('.dark-mode-toggle');
+
+        navDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const target = document.getElementById(dot.dataset.target);
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navDots.forEach(dot => dot.classList.toggle('active', dot.dataset.target === entry.target.id));
+                }
+            });
+        }, { threshold: 0.6 });
+
+        sections.forEach(section => observer.observe(section));
+
+        toggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            toggle.textContent = document.body.classList.contains('dark-mode') ? 'Toggle Light Mode' : 'Toggle Dark Mode';
+        });
+        const copyButtons = document.querySelectorAll('.copy-button');
+
+        function showCopyState(button, text, revert = 'Copy') {
+            const original = button.textContent;
+            button.textContent = text;
+            setTimeout(() => {
+                button.textContent = revert === 'Copy' ? original : revert;
+            }, 1500);
+        }
+
+        function fallbackCopy(text, button) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'fixed';
+            textarea.style.top = '-1000px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            textarea.setSelectionRange(0, textarea.value.length);
+            let succeeded = false;
+            try {
+                succeeded = document.execCommand('copy');
+            } catch (err) {
+                succeeded = false;
+            }
+            document.body.removeChild(textarea);
+            if (succeeded) {
+                showCopyState(button, 'Copied!');
+            } else {
+                showCopyState(button, 'Copy failed', 'Copy');
+            }
+        }
+
+        async function handleCopy(button) {
+            const code = button.nextElementSibling.textContent;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(code);
+                    showCopyState(button, 'Copied!');
+                    return;
+                } catch (err) {
+                    // fall back to execCommand path
+                }
+            }
+            fallbackCopy(code, button);
+        }
+
+        copyButtons.forEach((button) => {
+            button.addEventListener('click', () => handleCopy(button));
+        });
+
+    </script>
+</body>
+</html>

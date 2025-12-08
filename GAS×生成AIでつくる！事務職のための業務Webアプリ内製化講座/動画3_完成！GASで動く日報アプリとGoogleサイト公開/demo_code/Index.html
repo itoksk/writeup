@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>業務日報 - 閲覧アプリ</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+      background: #f5f7fa;
+      color: #2d3748;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #718096;
+      font-size: 14px;
+    }
+
+    .filters {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-group label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #4a5568;
+    }
+
+    select, input[type="text"] {
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+      color: #2d3748;
+      min-width: 200px;
+    }
+
+    select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: #4299e1;
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #718096;
+    }
+
+    .reports-container {
+      display: grid;
+      gap: 16px;
+    }
+
+    .report-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.2s;
+    }
+
+    .report-card:hover {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .report-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a202c;
+    }
+
+    .report-date {
+      font-size: 14px;
+      color: #718096;
+    }
+
+    .report-content {
+      margin-bottom: 12px;
+    }
+
+    .report-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #4a5568;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .report-text {
+      font-size: 14px;
+      color: #2d3748;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .report-feedback {
+      background: #f7fafc;
+      padding: 12px;
+      border-radius: 6px;
+      border-left: 3px solid #4299e1;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 40px;
+      color: #718096;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .error {
+      background: #fed7d7;
+      color: #c53030;
+      padding: 16px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+      border-left: 4px solid #c53030;
+    }
+
+    @media (max-width: 768px) {
+      .filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      select, input[type="text"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📋 業務日報 - 閲覧アプリ</h1>
+      <p class="subtitle">チーム全員の日報を確認できます</p>
+    </header>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label for="nameFilter">氏名:</label>
+        <select id="nameFilter">
+          <option value="">全員</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="searchText">検索:</label>
+        <input type="text" id="searchText" placeholder="業務内容や所感を検索...">
+      </div>
+    </div>
+
+    <div id="reportsContainer" class="loading">
+      読み込み中...
+    </div>
+  </div>
+
+  <script>
+    // グローバル変数
+    let allReports = [];
+    let allNames = [];
+
+    // ページ読み込み時の処理
+    window.onload = function() {
+      loadData();
+
+      // フィルター変更時のイベントリスナー
+      document.getElementById('nameFilter').addEventListener('change', filterReports);
+      document.getElementById('searchText').addEventListener('input', filterReports);
+    };
+
+    /**
+     * データを読み込む
+     */
+    function loadData() {
+      // 日報データを取得
+      google.script.run
+        .withSuccessHandler(function(reports) {
+          allReports = reports;
+          displayReports(reports);
+        })
+        .withFailureHandler(function(error) {
+          showError('データの読み込みに失敗しました: ' + error.message);
+        })
+        .getDailyReports();
+
+      // 氏名リストを取得
+      google.script.run
+        .withSuccessHandler(function(names) {
+          allNames = names;
+          populateNameFilter(names);
+        })
+        .withFailureHandler(function(error) {
+          console.error('氏名リストの取得に失敗しました:', error);
+        })
+        .getNameList();
+    }
+
+    /**
+     * 氏名フィルターのドロップダウンを設定
+     */
+    function populateNameFilter(names) {
+      const select = document.getElementById('nameFilter');
+      names.forEach(function(name) {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+    }
+
+    /**
+     * 日報データを画面に表示
+     */
+    function displayReports(reports) {
+      const container = document.getElementById('reportsContainer');
+
+      if (!reports || reports.length === 0) {
+        container.innerHTML = '<div class="no-data">日報データがありません</div>';
+        return;
+      }
+
+      let html = '<div class="reports-container">';
+
+      reports.forEach(function(report) {
+        html += `
+          <div class="report-card">
+            <div class="report-header">
+              <div class="report-name">${escapeHtml(report.name)}</div>
+              <div class="report-date">${report.date}</div>
+            </div>
+
+            <div class="report-content">
+              <div class="report-label">業務内容</div>
+              <div class="report-text">${escapeHtml(report.content)}</div>
+            </div>
+
+            ${report.feedback ? `
+              <div class="report-feedback">
+                <div class="report-label">所感・気づき</div>
+                <div class="report-text">${escapeHtml(report.feedback)}</div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    /**
+     * フィルター処理
+     */
+    function filterReports() {
+      const nameFilter = document.getElementById('nameFilter').value;
+      const searchText = document.getElementById('searchText').value.toLowerCase();
+
+      let filtered = allReports;
+
+      // 氏名でフィルター
+      if (nameFilter) {
+        filtered = filtered.filter(function(report) {
+          return report.name === nameFilter;
+        });
+      }
+
+      // 検索テキストでフィルター
+      if (searchText) {
+        filtered = filtered.filter(function(report) {
+          return (report.content && report.content.toLowerCase().includes(searchText)) ||
+                 (report.feedback && report.feedback.toLowerCase().includes(searchText));
+        });
+      }
+
+      displayReports(filtered);
+    }
+
+    /**
+     * エラーメッセージを表示
+     */
+    function showError(message) {
+      const container = document.getElementById('reportsContainer');
+      container.innerHTML = `<div class="error">${escapeHtml(message)}</div>`;
+    }
+
+    /**
+     * HTMLエスケープ処理（XSS対策）
+     */
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

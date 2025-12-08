@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：日報と週報を自動要約する確認時短フロー | ゼロタッチマネジメント</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #06B6D4;
+            --violet: #0EA5E9;
+            --gray: #4A5568;
+            --border: #E2E8F0;
+            --bg-light: #F8FAFC;
+        }
+        body {
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-back:hover { color: var(--electric); }
+        .nav-lesson {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem;
+        }
+        .lesson-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .lesson-number {
+            font-size: 6rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+        }
+        .lesson-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 1rem 0 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        .lesson-subtitle {
+            font-size: 1.125rem;
+            color: var(--gray);
+        }
+        section {
+            margin-bottom: 3rem;
+        }
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 4px solid var(--electric);
+        }
+        .goal-card {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(6, 182, 212, 0.05));
+            border-radius: 12px;
+            padding: 2rem;
+            border-left: 4px solid var(--violet);
+        }
+        .goal-card p {
+            font-size: 1.05rem;
+            color: var(--gray);
+            line-height: 1.8;
+        }
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        .problem-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .problem-card.issue { border-top: 4px solid #EF4444; }
+        .problem-card.solution { border-top: 4px solid #22C55E; }
+        .problem-card h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+        .problem-card.issue h3 { color: #EF4444; }
+        .problem-card.solution h3 { color: #22C55E; }
+        .problem-card ul {
+            list-style: none;
+        }
+        .problem-card li {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .problem-card.issue li::before {
+            content: "×";
+            position: absolute;
+            left: 0;
+            color: #EF4444;
+            font-weight: 700;
+        }
+        .problem-card.solution li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #22C55E;
+            font-weight: 700;
+        }
+        .element-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .element-card {
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .element-number {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--electric);
+            margin-bottom: 0.5rem;
+        }
+        .element-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .element-card p {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        .flow-diagram {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .flow-step {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0.5rem;
+        }
+        .flow-arrow {
+            color: var(--gray);
+            margin: 0 0.5rem;
+            font-size: 1.25rem;
+        }
+        .condition-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .condition-card {
+            background: rgba(14, 165, 233, 0.05);
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+        .condition-card h4 {
+            font-size: 0.9rem;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .condition-card p {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        .status-table th,
+        .status-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .status-table th {
+            background: var(--bg-light);
+            font-weight: 600;
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: var(--electric);
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin: 1rem 0;
+            line-height: 1.6;
+        }
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .step-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            font-weight: 700;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .step-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .step-content p {
+            font-size: 0.9rem;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+        .checklist-item svg {
+            color: #22c55e;
+            flex-shrink: 0;
+        }
+        .checklist-item span {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        .comparison-card {
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .comparison-card.before { border-top: 4px solid #EF4444; }
+        .comparison-card.after { border-top: 4px solid #22C55E; }
+        .comparison-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .comparison-card.before .comparison-header { color: #EF4444; }
+        .comparison-card.after .comparison-header { color: #22C55E; }
+        .comparison-card ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .comparison-card li {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        .summary-box {
+            background: var(--ink);
+            color: var(--paper);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+        .summary-box h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .summary-box ul {
+            list-style: none;
+        }
+        .summary-box li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .summary-box li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+        }
+        .next-preview {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(6, 182, 212, 0.1));
+            border-radius: 12px;
+            text-align: center;
+        }
+        .next-preview h3 {
+            font-size: 1rem;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .next-preview p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+        .nav-prev, .nav-next {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-light);
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-prev:hover, .nav-next:hover {
+            background: var(--electric);
+            color: white;
+        }
+        .prompt-section {
+            margin-top: 1rem;
+        }
+        .prompt-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .output-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .output-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+        .output-card h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .output-card p {
+            font-size: 0.85rem;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+        .alert-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: #FEF2F2;
+            color: #EF4444;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .success-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: #F0FDF4;
+            color: #22C55E;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .info-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: #EFF6FF;
+            color: #3B82F6;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .config-note {
+            background: rgba(6, 182, 212, 0.1);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            font-size: 0.875rem;
+            color: var(--gray);
+            margin-top: 1rem;
+            border-left: 3px solid var(--electric);
+        }
+        .config-note strong {
+            color: var(--ink);
+        }
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .assessment-card {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .assessment-card.green {
+            background: #F0FDF4;
+            border: 1px solid #BBF7D0;
+        }
+        .assessment-card.yellow {
+            background: #FEFCE8;
+            border: 1px solid #FEF08A;
+        }
+        .assessment-card.orange {
+            background: #FFF7ED;
+            border: 1px solid #FDBA74;
+        }
+        .assessment-card.red {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+        }
+        .assessment-card h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .assessment-card.green h4 { color: #22C55E; }
+        .assessment-card.yellow h4 { color: #EAB308; }
+        .assessment-card.orange h4 { color: #F97316; }
+        .assessment-card.red h4 { color: #EF4444; }
+        .assessment-card p {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+        @media (max-width: 768px) {
+            .lesson-number { font-size: 4rem; }
+            .lesson-title { font-size: 1.5rem; }
+            .problem-grid, .element-grid, .condition-grid, .comparison-grid, .output-grid, .assessment-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">第2回 / 全5回</div>
+        </div>
+    </nav>
+
+    <main>
+        <header class="lesson-header">
+            <div class="lesson-number">02</div>
+            <h1 class="lesson-title">日報と週報を自動要約する確認時短フロー</h1>
+            <p class="lesson-subtitle">重要ポイントだけを抽出して確認時間を5分の1にする</p>
+        </header>
+
+        <section>
+            <h2>学習目標 GOAL</h2>
+            <div class="goal-card">
+                <p>日報・週報メールをGeminiで自動要約し、業務サマリー・課題・依頼事項を構造化して抽出。管理職の確認時間を60分から12分に短縮し、重要情報の見落としをゼロにするReport Summary Agentを構築する</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>現状の課題</h2>
+            <div class="problem-grid">
+                <div class="problem-card issue">
+                    <h3>Before: 手動確認</h3>
+                    <ul>
+                        <li>10人×日報で毎日30分〜60分かかる</li>
+                        <li>課題や依頼事項が本文中に埋もれる</li>
+                        <li>依頼事項を見落とし、対応が遅れる</li>
+                        <li>対応優先度の判断に時間がかかる</li>
+                        <li>週報のレビューでさらに1時間追加</li>
+                        <li>重要な兆候を見逃すリスクがある</li>
+                    </ul>
+                </div>
+                <div class="problem-card solution">
+                    <h3>After: AI要約</h3>
+                    <ul>
+                        <li>要約で内容把握12分/日（80%削減）</li>
+                        <li>重要情報が自動で抽出される</li>
+                        <li>依頼事項が明示され見落としゼロ</li>
+                        <li>評価ラベルで対応要否が一目瞭然</li>
+                        <li>週報も自動要約で効率化</li>
+                        <li>キーワード検知で早期警戒が可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Report Summary Agentの価値</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">01</div>
+                    <h3>時間の大幅削減</h3>
+                    <p>全文を読む時間を要約確認の時間に置き換え、確認作業を80%効率化する</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">02</div>
+                    <h3>重要情報の抽出</h3>
+                    <p>課題・依頼事項・懸念点をAIが自動抽出し、対応が必要な項目を明確化</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">03</div>
+                    <h3>評価の標準化</h3>
+                    <p>「順調/注意/要フォロー」の評価ラベルで、対応優先度を統一基準で判断</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">04</div>
+                    <h3>トレンド分析</h3>
+                    <p>Sheetsに蓄積したデータから、チーム全体の傾向や課題パターンを可視化</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>エージェントフロー AGENT FLOW</h2>
+            <div class="flow-diagram">
+                <div class="flow-step">Gmail受信</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Gemini要約</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Chat通知</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">Sheets記録</div>
+                <div class="condition-grid">
+                    <div class="condition-card">
+                        <h4>日報検知</h4>
+                        <p>件名に「日報」を含むメール</p>
+                    </div>
+                    <div class="condition-card">
+                        <h4>週報検知</h4>
+                        <p>件名に「週報」を含むメール</p>
+                    </div>
+                    <div class="condition-card">
+                        <h4>構造化出力</h4>
+                        <p>サマリー・課題・依頼を抽出</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>エージェント設計</h2>
+            <table class="status-table">
+                <tr>
+                    <th>項目</th>
+                    <th>設定値</th>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td>Report Summary Agent</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>Summarizes daily/weekly reports and highlights key points</td>
+                </tr>
+                <tr>
+                    <td>Trigger</td>
+                    <td>Gmail (When email received)</td>
+                </tr>
+                <tr>
+                    <td>Filter Condition</td>
+                    <td>Subject contains "日報" OR "週報"</td>
+                </tr>
+                <tr>
+                    <td>Process</td>
+                    <td>Gemini summarization with structured extraction</td>
+                </tr>
+                <tr>
+                    <td>Primary Output</td>
+                    <td>Chat notification to manager space</td>
+                </tr>
+                <tr>
+                    <td>Secondary Output</td>
+                    <td>Sheets logging for trend analysis</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Gmailフィルター詳細設定</h2>
+            <table class="status-table">
+                <tr>
+                    <th>フィルター項目</th>
+                    <th>設定値</th>
+                    <th>説明</th>
+                </tr>
+                <tr>
+                    <td>Subject contains</td>
+                    <td>日報 OR 週報</td>
+                    <td>件名で日報・週報を検知</td>
+                </tr>
+                <tr>
+                    <td>From</td>
+                    <td>@yourcompany.com</td>
+                    <td>社内メールのみ対象</td>
+                </tr>
+                <tr>
+                    <td>Has attachment</td>
+                    <td>Any</td>
+                    <td>添付有無は問わない</td>
+                </tr>
+                <tr>
+                    <td>Exclude</td>
+                    <td>RE: / FW:</td>
+                    <td>返信・転送を除外</td>
+                </tr>
+            </table>
+            <div class="config-note">
+                <strong>ポイント:</strong> フィルター条件を細かく設定することで、誤検知を防ぎ、処理対象を正確に絞り込めます。
+            </div>
+        </section>
+
+        <section>
+            <h2>作成ステップ</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>新規エージェント作成</h3>
+                        <p>Google Workspace Studio → Create Agent → Name: Report Summary Agent → Description: Summarizes daily/weekly reports and highlights key points</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Gmailトリガー設定</h3>
+                        <p>Trigger Type: Gmail → Condition: When email received → Filter: Subject contains "日報" OR "週報" → From: @yourcompany.com</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Gemini要約プロンプト設定</h3>
+                        <p>下記の日報要約プロンプトを設定し、構造化された要約を自動生成。週報は拡張プロンプトを使用</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Chat送信アクション設定</h3>
+                        <p>Action: Send Chat message → Space: 管理者用スペース → Format: 下記のChat通知テンプレートを使用</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Sheets記録設定（オプション）</h3>
+                        <p>Action: Add row to Sheets → Spreadsheet: 日報管理シート → 日付・送信者・評価・要約を自動記録</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>テスト実行と有効化</h3>
+                        <p>Run Test → テスト日報メールで要約生成を確認 → Chat通知とSheets記録の動作確認 → Activate</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>日報要約プロンプト GEMINI PROMPT</h2>
+            <div class="code-block">You are a management assistant analyzing team reports.
+
+Report content:
+---
+{email_body}
+---
+
+Analyze this report and extract:
+
+1. **業務サマリー** (3 bullet points max)
+2. **達成した成果** (if any)
+3. **課題・懸念事項** (mark with 🚨 if critical)
+4. **相談・依頼事項** (mark with 📢 if needs response)
+5. **明日/来週の予定**
+
+Also provide:
+- Overall assessment: 順調 / 注意 / 要フォロー
+- Recommended action for manager (if any)
+
+Output in Japanese. Be concise.</div>
+            <div class="config-note">
+                <strong>ポイント:</strong> 🚨と📢のマークを使うことで、確認時に目を引く重要項目を視覚的に識別できます。
+            </div>
+        </section>
+
+        <section>
+            <h2>週報用拡張プロンプト</h2>
+            <div class="code-block">You are a management assistant analyzing weekly reports.
+
+Weekly report content:
+---
+{email_body}
+---
+
+Analyze this weekly report and extract:
+
+1. **今週の業務サマリー** (5 bullet points max)
+2. **達成した成果・完了タスク**
+3. **未完了タスクとその理由**
+4. **課題・懸念事項** (mark with 🚨 if critical)
+5. **相談・依頼事項** (mark with 📢 if needs response)
+6. **来週の計画**
+7. **リソース・サポート要望** (if any)
+
+Also provide:
+- Weekly assessment: 目標達成 / 概ね順調 / 遅延あり / 要支援
+- Key metrics (if mentioned in report)
+- Recommended action for manager (if any)
+
+Output in Japanese. Be concise but comprehensive.</div>
+        </section>
+
+        <section>
+            <h2>評価ラベルの定義</h2>
+            <div class="assessment-grid">
+                <div class="assessment-card green">
+                    <h4>順調</h4>
+                    <p>問題なし、予定通り進行</p>
+                </div>
+                <div class="assessment-card yellow">
+                    <h4>注意</h4>
+                    <p>軽微な遅れ、経過観察</p>
+                </div>
+                <div class="assessment-card orange">
+                    <h4>要フォロー</h4>
+                    <p>課題あり、支援検討</p>
+                </div>
+                <div class="assessment-card red">
+                    <h4>要支援</h4>
+                    <p>緊急対応、即時介入</p>
+                </div>
+            </div>
+            <div class="config-note">
+                <strong>活用法:</strong> 「要フォロー」以上のレポートは優先的に原文を確認し、必要に応じて1on1をスケジュール。
+            </div>
+        </section>
+
+        <section>
+            <h2>課題検知特化プロンプト（拡張用）</h2>
+            <div class="code-block">You are analyzing a team member's report for potential issues.
+
+Report content:
+---
+{email_body}
+---
+
+Identify and categorize any issues mentioned:
+
+1. **業務上の課題**
+   - Description
+   - Severity: Low / Medium / High / Critical
+   - Needs manager action: Yes / No
+
+2. **リソース・スケジュール問題**
+   - Description
+   - Impact on deadlines
+   - Suggested resolution
+
+3. **人間関係・コミュニケーション課題**
+   - Description (be tactful)
+   - Recommended approach
+
+4. **その他の懸念事項**
+   - Health/workload concerns
+   - Motivation indicators
+
+If no issues found, output: "課題検知なし - 順調に進行中"
+
+Output in Japanese.</div>
+        </section>
+
+        <section>
+            <h2>キーワードアラートプロンプト（拡張用）</h2>
+            <div class="code-block">Scan the following report for concerning keywords:
+
+Report:
+---
+{email_body}
+---
+
+Alert keywords to detect:
+- 退職、転職、辞めたい
+- 体調不良、病院、休養
+- 残業、深夜、週末作業
+- 遅延、間に合わない、厳しい
+- トラブル、クレーム、苦情
+- ストレス、限界、疲労
+
+If any keywords found:
+- List the keywords detected
+- Provide context (surrounding sentence)
+- Suggest manager action
+
+If no concerning keywords:
+- Output: "アラートキーワードなし"
+
+Output in Japanese.</div>
+            <div class="config-note">
+                <strong>注意:</strong> このプロンプトは早期警戒用です。検知された場合は、本人との対話を優先し、プライバシーに配慮した対応を心がけてください。
+            </div>
+        </section>
+
+        <section>
+            <h2>Chat通知テンプレート</h2>
+            <div class="code-block">📋 **日報要約** - {sender_name} ({date})
+
+■ 業務サマリー
+{business_summary}
+
+■ 達成した成果
+{achievements}
+
+■ 課題・懸念事項
+{issues}
+
+■ 相談・依頼事項
+{requests}
+
+■ 明日の予定
+{tomorrow_plan}
+
+---
+📊 評価: {assessment}
+📎 元メール: {email_link}</div>
+        </section>
+
+        <section>
+            <h2>週報用Chat通知テンプレート</h2>
+            <div class="code-block">📊 **週報要約** - {sender_name} ({week_period})
+
+■ 今週の業務サマリー
+{weekly_summary}
+
+■ 達成した成果・完了タスク
+{achievements}
+
+■ 未完了タスクとその理由
+{incomplete_tasks}
+
+■ 課題・懸念事項
+{issues}
+
+■ 相談・依頼事項
+{requests}
+
+■ 来週の計画
+{next_week_plan}
+
+■ リソース・サポート要望
+{support_requests}
+
+---
+📈 週次評価: {weekly_assessment}
+📎 元メール: {email_link}</div>
+        </section>
+
+        <section>
+            <h2>Sheets記録テンプレート</h2>
+            <table class="status-table">
+                <tr>
+                    <th>列</th>
+                    <th>内容</th>
+                    <th>形式</th>
+                </tr>
+                <tr>
+                    <td>A</td>
+                    <td>日付</td>
+                    <td>YYYY-MM-DD</td>
+                </tr>
+                <tr>
+                    <td>B</td>
+                    <td>送信者</td>
+                    <td>氏名</td>
+                </tr>
+                <tr>
+                    <td>C</td>
+                    <td>レポートタイプ</td>
+                    <td>日報 / 週報</td>
+                </tr>
+                <tr>
+                    <td>D</td>
+                    <td>評価</td>
+                    <td>順調 / 注意 / 要フォロー / 要支援</td>
+                </tr>
+                <tr>
+                    <td>E</td>
+                    <td>課題有無</td>
+                    <td>あり / なし</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>相談有無</td>
+                    <td>あり / なし</td>
+                </tr>
+                <tr>
+                    <td>G</td>
+                    <td>要約（短縮版）</td>
+                    <td>テキスト（200文字以内）</td>
+                </tr>
+                <tr>
+                    <td>H</td>
+                    <td>元メールリンク</td>
+                    <td>URL</td>
+                </tr>
+            </table>
+            <div class="config-note">
+                <strong>活用法:</strong> このデータを使って月次で「課題発生頻度」「評価トレンド」をピボットテーブルで分析し、チームの傾向を把握できます。
+            </div>
+        </section>
+
+        <section>
+            <h2>出力の活用シーン</h2>
+            <div class="output-grid">
+                <div class="output-card">
+                    <h4><span class="success-badge">朝一</span> 一括確認</h4>
+                    <p>毎朝、前日の日報要約がChatにまとまっている → 5分で全員の状況を把握して1日をスタート</p>
+                </div>
+                <div class="output-card">
+                    <h4><span class="alert-badge">優先対応</span> 課題の早期発見</h4>
+                    <p>🚨マークの報告を優先チェック → 問題が大きくなる前に対処し、チームの安定稼働を維持</p>
+                </div>
+                <div class="output-card">
+                    <h4><span class="info-badge">週次</span> レビュー会議</h4>
+                    <p>週報要約を会議資料として活用 → 各メンバーの状況を事前に把握した上でディスカッション</p>
+                </div>
+                <div class="output-card">
+                    <h4><span class="info-badge">月次</span> 傾向分析</h4>
+                    <p>Sheetsに蓄積したデータから傾向分析 → 誰がいつ課題を抱えやすいか、パターンを把握</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before</div>
+                    <ul>
+                        <li>全文を読んで内容把握 60分/日</li>
+                        <li>重要情報を自分で抽出する必要</li>
+                        <li>依頼事項を見落とす可能性あり</li>
+                        <li>対応優先度が不明確</li>
+                        <li>過去のレポートを検索しにくい</li>
+                        <li>チーム全体の傾向が見えない</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After</div>
+                    <ul>
+                        <li>要約で内容把握 12分/日（80%削減）</li>
+                        <li>重要情報がAIで自動抽出される</li>
+                        <li>📢マークで依頼事項が明示</li>
+                        <li>評価ラベルで対応要否が一目瞭然</li>
+                        <li>Sheetsで全履歴を検索・分析可能</li>
+                        <li>データドリブンなチーム管理が実現</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>効果測定の指標</h2>
+            <table class="status-table">
+                <tr>
+                    <th>指標</th>
+                    <th>Before</th>
+                    <th>After</th>
+                    <th>改善率</th>
+                </tr>
+                <tr>
+                    <td>日報確認時間</td>
+                    <td>60分/日</td>
+                    <td>12分/日</td>
+                    <td>80%削減</td>
+                </tr>
+                <tr>
+                    <td>依頼事項見落とし</td>
+                    <td>月2〜3件</td>
+                    <td>0件</td>
+                    <td>100%削減</td>
+                </tr>
+                <tr>
+                    <td>課題対応開始時間</td>
+                    <td>平均48時間</td>
+                    <td>平均6時間</td>
+                    <td>87%短縮</td>
+                </tr>
+                <tr>
+                    <td>週報レビュー準備</td>
+                    <td>30分</td>
+                    <td>5分</td>
+                    <td>83%削減</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>テスト確認ポイント</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>日報と週報が正しく検知されているか（件名フィルターの動作確認）</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>課題・相談事項が正しく抽出されているか（🚨📢マークの表示確認）</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>評価（順調/注意/要フォロー）が適切に判定されているか</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>日本語の品質は問題ないか（文法・敬語・読みやすさ）</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>Chat通知が正しいスペースに送信されているか</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>Sheetsに正しいデータが記録されているか（全項目の確認）</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>今日のポイント SUMMARY</h2>
+            <div class="summary-box">
+                <h3>まとめ</h3>
+                <ul>
+                    <li>Gmail受信トリガーで日報・週報メールを自動検知</li>
+                    <li>Geminiで構造化された要約を生成（業務サマリー・課題・依頼事項）</li>
+                    <li>🚨📢マークで重要項目を視覚的に識別可能に</li>
+                    <li>評価ラベル（順調/注意/要フォロー）で優先順位付け</li>
+                    <li>Sheetsへのログ記録で傾向分析とデータドリブンな管理を実現</li>
+                    <li>確認時間を60分→12分に短縮（80%削減）し、ゼロタッチマネジメントの第一歩を構築</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="next-preview">
+            <h3>次回予告</h3>
+            <p>合格・要修正・再提出を条件分岐で仕分ける！チェックリストを自動で判定する審査フロー</p>
+        </div>
+
+        <nav class="lesson-nav">
+            <a href="lesson1.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson3.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

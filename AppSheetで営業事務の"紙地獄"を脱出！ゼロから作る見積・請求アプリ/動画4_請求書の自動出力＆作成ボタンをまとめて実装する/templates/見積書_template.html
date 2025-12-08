@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>見積書テンプレート</title>
+    <style>
+        body {
+            font-family: "Noto Sans JP", "Yu Gothic", sans-serif;
+            color: #222;
+            line-height: 1.6;
+            margin: 0;
+            padding: 24px 32px;
+        }
+
+        header, footer {
+            border-bottom: 2px solid #0A0E27;
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin: 0 0 8px 0;
+            letter-spacing: 0.1em;
+        }
+
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        .meta-table td {
+            padding: 6px 10px;
+            vertical-align: top;
+        }
+
+        .meta-table td.label {
+            width: 18%;
+            font-weight: 600;
+            background: #f6f8fa;
+        }
+
+        .customer-block, .issuer-block {
+            border: 1px solid #0A0E27;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .customer-block h2,
+        .issuer-block h2 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            border-left: 4px solid #00A3FF;
+            padding-left: 8px;
+        }
+
+        table.detail {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        table.detail th,
+        table.detail td {
+            border: 1px solid #0A0E27;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table.detail th {
+            background: #0A0E27;
+            color: #fff;
+        }
+
+        .summary-table {
+            width: 60%;
+            margin-left: auto;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            border: 1px solid #0A0E27;
+            padding: 8px 12px;
+            text-align: right;
+        }
+
+        .summary-table th {
+            background: #f6f8fa;
+            text-align: left;
+        }
+
+        .remarks {
+            margin-top: 24px;
+            padding: 16px;
+            border: 1px solid #d0d7de;
+            background: #fefefe;
+        }
+
+        .remarks h3 {
+            margin-top: 0;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>見　積　書</h1>
+        <table class="meta-table">
+            <tr>
+                <td class="label">見積番号</td>
+                <td>&lt;&lt;[見積番号]&gt;&gt;</td>
+                <td class="label">発行日</td>
+                <td>&lt;&lt;TEXT([発行日], "YYYY年MM月DD日")&gt;&gt;</td>
+            </tr>
+            <tr>
+                <td class="label">納期</td>
+                <td>&lt;&lt;IF(ISNOTBLANK([納期]), TEXT([納期], "YYYY年MM月DD日"), "―")&gt;&gt;</td>
+                <td class="label">担当者</td>
+                <td>&lt;&lt;[ID社員].[社員名]&gt;&gt;（TEL: &lt;&lt;[ID社員].[電話]&gt;&gt;）</td>
+            </tr>
+        </table>
+    </header>
+
+    <section class="customer-block">
+        <h2>御見積先</h2>
+        <p>
+            &lt;&lt;[ID顧客].[顧客名]&gt;&gt; 御中<br>
+            &lt;&lt;[ID顧客].[住所]&gt;&gt;<br>
+            TEL: &lt;&lt;[ID顧客].[電話]&gt;&gt;　／　MAIL: &lt;&lt;[ID顧客].[メール]&gt;&gt;
+        </p>
+    </section>
+
+    <section class="issuer-block">
+        <h2>発行元</h2>
+        <p>
+            会社名：会社情報を入力してください<br>
+            所在地：住所を入力してください<br>
+            電話番号：電話番号を入力してください
+        </p>
+    </section>
+
+    <section>
+        <h2>御見積金額</h2>
+        <p>下記の通り御見積申し上げます。</p>
+        <table class="detail">
+            <thead>
+                <tr>
+                    <th style="width: 35%;">サービス名</th>
+                    <th style="width: 15%;">数量</th>
+                    <th style="width: 20%;">単価</th>
+                    <th style="width: 30%;">金額</th>
+                </tr>
+            </thead>
+            <tbody>
+                &lt;&lt;Start:[Related 注文詳細s]&gt;&gt;
+                <tr>
+                    <td>&lt;&lt;[IDサービス].[サービス名]&gt;&gt;</td>
+                    <td style="text-align: right;">&lt;&lt;[数量]&gt;&gt;</td>
+                    <td style="text-align: right;">&lt;&lt;TEXT([単価], "#,##0")&gt;&gt; 円</td>
+                    <td style="text-align: right;">&lt;&lt;TEXT([納入金額], "#,##0")&gt;&gt; 円</td>
+                </tr>
+                &lt;&lt;End:[Related 注文詳細s]&gt;&gt;
+            </tbody>
+        </table>
+
+        <table class="summary-table">
+            <tr>
+                <th>小計</th>
+                <td>&lt;&lt;TEXT([納入単価合計], "#,##0")&gt;&gt; 円</td>
+            </tr>
+            <tr>
+                <th>消費税 (10%)</th>
+                <td>&lt;&lt;TEXT([消費税], "#,##0")&gt;&gt; 円</td>
+            </tr>
+            <tr>
+                <th>合計金額</th>
+                <td><strong>&lt;&lt;TEXT([合計金額], "#,##0")&gt;&gt; 円</strong></td>
+            </tr>
+        </table>
+    </section>
+
+    <section class="remarks">
+        <h3>備考 / 条件</h3>
+        <p>
+            納期：&lt;&lt;IF(ISNOTBLANK([納期]), TEXT([納期], "YYYY年MM月DD日"), "未設定")&gt;&gt;<br>
+            ステータス：&lt;&lt;[ステータス]&gt;&gt;<br>
+            備考：必要に応じて追記してください。
+        </p>
+    </section>
+
+    <footer>
+        <p>本見積書に関するお問い合わせは担当者までご連絡ください。</p>
+    </footer>
+</body>
+</html>

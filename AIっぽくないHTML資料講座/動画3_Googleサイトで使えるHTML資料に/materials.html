@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Googleサイトで“使える”HTML資料を埋め込む方法</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gray: #4A4E6A;
+            --muted: rgba(10, 14, 39, 0.65);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            font-size: 18px;
+            line-height: 1.7;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top, rgba(0, 240, 255, 0.09), transparent 45%),
+                        radial-gradient(circle at bottom, rgba(255, 107, 107, 0.08), transparent 40%);
+            z-index: -1;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(12px);
+            background: rgba(254, 254, 248, 0.8);
+            color: var(--ink);
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 48px;
+            z-index: 10;
+        }
+
+        body.dark-mode header {
+            background: rgba(10, 14, 39, 0.8);
+            color: var(--paper);
+            border-bottom-color: rgba(254, 254, 248, 0.1);
+        }
+
+        .course-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .course-meta span {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.06em;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .dark-mode-toggle {
+            border: 1px solid currentColor;
+            background: transparent;
+            color: inherit;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            align-items: center;
+            padding: 48px clamp(32px, 5vw, 72px) 72px;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 32px 20px 56px;
+            }
+        }
+
+        .content-section {
+            width: min(1100px, 100%);
+            background: rgba(254, 254, 248, 0.92);
+            padding: clamp(32px, 4vw, 48px);
+            margin-bottom: 32px;
+            border-radius: 28px;
+            box-shadow: 0 20px 48px rgba(10, 14, 39, 0.08);
+        }
+
+        body.dark-mode .content-section {
+            background: rgba(10, 14, 39, 0.82);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+        }
+
+        .section-title {
+            font-size: 28px;
+            letter-spacing: 0.04em;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        body.dark-mode .section-subtitle {
+            color: rgba(254, 254, 248, 0.6);
+        }
+
+        .section-content p {
+            margin: 12px 0;
+        }
+
+        .section-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 16px 0;
+            border-left: 2px solid var(--electric);
+            padding-left: 18px;
+        }
+
+        body.dark-mode .section-content ul {
+            border-left-color: var(--coral);
+        }
+
+        .section-content li {
+            margin-bottom: 12px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .section-content li::before {
+            content: '•';
+            color: var(--electric);
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        body.dark-mode .section-content li::before {
+            color: var(--coral);
+        }
+
+        .code-block {
+            background: rgba(10, 14, 39, 0.85);
+            color: #F8F8FF;
+            padding: 24px;
+            border-radius: 18px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        body.dark-mode .code-block {
+            background: rgba(254, 254, 248, 0.12);
+            color: var(--paper);
+        }
+
+
+        .transformation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .prompt-card {
+            border: 1px solid rgba(10, 14, 39, 0.12);
+            border-radius: 24px;
+            padding: clamp(24px, 3vw, 36px);
+            background: rgba(254, 254, 248, 0.96);
+            line-height: 1.8;
+        }
+
+        body.dark-mode .prompt-card {
+            background: rgba(10, 14, 39, 0.86);
+            border-color: rgba(254, 254, 248, 0.16);
+        }
+
+        .prompt-card h3 {
+            margin-top: 0;
+            font-size: 18px;
+            letter-spacing: 0.04em;
+        }
+        
+        .transformation-card {
+            border: 1px solid rgba(10, 14, 39, 0.12);
+            border-radius: 24px;
+            padding: clamp(24px, 3.2vw, 36px);
+            background: rgba(254, 254, 248, 0.96);
+            line-height: 1.8;
+        }
+
+        body.dark-mode .transformation-card {
+            background: rgba(10, 14, 39, 0.86);
+            border-color: rgba(254, 254, 248, 0.16);
+        }
+        
+        .code-wrapper {
+            position: relative;
+            margin: 18px 0;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(254, 254, 248, 0.85);
+            color: var(--ink);
+            border: 1px solid rgba(10, 14, 39, 0.2);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .copy-button:hover {
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .copy-button {
+            background: rgba(10, 14, 39, 0.85);
+            color: var(--paper);
+            border-color: rgba(254, 254, 248, 0.2);
+        }
+    
+        .nav-dots {
+            position: fixed;
+            right: clamp(16px, 4vw, 48px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            z-index: 9;
+        }
+
+        @media (max-width: 1200px) {
+            .nav-dots {
+                display: none;
+            }
+        }
+
+        .nav-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.25);
+            border: 2px solid rgba(10, 14, 39, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        body.dark-mode .nav-dot {
+            background: rgba(254, 254, 248, 0.25);
+            border-color: rgba(254, 254, 248, 0.4);
+        }
+
+        .nav-dot.active {
+            transform: scale(1.2);
+            background: var(--electric);
+            border-color: var(--electric);
+        }
+
+        body.dark-mode .nav-dot.active {
+            background: var(--coral);
+            border-color: var(--coral);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 240, 255, 0.12);
+            color: var(--ink);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 12px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        body.dark-mode .badge {
+            background: rgba(255, 107, 107, 0.18);
+            color: var(--paper);
+        }
+
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .step-card {
+            border: 1px solid rgba(10, 14, 39, 0.12);
+            border-radius: 24px;
+            padding: clamp(24px, 3.2vw, 36px);
+            background: rgba(254, 254, 248, 0.96);
+            line-height: 1.8;
+        }
+
+        body.dark-mode .step-card {
+            background: rgba(10, 14, 39, 0.86);
+            border-color: rgba(254, 254, 248, 0.16);
+        }
+
+        .step-card strong {
+            display: block;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.08em;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="course-meta">
+            <span>module 3</span>
+            <strong>Googleサイトで“使える”HTML資料を埋め込む方法</strong>
+        </div>
+        <button class="dark-mode-toggle" type="button">Toggle Dark Mode</button>
+    </header>
+
+    <nav class="nav-dots" aria-label="セクションのショートカット">
+        <button class="nav-dot" data-target="intro" aria-label="イントロ"></button>
+        <button class="nav-dot" data-target="transformation" aria-label="ビフォーアフター"></button>
+        <button class="nav-dot" data-target="overview" aria-label="全体像"></button>
+        <button class="nav-dot" data-target="embed" aria-label="埋め込み"></button>
+        <button class="nav-dot" data-target="prompts" aria-label="プロンプト"></button>
+        <button class="nav-dot" data-target="permission" aria-label="権限"></button>
+        <button class="nav-dot" data-target="check" aria-label="チェック"></button>
+        <button class="nav-dot" data-target="action" aria-label="アクション"></button>
+    </nav>
+
+    <main>
+        <section class="content-section" id="intro" data-section>
+            <div class="section-subtitle">Kickoff</div>
+            <h2 class="section-title">Googleサイトで“使える”HTML資料を埋め込む方法</h2>
+            <div class="section-content">
+                <p>デザインしたHTML資料をGoogleサイトに安全に埋め込み、社内で迷わず閲覧できる状態を目指します。「見えない」「スクロールしづらい」「共有設定が不安」といった悩みを30分でリセットしましょう。</p>
+                <div class="badge">Goal：埋め込み〜公開までの手順を再現できる</div>
+            </div>
+        </section>
+
+        <section class="content-section" id="transformation" data-section>
+            <div class="section-subtitle">Shift</div>
+            <h2 class="section-title">Googleサイト共有がこう変わる</h2>
+            <div class="section-content">
+                <div class="transformation-grid">
+                    <div class="transformation-card">
+                        <span class="badge">Before</span>
+                        <ul>
+                            <li>HTMLを埋め込むと余白崩れや二重スクロールが発生し、閲覧者から不満が出る</li>
+                            <li>社内公開設定やアクセス権の調整に時間がかかり、展開が遅れる</li>
+                            <li>モバイル表示やダークモードのチェック漏れで後追い修正が頻発</li>
+                        </ul>
+                    </div>
+                    <div class="transformation-card">
+                        <span class="badge">After</span>
+                        <ul>
+                            <li>推奨iframe設定とレスポンシブ調整で、Googleサイト上でも違和感なく表示できる</li>
+                            <li>共有手順と権限テンプレが定まり、社内周知までのリードタイムが短縮</li>
+                            <li>公開前チェックリストに沿ってPC/モバイル/ダークモードを検証でき、リリース後の手戻りを防げる</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section class="content-section" id="overview" data-section>
+            <div class="section-subtitle">3-Step Flow</div>
+            <h2 class="section-title">Googleサイト公開までの俯瞰図</h2>
+            <div class="section-content">
+                <div class="step-grid">
+                    <div class="step-card">
+                        <strong>STEP 1</strong>
+                        <p>Googleサイトで新規ページを用意し、ブランドカラーとフォントを整える。</p>
+                    </div>
+                    <div class="step-card">
+                        <strong>STEP 2</strong>
+                        <p>HTMLをURLまたは`<iframe>`で埋め込み、サイズを100%幅に調整する。</p>
+                    </div>
+                    <div class="step-card">
+                        <strong>STEP 3</strong>
+                        <p>公開権限を社内ドメインに限定し、PC/モバイルで表示を確認する。</p>
+                    </div>
+                </div>
+                <p>この流れを覚えておけば、毎回ゼロから悩まずに展開できます。</p>
+            </div>
+        </section>
+
+        <section class="content-section" id="embed" data-section>
+            <div class="section-subtitle">Embed Options</div>
+            <h2 class="section-title">URL埋め込みとコード埋め込みを使い分ける</h2>
+            <div class="section-content">
+                <p>おすすめは「公開URL」を使う方法です。GitHub Pagesや社内サーバでホストすれば、GoogleサイトはURLを読み込むだけでOKです。</p>
+                <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block"><iframe src="https://example.com/materials.html"
+        style="border:0; width:100%; height:90vh; overflow:hidden;"
+        allowfullscreen></iframe>
+<p style="text-align:center; margin-top:12px;">
+    <a href="https://example.com/materials.html" target="_blank" rel="noopener" style="color:#00F0FF;">資料を新しいタブで開く</a>
+</p></pre></div>
+                <p>JavaScriptが含まれる場合は、Googleサイト側でブロックされることもあるため、インタラクションが必要な部分はスタティックに書き換えるのが安全です。</p>
+            </div>
+        </section>
+
+        <section class="content-section" id="prompts" data-section>
+            <div class="section-subtitle">Sample Prompts</div>
+            <h2 class="section-title">埋め込み・公開チェック用プロンプト</h2>
+            <div class="section-content">
+                <p>Googleサイト展開で繰り返し使えるチェックリスト系プロンプトをまとめています。</p>
+                <div class="prompt-grid">
+                    <div class="prompt-card">
+                        <h3>レスポンシブ検証</h3>
+                        <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block">Googleサイトに埋め込むHTML資料について、公開前のレスポンシブチェックリストを生成してください。
+条件：
+- PC / タブレット / スマホの3デバイスで確認する観点をそれぞれ3つずつ提示
+- ダークモード時の想定トラブルと確認手順を2つ挙げる
+- 結果をMarkdownテーブル（列：観点 / チェック方法 / 合格基準 / 修正アクション）で出力
+- 最後に、チェックを自動化するためのChrome DevToolsショートカットを箇条書きで追加</pre></div>
+                    </div>
+                    <div class="prompt-card">
+                        <h3>権限・共有</h3>
+                        <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block">Googleサイトで社内限定公開を行う際の設定プロンプトを生成してください。含めたい要素は以下の通りです。
+- 公開対象（ドメイン全体 / 特定グループ / 個別ユーザー）の切り替え手順
+- 公開リンクの共有先（Slack / 社内ポータル / メール）の想定テンプレート
+- 監査ログや更新履歴を残す際のコメント例
+- 共有後24時間以内に行うべき確認タスク
+出力はチェックリスト形式とし、最後にトラブルが起きたときの問い合わせ先テンプレートも生成してください。</pre></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section class="content-section" id="permission" data-section>
+            <div class="section-subtitle">Visibility &amp; Responsive</div>
+            <h2 class="section-title">権限設定とレスポンシブの最終確認</h2>
+            <div class="section-content">
+                <ul>
+                    <li><strong>公開範囲：</strong> Googleサイト右上の「共有」から、閲覧権限を「ドメイン内のユーザー」に設定。</li>
+                    <li><strong>閲覧デバイス：</strong> プレビューのPC・タブレット・スマホで余白やスクロールを確認。</li>
+                    <li><strong>レスポンシブ：</strong> iframeの高さを`vh`で調整し、資料側で`@media`を実装しておく。</li>
+                    <li><strong>アクセシビリティ：</strong> ALTテキスト、タイトル、説明文を設定しておく。</li>
+                </ul>
+                <p>特に社外に共有する場合は、Googleアカウントを持たない閲覧者も想定し、PDF版を別リンクで配布すると安心です。</p>
+            </div>
+        </section>
+
+        <section class="content-section" id="check" data-section>
+            <div class="section-subtitle">Preflight</div>
+            <h2 class="section-title">公開直前のチェックリスト</h2>
+            <div class="section-content">
+                <ul>
+                    <li>公開URLがHTTPSでホストされている。</li>
+                    <li>ダークモード切り替えが資料側で動作する。</li>
+                    <li>スクロールがiframe内で完結し、Googleサイト側にスクロールバーが二重になっていない。</li>
+                    <li>閲覧権限のテストとして、チームメンバーにプレビューURLを開いてもらう。</li>
+                    <li>Googleサイトの「バージョン履歴」に更新内容をメモしておく。</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section" id="action" data-section>
+            <div class="section-subtitle">Next Action</div>
+            <h2 class="section-title">社内展開までの残タスク</h2>
+            <div class="section-content">
+                <ul>
+                    <li>HTML資料を社内でアクセスできるURLにホストする。</li>
+                    <li>Googleサイトに埋め込み、プレビューで各デバイス表示を確認。</li>
+                    <li>Slackや社内ポータルに公開URLと更新コメントを投稿する。</li>
+                </ul>
+                <p>これで“AIっぽくない”資料が社内ポータルでも自然に表示されます。定期更新の運用に進みましょう。</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const navDots = document.querySelectorAll('.nav-dot');
+        const sections = document.querySelectorAll('[data-section]');
+        const toggle = document.querySelector('.dark-mode-toggle');
+
+        navDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const target = document.getElementById(dot.dataset.target);
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navDots.forEach(dot => dot.classList.toggle('active', dot.dataset.target === entry.target.id));
+                }
+            });
+        }, { threshold: 0.6 });
+
+        sections.forEach(section => observer.observe(section));
+
+        toggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            toggle.textContent = document.body.classList.contains('dark-mode') ? 'Toggle Light Mode' : 'Toggle Dark Mode';
+        });
+        const copyButtons = document.querySelectorAll('.copy-button');
+
+        function showCopyState(button, text, revert = 'Copy') {
+            const original = button.textContent;
+            button.textContent = text;
+            setTimeout(() => {
+                button.textContent = revert === 'Copy' ? original : revert;
+            }, 1500);
+        }
+
+        function fallbackCopy(text, button) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'fixed';
+            textarea.style.top = '-1000px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            textarea.setSelectionRange(0, textarea.value.length);
+            let succeeded = false;
+            try {
+                succeeded = document.execCommand('copy');
+            } catch (err) {
+                succeeded = false;
+            }
+            document.body.removeChild(textarea);
+            if (succeeded) {
+                showCopyState(button, 'Copied!');
+            } else {
+                showCopyState(button, 'Copy failed', 'Copy');
+            }
+        }
+
+        async function handleCopy(button) {
+            const code = button.nextElementSibling.textContent;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(code);
+                    showCopyState(button, 'Copied!');
+                    return;
+                } catch (err) {
+                    // fall back to execCommand path
+                }
+            }
+            fallbackCopy(code, button);
+        }
+
+        copyButtons.forEach((button) => {
+            button.addEventListener('click', () => handleCopy(button));
+        });
+
+    </script>
+</body>
+</html>

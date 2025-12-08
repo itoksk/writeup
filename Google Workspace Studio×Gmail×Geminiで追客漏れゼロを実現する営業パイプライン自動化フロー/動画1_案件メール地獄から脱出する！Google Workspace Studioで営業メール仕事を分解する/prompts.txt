@@ -1,0 +1,172 @@
+# 営業パイプライン自動化フロー 第1回：案件メール地獄から脱出する！
+# プロンプト集
+
+---
+
+## 概要
+
+第1回は導入編のため、エージェント作成のプロンプトはありません。
+以下は、次回以降で使用するプロンプトの概要と、事前準備用のテンプレートです。
+
+---
+
+## 1. 事前準備：重要顧客リストのテンプレート
+
+### スプレッドシート構造
+```
+| 顧客名 | メールアドレス | 重要度 | 担当者 | 備考 |
+|--------|----------------|--------|--------|------|
+| 株式会社A | info@a-corp.co.jp | VIP | 山田 | 年間契約予定 |
+| 株式会社B | sales@b-inc.com | 高 | 田中 | 提案中 |
+```
+
+---
+
+## 2. 事前準備：案件ステージ定義
+
+### ステージ一覧と判定基準
+```
+【問い合わせ】
+- キーワード：問い合わせ、資料請求、詳細を教えて
+- 判定基準：初回コンタクト
+
+【提案中】
+- キーワード：提案、プレゼン、ご提案
+- 判定基準：提案資料を送付済み
+
+【見積もり】
+- キーワード：見積、お見積、価格、費用
+- 判定基準：見積書を提出済み
+
+【契約交渉】
+- キーワード：契約、条件、調整、検討
+- 判定基準：価格・条件を交渉中
+
+【受注】
+- キーワード：発注、注文、お願いします
+- 判定基準：受注確定
+
+【失注】
+- キーワード：見送り、今回は、別の会社
+- 判定基準：失注確定
+```
+
+---
+
+## 3. 事前準備：監視キーワードリスト
+
+### 営業関連キーワード
+```
+【緊急度高】
+- 至急
+- 急ぎ
+- 本日中
+- 期限
+- 締め切り
+
+【案件進行】
+- 提案書
+- 見積書
+- 見積もり
+- 契約書
+- 発注
+
+【重要アクション】
+- 決裁
+- 承認
+- 検討結果
+- 回答
+- 確認
+```
+
+---
+
+## 4. 次回以降で使用するプロンプト（プレビュー）
+
+### 第2回：メール要約プロンプト
+```
+Analyze this sales email and provide:
+1. SUMMARY: 3-sentence summary in Japanese
+2. PRIORITY: HIGH/MEDIUM/LOW
+3. STAGE: Inquiry/Proposal/Quote/Negotiation
+4. ACTION: Recommended next action
+
+Format response in Japanese.
+```
+
+### 第3回：追客アクション提案プロンプト
+```
+This email requires follow-up action.
+Based on the content, suggest:
+1. NEXT_ACTION: Specific action to take
+2. DEADLINE: Recommended deadline
+3. TEMPLATE: Draft response template
+
+Respond in Japanese.
+```
+
+### 第4回：資料分類プロンプト
+```
+Classify this attachment:
+- TYPE: Proposal/Quote/Contract/Other
+- CLIENT: Extract client name
+- PROJECT: Extract project name
+- DATE: Extract date if mentioned
+
+Suggest folder path and filename.
+```
+
+### 第5回：案件確度判定プロンプト
+```
+Analyze email for deal probability:
+- KEYWORDS: List sales-related keywords found
+- SIGNALS: Positive or negative buying signals
+- PROBABILITY: HIGH/MEDIUM/LOW
+- URGENCY: Score 1-10
+
+Provide reasoning in Japanese.
+```
+
+---
+
+## 5. Studio アクセス確認
+
+### アクセスURL
+```
+studio.workspace.google.com
+```
+
+### 確認手順
+1. 上記URLにアクセス
+2. Google Workspaceアカウントでサインイン
+3. 「Discover」ページが表示されればOK
+4. アクセスできない場合は管理者に問い合わせ
+
+---
+
+## 6. 講座全体の学習ポイント
+
+### 第1回（本講座）
+- 営業メール業務を5つの要素に分解
+- 各要素の自動化可能性を理解
+- 事前準備の重要性を認識
+
+### 第2回
+- スターター（トリガー）の設定
+- Geminiへの要約指示
+- Chat通知の設定
+
+### 第3回
+- ラベル自動付与
+- 条件分岐の設定
+- 変数の活用
+
+### 第4回
+- Drive連携
+- ファイル自動保存
+- 定期実行の設定
+
+### 第5回
+- 複数エージェントの連携
+- 運用時の注意点
+- トラブルシューティング

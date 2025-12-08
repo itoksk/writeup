@@ -1,0 +1,8 @@
+GoogleサイトでHTML資料を埋め込む手順（社内公開）
+1. HTMLファイルをGitHub Pagesの`https://company.github.io/ai-materials/`へアップロード。
+2. Googleサイトを開き、新しいページ「資料共有デモ」を作成。
+3. 右側の「埋め込む」→「URL」に `https://company.github.io/ai-materials/materials.html` を入力。
+4. 埋め込んだカードを選択し、ツールバーから「サイズ → 幅を100%」を選択。
+5. 「設定」アイコンから「境界線を表示」をOFFにし、`ALT`テキストに資料名を記入。
+6. 右上の「公開」→「限定公開」を選択し、チームのGoogleグループを閲覧権限に追加。
+7. 公開リンクをコピーし、Slackの#ai_share チャンネルへ投稿。

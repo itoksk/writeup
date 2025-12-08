@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：Google Workspace Studioの登録と基本操作 | Google Workspace Studioの活用</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --ink: #0A0E27; --paper: #FEFEF8; --electric: #00F0FF; --coral: #FF6B6B; --violet: #7C3AED; --gray: #4A5568; --google-blue: #4285F4; --google-green: #34A853; }
+        body { font-family: 'Zen Kaku Gothic New', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.7; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(10, 14, 39, 0.01) 2px, rgba(10, 14, 39, 0.01) 4px); pointer-events: none; z-index: 1; }
+        nav { position: fixed; top: 0; width: 100%; background: rgba(254, 254, 248, 0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 1.5rem 0; box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1); }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .nav-back { display: flex; align-items: center; gap: 0.5rem; color: var(--gray); text-decoration: none; font-size: 0.9rem; transition: color 0.3s ease; }
+        .nav-back:hover { color: var(--google-blue); }
+        .nav-menu { display: flex; gap: 2rem; }
+        .nav-menu a { color: var(--ink); text-decoration: none; font-size: 0.9rem; position: relative; transition: color 0.3s ease; }
+        .nav-menu a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--electric); transition: width 0.3s ease; }
+        .nav-menu a:hover::after { width: 100%; }
+        .hero { min-height: 100vh; display: flex; align-items: center; padding: 0 2rem; margin-top: 80px; }
+        .hero-content { max-width: 1400px; margin: 0 auto; width: 100%; }
+        .hero-label { display: inline-block; background: var(--ink); color: var(--paper); padding: 0.5rem 1.5rem; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; margin-bottom: 2rem; transform: rotate(-1deg); }
+        .hero-title { font-size: clamp(2.5rem, 7vw, 5rem); font-weight: 900; line-height: 0.9; margin-bottom: 2rem; letter-spacing: -0.03em; }
+        .hero-title span { display: block; color: var(--google-blue); font-size: 0.6em; margin-top: 0.2em; }
+        .hero-description { font-size: 1.25rem; max-width: 800px; margin-bottom: 3rem; line-height: 1.8; font-weight: 300; }
+        .section { max-width: 1400px; margin: 80px auto; padding: 0 2rem; }
+        .section-label { font-family: 'Space Grotesk', monospace; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.2em; opacity: 0.5; margin-bottom: 1rem; text-transform: uppercase; }
+        .section-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 3rem; position: relative; padding-bottom: 1rem; }
+        .section-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 60px; height: 3px; background: var(--electric); }
+        .grid { display: grid; gap: 2rem; }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .card { background: var(--paper); border: 2px solid var(--ink); padding: 2rem; position: relative; transition: all 0.3s ease; cursor: pointer; }
+        .card::before { content: ''; position: absolute; top: 4px; left: 4px; width: 100%; height: 100%; background: var(--ink); z-index: -1; transition: all 0.3s ease; }
+        .card:hover { transform: translate(-4px, -4px); background: var(--ink); color: var(--paper); }
+        .card:hover::before { top: 8px; left: 8px; }
+        .card:hover .card-number { background: var(--paper); color: var(--ink); }
+        .card-number { display: inline-block; width: 40px; height: 40px; background: var(--electric); color: var(--ink); font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; transition: all 0.3s ease; }
+        .card-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.2; }
+        .card-description { font-size: 0.95rem; opacity: 0.8; line-height: 1.7; }
+        .phase-card { background: linear-gradient(to right, var(--paper) 50%, transparent 50%); background-size: 20px 1px; background-repeat: repeat-x; background-position: 0 100%; padding-bottom: 2rem; margin-bottom: 3rem; }
+        .phase-header { display: flex; align-items: baseline; gap: 2rem; margin-bottom: 2rem; }
+        .phase-number { font-family: 'Space Grotesk', monospace; font-size: 5rem; font-weight: 700; line-height: 1; color: var(--violet); opacity: 0.2; }
+        .phase-title { font-size: 2rem; font-weight: 700; }
+        .schedule-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 2rem; }
+        .schedule-table th { background: var(--ink); color: var(--paper); padding: 1rem; text-align: left; font-weight: 500; font-size: 0.9rem; letter-spacing: 0.05em; }
+        .schedule-table td { padding: 1.25rem 1rem; border-bottom: 1px solid rgba(0,0,0,0.1); vertical-align: top; }
+        .schedule-table tr:hover { background: rgba(0,240,255,0.05); }
+        .schedule-session { font-family: 'Space Grotesk', monospace; font-weight: 700; color: var(--electric); }
+        ul { list-style-position: inside; margin-left: 1rem; }
+        ul li { margin-bottom: 0.5rem; }
+        .note { background: rgba(124, 58, 237, 0.05); border-left: 4px solid var(--violet); padding: 1.5rem; margin: 2rem 0; }
+        .note-title { font-weight: 700; margin-bottom: 0.5rem; }
+        .warning { background: rgba(255, 107, 107, 0.05); border-left: 4px solid var(--coral); padding: 1.5rem; margin: 2rem 0; }
+        .warning-title { font-weight: 700; margin-bottom: 0.5rem; color: var(--coral); }
+        .url-box { background: var(--ink); color: var(--paper); padding: 1.5rem; border-radius: 4px; margin: 2rem 0; font-family: 'Space Grotesk', monospace; font-size: 1.2rem; text-align: center; }
+        .url-box a { color: var(--electric); text-decoration: none; }
+        .step-list { counter-reset: step-counter; list-style: none; padding: 0; }
+        .step-list li { counter-increment: step-counter; position: relative; padding-left: 4rem; margin-bottom: 2rem; }
+        .step-list li::before { content: "STEP " counter(step-counter); position: absolute; left: 0; top: 0; font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 0.8rem; color: var(--electric); letter-spacing: 0.1em; }
+        .step-title { font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .code-block { background: #1a1a2e; color: #eee; padding: 1.5rem; border-radius: 4px; font-family: 'Space Grotesk', monospace; font-size: 0.9rem; margin: 1rem 0; overflow-x: auto; }
+        .lesson-nav { display: flex; justify-content: space-between; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.1); }
+        .lesson-nav a { display: flex; align-items: center; gap: 0.5rem; padding: 1rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; }
+        .nav-prev { color: var(--gray); background: rgba(0,0,0,0.05); }
+        .nav-prev:hover { background: rgba(0,0,0,0.1); }
+        .nav-next { background: var(--ink); color: var(--paper); }
+        .nav-next:hover { transform: translateX(4px); }
+        @media (max-width: 768px) { .nav-menu { display: none; } .grid-3 { grid-template-columns: 1fr; } .hero-title { font-size: 2.5rem; } .phase-header { flex-direction: column; gap: 1rem; } .phase-number { font-size: 3rem; } .card { padding: 1.5rem; } .step-list li { padding-left: 0; padding-top: 2rem; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-menu">
+                <a href="#access">アクセス</a>
+                <a href="#template">テンプレート</a>
+                <a href="#create">作成手順</a>
+                <a href="#test">テスト</a>
+                <a href="#manage">管理</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第2回 / 全4回</div>
+            <h1 class="hero-title">
+                Google Workspace Studioの登録と基本操作
+                <span>テンプレートから最初のエージェントを作成</span>
+            </h1>
+            <p class="hero-description">
+                Studioにアクセスして、テンプレートを使って最初のエージェントを作成します。
+                今日の目標は「毎朝、未読メールをGeminiが要約してChatで通知するエージェント」の完成です。
+            </p>
+        </div>
+    </div>
+
+    <section class="section" id="access">
+        <div class="section-label">Access</div>
+        <h2 class="section-title">Studioへのアクセス</h2>
+
+        <div class="url-box">
+            <a href="https://studio.workspace.google.com" target="_blank">studio.workspace.google.com</a>
+        </div>
+
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>確認項目</th>
+                    <th>要件</th>
+                    <th>確認方法</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="schedule-session">アカウント</td>
+                    <td>Google Workspace（Business/Enterprise/Education）</td>
+                    <td>個人アカウント（@gmail.com）は利用不可</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">Gemini設定</td>
+                    <td>Gemini for Workspaceが有効化されていること</td>
+                    <td>AI機能テンプレートが表示されない場合は管理者に確認</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">展開状況</td>
+                    <td>Rapid Release: 2025/12/3〜 / Scheduled: 2026/1/5〜</td>
+                    <td>アクセスできない場合は管理者に確認</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="note">
+            <div class="note-title">管理者向け：有効化の確認方法</div>
+            <p>Google管理コンソール > アプリ > Google Workspace > Studio で有効化状況を確認できます。組織単位（OU）やグループ単位での制御も可能です。</p>
+        </div>
+    </section>
+
+    <section class="section" id="template">
+        <div class="section-label">Templates</div>
+        <h2 class="section-title">Discoverページの構成</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">プロンプトバー</h3>
+                <p class="card-description">
+                    自然言語でエージェントの説明を入力すると、Geminiが自動でエージェントを作成します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">テンプレート一覧</h3>
+                <p class="card-description">
+                    よくある自動化パターンが並んでいます。Email、Calendar、Drive、Forms、Chatなどのカテゴリ別に探せます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">左側メニュー</h3>
+                <p class="card-description">
+                    My agents（自分のエージェント）、Discover（テンプレート）、Recent（最近使用）にアクセスできます。
+                </p>
+            </div>
+        </div>
+
+        <div class="note">
+            <div class="note-title">人気のテンプレート</div>
+            <ul>
+                <li><strong>Recap unread emails</strong>：未読メールの要約をChat通知</li>
+                <li><strong>Get meeting prep</strong>：会議前の準備情報を自動送信</li>
+                <li><strong>Notify form responses</strong>：フォーム回答をチームに通知</li>
+                <li><strong>Summarize Drive files</strong>：Driveファイルの要約を作成</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="create">
+        <div class="section-label">Create Agent</div>
+        <h2 class="section-title">エージェント作成の5ステップ</h2>
+
+        <ul class="step-list">
+            <li>
+                <div class="step-title">テンプレートを選択</div>
+                <p>Discoverページで「Recap unread emails」をクリックします。テンプレートの説明を確認し、自分のニーズに合っているか確認します。</p>
+            </li>
+            <li>
+                <div class="step-title">スターターの確認・調整</div>
+                <p>「On a schedule」が設定されています。デフォルトは「Every weekday morning」。必要に応じて「Every day at 8:00 AM」などに変更します。</p>
+            </li>
+            <li>
+                <div class="step-title">Geminiステップの確認</div>
+                <p>「Recap unread emails」ステップで、対象期間（Yesterday、Last 24 hoursなど）とGeminiへのプロンプトを確認します。日本語出力には「Please summarize in Japanese.」を追加。</p>
+            </li>
+            <li>
+                <div class="step-title">通知ステップの確認</div>
+                <p>「Notify me in Chat」ステップで、通知先（自分自身 or スペース）とメッセージ内容を確認します。変数を使ってGeminiの要約を含めます。</p>
+            </li>
+            <li>
+                <div class="step-title">保存と有効化</div>
+                <p>右上の「Save」ボタンをクリックして保存します。設定したスケジュールになると、自動的にエージェントが実行されます。</p>
+            </li>
+        </ul>
+
+        <div class="code-block"># Geminiプロンプトに追加する例（日本語出力）
+Please summarize in Japanese.</div>
+    </section>
+
+    <section class="section" id="test">
+        <div class="section-label">Test Run</div>
+        <h2 class="section-title">テスト実行</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">Run nowをクリック</div>
+            </div>
+            <p>エージェントの編集画面で「Run now」または「Test」ボタンをクリックします。スケジュールを待たずに即座に実行できます。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">実行結果を確認</div>
+            </div>
+            <p>各ステップが順番に実行され、結果が表示されます。成功すると緑のチェックマークが表示されます。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">Chatで通知を確認</div>
+            </div>
+            <p>Google Chatアプリを開き、要約メッセージが届いていることを確認します。</p>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">よくあるエラーと対処法</div>
+            <ul>
+                <li><strong>Gmailアクセスエラー</strong>：Gmailへのアクセス権限を確認</li>
+                <li><strong>Chat投稿エラー</strong>：Chatスペースへの投稿権限を確認</li>
+                <li><strong>Geminiエラー</strong>：プロンプトを簡潔にして再試行</li>
+                <li><strong>タイムアウト</strong>：処理対象を絞り込んで再試行</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="manage">
+        <div class="section-label">Management</div>
+        <h2 class="section-title">エージェント管理の基本</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">My agents</h3>
+                <p class="card-description">
+                    作成したエージェント一覧を確認。名前、ステータス、最終実行日時、次回実行予定が表示されます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">操作メニュー</h3>
+                <p class="card-description">
+                    Edit（編集）、Duplicate（複製）、Share（共有）、Delete（削除）、Enable/Disable（有効化/無効化）が可能です。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">共有機能</h3>
+                <p class="card-description">
+                    Google Driveのファイルのように、チームメンバーとエージェントを共有できます。共有された相手もそのエージェントを使えます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">実行履歴</h3>
+                <p class="card-description">
+                    エージェントの実行履歴を確認できます。成功/失敗、実行時間、エラー内容などが記録されています。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Practice</div>
+        <h2 class="section-title">実践課題</h2>
+
+        <div class="note">
+            <div class="note-title">今日の課題</div>
+            <p>作成したメール要約エージェントを、明日の朝まで動かしてみてください。毎朝、未読メールの要約がChatに届くようになります。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="lesson-nav">
+            <a href="lesson1.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson3.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+</body>
+</html>

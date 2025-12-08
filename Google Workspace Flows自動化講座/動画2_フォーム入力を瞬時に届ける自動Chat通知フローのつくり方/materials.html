@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回:フォーム入力を"瞬時に届ける"自動Chat通知エージェントのつくり方 | Google Workspace Flows自動化講座</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.9rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--electric);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 900;
+            line-height: 0.9;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.7em;
+            margin-top: 0.2em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .phase-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-left: calc(5rem + 2rem);
+        }
+
+        .comparison-box {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .comparison-box.after {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+        }
+
+        .comparison-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style-position: inside;
+            margin-left: 1rem;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .note {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .warning-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--coral);
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .phase-description {
+                margin-left: 0;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">Google Workspace Flows 自動化講座</div>
+            <div class="nav-menu">
+                <a href="#overview">概要</a>
+                <a href="#steps">手順</a>
+                <a href="#variables">変数</a>
+                <a href="#notes">注意点</a>
+                <a href="#tips">活用</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第2回 / 全5回</div>
+            <h1 class="hero-title">
+                フォーム入力を"瞬時に届ける"
+                <span>自動Chat通知エージェントのつくり方</span>
+            </h1>
+            <p class="hero-description">
+                実際に手を動かして、「フォーム回答→Chat通知」の自動化エージェントを構築。
+                テンプレートと変数を使えば、たった5分で完成します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section" id="overview">
+        <div class="section-label">Overview</div>
+        <h2 class="section-title">Before / After</h2>
+
+        <div class="comparison-box">
+            <div class="comparison-title">Before：手作業での通知（1件あたり5分）</div>
+            <ul>
+                <li>フォームに回答が送信される</li>
+                <li>担当者がフォームを開いて、新しい回答があるか確認</li>
+                <li>回答内容をコピー</li>
+                <li>Chatを開いて、手動でメッセージを作成</li>
+                <li>Chatに投稿</li>
+                <li><strong>1日10件 = 50分の作業時間</strong></li>
+            </ul>
+        </div>
+
+        <div class="comparison-box after">
+            <div class="comparison-title">After：自動化後（作業時間0秒）</div>
+            <ul>
+                <li>フォームに回答が送信される</li>
+                <li><strong>自動でChatに通知（作業時間0秒）</strong></li>
+                <li>回答者の名前、回答内容、送信日時もすべて自動で含まれる</li>
+                <li><strong>反応スピードが3倍に向上</strong></li>
+                <li>手作業の時間は完全にゼロ</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="steps">
+        <div class="section-label">Steps</div>
+        <h2 class="section-title">構築手順（4ステップ・5分で完成）</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">テンプレートを選ぶ</div>
+            </div>
+            <p class="phase-description">
+                Flowsのホーム画面から「Discover」をクリックし、「Notify team of new form response」（新しいフォーム回答をチームに通知）というテンプレートを選択。
+                テンプレートには、基本的な設定がすでに組み込まれています。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">スターター（フォーム）を設定する</div>
+            </div>
+            <p class="phase-description">
+                どのフォームを監視するか選択します。「Select form」をクリックすると、自分が作成したフォーム一覧が表示されます。
+                監視したいフォームをクリックするだけで設定完了。編集権限を持っているフォームであれば、どれでも選択できます。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">Chat送信先を設定・変数でカスタマイズ</div>
+            </div>
+            <p class="phase-description">
+                通知を送りたいChatスペースを選択します。「Space」欄をクリックし、スペース名の一部（例:「Market」）を入力すると候補が表示されます。
+                <strong>必ず候補から選択してください（手動で全部入力してはいけません）。</strong>
+                メッセージ内容は、「Variables」ボタンから変数を追加してカスタマイズできます。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">04</div>
+                <div class="phase-title">テスト実行して有効化</div>
+            </div>
+            <p class="phase-description">
+                「Test run」ボタンでテスト実行し、Chatに通知が届くか確認します。
+                テストが成功したら「Turn on」ボタンで本番稼働させます。
+                これで、フォームに回答が送信されるたびに、自動でChatに通知されるようになります。
+            </p>
+        </div>
+    </section>
+
+    <section class="section" id="variables">
+        <div class="section-label">Variables</div>
+        <h2 class="section-title">変数の使い方とベストプラクティス</h2>
+
+        <div class="note">
+            <div class="note-title">💡 変数とは何か？</div>
+            <p>
+                変数とは、前のステップで得られた情報を、後のステップで使うための<strong>動的なプレースホルダー</strong>です。
+                例えば、フォームの回答内容や送信日時、回答者のメールアドレスなどを、Chat通知のメッセージに自動で含めることができます。
+            </p>
+        </div>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">変数はチップで追加</h3>
+                <p class="card-description">
+                    変数を手動で<code>{変数名}</code>のように入力しても動きません。
+                    <strong>必ず「Variables」ボタンから選択して、チップとして追加してください。</strong>
+                    チップが、実行時に実際の値に置き換わります。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">アプリ間のデータ共有</h3>
+                <p class="card-description">
+                    変数を使うことで、アプリ間でコンテンツを共有できます。
+                    例えば、フォームの回答をスプレッドシートに記録したり、
+                    メール送信者に自動返信を送る際、Toを送信者に設定できます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">ステップのチェーン</h3>
+                <p class="card-description">
+                    各ステップが変数を生成し、その変数を後のステップで利用できます。
+                    例えば、次回学ぶGemini要約では、Geminiが生成した要約を変数で取得し、
+                    それをChat通知に含めることができます。
+                </p>
+            </div>
+        </div>
+
+        <div class="note">
+            <div class="note-title">📋 利用可能な変数の例</div>
+            <ul>
+                <li><strong>Respondent email</strong>：回答者のメールアドレス（誰が回答したかすぐにわかる）</li>
+                <li><strong>Timestamp</strong>：送信日時（いつ回答があったか記録）</li>
+                <li><strong>Form responses</strong>：フォームの各質問の回答（質問ごとに個別に取得可能）</li>
+                <li><strong>Form URL</strong>：フォームへのリンク（すぐにフォーム全体を確認できる）</li>
+            </ul>
+        </div>
+
+        <div class="note">
+            <div class="note-title">✍️ メッセージのカスタマイズ例</div>
+            <p>変数を使って、こんなメッセージを作成できます：</p>
+            <pre style="background: rgba(0,0,0,0.05); padding: 1rem; border-radius: 4px; margin-top: 1rem; overflow-x: auto;">
+📝 新しいフォーム回答が届きました
+
+👤 回答者: [Respondent email]
+📅 送信日時: [Timestamp]
+
+【お問い合わせ内容】
+[Question 1 response]
+
+詳細はこちら: [Form URL]
+            </pre>
+            <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                ※ [ ] 内の部分は、「Variables」ボタンから選択して追加した変数チップです。
+            </p>
+        </div>
+    </section>
+
+    <section class="section" id="notes">
+        <div class="section-label">Important</div>
+        <h2 class="section-title">重要な注意点</h2>
+
+        <div class="warning">
+            <div class="warning-title">⚠️ 注意1：Chatスペースは候補から選択（最重要！）</div>
+            <p>Chatスペース名を手動で全部入力したり、Webhook URLを貼り付けても動きません。</p>
+            <p><strong>必ず、スペース名の一部を入力して表示される候補から選択してください。</strong></p>
+            <p>候補から選択することで、スペースの内部IDが自動的に設定されます。</p>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">⚠️ 注意2：スペースのメンバー権限</div>
+            <p>通知を送るChatスペースには、あらかじめ参加している必要があります。</p>
+            <p>参加していないスペースには、エージェントも通知を送れません（エージェントはあなたのアカウント権限で動作します）。</p>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">⚠️ 注意3：フォームの権限</div>
+            <p>監視するフォームは、自分が編集権限を持っているものを選んでください。</p>
+            <p>閲覧権限のみのフォームは、スターターとして設定できません。</p>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">⚠️ 注意4：変数は必ずボタンから追加</div>
+            <p>変数を手動で入力しても認識されません。</p>
+            <p><strong>「Variables」ボタンから選択して、チップとして追加してください。</strong></p>
+        </div>
+    </section>
+
+    <section class="section" id="tips">
+        <div class="section-label">Tips</div>
+        <h2 class="section-title">活用ポイント</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">通知内容のカスタマイズ</h3>
+                <p class="card-description">
+                    重要な質問だけを通知に含めたり、絵文字を使って見やすくしたり、
+                    リンクを追加してすぐにアクセスできるようにできます。
+                    変数を活用して、自分のチームに最適な通知フォーマットを作りましょう。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">複数のエージェントを作成</h3>
+                <p class="card-description">
+                    1つのフォームに対して、複数のエージェントを作成可能。
+                    一般的な回答と緊急の回答で、通知先を変えたり、
+                    特定の回答パターンに応じて異なる処理をすることもできます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">テスト実行を活用</h3>
+                <p class="card-description">
+                    「Test run」機能を使って、本番稼働前に必ず動作確認をしましょう。
+                    テスト実行では、最新のフォーム回答を使って実際の動作をシミュレートできます。
+                    変数が正しく表示されるか確認してから有効化しましょう。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Summary</div>
+        <h2 class="section-title">今日のポイント</h2>
+
+        <div class="note">
+            <div class="note-title">✅ 今日学んだこと</div>
+            <ul>
+                <li>テンプレートを使えば、<strong>5分でエージェントが完成</strong></li>
+                <li>スターター（フォーム）とステップ（Chat通知）を設定</li>
+                <li>Chatスペースは<strong>候補から選択</strong>する（手動入力NG）</li>
+                <li><strong>変数</strong>を使って、前のステップの情報を後のステップで活用</li>
+                <li>変数は<strong>Variablesボタンから選択</strong>してチップとして追加</li>
+                <li>テスト実行してから本番稼働させる</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Next</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div class="card">
+            <div class="card-number">03</div>
+            <h3 class="card-title">Driveアップロード→Gemini要約×Chat連携の方法</h3>
+            <p class="card-description">
+                Driveにアップロードされたファイルを、Geminiが自動で要約して、Chatに通知するエージェントを作成。
+                AIステップの使い方、Geminiのソース設定、プロンプトのベストプラクティスなど、AI活用の核心に迫ります。
+            </p>
+        </div>
+    </section>
+</body>
+</html>

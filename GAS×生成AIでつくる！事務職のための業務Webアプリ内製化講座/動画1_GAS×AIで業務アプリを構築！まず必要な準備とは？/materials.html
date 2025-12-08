@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：GAS×AIで業務アプリを構築！まず必要な準備とは？ | 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            border-bottom: 2px dashed rgba(10, 14, 39, 0.2);
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 2rem;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">GAS×AI 業務アプリ講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第1回 / 全5回</div>
+            <h1 class="hero-title">
+                GAS×AIで<br>業務アプリを構築！<br>
+                まず必要な準備とは？
+            </h1>
+            <p class="hero-description">
+                プログラミング未経験でも大丈夫。Google Apps Scriptと生成AIを組み合わせれば、
+                自分の業務にぴったりのアプリが作れます。この回では、開発の全体像と準備を学びます。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">この回で学ぶこと</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">GAS×AIの全体像</h3>
+                <p class="card-description">
+                    Google Apps Scriptと生成AIを組み合わせると、どこまで自分でできるのか。
+                    アプリ開発の全体像を掴みます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">AIで仕様案を作る</h3>
+                <p class="card-description">
+                    ChatGPTやGeminiに「こんなアプリが作りたい」と伝えて、
+                    仕様案を出してもらう方法を学びます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">開発の3ステップ</h3>
+                <p class="card-description">
+                    仕様策定→コード生成→連携設定の3ステップを理解し、
+                    次回以降の実践に備えます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">何が変わるのか</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">Before</div>
+                <div class="phase-title">受講前の状態</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✗ GASに興味はあるが触ったことがない</li>
+                <li>✗ AIの活用方法もピンとこない</li>
+                <li>✗ ChatGPTは試したが、業務でどう使えばいいか分からない</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">After</div>
+                <div class="phase-title">受講後の状態</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ GAS×AIでどこまで自分でできるかが分かる</li>
+                <li>✓ 簡単な日報アプリなら、自分で作れるイメージが湧く</li>
+                <li>✓ アプリ開発の全体像が掴める</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">3 STEPS</div>
+        <h2 class="section-title">GAS×AIアプリ開発の流れ</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">生成AIで仕様アイデアを得る</div>
+            </div>
+            <p>ChatGPTやGeminiに「こんなアプリが作りたい」と伝えて、仕様案を出してもらいます。
+            ここで大事なのは、業務の目的を明確に伝えることです。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">GASの雛形コードをAIに生成させる</div>
+            </div>
+            <p>仕様が固まったら、AIに「この仕様のGASコードを書いて」と頼みます。
+            80%くらいはできているので、あとは微調整するだけです。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">Googleフォーム・スプレッドシートと接続</div>
+            </div>
+            <p>生成されたコードをApps Scriptエディタに貼り付けて、Googleフォームやスプレッドシートと連携させます。
+            トリガー設定で自動実行の仕組みを作ります。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROMPT EXAMPLES</div>
+        <h2 class="section-title">実際に使うプロンプト</h2>
+
+        <h3 style="font-size: 1.5rem; margin: 3rem 0 1rem; font-weight: 700;">ChatGPT：日報アプリの仕様案</h3>
+        <div class="code-block">
+あなたは業務効率化のコンサルタントです。<br>
+事務職向けの「日報管理アプリ」を、Google Apps Scriptで作りたいと考えています。<br>
+以下の要件を満たすアプリの仕様案を、簡潔に箇条書きで提案してください。<br>
+<br>
+【要件】<br>
+- 毎日の業務内容を記録する<br>
+- 日付、氏名、業務内容、所感を入力できる<br>
+- 入力したデータは自動でスプレッドシートに蓄積される<br>
+- 後から検索・集計しやすい形式にする
+        </div>
+
+        <h3 style="font-size: 1.5rem; margin: 3rem 0 1rem; font-weight: 700;">Gemini：フォーム項目の詳細</h3>
+        <div class="code-block">
+Googleフォームで「業務日報」を作成します。<br>
+以下の要件を満たす入力項目を、具体的に列挙してください。<br>
+<br>
+【要件】<br>
+- 日付、氏名、業務内容、所感を記録<br>
+- 入力しやすく、検索しやすい形式<br>
+- 必須項目と任意項目を区別<br>
+<br>
+各項目について、「項目名」「入力形式」「必須/任意」を明記してください。
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">注意点・活用ポイント</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">AIの提案をそのまま使わない</h3>
+                <p class="card-description">
+                    AIの出力は、あくまで「たたき台」です。必ず、自分の業務目的に合っているか確認してください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">複数のAIを使う</h3>
+                <p class="card-description">
+                    ChatGPTとGeminiでは、出力の形式や詳しさが違います。
+                    複数使うことで、表現や観点の幅が広がります。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">現実的な効率化を目指す</h3>
+                <p class="card-description">
+                    「完全自動化」ではなく、「20～30%の効率化」を目標にしましょう。
+                    小さな改善の積み重ねが大切です。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="margin-bottom: 5rem;">
+        <div class="section-label">NEXT</div>
+        <h2 class="section-title">次回予告</h2>
+        <p style="font-size: 1.2rem; line-height: 1.8;">
+            次回は、このアイデアを使って、実際に日報入力フォームを作っていきます。<br>
+            Googleフォームの作成から、GASコードの生成まで、一緒に手を動かしましょう！
+        </p>
+        <div style="margin-top: 2rem; padding: 2rem; background: rgba(0, 240, 255, 0.1); border-left: 4px solid var(--electric);">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700;">第2回：AIと一緒に作る！日報管理アプリの下書き生成</h3>
+            <p>Googleフォームで必要な入力項目を定義し、AIにGASコードを書いてもらいます。</p>
+        </div>
+    </section>
+
+</body>
+</html>

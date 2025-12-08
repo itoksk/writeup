@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：履歴書・職務経歴書を自動整理 | 採用パイプライン自動化フロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">第3回 / 全5回</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">03</div>
+            <h1 class="lesson-title">履歴書・職務経歴書を自動整理</h1>
+            <p class="lesson-subtitle">候補者フォルダへの自動保存とファイル命名</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>応募メールの添付ファイルをGeminiで分類し、候補者名フォルダに自動保存、統一されたファイル命名規則を適用するエージェントを作成する</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エージェントのフロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Email Trigger</h3>
+                        <p>添付ファイル付きメール受信時に起動</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Gemini Analysis</h3>
+                        <p>候補者名・ファイル種別を判定</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Drive Folder</h3>
+                        <p>候補者フォルダを作成または特定</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>File Upload</h3>
+                        <p>命名規則に従いファイル保存</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">フォルダ構造</h2>
+            <div class="code-block">採用書類/
+├── エンジニア/
+│   ├── 山田太郎_20250115/
+│   │   ├── 履歴書_山田太郎_20250115.pdf
+│   │   └── 職務経歴書_山田太郎_20250115.pdf
+│   └── 佐藤花子_20250116/
+│       └── ...
+├── 営業/
+│   └── ...
+└── バックオフィス/
+    └── ...</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">ファイル分類</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">種別 1</div>
+                    <h3>履歴書</h3>
+                    <p>基本情報・学歴・職歴を記載した書類</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">種別 2</div>
+                    <h3>職務経歴書</h3>
+                    <p>詳細な業務経験・スキルを記載した書類</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">種別 3</div>
+                    <h3>ポートフォリオ</h3>
+                    <p>作品集・実績資料</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before</div>
+                    <ul>
+                        <li>添付ファイルがメールに埋もれる</li>
+                        <li>「あの人の履歴書どこ？」が頻発</li>
+                        <li>ファイル名がバラバラ</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After</div>
+                    <ul>
+                        <li>候補者別フォルダで一元管理</li>
+                        <li>統一命名規則で即座に検索</li>
+                        <li>面接前に3秒で資料確認</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson2.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson4.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

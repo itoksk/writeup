@@ -1,0 +1,88 @@
+# 採用パイプライン自動化フロー 第3回：面接日程自動調整エージェント
+# プロンプト集
+
+---
+
+## 1. 日程案内メールプロンプト
+
+```
+Generate an interview scheduling email in Japanese:
+
+Candidate: {candidate_name}
+Position: {position}
+Available slots:
+{available_times}
+
+Create a professional email that:
+- Thanks for passing document screening
+- Offers 3-5 time slot options
+- Asks candidate to reply with preferred time
+- Mentions interview duration (60 min)
+- Includes next steps
+
+Format time slots clearly with numbers.
+```
+
+---
+
+## 2. Calendar設定
+
+### 空き時間取得
+```
+Action: Get free/busy times
+Calendar: 面接官カレンダー
+Date range: 今日〜2週間後
+Duration: 60分
+Working hours: 10:00-18:00
+```
+
+### 予定作成（確定後）
+```
+Action: Create event
+Title: 面接：{candidate_name}様
+Start: {selected_time}
+Duration: 60分
+Attendees: 面接官、候補者
+Description: {position}の面接
+```
+
+---
+
+## 3. 確定通知メールプロンプト
+
+```
+Generate interview confirmation email in Japanese:
+
+Candidate: {candidate_name}
+Confirmed time: {selected_time}
+Duration: 60 minutes
+Location: オンライン（Google Meet）
+Interviewer: {interviewer_name}
+
+Include:
+- Confirmation of date/time
+- Meeting link (placeholder)
+- What to prepare
+- Contact for questions
+```
+
+---
+
+## 4. エージェント構成
+
+```
+エージェント名: 面接日程自動調整エージェント
+
+Starter: Manual trigger / Label trigger
+
+Step 1: Google Calendar - Get free/busy times
+  - Output: available_times
+
+Step 2: Gemini - Generate content
+  - Prompt: [日程案内メールプロンプト]
+  - Output: schedule_email
+
+Step 3: Gmail - Create draft
+  - To: {candidate_email}
+  - Body: {schedule_email}
+```

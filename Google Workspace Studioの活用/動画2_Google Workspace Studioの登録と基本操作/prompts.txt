@@ -1,0 +1,154 @@
+# Google Workspace Studio 第2回：登録と基本操作
+# プロンプト集
+
+---
+
+## 1. 自然言語でエージェント作成（プロンプトバー用）
+
+### メール要約エージェント
+```
+Every weekday at 8am, summarize my unread emails from the past 24 hours and send me the summary in Google Chat.
+```
+
+### 週次メールダイジェスト
+```
+Every Monday morning, create a digest of all emails received last week and send it to me in Chat.
+```
+
+### 重要メール通知
+```
+When I receive an email from my manager or with "urgent" in the subject, immediately notify me in Chat.
+```
+
+---
+
+## 2. Geminiステップ用プロンプト
+
+### 基本的なメール要約
+```
+Summarize these unread emails. For each email, provide:
+- Sender name
+- Subject
+- Key points (1-2 sentences)
+- Action required (Yes/No)
+
+Please respond in Japanese.
+```
+
+### 優先順位付きメール要約
+```
+Analyze these emails and categorize them by priority:
+
+HIGH PRIORITY:
+- Emails requiring immediate action
+- Deadline-related emails
+
+MEDIUM PRIORITY:
+- Important updates
+- Meeting requests
+
+LOW PRIORITY:
+- FYI emails
+- Newsletters
+
+Summarize in Japanese.
+```
+
+### アクションアイテム抽出
+```
+From these emails, extract all action items and deadlines.
+Format:
+- [ ] Action item (Deadline: MM/DD)
+
+Output in Japanese.
+```
+
+---
+
+## 3. 日本語プロンプト例
+
+### シンプルな要約
+```
+これらの未読メールを以下の形式で要約してください：
+
+【送信者】名前
+【件名】メールの件名
+【概要】1-2文で内容を説明
+【対応】必要/不要
+```
+
+### 優先度分類
+```
+以下のメールを優先度別に分類してください：
+
+【緊急】今日中に対応が必要なもの
+【重要】今週中に対応が必要なもの
+【通常】確認のみでOKなもの
+```
+
+---
+
+## 4. Chat通知用メッセージテンプレート
+
+### 基本形式
+```
+📧 メール要約 ({current_date})
+
+{gemini_summary}
+
+---
+このメッセージはWorkspace Studioから自動送信されました。
+```
+
+### 詳細形式
+```
+📧 未読メール要約レポート
+📅 {current_date}
+📊 対象：過去24時間の未読メール
+
+{gemini_summary}
+
+---
+次回実行：明日 {scheduled_time}
+```
+
+---
+
+## 5. スケジュール設定例
+
+### 毎日朝8時
+```
+Every day at 8:00 AM
+```
+
+### 平日のみ朝9時
+```
+Every weekday at 9:00 AM
+```
+
+### 月曜日の朝
+```
+Every Monday at 8:00 AM
+```
+
+### 複数回/日
+```
+Every day at 8:00 AM and 5:00 PM
+```
+
+---
+
+## 6. テスト時の確認ポイント
+
+### チェックリスト
+- [ ] スターターの時間設定は正しいか
+- [ ] Geminiプロンプトは適切か（言語指定含む）
+- [ ] 変数が正しく参照されているか
+- [ ] Chat通知先は正しいか
+- [ ] テスト実行で成功するか
+- [ ] 実際にChatに通知が届くか
+
+### よくあるエラーと対処
+- 権限エラー → 管理者に確認、アプリへのアクセス許可を確認
+- タイムアウト → 処理対象を絞り込む（期間を短く）
+- Geminiエラー → プロンプトを簡潔にする

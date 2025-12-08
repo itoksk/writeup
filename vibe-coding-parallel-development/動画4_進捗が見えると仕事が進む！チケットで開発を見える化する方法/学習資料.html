@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画4：進捗が見えると仕事が進む！チケットで開発を見える化する方法 - 学習資料</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #764ba2;
+            font-size: 36px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        
+        h2 {
+            color: #5a3d78;
+            font-size: 28px;
+            margin: 40px 0 20px;
+            padding-left: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .progress-dashboard {
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #333;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+        
+        .ticket-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .ticket-column {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .column-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .todo { background: #fff3cd; }
+        .doing { background: #cfe2ff; }
+        .done { background: #d1f2eb; }
+        
+        .ticket {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .ticket:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .priority-high {
+            border-left: 5px solid #ff4757;
+        }
+        
+        .priority-medium {
+            border-left: 5px solid #feca57;
+        }
+        
+        .priority-low {
+            border-left: 5px solid #48dbfb;
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 20px;
+            height: 30px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s ease;
+        }
+        
+        .formula-box {
+            background: #f0f0f0;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .formula-title {
+            color: #764ba2;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .benefit-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        
+        .benefit-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .benefit-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        
+        .template-section {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px dashed #667eea;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .status-todo { background: #ffc107; color: #333; }
+        .status-doing { background: #17a2b8; color: white; }
+        .status-done { background: #28a745; color: white; }
+        
+        .highlight {
+            background: linear-gradient(to bottom, transparent 50%, #feca57 50%);
+            padding: 2px 5px;
+        }
+        
+        .emoji-large {
+            font-size: 72px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .action-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container fade-in">
+        <h1>📊 動画4：進捗が見えると仕事が進む！チケットで開発を見える化する方法</h1>
+        
+        <div class="emoji-large">📈</div>
+        
+        <h2>🎯 なぜ進捗の見える化が重要なのか？</h2>
+        <div class="benefit-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">😊</div>
+                <h3>モチベーション維持</h3>
+                <p>小さな達成感の積み重ねが大きな成果を生みます</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">📊</div>
+                <h3>客観的な評価</h3>
+                <p>数値で進捗を把握でき、改善点が明確になります</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">⏰</div>
+                <h3>時間管理の最適化</h3>
+                <p>見積精度が向上し、効率的な開発が可能に</p>
+            </div>
+        </div>
+        
+        <h2>📋 チケット管理の基本構造</h2>
+        <div class="ticket-board">
+            <div class="ticket-column todo">
+                <div class="column-header">📝 未着手</div>
+                <div class="ticket priority-high">
+                    <strong>#001 ログイン機能</strong><br>
+                    優先度：高 | 見積：3h
+                </div>
+                <div class="ticket priority-medium">
+                    <strong>#002 データバックアップ</strong><br>
+                    優先度：中 | 見積：2h
+                </div>
+            </div>
+            <div class="ticket-column doing">
+                <div class="column-header">🔧 作業中</div>
+                <div class="ticket priority-high">
+                    <strong>#003 API連携</strong><br>
+                    優先度：高 | 進捗：70%
+                </div>
+            </div>
+            <div class="ticket-column done">
+                <div class="column-header">✅ 完了</div>
+                <div class="ticket priority-medium">
+                    <strong>#004 UIデザイン</strong><br>
+                    実績：2.5h | 完了日：11/20
+                </div>
+                <div class="ticket priority-low">
+                    <strong>#005 ドキュメント作成</strong><br>
+                    実績：1h | 完了日：11/21
+                </div>
+            </div>
+        </div>
+        
+        <h2>📊 進捗ダッシュボード</h2>
+        <div class="progress-dashboard">
+            <h3>今週の進捗サマリー</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 60%;">60% 完了</div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">完了チケット</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">作業中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">85%</div>
+                    <div class="stat-label">見積精度</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2.5h</div>
+                    <div class="stat-label">平均処理時間</div>
+                </div>
+            </div>
+        </div>
+        
+        <h2>🛠️ スプレッドシートで進捗管理</h2>
+        <div class="template-section">
+            <h3>チケット管理テンプレート</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>チケット#</th>
+                        <th>タイトル</th>
+                        <th>優先度</th>
+                        <th>見積時間</th>
+                        <th>実績時間</th>
+                        <th>ステータス</th>
+                        <th>完了日</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#001</td>
+                        <td>ログイン画面実装</td>
+                        <td><span class="status-badge" style="background: #ff4757;">高</span></td>
+                        <td>3h</td>
+                        <td>2.5h</td>
+                        <td><span class="status-badge status-done">完了</span></td>
+                        <td>2024/11/20</td>
+                    </tr>
+                    <tr>
+                        <td>#002</td>
+                        <td>DB接続処理</td>
+                        <td><span class="status-badge" style="background: #ff4757;">高</span></td>
+                        <td>2h</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-doing">作業中</span></td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>#003</td>
+                        <td>レポート機能</td>
+                        <td><span class="status-badge" style="background: #feca57;">中</span></td>
+                        <td>4h</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-todo">未着手</span></td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h2>📈 便利な関数・計算式</h2>
+        <div class="formula-box">
+            <div class="formula-title">スプレッドシート関数集</div>
+            <pre>
+// 完了数をカウント
+=COUNTIF(F:F,"完了")
+
+// 完了率を計算
+=COUNTIF(F:F,"完了")/COUNTA(F:F)*100
+
+// 今週の完了数
+=COUNTIFS(F:F,"完了",G:G,">="&TODAY()-7)
+
+// 見積精度
+=AVERAGE(E:E/D:D)*100
+
+// 優先度別の進捗
+=COUNTIFS(C:C,"高",F:F,"完了")/COUNTIF(C:C,"高")*100
+            </pre>
+        </div>
+        
+        <h2>🤖 AIを使った週次レポート生成</h2>
+        <div class="code-block">
+            <pre>
+// ChatGPTへのプロンプト例
+以下のチケット一覧から今週の成果をまとめてください：
+
+【完了チケット】
+#001 ログイン画面（高）- 2.5h
+#004 データ検証（高）- 1.5h
+#005 エラー処理（中）- 3h
+
+【作業中】
+#002 DB接続（高）- 進捗70%
+
+【来週の予定】
+未着手の高優先度チケットを中心に
+
+形式：
+1. 今週の成果（箇条書き）
+2. 改善点
+3. 来週の目標
+            </pre>
+        </div>
+        
+        <h2>✅ 成功のポイント</h2>
+        <div class="success-box">
+            <h3>DO - これを実践しよう</h3>
+            <ul>
+                <li><strong>毎日5分の更新時間</strong> - 朝一番or終業前に必ず更新</li>
+                <li><strong>完了チケットは残す</strong> - 達成感の記録として重要</li>
+                <li><strong>グラフで視覚化</strong> - 数字だけでなくビジュアルで把握</li>
+                <li><strong>週1回の振り返り</strong> - 改善点を発見して次週に活かす</li>
+                <li><strong>小さく分割</strong> - 1チケット2時間以内が理想</li>
+            </ul>
+        </div>
+        
+        <div class="warning-box">
+            <h3>DON'T - これは避けよう</h3>
+            <ul>
+                <li><strong>細かすぎる管理</strong> - 5分単位の管理は逆効果</li>
+                <li><strong>更新を後回し</strong> - リアルタイム性が失われる</li>
+                <li><strong>完璧主義</strong> - 60%の精度でも十分価値がある</li>
+                <li><strong>複数同時進行</strong> - 「作業中」は1つまで</li>
+                <li><strong>見積なしスタート</strong> - 必ず事前に時間を予測</li>
+            </ul>
+        </div>
+        
+        <h2>📊 進捗可視化の効果</h2>
+        <div class="chart-container">
+            <h3>Before & After</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <h4 style="color: #999;">Before（見える化なし）</h4>
+                    <ul style="color: #666;">
+                        <li>「進んでる感じがしない」</li>
+                        <li>何を達成したか忘れる</li>
+                        <li>モチベーション低下</li>
+                        <li>同じミスを繰り返す</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: #667eea;">After（チケット管理）</h4>
+                    <ul style="color: #333;">
+                        <li>「今日3チケット完了！」</li>
+                        <li>成果が明確に残る</li>
+                        <li>達成感でやる気UP</li>
+                        <li>データから改善点発見</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <h2>🎯 実践演習</h2>
+        <div class="template-section">
+            <h3>今すぐ始められる3ステップ</h3>
+            <ol style="font-size: 18px; line-height: 2;">
+                <li><strong>スプレッドシート作成</strong> - テンプレートをコピーして自分用にカスタマイズ</li>
+                <li><strong>今週のタスクを入力</strong> - まず5個のチケットから始める</li>
+                <li><strong>毎日5分更新</strong> - ステータスと実績時間を記録</li>
+            </ol>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="action-button">テンプレートをダウンロード</button>
+            </div>
+        </div>
+        
+        <h2>💡 まとめ</h2>
+        <div class="highlight" style="font-size: 20px; text-align: center; padding: 20px;">
+            <strong>見えないものは管理できない。見えるものは改善できる。</strong>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 30px; border-radius: 15px; margin-top: 30px; text-align: center;">
+            <h3 style="color: white;">Remember</h3>
+            <p style="font-size: 18px;">
+                小さな達成感の積み重ねが、大きな成果を生む。<br>
+                進捗の可視化は、モチベーション維持の最強ツール！
+            </p>
+        </div>
+    </div>
+</body>
+</html>

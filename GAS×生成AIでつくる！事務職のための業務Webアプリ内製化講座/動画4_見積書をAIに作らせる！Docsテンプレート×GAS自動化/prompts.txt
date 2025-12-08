@@ -1,0 +1,516 @@
+# 第4回：見積書をAIに作らせる！Docsテンプレート×GAS自動化
+# 使用プロンプト集
+
+---
+
+## プロンプト0: テンプレート要件のヒアリング（新規追加）
+
+### 使用タイミング
+見積書テンプレート作成前、または既存テンプレートのカスタマイズ時
+
+### プロンプト本文
+
+```
+あなたはドキュメント設計の専門家です。
+**Google Docs**と**Google Apps Script（GAS）**を使った見積書自動生成システムを作成するにあたり、必要なテンプレート設計を一緒に整理してください。
+
+【現在決まっていること】
+- 使用ツール: **Google Docs**（テンプレート）、**Google Apps Script**（自動化）、**Google Drive**（保存先）
+- 基本機能: テンプレートにデータを差し込み、PDF化してDriveに保存
+
+以下の観点で、テンプレートに必要な設計を質問してください：
+1. **記載項目**: 見積書にどんな情報を載せますか？（顧客名、日付、商品名、金額など）
+2. **計算項目**: 自動計算が必要な項目は？（小計、消費税、合計金額など）
+3. **可変項目**: 案件ごとに変わる項目は？（複数商品の明細、納期など）
+4. **固定項目**: 毎回同じ情報は？（自社情報、振込先など）
+5. **出力形式**: PDFのファイル名はどうしますか？（例：見積書_顧客名_日付.pdf）
+6. **保存先**: どのフォルダに保存しますか？（Google Drive内の構成）
+
+この質問に答えることで、Google Apps Scriptで自動化しやすいテンプレート設計を固めます。
+```
+
+### 期待される回答例
+
+```
+【テンプレート要件の整理】
+
+1. 記載項目
+   → 顧客名、日付、見積番号、商品名、数量、単価、小計、消費税、合計金額、有効期限
+
+2. 計算項目
+   → 小計 = 単価 × 数量
+   → 消費税 = 小計 × 0.1
+   → 合計金額 = 小計 + 消費税
+
+3. 可変項目
+   → 今回は1商品のみ（将来的に複数商品対応を検討）
+
+4. 固定項目
+   → 自社情報（社名、住所、電話番号）
+   → 振込先情報
+
+5. 出力形式
+   → ファイル名: 見積書_[顧客名]_[日付].pdf
+
+6. 保存先
+   → Google Driveの「見積書」フォルダ
+
+【差し込み変数の設計】
+- {{顧客名}}, {{日付}}, {{見積番号}}, {{商品名}}, {{数量}}, {{単価}}, {{小計}}, {{消費税}}, {{合計金額}}, {{有効期限}}
+
+【次のステップ】
+この設計をもとに、Google Docsテンプレートを作成し、Google Apps Scriptのコードを生成しましょう。
+```
+
+---
+
+## プロンプト1: 見積書作成Webアプリの作成（推奨版）
+
+### 使用タイミング
+動画内デモ、受講者の実践時（最も実務的なアプローチ）
+
+### プロンプト本文
+
+```
+Google Apps Scriptで、スプレッドシートのデータベースを活用した見積書作成Webアプリを作成してください。
+
+以下の4つのファイルを作成してください：
+1. create_quotation.gs - メインのGASコード（ダイアログ表示、PDF生成機能）
+2. Dialog.html - 見積書作成フォームのHTML（Tailwind CSS使用）
+3. database_spreadsheet_layout.md - データベーススプレッドシートの構成説明
+4. template_layout.md - Google Docsテンプレートのレイアウト説明
+
+【技術仕様】
+- プラットフォーム: Google Apps Script
+- UI: HTMLダイアログ（Tailwind CSS）
+- データソース: スプレッドシート（顧客マスタ、商品マスタ）
+- 出力: PDF（Google Docsテンプレート使用）
+- 保存先: Google Drive指定フォルダ
+
+【機能要件】
+
+**1. ダイアログUI（Dialog.html）**
+- "既存の顧客・商品を選択" と "新規入力" の2つのモード
+- 既存選択モード: ドロップダウンで顧客・商品を選択
+- 新規入力モード: テキスト入力欄で新規情報を入力
+- 数量入力フィールド
+- リアルタイム金額計算表示（小計、消費税10%、合計）
+- 見積書生成ボタン
+- Tailwind CDN使用でモダンなデザイン
+
+**2. データベース構造（database_spreadsheet_layout.md）**
+スプレッドシート「見積データベース」に以下のシートを作成：
+
+シート1「顧客マスタ」:
+- A列: 顧客名
+- B列: 住所
+- C列: 電話番号
+
+シート2「商品マスタ」:
+- A列: 商品名
+- B列: 単価
+- C列: 説明
+
+シート3「見積作成履歴」:
+- A列: 作成日時
+- B列: 見積番号
+- C列: 顧客名
+- D列: 商品名
+- E列: 数量
+- F列: 合計金額
+- G列: PDFリンク
+
+**3. Google Docsテンプレート（template_layout.md）**
+以下のプレースホルダーを含むテンプレートを作成：
+
+【見積書】
+
+見積番号: {{見積番号}}
+作成日: {{作成日}}
+
+お客様情報:
+{{顧客名}} 様
+{{住所}}
+{{電話番号}}
+
+商品明細:
+商品名: {{商品名}}
+単価: ¥{{単価}}
+数量: {{数量}}
+小計: ¥{{小計}}
+消費税(10%): ¥{{消費税}}
+合計金額: ¥{{合計金額}}
+
+有効期限: {{有効期限}}
+
+**4. GASコード（create_quotation.gs）**
+
+必須関数:
+- `showQuotationDialog()` - ダイアログ表示
+- `getCustomerList()` - 顧客マスタから顧客リスト取得
+- `getProductList()` - 商品マスタから商品リスト取得
+- `getCustomerInfo(customerName)` - 顧客情報取得
+- `getProductInfo(productName)` - 商品情報取得
+- `createQuotation(data)` - 見積書PDF生成と履歴記録
+
+処理フロー:
+1. スプレッドシートから顧客・商品マスタを取得
+2. HTMLダイアログでデータ入力
+3. 入力データをバリデーション
+4. 金額計算（小計、消費税、合計）
+5. 見積番号自動生成（例: Q-20251025-001）
+6. Google Docsテンプレートに差し込み
+7. PDFに変換してDriveに保存
+8. 「見積作成履歴」シートに記録
+9. 成功メッセージ表示
+
+【コード要件】
+- エラーハンドリング実装
+- 日本語コメント付き
+- 初心者でも読みやすいコード
+- toLocaleString()で金額をカンマ区切り表示
+- Utilities.formatDateで日付フォーマット
+
+【設定が必要な項目】
+スクリプトエディタで以下を設定：
+- DATABASE_SPREADSHEET_ID: データベーススプレッドシートID
+- TEMPLATE_DOC_ID: Google DocsテンプレートID
+- OUTPUT_FOLDER_ID: PDF保存先フォルダID
+
+上記の仕様に従って、4つのファイルを作成してください。
+各ファイルには詳細なコメントと説明を含めてください。
+```
+
+### 期待される回答
+
+AIは以下の4つのファイルを生成します：
+
+**create_quotation.gs** - フル機能のGASコード（ダイアログ、データ取得、PDF生成、履歴記録）
+**Dialog.html** - Tailwind CSSを使用した美しいフォームUI
+**database_spreadsheet_layout.md** - スプレッドシートの構成手順
+**template_layout.md** - Google Docsテンプレートの作成手順
+
+### このプロンプトの特徴
+- 実務で使える完成度の高いWebアプリ
+- データベース活用で効率的な運用
+- 既存データの再利用と新規入力の両対応
+- 履歴管理機能付き
+- モダンなUI（Tailwind CSS）
+- 初心者でも実装可能な段階的な説明
+
+---
+
+## プロンプト2: Claudeで見積書生成コード作成（比較用）
+
+### 使用タイミング
+受講者が別のAIでも試したい時
+
+### プロンプト本文
+
+```
+Google Apps Scriptを使って、Google Docsテンプレートから見積書PDFを自動生成する
+システムを作りたいです。以下の要件を満たすコードを、セキュリティ面にも配慮して作成してください。
+
+【機能要件】
+1. テンプレートの複製と変数置換
+   - {{変数名}} 形式のプレースホルダーを使用
+   - 顧客名、日付、商品名、金額などを置換
+2. 金額の自動計算（小計、消費税、合計）
+3. PDFへの変換
+4. Google Driveへの保存
+5. ファイル名の動的生成（例：見積書_顧客名_日付.pdf）
+
+【セキュリティ要件】
+- テンプレートIDやフォルダIDは、スクリプトプロパティで管理
+- エラーハンドリングを実装
+- 一時ファイルは確実に削除
+
+初心者向けに、各処理の説明も追加してください。
+```
+
+### 期待される回答例
+
+Claudeは、セキュリティ面やエラーハンドリングを含めた、より堅牢なコードを提案してくれる傾向があります。
+
+```javascript
+/**
+ * 見積書を自動生成してPDFとして保存する関数
+ */
+function generateQuotation() {
+  try {
+    // スクリプトプロパティから設定を取得（セキュリティ対策）
+    var scriptProperties = PropertiesService.getScriptProperties();
+    var templateId = scriptProperties.getProperty('TEMPLATE_ID');
+    var folderId = scriptProperties.getProperty('FOLDER_ID');
+
+    // 設定が未登録の場合はエラー
+    if (!templateId || !folderId) {
+      throw new Error('テンプレートIDまたはフォルダIDが設定されていません');
+    }
+
+    // データ定義
+    var data = {
+      顧客名: 'ABC商事株式会社',
+      日付: Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy-MM-dd'),
+      見積番号: generateQuotationNumber(),
+      商品名: '業務支援システム',
+      数量: 1,
+      単価: 500000,
+      有効期限: calculateExpiryDate(30) // 30日後
+    };
+
+    // 金額計算
+    calculateAmounts(data);
+
+    // 見積書生成
+    var fileName = createQuotationPDF(templateId, folderId, data);
+
+    Logger.log('見積書を生成しました: ' + fileName);
+    return fileName;
+
+  } catch (error) {
+    Logger.log('エラーが発生しました: ' + error.message);
+    throw error;
+  }
+}
+
+/**
+ * 金額を計算してdataオブジェクトに追加
+ */
+function calculateAmounts(data) {
+  data.小計 = data.単価 * data.数量;
+  data.消費税 = Math.floor(data.小計 * 0.1);
+  data.合計金額 = data.小計 + data.消費税;
+
+  // カンマ区切りに変換
+  data.小計 = data.小計.toLocaleString();
+  data.消費税 = data.消費税.toLocaleString();
+  data.合計金額 = data.合計金額.toLocaleString();
+}
+
+/**
+ * PDFを生成してDriveに保存
+ */
+function createQuotationPDF(templateId, folderId, data) {
+  var tempDoc = null;
+
+  try {
+    // テンプレートを複製
+    var template = DriveApp.getFileById(templateId);
+    tempDoc = template.makeCopy('temp_quotation_' + Date.now());
+    var doc = DocumentApp.openById(tempDoc.getId());
+    var body = doc.getBody();
+
+    // データを置換
+    for (var key in data) {
+      body.replaceText('\\{\\{' + key + '\\}\\}', data[key]);
+    }
+
+    doc.saveAndClose();
+
+    // PDFに変換
+    var pdf = tempDoc.getAs('application/pdf');
+    var fileName = '見積書_' + data.顧客名 + '_' + data.日付 + '.pdf';
+
+    // 保存
+    var folder = DriveApp.getFolderById(folderId);
+    folder.createFile(pdf).setName(fileName);
+
+    return fileName;
+
+  } finally {
+    // 一時ファイルを必ず削除
+    if (tempDoc) {
+      DriveApp.getFileById(tempDoc.getId()).setTrashed(true);
+    }
+  }
+}
+```
+
+---
+
+## プロンプト3: フォーム連携で見積書自動生成
+
+### 使用タイミング
+Googleフォームから見積書を生成したい時
+
+### プロンプト本文
+
+```
+Googleフォームで入力した内容を元に、見積書PDFを自動生成する
+Google Apps Scriptのコードを作成してください。
+
+【フォーム項目】
+- 顧客名
+- 商品名
+- 数量
+- 単価
+
+【処理の流れ】
+1. フォーム送信時にトリガー発動
+2. 入力内容を取得
+3. Google Docsテンプレートにデータを差し込み
+4. PDFに変換してDriveに保存
+5. 送信者にメールで通知（PDFのリンク付き）
+
+【テンプレート変数】
+- {{顧客名}}, {{日付}}, {{見積番号}}, {{商品名}}, {{数量}}, {{単価}}, {{合計金額}}
+
+コメント付きで、分かりやすく作成してください。
+```
+
+### 期待される回答例
+
+```javascript
+function onFormSubmit(e) {
+  // フォームの回答を取得
+  var itemResponses = e.response.getItemResponses();
+
+  // データを整理
+  var data = {
+    顧客名: itemResponses[0].getResponse(),
+    商品名: itemResponses[1].getResponse(),
+    数量: parseInt(itemResponses[2].getResponse()),
+    単価: parseInt(itemResponses[3].getResponse()),
+    日付: Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy-MM-dd'),
+    見積番号: 'Q-' + Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyyMMdd') + '-001'
+  };
+
+  // 合計金額を計算
+  data.合計金額 = (data.数量 * data.単価).toLocaleString();
+
+  // 見積書を生成
+  var pdfUrl = generateQuotationFromData(data);
+
+  // メール通知
+  var email = e.response.getRespondentEmail();
+  if (email) {
+    sendNotificationEmail(email, data.顧客名, pdfUrl);
+  }
+
+  Logger.log('見積書を生成しました: ' + data.顧客名);
+}
+
+function sendNotificationEmail(email, customerName, pdfUrl) {
+  var subject = '【見積書生成完了】' + customerName + '様宛';
+  var body = '見積書の生成が完了しました。\n\n' +
+             '以下のリンクからPDFをダウンロードできます：\n' +
+             pdfUrl;
+
+  MailApp.sendEmail(email, subject, body);
+}
+```
+
+---
+
+## プロンプト4: 複数商品の明細対応
+
+### 使用タイミング
+見積書に複数の商品明細を含めたい時
+
+### プロンプト本文
+
+```
+Google Docsテンプレートで、複数の商品明細を含む見積書を作成したいです。
+Google Apps Scriptで、スプレッドシートの商品リストを読み込み、
+Docsテンプレートに表形式で差し込むコードを教えてください。
+
+【要件】
+- スプレッドシート「見積データ」シートから商品リストを取得
+- 各商品の「商品名、数量、単価、小計」を表示
+- テンプレートの {{商品明細}} 部分に表を挿入
+- 合計金額を自動計算
+
+【スプレッドシートの構造】
+A列: 商品名
+B列: 数量
+C列: 単価
+（2行目以降にデータ）
+```
+
+---
+
+## プロンプト5: エラーハンドリングの追加
+
+### 使用タイミング
+既存のコードにエラー対策を追加したい時
+
+### プロンプト本文
+
+```
+以下のGoogle Apps Scriptコードに、エラーハンドリングを追加してください。
+
+【現在のコード】
+[ここに既存のコードを貼り付け]
+
+【追加したいエラー処理】
+1. テンプレートが見つからない場合
+2. フォルダが見つからない場合
+3. PDF変換に失敗した場合
+4. 一時ファイルの削除に失敗した場合
+
+エラー発生時は、Logger.log でエラー内容を記録し、
+適切なエラーメッセージを返すようにしてください。
+```
+
+---
+
+## よくある質問
+
+**Q1: テンプレートIDはどこで確認できますか？**
+A1: Google Docsを開いた時のURLから取得できます。
+    `https://docs.google.com/document/d/【この部分】/edit`
+    の【この部分】が、テンプレートIDです。
+
+**Q2: {{変数名}} が置換されません**
+A2: 以下を確認してください：
+    - `{{` と `}}` が全角になっていないか（半角のみ有効）
+    - 変数名がコード内のキーと完全一致しているか
+    - スペースが入っていないか（例：`{{ 顧客名 }}` は NG、`{{顧客名}}` が OK）
+
+**Q3: PDFが保存されません**
+A3: 以下を確認してください：
+    - フォルダIDが正しいか
+    - Driveの保存先フォルダへのアクセス権があるか
+    - `getAs('application/pdf')` の前に `doc.saveAndClose()` をしているか
+
+**Q4: 金額がカンマ区切りになりません**
+A4: `toLocaleString()` を使用してください：
+    ```javascript
+    var amount = 500000;
+    var formatted = amount.toLocaleString(); // "500,000"
+    ```
+
+---
+
+## demo_code ファイルの使い方
+
+### quotation_generator.gs
+- 見積書生成の完成版GASコード
+- テンプレートID、フォルダIDは、自分の環境に合わせて書き換えてください
+- コメント付きで、各処理の意味を解説
+
+### template_sample.docx
+- 見積書テンプレートのサンプル
+- Google Docsにアップロードして使用
+- `{{変数名}}` の部分を、自分の業務に合わせてカスタマイズ
+
+---
+
+## 次回予告
+
+次回（第5回・最終回）では、Claude、Gemini、ChatGPTの3ツールを徹底比較します。
+
+**次回使用予定のプロンプト**:
+- 同じ課題を3つのAIに投げて、出力を比較
+- 各AIの得意分野と使い分けのコツ
+- 実務での効果的な活用方法
+
+お楽しみに！
+
+---
+
+**ファイル作成日**: 2025-10-25
+**対象動画**: 第4回（10分）
+**使用AI**: ChatGPT、Claude
+**次回**: AI 3ツール徹底比較（最終回）

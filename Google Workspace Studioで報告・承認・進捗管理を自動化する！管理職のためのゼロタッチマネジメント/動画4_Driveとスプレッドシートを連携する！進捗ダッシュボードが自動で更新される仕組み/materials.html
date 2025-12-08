@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：進捗ダッシュボードが自動で更新される仕組み | ゼロタッチマネジメント</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --ink: #0A0E27; --paper: #FEFEF8; --electric: #06B6D4; --violet: #0EA5E9; --gray: #4A5568; }
+        body { font-family: 'Zen Kaku Gothic New', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.8; }
+        nav { position: fixed; top: 0; width: 100%; background: rgba(254, 254, 248, 0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 1.5rem 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        main { max-width: 900px; margin: 0 auto; padding: 8rem 2rem 4rem; }
+        .lesson-header { text-align: center; margin-bottom: 4rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(10, 14, 39, 0.1); }
+        .lesson-number { font-size: 6rem; font-weight: 900; background: linear-gradient(135deg, var(--violet), var(--electric)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+        .lesson-title { font-size: 2rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        .lesson-subtitle { font-size: 1.1rem; color: var(--gray); }
+        section { margin-bottom: 3rem; }
+        h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; padding-left: 1rem; border-left: 4px solid var(--electric); }
+        .goal-card { background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(6, 182, 212, 0.05)); border-radius: 12px; padding: 2rem; border-left: 4px solid var(--violet); }
+        .dashboard-preview { background: white; border: 1px solid rgba(10, 14, 39, 0.1); border-radius: 12px; padding: 2rem; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(10, 14, 39, 0.1); }
+        .dashboard-title { font-size: 1.25rem; font-weight: 700; }
+        .dashboard-date { font-size: 0.85rem; color: var(--gray); }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: linear-gradient(135deg, var(--violet), var(--electric)); color: white; border-radius: 8px; padding: 1rem; text-align: center; }
+        .stat-value { font-size: 1.75rem; font-weight: 900; }
+        .stat-label { font-size: 0.75rem; opacity: 0.9; }
+        .status-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .status-table th, .status-table td { padding: 0.5rem; text-align: left; border-bottom: 1px solid rgba(10, 14, 39, 0.1); }
+        .status-table th { background: rgba(14, 165, 233, 0.05); font-weight: 600; }
+        .status-badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+        .status-badge.submitted { background: #D1FAE5; color: #065F46; }
+        .status-badge.late { background: #FEF3C7; color: #92400E; }
+        .status-badge.missing { background: #FEE2E2; color: #991B1B; }
+        .data-flow { display: flex; flex-direction: column; gap: 1rem; }
+        .flow-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: white; border: 1px solid rgba(10, 14, 39, 0.1); border-radius: 12px; }
+        .flow-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--violet), var(--electric)); color: white; border-radius: 12px; font-size: 1.25rem; flex-shrink: 0; }
+        .flow-content h3 { font-size: 1rem; font-weight: 600; }
+        .flow-content p { font-size: 0.85rem; color: var(--gray); }
+        .flow-arrow { text-align: center; color: var(--gray); font-size: 1.25rem; }
+        .agents-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .agent-card { background: white; border: 1px solid rgba(10, 14, 39, 0.1); border-radius: 12px; padding: 1.25rem; }
+        .agent-card h4 { font-size: 0.9rem; font-weight: 600; color: var(--violet); margin-bottom: 0.5rem; }
+        .agent-card p { font-size: 0.85rem; color: var(--gray); }
+        .summary-box { background: var(--ink); color: var(--paper); border-radius: 12px; padding: 2rem; }
+        .summary-box h3 { font-size: 1.2rem; margin-bottom: 1rem; }
+        .summary-box ul { list-style: none; }
+        .summary-box li { margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative; }
+        .summary-box li::before { content: "→"; position: absolute; left: 0; color: var(--electric); }
+        .next-preview { margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(6, 182, 212, 0.1)); border-radius: 12px; text-align: center; }
+        @media (max-width: 768px) { .stats-grid, .agents-grid { grid-template-columns: repeat(2, 1fr); } .lesson-number { font-size: 4rem; } }
+    </style>
+</head>
+<body>
+    <nav><div class="nav-container"><div>ゼロタッチマネジメント</div><div>第4回 / 全5回</div></div></nav>
+    <main>
+        <header class="lesson-header">
+            <div class="lesson-number">04</div>
+            <h1 class="lesson-title">進捗ダッシュボードが自動で更新される仕組み</h1>
+            <p class="lesson-subtitle">Driveとスプレッドシートを連携する</p>
+        </header>
+        <section>
+            <h2>学習目標</h2>
+            <div class="goal-card"><p>チームの進捗状況をリアルタイムで可視化するダッシュボードを自動更新するエージェントを作成する</p></div>
+        </section>
+        <section>
+            <h2>ダッシュボードイメージ</h2>
+            <div class="dashboard-preview">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">📊 チーム進捗ダッシュボード</div>
+                    <div class="dashboard-date">2024/01/15 21:00 更新</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-value">8</div><div class="stat-label">提出済</div></div>
+                    <div class="stat-card"><div class="stat-value">2</div><div class="stat-label">未提出</div></div>
+                    <div class="stat-card"><div class="stat-value">1</div><div class="stat-label">遅延</div></div>
+                    <div class="stat-card"><div class="stat-value">80%</div><div class="stat-label">提出率</div></div>
+                </div>
+                <table class="status-table">
+                    <tr><th>メンバー</th><th>日報</th><th>提出時刻</th><th>品質</th></tr>
+                    <tr><td>山田太郎</td><td><span class="status-badge submitted">提出済</span></td><td>16:45</td><td>合格</td></tr>
+                    <tr><td>佐藤花子</td><td><span class="status-badge late">遅延</span></td><td>18:30</td><td>合格</td></tr>
+                    <tr><td>鈴木一郎</td><td><span class="status-badge missing">未提出</span></td><td>-</td><td>-</td></tr>
+                </table>
+            </div>
+        </section>
+        <section>
+            <h2>データフロー</h2>
+            <div class="data-flow">
+                <div class="flow-item"><div class="flow-icon">📧</div><div class="flow-content"><h3>Gmail受信</h3><p>日報・週報メールを受信</p></div></div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-item"><div class="flow-icon">📝</div><div class="flow-content"><h3>Sheets記録</h3><p>提出ログに自動記録</p></div></div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-item"><div class="flow-icon">📊</div><div class="flow-content"><h3>ダッシュボード更新</h3><p>集計結果を自動反映</p></div></div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-item"><div class="flow-icon">💬</div><div class="flow-content"><h3>Chat通知</h3><p>未提出・遅延をアラート</p></div></div>
+            </div>
+        </section>
+        <section>
+            <h2>作成するエージェント</h2>
+            <div class="agents-grid">
+                <div class="agent-card">
+                    <h4>Submission Check Agent</h4>
+                    <p>毎日20:00に未提出者を検知してアラート送信</p>
+                </div>
+                <div class="agent-card">
+                    <h4>Dashboard Update Agent</h4>
+                    <p>毎日21:00にダッシュボードを自動更新</p>
+                </div>
+                <div class="agent-card">
+                    <h4>Weekly Summary Agent</h4>
+                    <p>金曜18:00に週次サマリーを生成</p>
+                </div>
+                <div class="agent-card">
+                    <h4>Drive Sync Agent</h4>
+                    <p>添付ファイルをDriveに自動保存</p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>今日のポイント</h2>
+            <div class="summary-box">
+                <h3>まとめ</h3>
+                <ul>
+                    <li>提出ログをSheetsで一元管理</li>
+                    <li>未提出者を自動検知してアラート</li>
+                    <li>ダッシュボードを定時自動更新</li>
+                    <li>週次サマリーを自動生成</li>
+                    <li>DriveとSheetsを連携</li>
+                </ul>
+            </div>
+        </section>
+        <div class="next-preview"><h3>次回予告（最終回）</h3><p>誰に何をいつ伝えるかを整理し遅延ゼロを実現する！承認プロセスを自動化するワークフロー</p></div>
+    </main>
+</body>
+</html>

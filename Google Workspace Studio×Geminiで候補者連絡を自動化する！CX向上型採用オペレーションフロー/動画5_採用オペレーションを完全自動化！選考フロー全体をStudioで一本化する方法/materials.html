@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：採用オペレーションを完全自動化 | CX向上型採用オペレーションフロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --ink: #0A0E27; --paper: #FEFEF8; --electric: #EC4899; --violet: #7C3AED; --gray: #4A5568; }
+        body { font-family: 'Zen Kaku Gothic New', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.8; }
+        nav { position: fixed; top: 0; width: 100%; background: rgba(254, 254, 248, 0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 1.5rem 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; }
+        main { max-width: 900px; margin: 0 auto; padding: 8rem 2rem 4rem; }
+        .lesson-header { text-align: center; margin-bottom: 4rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(10, 14, 39, 0.1); }
+        .lesson-number { font-size: 6rem; font-weight: 900; background: linear-gradient(135deg, var(--violet), var(--electric)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+        .lesson-title { font-size: 2rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        .lesson-subtitle { font-size: 1.1rem; color: var(--gray); }
+        section { margin-bottom: 3rem; }
+        h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; padding-left: 1rem; border-left: 4px solid var(--electric); }
+        .goal-card { background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(236, 72, 153, 0.05)); border-radius: 12px; padding: 2rem; border-left: 4px solid var(--violet); }
+        .agents-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .agent-card { background: white; border: 1px solid rgba(10, 14, 39, 0.1); border-radius: 12px; padding: 1.5rem; }
+        .agent-card h3 { font-size: 1rem; margin-bottom: 0.25rem; color: var(--violet); }
+        .agent-card p { font-size: 0.85rem; color: var(--gray); }
+        .status-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+        .status-table th, .status-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(10, 14, 39, 0.1); }
+        .status-table th { background: rgba(124, 58, 237, 0.05); font-weight: 600; }
+        .code-block { background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; margin: 1rem 0; }
+        .results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .result-card { background: linear-gradient(135deg, var(--violet), var(--electric)); color: white; border-radius: 12px; padding: 1.5rem; text-align: center; }
+        .result-value { font-size: 2.5rem; font-weight: 900; }
+        .result-label { font-size: 0.9rem; opacity: 0.9; }
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .comparison-card { border-radius: 12px; padding: 1.5rem; }
+        .comparison-card.before { background: #FEF2F2; border: 1px solid #FECACA; }
+        .comparison-card.after { background: #F0FDF4; border: 1px solid #BBF7D0; }
+        .comparison-card h3 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; }
+        .comparison-card.before h3 { color: #DC2626; }
+        .comparison-card.after h3 { color: #16A34A; }
+        .comparison-card ul { list-style: none; }
+        .comparison-card li { font-size: 0.9rem; margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative; }
+        .comparison-card.before li::before { content: "×"; position: absolute; left: 0; color: #DC2626; }
+        .comparison-card.after li::before { content: "✓"; position: absolute; left: 0; color: #16A34A; }
+        .summary-box { background: var(--ink); color: var(--paper); border-radius: 12px; padding: 2rem; }
+        .summary-box h3 { font-size: 1.2rem; margin-bottom: 1rem; }
+        .summary-box ul { list-style: none; }
+        .summary-box li { margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative; }
+        .summary-box li::before { content: "→"; position: absolute; left: 0; color: var(--electric); }
+        .complete-banner { margin-top: 3rem; padding: 3rem; background: linear-gradient(135deg, var(--violet), var(--electric)); border-radius: 12px; text-align: center; color: white; }
+        .complete-banner h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .complete-banner p { font-size: 1rem; opacity: 0.9; }
+        @media (max-width: 768px) { .agents-grid, .results-grid, .comparison { grid-template-columns: 1fr; } .lesson-number { font-size: 4rem; } }
+    </style>
+</head>
+<body>
+    <nav><div class="nav-container"><div>CX向上型採用オペレーションフロー</div><div>第5回 / 全5回</div></div></nav>
+    <main>
+        <header class="lesson-header">
+            <div class="lesson-number">05</div>
+            <h1 class="lesson-title">採用オペレーションを完全自動化</h1>
+            <p class="lesson-subtitle">選考フロー全体をStudioで一本化する方法</p>
+        </header>
+        <section>
+            <h2>学習目標</h2>
+            <div class="goal-card"><p>これまで作成したエージェントを統合し、選考フロー全体を一本化する運用設計を完成させる</p></div>
+        </section>
+        <section>
+            <h2>作成したエージェント一覧</h2>
+            <div class="agents-grid">
+                <div class="agent-card"><h3>Interview Prep Notification</h3><p>面接前準備の自動化</p></div>
+                <div class="agent-card"><h3>Post-Interview Workflow</h3><p>面接後作業の自動化</p></div>
+                <div class="agent-card"><h3>Interview Reminder</h3><p>面接リマインド</p></div>
+                <div class="agent-card"><h3>Evaluation Reminder</h3><p>評価提出リマインド</p></div>
+                <div class="agent-card"><h3>Delay Alert</h3><p>遅延アラート</p></div>
+                <div class="agent-card"><h3>Daily Recruiting Dashboard</h3><p>日次サマリー配信</p></div>
+            </div>
+        </section>
+        <section>
+            <h2>ステータス定義</h2>
+            <table class="status-table">
+                <tr><th>ステータス</th><th>意味</th><th>次アクション</th></tr>
+                <tr><td>応募受付</td><td>応募書類受領</td><td>書類選考</td></tr>
+                <tr><td>書類選考中</td><td>履歴書確認中</td><td>結果連絡 or 面接設定</td></tr>
+                <tr><td>一次面接予定</td><td>面接日程確定</td><td>面接準備通知</td></tr>
+                <tr><td>一次面接完了</td><td>評価待ち</td><td>評価リマインド</td></tr>
+                <tr><td>内定</td><td>オファー提示</td><td>回答待ち</td></tr>
+            </table>
+        </section>
+        <section>
+            <h2>日次ダッシュボード</h2>
+            <div class="code-block">【採用パイプライン日次サマリー】
+
+■ パイプライン概況
+・応募受付: {count}名
+・書類選考中: {count}名
+・面接予定: {count}名
+・評価待ち: {count}名
+
+■ 本日の面接予定
+{today_interviews}
+
+■ 要フォロー（3日以上連絡なし）
+{delayed_candidates}</div>
+        </section>
+        <section>
+            <h2>コース全体の成果</h2>
+            <div class="results-grid">
+                <div class="result-card"><div class="result-value">70%</div><div class="result-label">業務時間削減</div></div>
+                <div class="result-card"><div class="result-value">0</div><div class="result-label">連絡漏れ</div></div>
+                <div class="result-card"><div class="result-value">即時</div><div class="result-label">候補者対応</div></div>
+            </div>
+        </section>
+        <section>
+            <h2>Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h3>Before</h3>
+                    <ul>
+                        <li>連絡業務2〜3時間/日</li>
+                        <li>面接準備10分/件</li>
+                        <li>評価収集は手動依頼</li>
+                        <li>連絡漏れが月に数件</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h3>After</h3>
+                    <ul>
+                        <li>連絡業務30分以下/日</li>
+                        <li>面接準備は自動配信</li>
+                        <li>評価は自動リマインド</li>
+                        <li>連絡漏れほぼゼロ</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>今日のポイント</h2>
+            <div class="summary-box">
+                <h3>まとめ</h3>
+                <ul>
+                    <li>候補者管理シートを中心に全エージェントを統合</li>
+                    <li>ステータス自動更新でデータの一貫性を確保</li>
+                    <li>日次ダッシュボードで全体を可視化</li>
+                    <li>運用ルールの設計で持続的な運用を実現</li>
+                </ul>
+            </div>
+        </section>
+        <div class="complete-banner">
+            <h3>コース完了</h3>
+            <p>CX向上型採用オペレーションフローの構築が完了しました！<br>自社の採用プロセスに合わせてカスタマイズし、CX向上を実現してください。</p>
+        </div>
+    </main>
+</body>
+</html>

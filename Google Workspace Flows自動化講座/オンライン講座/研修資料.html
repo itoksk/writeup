@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>つまずかないGoogle Workspace Flows - AIバード研修</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --sage: #10B981;
+            --amber: #F59E0B;
+            --gem-blue: #4285f4;
+            --gem-green: #34a853;
+            --gem-yellow: #fbbc04;
+            --gem-red: #ea4335;
+            --text-primary: #0A0E27;
+            --text-secondary: #4A5568;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background-color: var(--paper);
+            color: var(--text-primary);
+            line-height: 1.8;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(66, 133, 244, 0.01) 2px,
+                rgba(66, 133, 244, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--ink);
+            z-index: 10;
+            padding: 1rem 0;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .nav-title {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: 0.02em;
+        }
+
+        .nav-time {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.5rem 1rem;
+        }
+
+        .hero {
+            margin-top: 100px;
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--gem-blue);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transform: rotate(-1deg);
+            margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-weight: 900;
+            font-size: clamp(3rem, 8vw, 6rem);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section {
+            margin: 80px 0;
+            position: relative;
+        }
+
+        .section-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--ink);
+            opacity: 0.15;
+            position: absolute;
+            top: -2rem;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .section-header {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-subtitle {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 2rem;
+            box-shadow: 4px 4px 0 var(--ink);
+        }
+
+        .card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0 var(--ink);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .highlight-box {
+            background: var(--electric);
+            border: 3px solid var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 6px 6px 0 var(--ink);
+        }
+
+        .highlight-box.important {
+            background: var(--coral);
+            color: var(--paper);
+        }
+
+        .highlight-box.success {
+            background: var(--sage);
+            color: var(--paper);
+        }
+
+        .highlight-box.warning {
+            background: var(--amber);
+        }
+
+        .key-point {
+            border-left: 6px solid var(--violet);
+            padding: 1.5rem;
+            background: rgba(124, 58, 237, 0.05);
+            margin: 2rem 0;
+        }
+
+        .key-point-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .step-card {
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            background: var(--paper);
+            position: relative;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -1rem;
+            left: 1rem;
+            background: var(--electric);
+            color: var(--ink);
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border: 2px solid var(--ink);
+        }
+
+        .example-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--sage);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .example-title {
+            font-weight: 700;
+            color: var(--sage);
+            margin-bottom: 0.75rem;
+        }
+
+        .conversation {
+            margin: 2rem 0;
+        }
+
+        .chat-message {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 2px solid var(--ink);
+        }
+
+        .chat-message.user {
+            background: rgba(66, 133, 244, 0.1);
+            border-left: 6px solid var(--gem-blue);
+        }
+
+        .chat-message.ai {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 6px solid var(--sage);
+        }
+
+        .chat-label {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-message.user .chat-label {
+            color: var(--gem-blue);
+        }
+
+        .chat-message.ai .chat-label {
+            color: var(--sage);
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+        }
+
+        strong {
+            font-weight: 700;
+            color: var(--violet);
+        }
+
+        .final-cta {
+            text-align: center;
+            margin: 4rem 0;
+            padding: 3rem;
+            background: var(--sage);
+            color: var(--paper);
+            border: 3px solid var(--ink);
+            box-shadow: 8px 8px 0 var(--ink);
+        }
+
+        .final-cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .final-cta p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th, td {
+            border: 2px solid var(--ink);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background: var(--electric);
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(10, 14, 39, 0.02);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 2px solid var(--ink);
+            margin-right: 0.5rem;
+        }
+
+        .status-badge.error {
+            background: var(--coral);
+            color: var(--paper);
+        }
+
+        .status-badge.success {
+            background: var(--sage);
+            color: var(--paper);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .section-number {
+                font-size: 4rem;
+            }
+
+            .step-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="nav-title">Google Workspace Flows 講座</div>
+            <div class="nav-time">60分</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="container">
+            <div class="hero-label">Workspace Flows Workshop</div>
+            <h1 class="hero-title">つまずかない<br>Google Workspace Flows</h1>
+            <p class="hero-subtitle">設定画面で見る、よくある失敗と確実な成功法</p>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Section 01 -->
+        <section class="section">
+            <div class="section-number">01</div>
+            <div class="section-header">
+                <h2 class="section-title">そもそもGoogle Workspace Flowsって何?</h2>
+                <p class="section-subtitle">What is Workspace Flows and why it's powerful</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Google Workspace Flowsとは</h3>
+                    <p class="card-subtitle">Googleが提供するノーコード自動化プラットフォーム</p>
+                </div>
+                <p>Google Workspace Flowsは、<strong>プログラミング不要で業務を自動化できるツール</strong>です。フォーム回答の通知、ファイルアップロード時の処理、定期的なタスク実行などを、クリック操作だけで設定できます。</p>
+
+                <div class="key-point" style="margin-top: 2rem;">
+                    <div class="key-point-title">なぜスゴいのか?</div>
+                    <ul>
+                        <li><strong>ノーコードでAI活用</strong> - GeminiによるAI要約・分析を、コード不要で業務に組み込める</li>
+                        <li><strong>Google Workspace内で完結</strong> - 外部サービス不要、セキュリティも安心</li>
+                        <li><strong>即座に実用可能</strong> - 設定から数分で自動化が動き出す</li>
+                        <li><strong>メンテナンスフリー</strong> - Googleが自動でアップデート、保守の手間なし</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">従来の自動化との違い</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>GAS (従来)</th>
+                            <th>Workspace Flows (新)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>スキル要件</td>
+                            <td>JavaScriptの知識が必要</td>
+                            <td><strong style="color: var(--sage);">不要</strong></td>
+                        </tr>
+                        <tr>
+                            <td>AI連携</td>
+                            <td>自分でAPI呼び出しを実装</td>
+                            <td><strong style="color: var(--sage);">ビルトイン</strong></td>
+                        </tr>
+                        <tr>
+                            <td>セットアップ時間</td>
+                            <td>数時間〜数日</td>
+                            <td><strong style="color: var(--sage);">5〜10分</strong></td>
+                        </tr>
+                        <tr>
+                            <td>デバッグ</td>
+                            <td>エラーログを読み解く</td>
+                            <td><strong style="color: var(--sage);">視覚的に確認</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="example-box">
+                <div class="example-title">実際にできること（一部）</div>
+                <ul>
+                    <li><strong>フォーム回答 → Chat通知</strong> - お問い合わせフォームに回答が来たら、即座にチームに通知</li>
+                    <li><strong>Drive → Gemini要約 → Chat</strong> - 議事録がアップロードされたら、AI要約してチームに共有</li>
+                    <li><strong>定期実行 → データ集計 → レポート送信</strong> - 毎週月曜日に、週次レポートを自動作成・送信</li>
+                    <li><strong>カレンダー → リマインダー通知</strong> - イベント前日に、参加者全員に自動でリマインド</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 02 -->
+        <section class="section">
+            <div class="section-number">02</div>
+            <div class="section-header">
+                <h2 class="section-title">どんな Before → After が起きる?</h2>
+                <p class="section-subtitle">Real-world transformations</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">ケース1: お問い合わせフォーム対応</h3>
+                    <p class="card-subtitle">毎日20件、1件あたり5分の作業時間</p>
+                </div>
+
+                <div class="step-grid">
+                    <div class="step-card">
+                        <div class="step-number" style="background: var(--coral);">Before</div>
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--coral);">手作業フロー</h4>
+                        <ol style="font-size: 0.9rem;">
+                            <li>フォームを開いて新規回答を確認（2分）</li>
+                            <li>回答内容をコピー（1分）</li>
+                            <li>Chatを開いてメッセージ作成（2分）</li>
+                        </ol>
+                        <p style="margin-top: 1rem; font-weight: 700; color: var(--coral);">合計: 1日100分（1時間40分）</p>
+                    </div>
+
+                    <div class="step-card" style="border: 2px solid var(--sage);">
+                        <div class="step-number" style="background: var(--sage);">After</div>
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--sage);">自動化フロー</h4>
+                        <ol style="font-size: 0.9rem;">
+                            <li>フォーム回答が自動でChatに通知</li>
+                            <li>回答者名・内容が整形されて表示</li>
+                            <li>担当者は通知を見て即対応</li>
+                        </ol>
+                        <p style="margin-top: 1rem; font-weight: 700; color: var(--sage);">合計: 0分（完全自動）</p>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <div class="key-point-title">削減効果</div>
+                    <ul>
+                        <li><strong>時間削減:</strong> 1日100分 → 0分（<strong style="color: var(--sage);">100%削減</strong>）</li>
+                        <li><strong>反応速度:</strong> 数時間後 → <strong style="color: var(--sage);">数分以内</strong></li>
+                        <li><strong>見逃しリスク:</strong> あり → <strong style="color: var(--sage);">なし</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">ケース2: 会議議事録の共有</h3>
+                    <p class="card-subtitle">週5回、1件あたり10分の作業時間</p>
+                </div>
+
+                <div class="step-grid">
+                    <div class="step-card">
+                        <div class="step-number" style="background: var(--coral);">Before</div>
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--coral);">手作業フロー</h4>
+                        <ol style="font-size: 0.9rem;">
+                            <li>Driveから議事録を探す（2分）</li>
+                            <li>内容を読んで要点を整理（5分）</li>
+                            <li>Chatでチームに共有（3分）</li>
+                        </ol>
+                        <p style="margin-top: 1rem; font-weight: 700; color: var(--coral);">週5回 × 10分 = <strong>週50分</strong></p>
+                    </div>
+
+                    <div class="step-card" style="border: 2px solid var(--sage);">
+                        <div class="step-number" style="background: var(--sage);">After</div>
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--sage);">自動化フロー（Gemini連携）</h4>
+                        <ol style="font-size: 0.9rem;">
+                            <li>議事録がDriveにアップロード</li>
+                            <li>Geminiが自動で要約（3行）</li>
+                            <li>要約とリンクを自動でChat通知</li>
+                        </ol>
+                        <p style="margin-top: 1rem; font-weight: 700; color: var(--sage);">0分（完全自動、AI要約付き）</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-title">Gemini要約の例</div>
+                    <div style="background: var(--paper); border: 2px solid var(--ink); padding: 1rem; margin-top: 1rem; font-size: 0.9rem;">
+                        <p style="font-weight: 700; margin-bottom: 0.5rem;">新規会議議事録が追加されました</p>
+                        <p style="margin-bottom: 0.5rem;"><strong>ファイル:</strong> 2025年11月プロジェクト会議_議事録.docx</p>
+                        <p style="margin-bottom: 0.5rem;"><strong>AI要約:</strong></p>
+                        <ul style="font-size: 0.85rem; margin-left: 1rem;">
+                            <li>新機能のリリースは12月15日に決定</li>
+                            <li>マーケティング施策は田中さんが担当</li>
+                            <li>次回会議は11月30日 14:00</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;"><a href="#" style="color: var(--gem-blue);">議事録を開く</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box success">
+                <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">導入効果の実例（ある企業の場合）</h3>
+                <ul style="font-size: 1.05rem;">
+                    <li><strong>通知業務:</strong> 1日2時間 → <strong style="color: var(--electric);">0分</strong>（月40時間削減）</li>
+                    <li><strong>情報共有:</strong> 見逃し多発 → <strong style="color: var(--electric);">即座に全員に届く</strong></li>
+                    <li><strong>対応速度:</strong> 平均4時間 → <strong style="color: var(--electric);">平均15分</strong></li>
+                    <li><strong>チーム満足度:</strong> 「情報が来ない」というクレーム → <strong style="color: var(--electric);">ゼロ</strong></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 03 -->
+        <section class="section">
+            <div class="section-number">03</div>
+            <div class="section-header">
+                <h2 class="section-title">実際の画面ってどんな感じ?</h2>
+                <p class="section-subtitle">Demo: Live walkthrough</p>
+            </div>
+
+            <div class="highlight-box important">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">このセクションは実演中心です</h3>
+                <p style="font-size: 1.1rem;">講師が実際の設定画面を操作しながら、以下のポイントを見せていきます。</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Flowsホーム画面の見方</h3>
+                    <p class="card-subtitle">workflows.workspace.google.com</p>
+                </div>
+                <p><strong>実演で確認するポイント</strong></p>
+                <ul style="margin-top: 1rem;">
+                    <li><strong>Discover:</strong> テンプレート一覧（どんな自動化が作れるか見られる）</li>
+                    <li><strong>My agents:</strong> 作成済みのエージェント一覧</li>
+                    <li><strong>Templates:</strong> 人気のテンプレート（フォーム通知、Drive監視など）</li>
+                    <li><strong>Create:</strong> ゼロから作る場合はここから</li>
+                </ul>
+
+                <div class="key-point">
+                    <div class="key-point-title">ポイント: 最初はテンプレートから始めよう</div>
+                    <p>ゼロから作るより、<strong>「Discover」でテンプレートを探す</strong>方が、はるかに早く確実です。90%のケースは、テンプレートをカスタマイズするだけで実現できます。</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">エージェントの基本構造</h3>
+                    <p class="card-subtitle">トリガー → アクション の流れ</p>
+                </div>
+                <p><strong>実演で確認するポイント</strong></p>
+
+                <div class="step-grid" style="margin-top: 1.5rem;">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h4 style="margin-top: 1rem; margin-bottom: 0.5rem;">Starter（トリガー）</h4>
+                        <p style="font-size: 0.9rem;">「いつ動かすか」を設定</p>
+                        <ul style="font-size: 0.85rem; margin-top: 0.5rem;">
+                            <li>New form response（フォーム回答時）</li>
+                            <li>New file in folder（ファイル追加時）</li>
+                            <li>On a schedule（定期実行）</li>
+                            <li>New calendar event（カレンダー追加時）</li>
+                        </ul>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h4 style="margin-top: 1rem; margin-bottom: 0.5rem;">Steps（アクション）</h4>
+                        <p style="font-size: 0.9rem;">「何をするか」を設定</p>
+                        <ul style="font-size: 0.85rem; margin-top: 0.5rem;">
+                            <li>Send a message in Chat</li>
+                            <li>Summarize with Gemini</li>
+                            <li>Send an email</li>
+                            <li>Create calendar event</li>
+                            <li>Add row to spreadsheet</li>
+                        </ul>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h4 style="margin-top: 1rem; margin-bottom: 0.5rem;">Variables（変数）</h4>
+                        <p style="font-size: 0.9rem;">トリガーの情報を使う</p>
+                        <ul style="font-size: 0.85rem; margin-top: 0.5rem;">
+                            <li>フォーム: 回答者、回答内容</li>
+                            <li>Drive: ファイル名、URL</li>
+                            <li>Gemini: 要約結果</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-title">実演の流れ</div>
+                    <ol>
+                        <li><strong>テンプレート選択:</strong> 「Notify team of new form response」を選ぶ</li>
+                        <li><strong>Starter設定:</strong> 監視するフォームを選択（候補から選ぶ）</li>
+                        <li><strong>Chat設定:</strong> 通知先スペースを選択（候補から選ぶ）</li>
+                        <li><strong>変数挿入:</strong> 「Insert variable」から回答者情報を追加</li>
+                        <li><strong>Test run:</strong> 動作確認</li>
+                        <li><strong>Turn on:</strong> 有効化</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">変数の使い方（重要）</h3>
+                </div>
+                <p><strong>実演で確認するポイント</strong></p>
+                <p style="margin-top: 1rem;">変数を使うことで、<strong>通知内容を動的にカスタマイズ</strong>できます。</p>
+
+                <div class="conversation">
+                    <div class="chat-message user">
+                        <div class="chat-label">変数なしの通知（悪い例）</div>
+                        <p>新しいフォーム回答がありました。<br>確認してください。</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--coral);">これでは「誰が」「何を」回答したかわからない</p>
+                    </div>
+
+                    <div class="chat-message ai">
+                        <div class="chat-label">変数ありの通知（良い例）</div>
+                        <p><strong>新しいフォーム回答がありました</strong></p>
+                        <p style="margin-top: 0.5rem;">回答者: ${回答者のメールアドレス}</p>
+                        <p>送信日時: ${タイムスタンプ}</p>
+                        <p>お名前: ${お名前}</p>
+                        <p>お問い合わせ内容: ${お問い合わせ内容}</p>
+                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--sage);">一目で内容がわかる、即座に対応できる</p>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <div class="key-point-title">変数の挿入方法（実演）</div>
+                    <ol>
+                        <li>メッセージ欄をクリック</li>
+                        <li>右側の「<strong>Insert variable</strong>」アイコンをクリック</li>
+                        <li>使いたい変数を一覧から選択</li>
+                        <li>${変数名} の形式で自動挿入される</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 04 -->
+        <section class="section">
+            <div class="section-number">04</div>
+            <div class="section-header">
+                <h2 class="section-title">類似サービスとの違い</h2>
+                <p class="section-subtitle">Workspace Flows vs Others</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">主要な自動化ツールとの比較</h3>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ツール</th>
+                            <th>特徴</th>
+                            <th>Google連携</th>
+                            <th>AI機能</th>
+                            <th>料金</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: rgba(0, 240, 255, 0.1);">
+                            <td><strong>Workspace Flows</strong></td>
+                            <td>Google公式、Workspace内で完結</td>
+                            <td><strong style="color: var(--sage);">ネイティブ</strong></td>
+                            <td><strong style="color: var(--sage);">Gemini統合</strong></td>
+                            <td><strong style="color: var(--sage);">無料*</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zapier</strong></td>
+                            <td>3000+サービス連携、老舗</td>
+                            <td>API経由</td>
+                            <td>AI機能あり（有料）</td>
+                            <td>$19.99/月〜</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Make (旧Integromat)</strong></td>
+                            <td>ビジュアル設計、複雑なフロー向き</td>
+                            <td>API経由</td>
+                            <td>AI機能あり（有料）</td>
+                            <td>$9/月〜</td>
+                        </tr>
+                        <tr>
+                            <td><strong>n8n</strong></td>
+                            <td>オープンソース、自前でホスト</td>
+                            <td>API経由</td>
+                            <td>外部AI連携</td>
+                            <td>無料（セルフホスト）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GAS (Apps Script)</strong></td>
+                            <td>JavaScript、完全カスタマイズ可</td>
+                            <td><strong style="color: var(--sage);">ネイティブ</strong></td>
+                            <td>自分で実装</td>
+                            <td>無料</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">* Gemini for Workspaceの有効化が必要（一部プランで追加料金）</p>
+            </div>
+
+            <div class="step-grid">
+                <div class="step-card" style="border: 2px solid var(--gem-blue);">
+                    <div class="step-number" style="background: var(--gem-blue);">1</div>
+                    <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">Workspace Flowsの強み</h3>
+                    <ul style="font-size: 0.9rem;">
+                        <li><strong>セキュリティ:</strong> データがGoogle外に出ない</li>
+                        <li><strong>簡単:</strong> ノーコード、初心者でもOK</li>
+                        <li><strong>AI統合:</strong> Gemini要約が標準機能</li>
+                        <li><strong>管理不要:</strong> Googleが自動メンテ</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-weight: 700; color: var(--gem-blue);">Google Workspace内の業務なら最適</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number" style="background: var(--amber);">2</div>
+                    <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">Zapier/Makeの強み</h3>
+                    <ul style="font-size: 0.9rem;">
+                        <li><strong>外部サービス連携:</strong> Slack、Salesforce、HubSpotなど</li>
+                        <li><strong>複雑なフロー:</strong> 条件分岐・ループ処理</li>
+                        <li><strong>実績:</strong> 多くの企業が導入済み</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-weight: 700; color: var(--amber);">複数サービスをまたぐ自動化向き</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number" style="background: var(--violet);">3</div>
+                    <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">GASの強み</h3>
+                    <ul style="font-size: 0.9rem;">
+                        <li><strong>完全カスタマイズ:</strong> JavaScriptで何でも可能</li>
+                        <li><strong>高度な処理:</strong> データ分析、複雑なロジック</li>
+                        <li><strong>無料:</strong> コストゼロ</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-weight: 700; color: var(--violet);">コードが書ける人向け</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">どれを選ぶべきか?</h3>
+                <ul style="font-size: 1.05rem;">
+                    <li><strong>Google Workspace内の自動化</strong> → <span style="color: var(--gem-blue); font-weight: 700;">Workspace Flows</span>（簡単、安全、AI統合）</li>
+                    <li><strong>外部サービスとの連携</strong> → Zapier/Make（幅広い連携先）</li>
+                    <li><strong>完全カスタマイズが必要</strong> → GAS（コードが書ける人）</li>
+                    <li><strong>コストを抑えたい</strong> → Workspace Flows または n8n</li>
+                </ul>
+
+                <div class="key-point" style="margin-top: 2rem;">
+                    <div class="key-point-title">実務での使い分け</div>
+                    <p>多くの企業では、<strong>Workspace Flowsをメインに使い、外部連携が必要な部分だけZapier</strong>、という組み合わせが増えています。まずはWorkspace Flowsで始めて、必要に応じて拡張するのがおすすめです。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 05 -->
+        <section class="section">
+            <div class="section-number">05</div>
+            <div class="section-header">
+                <h2 class="section-title">どんな人が使いこなせるといい?</h2>
+                <p class="section-subtitle">Who should master Workspace Flows</p>
+            </div>
+
+            <div class="step-grid">
+                <div class="step-card" style="border: 2px solid var(--sage);">
+                    <div class="step-number" style="background: var(--sage);">1</div>
+                    <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">経営者・管理職</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">業務効率化を推進する立場</p>
+                    <div class="example-box" style="margin: 0;">
+                        <div class="example-title">活用例</div>
+                        <ul style="font-size: 0.85rem;">
+                            <li>週次レポートの自動集計・配信</li>
+                            <li>重要な問い合わせの即時通知</li>
+                            <li>チーム全体の情報共有自動化</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border: 2px solid var(--gem-blue);">
+                    <div class="step-number" style="background: var(--gem-blue);">2</div>
+                    <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">業務担当者・スタッフ</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">日々の作業を効率化したい人</p>
+                    <div class="example-box" style="margin: 0;">
+                        <div class="example-title">活用例</div>
+                        <ul style="font-size: 0.85rem;">
+                            <li>フォーム回答の自動通知</li>
+                            <li>議事録の自動要約・共有</li>
+                            <li>定期的なリマインダー設定</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number" style="background: var(--violet);">3</div>
+                    <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">情報システム担当</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">社内のIT環境を管理</p>
+                    <div class="example-box" style="margin: 0;">
+                        <div class="example-title">活用例</div>
+                        <ul style="font-size: 0.85rem;">
+                            <li>社内申請フローの自動化</li>
+                            <li>セキュリティアラートの通知</li>
+                            <li>全社向けテンプレートの展開</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number" style="background: var(--amber);">4</div>
+                    <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">マーケティング・営業</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">リード管理・顧客対応</p>
+                    <div class="example-box" style="margin: 0;">
+                        <div class="example-title">活用例</div>
+                        <ul style="font-size: 0.85rem;">
+                            <li>リード獲得フォームの即時通知</li>
+                            <li>商談資料のAI要約・共有</li>
+                            <li>定期フォローアップの自動化</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number" style="background: var(--coral);">5</div>
+                    <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">人事・総務</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">社内手続き・管理業務</p>
+                    <div class="example-box" style="margin: 0;">
+                        <div class="example-title">活用例</div>
+                        <ul style="font-size: 0.85rem;">
+                            <li>休暇申請の自動通知</li>
+                            <li>入社手続きのチェックリスト配信</li>
+                            <li>定期アンケートの自動集計</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number" style="background: var(--text-secondary);">6</div>
+                    <h3 style="margin-top: 1rem; margin-bottom: 0.5rem;">プロジェクトマネージャー</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">チーム連携・進捗管理</p>
+                    <div class="example-box" style="margin: 0;">
+                        <div class="example-title">活用例</div>
+                        <ul style="font-size: 0.85rem;">
+                            <li>タスク完了の自動通知</li>
+                            <li>進捗レポートの自動生成</li>
+                            <li>会議前リマインダーの配信</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box success">
+                <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">共通して言えること</h3>
+                <p style="font-size: 1.1rem;"><strong>「コードが書けない人」こそ、Workspace Flowsを使うべきです。</strong></p>
+                <p style="margin-top: 1rem;">これまで「自動化=プログラミング」というイメージがあり、多くの人が諦めてきました。しかし、Workspace Flowsなら、<strong>クリック操作だけで業務を自動化できます</strong>。</p>
+            </div>
+        </section>
+
+        <!-- Section 06 -->
+        <section class="section">
+            <div class="section-number">06</div>
+            <div class="section-header">
+                <h2 class="section-title">どんなつまづきポイントがある?</h2>
+                <p class="section-subtitle">Common pitfalls and how to overcome them</p>
+            </div>
+
+            <div class="highlight-box important">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">このセクションが最重要です</h3>
+                <p style="font-size: 1.1rem;">多くの人が<strong>同じポイント</strong>でつまずいています。これらを事前に知っておけば、スムーズに自動化を実現できます。</p>
+            </div>
+
+            <!-- つまずきポイント1 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">つまずきポイント1: Chatスペース連携エラー</h3>
+                    <p class="card-subtitle">最も多いエラー原因</p>
+                </div>
+
+                <div class="step-grid">
+                    <div class="step-card" style="border-left: 4px solid var(--coral);">
+                        <h4 style="color: var(--coral); margin-bottom: 1rem;"><span class="status-badge error">NG</span>よくある間違い1</h4>
+                        <p style="font-weight: 700; margin-bottom: 0.5rem;">スペース名を手動入力してしまう</p>
+                        <p style="font-size: 0.9rem; margin-bottom: 1rem;">「Marketing Team」とSpace欄に直接入力</p>
+                        <div style="background: rgba(255, 107, 107, 0.1); padding: 1rem; font-size: 0.85rem;">
+                            <strong>なぜダメか:</strong><br>
+                            Flowsは、スペース名ではなく<strong>「スペースID」</strong>で識別します。手動入力では、IDが取得できず、エラーになります。
+                        </div>
+                    </div>
+
+                    <div class="step-card" style="border-left: 4px solid var(--sage);">
+                        <h4 style="color: var(--sage); margin-bottom: 1rem;"><span class="status-badge success">OK</span>正しい方法</h4>
+                        <p style="font-weight: 700; margin-bottom: 0.5rem;">候補から選択する</p>
+                        <ol style="font-size: 0.9rem;">
+                            <li>Space欄をクリック</li>
+                            <li>スペース名の一部を入力（例:「Market」）</li>
+                            <li>表示された<strong>候補から選択</strong></li>
+                        </ol>
+                        <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; margin-top: 1rem; font-size: 0.85rem;">
+                            <strong>ポイント:</strong><br>
+                            候補から選択すると、スペースIDが自動で設定されます。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-grid" style="margin-top: 2rem;">
+                    <div class="step-card" style="border-left: 4px solid var(--coral);">
+                        <h4 style="color: var(--coral); margin-bottom: 1rem;"><span class="status-badge error">NG</span>よくある間違い2</h4>
+                        <p style="font-weight: 700; margin-bottom: 0.5rem;">Webhook URLを貼り付けてしまう</p>
+                        <p style="font-size: 0.9rem; margin-bottom: 1rem;">「Chatに通知するには、Webhook URLが必要だ」と思い込む</p>
+                        <div style="background: rgba(255, 107, 107, 0.1); padding: 1rem; font-size: 0.85rem;">
+                            <strong>なぜダメか:</strong><br>
+                            Workspace Flowsの<strong>内部統合</strong>では、Webhook URLは不要です。Webhook URLが必要なのは、SlackやMicrosoft Teamsなど、<strong>外部サービスとの連携</strong>の場合のみです。
+                        </div>
+                    </div>
+
+                    <div class="step-card" style="border-left: 4px solid var(--sage);">
+                        <h4 style="color: var(--sage); margin-bottom: 1rem;"><span class="status-badge success">OK</span>正しい方法</h4>
+                        <p style="font-weight: 700; margin-bottom: 0.5rem;">候補から選択するだけでOK</p>
+                        <p style="font-size: 0.9rem; margin-bottom: 1rem;">Google Workspace内のChatへの通知は、<strong>Webhook URL不要</strong>です。</p>
+                        <table style="font-size: 0.85rem;">
+                            <tr>
+                                <th>連携先</th>
+                                <th>Webhook URL</th>
+                            </tr>
+                            <tr>
+                                <td>Google Chat（Workspace内）</td>
+                                <td><strong style="color: var(--coral);">不要</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Slack、Microsoft Teams</td>
+                                <td><strong style="color: var(--sage);">必要</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left: 4px solid var(--coral); margin-top: 2rem;">
+                    <h4 style="color: var(--coral); margin-bottom: 1rem;"><span class="status-badge error">NG</span>よくある間違い3</h4>
+                    <p style="font-weight: 700; margin-bottom: 0.5rem;">参加していないスペースを選択してしまう</p>
+                    <div style="background: rgba(255, 107, 107, 0.1); padding: 1rem; margin-top: 1rem; font-size: 0.9rem;">
+                        <p><strong>なぜダメか:</strong></p>
+                        <p style="margin-top: 0.5rem;">エージェントは、<strong>あなたのアカウント権限</strong>で動作します。あなたが参加していないスペースには、エージェントも通知を送れません。</p>
+                        <p style="margin-top: 1rem;"><strong style="color: var(--sage);">解決策:</strong></p>
+                        <p>事前に、通知を送りたいChatスペースに参加しておく。</p>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <div class="key-point-title">Chatスペース連携まとめ</div>
+                    <ul>
+                        <li><strong>候補から選択</strong>（手動入力NG）</li>
+                        <li><strong>Webhook URL不要</strong>（内部統合の場合）</li>
+                        <li><strong>事前にスペースに参加</strong>（権限確認）</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- つまずきポイント2 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">つまずきポイント2: トリガー（スターター）設定</h3>
+                    <p class="card-subtitle">フォーム・Driveフォルダの選択ミス</p>
+                </div>
+
+                <div class="step-grid">
+                    <div class="step-card" style="border-left: 4px solid var(--coral);">
+                        <h4 style="color: var(--coral); margin-bottom: 1rem;"><span class="status-badge error">NG</span>よくある間違い</h4>
+                        <p style="font-weight: 700; margin-bottom: 0.5rem;">フォームやフォルダのURLを貼り付けてしまう</p>
+                        <div style="background: rgba(255, 107, 107, 0.1); padding: 1rem; margin-top: 1rem; font-size: 0.9rem;">
+                            <p>「URLを貼り付ければ認識してくれるだろう」と思い、Drive URLやフォームURLを貼り付ける。</p>
+                            <p style="margin-top: 0.5rem;"><strong>結果:</strong> エラーになるか、動作しない。</p>
+                        </div>
+                    </div>
+
+                    <div class="step-card" style="border-left: 4px solid var(--sage);">
+                        <h4 style="color: var(--sage); margin-bottom: 1rem;"><span class="status-badge success">OK</span>正しい方法</h4>
+                        <p style="font-weight: 700; margin-bottom: 0.5rem;">候補から選択する</p>
+                        <ol style="font-size: 0.9rem;">
+                            <li>「Select form」または「Folder」欄をクリック</li>
+                            <li>名前の一部を入力</li>
+                            <li><strong>候補から選択</strong></li>
+                        </ol>
+                        <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; margin-top: 1rem; font-size: 0.85rem;">
+                            <strong>重要:</strong> Chatスペースと同じく、フォーム・フォルダも<strong>候補から選択</strong>する必要があります。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-title">権限の確認も重要</div>
+                    <p>フォーム・フォルダの<strong>編集権限</strong>を持っていることを確認してください。閲覧権限だけでは、トリガーに設定できません。</p>
+                </div>
+            </div>
+
+            <!-- つまずきポイント3 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">つまずきポイント3: エージェント有効化を忘れる</h3>
+                    <p class="card-subtitle">「Test run」で満足してしまう</p>
+                </div>
+
+                <div class="step-grid">
+                    <div class="step-card" style="border-left: 4px solid var(--coral);">
+                        <h4 style="color: var(--coral); margin-bottom: 1rem;"><span class="status-badge error">NG</span>よくある間違い</h4>
+                        <p style="font-weight: 700; margin-bottom: 0.5rem;">「Test run」で動作確認して満足</p>
+                        <div style="background: rgba(255, 107, 107, 0.1); padding: 1rem; margin-top: 1rem; font-size: 0.9rem;">
+                            <p>「Test runで通知が来たから、これで完成だ！」と思ってしまう。</p>
+                            <p style="margin-top: 0.5rem;"><strong>結果:</strong> 本番では動かない。エージェントが「Draft（下書き）」のままで、トリガーが有効化されていない。</p>
+                        </div>
+                    </div>
+
+                    <div class="step-card" style="border-left: 4px solid var(--sage);">
+                        <h4 style="color: var(--sage); margin-bottom: 1rem;"><span class="status-badge success">OK</span>正しい方法</h4>
+                        <p style="font-weight: 700; margin-bottom: 0.5rem;">必ず「Turn on」で有効化</p>
+                        <ol style="font-size: 0.9rem;">
+                            <li>Test runで動作確認</li>
+                            <li>問題なければ、画面右上の<strong>「Turn on」</strong>をクリック</li>
+                            <li>状態が<strong>「On」</strong>になったことを確認</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <table style="margin-top: 2rem;">
+                    <thead>
+                        <tr>
+                            <th>状態</th>
+                            <th>説明</th>
+                            <th>本番で動く?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong style="color: var(--amber);">Draft（下書き）</strong></td>
+                            <td>編集中の状態</td>
+                            <td><strong style="color: var(--coral);">動かない</strong></td>
+                        </tr>
+                        <tr style="background: rgba(16, 185, 129, 0.1);">
+                            <td><strong style="color: var(--sage);">On（有効）</strong></td>
+                            <td>「Turn on」した状態</td>
+                            <td><strong style="color: var(--sage);">動く</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--text-secondary);">Off（停止）</strong></td>
+                            <td>一時停止した状態</td>
+                            <td><strong style="color: var(--coral);">動かない</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- つまずきポイント4 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">つまずきポイント4: 変数の使い忘れ</h3>
+                    <p class="card-subtitle">通知内容が固定テキストのまま</p>
+                </div>
+
+                <p>変数を使わないと、通知は来ても<strong>「誰が」「何を」したのかわからない</strong>状態になります。</p>
+
+                <div class="conversation" style="margin-top: 1.5rem;">
+                    <div class="chat-message user">
+                        <div class="chat-label">変数なしの通知</div>
+                        <p>新しいフォーム回答がありました。確認してください。</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--coral);">これでは情報不足で、結局フォームを開いて確認する必要がある</p>
+                    </div>
+
+                    <div class="chat-message ai">
+                        <div class="chat-label">変数ありの通知</div>
+                        <p><strong>新しいフォーム回答がありました</strong></p>
+                        <p>田中太郎 (tanaka@example.com)</p>
+                        <p>2025-11-20 14:30</p>
+                        <p>お問い合わせ内容: 料金プランについて教えてください</p>
+                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--sage);">一目で状況がわかる、即座に対応できる</p>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <div class="key-point-title">変数挿入を忘れずに</div>
+                    <ul>
+                        <li>メッセージ欄の<strong>「Insert variable」</strong>アイコンを活用</li>
+                        <li>フォーム: 回答者、タイムスタンプ、各質問への回答</li>
+                        <li>Drive: ファイル名、アップロード者、ファイルURL</li>
+                        <li>Gemini: 要約結果</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- つまずきポイント5 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">つまずきポイント5: エラー発生時のパニック</h3>
+                    <p class="card-subtitle">エラーログの確認方法を知らない</p>
+                </div>
+
+                <p>エージェントが動かない時、<strong>「何が悪いのかわからない」</strong>とパニックになりがちです。</p>
+
+                <div class="highlight-box warning">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 1rem;">解決策: Activityログを確認する</h3>
+                    <ol style="font-size: 1.05rem;">
+                        <li>Flowsホーム画面で「<strong>My agents</strong>」をクリック</li>
+                        <li>エージェントの横にある「<strong>More</strong>」→「<strong>Activity</strong>」をクリック</li>
+                        <li>エラーログを確認し、原因を特定</li>
+                    </ol>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-title">よくあるエラーと解決方法</div>
+                    <ul>
+                        <li><strong>「Permission denied」</strong> → スペース・フォーム・フォルダの権限を確認</li>
+                        <li><strong>「Space not found」</strong> → スペースが削除されたか、除外された可能性</li>
+                        <li><strong>「Test run成功するが本番で動かない」</strong> → 「Turn on」を忘れている</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- つまずきポイント6 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">つまずきポイント6: 作り込みすぎ・複雑化</h3>
+                    <p class="card-subtitle">最初から完璧を目指してしまう</p>
+                </div>
+
+                <div class="key-point">
+                    <div class="key-point-title">最初はシンプルに始めよう</div>
+                    <ul>
+                        <li><strong>まずは基本フローだけ作る</strong> - 条件分岐や複雑なロジックは後回し</li>
+                        <li><strong>動いたら少しずつ改善</strong> - 最初から100点を目指さない</li>
+                        <li><strong>テンプレートをカスタマイズ</strong> - ゼロから作るより、既存テンプレートを改変</li>
+                    </ul>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-title">段階的改善の例</div>
+                    <ol>
+                        <li><strong>ステップ1:</strong> フォーム→Chat通知（シンプル）</li>
+                        <li><strong>ステップ2:</strong> 変数を追加して、通知内容を充実</li>
+                        <li><strong>ステップ3:</strong> 条件分岐を追加（緊急度で通知先を変える）</li>
+                        <li><strong>ステップ4:</strong> スプレッドシートにログを記録</li>
+                    </ol>
+                    <p style="margin-top: 1rem; font-size: 0.9rem;">いきなりステップ4を目指すのではなく、<strong>ステップ1から順に</strong>進めましょう。</p>
+                </div>
+            </div>
+
+            <div class="highlight-box success">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">つまずきポイント総まとめ</h3>
+                <ol style="font-size: 1.05rem; line-height: 2;">
+                    <li><strong>Chatスペース・フォーム・フォルダは候補から選択</strong>（手動入力・URL貼り付けNG）</li>
+                    <li><strong>Webhook URLは不要</strong>（Google Workspace内の連携）</li>
+                    <li><strong>事前にスペースに参加、権限を確認</strong></li>
+                    <li><strong>Test run後、必ず「Turn on」で有効化</strong></li>
+                    <li><strong>変数を活用して、通知内容を充実させる</strong></li>
+                    <li><strong>エラーはActivityログで確認</strong></li>
+                    <li><strong>シンプルに始めて、段階的に改善</strong></li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <div class="final-cta">
+            <h2>さあ、実践してみよう!</h2>
+            <p>ハンズオン課題で、今日学んだつまずきポイントを意識しながら、自動化を作ってみましょう</p>
+        </div>
+
+        <div style="margin: 4rem 0; padding: 2rem; border: 2px solid var(--ink); background: rgba(124, 58, 237, 0.05);">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--violet);">今日の講座のまとめ</h3>
+            <ol style="font-size: 1.05rem; line-height: 2;">
+                <li><strong>Workspace Flowsとは</strong> - ノーコードで業務自動化、Gemini統合、Google Workspace内で完結</li>
+                <li><strong>Before → After</strong> - 1日2時間の作業が0分に、反応速度が3倍に</li>
+                <li><strong>実際の画面</strong> - トリガー→アクション の流れ、変数の活用</li>
+                <li><strong>類似サービス</strong> - Workspace内ならFlows、外部連携ならZapier、カスタマイズならGAS</li>
+                <li><strong>誰が使うべきか</strong> - コードが書けない人こそ、Flows で自動化を</li>
+                <li><strong>つまずきポイント</strong> - 候補から選択、Turn on忘れずに、変数を活用、シンプルに始める</li>
+            </ol>
+        </div>
+
+    </div>
+
+    <footer style="background: var(--ink); color: var(--paper); padding: 2rem; text-align: center; margin-top: 4rem;">
+        <p style="font-size: 0.9rem; color: rgba(254, 254, 248, 0.7);">つまずかないGoogle Workspace Flows</p>
+        <p style="font-size: 0.85rem; margin-top: 1rem; color: rgba(254, 254, 248, 0.6);">© 2025 AIバード研修. All rights reserved.</p>
+    </footer>
+</body>
+</html>

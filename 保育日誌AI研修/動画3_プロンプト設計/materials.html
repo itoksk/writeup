@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画3：日誌文章を自然に仕上げるプロンプト設計と改善方法</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--electric);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateX(10px);
+            border-color: var(--electric);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block::before {
+            content: 'PROMPT TEMPLATE';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .list {
+            text-align: left;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .before-card {
+            border-color: #FF6B6B;
+        }
+
+        .after-card {
+            border-color: var(--electric);
+        }
+
+        .magic-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .level-card {
+            margin: 1rem 0;
+            padding: 1.5rem;
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+            border-radius: 8px;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+            background: rgba(0, 240, 255, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .keyword-tag {
+            display: inline-block;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--electric);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            border: 1px solid var(--electric);
+            margin: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .navigation {
+                display: none;
+            }
+
+            .content-section {
+                padding: 3rem 0;
+            }
+
+            .grid, .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+        <div class="nav-pill" data-section="7"></div>
+    </div>
+
+    <div class="container">
+        <section class="content-section visible">
+            <h1 class="section-title">プロンプトの力で<br>日誌文章を自然に仕上げる</h1>
+            <div class="section-content">
+                <p>言葉の魔法で、機械的な文章がベテラン保育士の温かい言葉に変わります。<br>
+                プロンプト設計の技術で、AIの可能性を最大限に引き出しましょう</p>
+            </div>
+            <div class="comparison-grid">
+                <div class="card before-card">
+                    <h3>Before（機械的）</h3>
+                    <p>本日は散歩を実施しました。<br>
+                    児童は花を発見しました。<br>
+                    天候は晴天でした。<br>
+                    活動は終了しました。</p>
+                </div>
+                <div class="card after-card">
+                    <h3>After（自然）</h3>
+                    <p>今日はぽかぽか陽気の中、みんなで近くの公園までお散歩に出かけました。<br>
+                    「あ！たんぽぽ見つけた！」と春の訪れを感じる発見がたくさん。<br>
+                    子どもたちの好奇心あふれる姿が印象的な一日でした。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">プロンプト改善の3つの魔法</h2>
+            <div class="section-content">
+                <p>AIの文章を劇的に改善する3つの要素</p>
+            </div>
+            <div class="magic-box">
+                <h3>魔法の言葉</h3>
+                <div class="grid">
+                    <div>
+                        <h4>1. 役割設定</h4>
+                        <p>「あなたは15年目のベテラン保育士です」</p>
+                    </div>
+                    <div>
+                        <h4>2. 文体指定</h4>
+                        <p>「保護者が読んで安心する温かい文体で」</p>
+                    </div>
+                    <div>
+                        <h4>3. 構造化</h4>
+                        <p>「以下の要素を含めてください：」</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">プロンプトの進化過程</h2>
+            <div class="section-content">
+                <p>レベル1からレベル4へ、段階的にプロンプトを改善していきます</p>
+            </div>
+            <div class="card">
+                <div class="level-card">
+                    <h4>レベル1：基本形</h4>
+                    <div class="code-block">保育日誌を作成してください。</div>
+                    <p>→ 結果：機械的で不自然な文章になりがち</p>
+                </div>
+                
+                <div class="level-card">
+                    <h4>レベル2：視点と表現の追加</h4>
+                    <div class="code-block"><span class="highlight">保育士として温かみのある表現で書いてください。</span>
+保育日誌を作成してください。</div>
+                    <p>→ 結果：温かみが出るが、まだ具体性に欠ける</p>
+                </div>
+                
+                <div class="level-card">
+                    <h4>レベル3：文体と対象の明確化</h4>
+                    <div class="code-block">保育士として温かみのある表現で書いてください。
+<span class="highlight">活動の意味づけを添えてください。
+保護者に安心感を与えるトーンで</span>
+保育日誌を作成してください。</div>
+                    <p>→ 結果：保護者向けの配慮が加わり、読みやすくなる</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">完成形プロンプト</h2>
+            <div class="section-content">
+                <p>レベル4：構造化と制約を追加した最終形</p>
+            </div>
+            <div class="code-block">あなたは保育園の日誌作成を支援するアシスタントです。
+次の入力をもとに、保育日誌形式の文章を生成してください。
+
+<span class="highlight">【記載ルール】
+- 保育士として温かみのある表現で書いてください
+- 活動の意味づけを添えてください
+- 保護者に安心感を与えるトーンで
+- 200字以内でまとめてください
+
+【含める要素】
+- 子どもの表情や言葉を具体的に
+- 活動の教育的意味を簡潔に
+- 友達との関わりや成長の様子
+- 明日につながる観察ポイント</span></div>
+            <div class="card">
+                <p><strong>結果：</strong>構造化され、一貫性のある高品質な文章が生成される</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">場面別プロンプト</h2>
+            <div class="section-content">
+                <p>用途に応じてプロンプトをカスタマイズしましょう</p>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>保護者向け</h3>
+                    <p>温かく、安心感のある文章</p>
+                    <div>
+                        <span class="keyword-tag">楽しく</span>
+                        <span class="keyword-tag">笑顔</span>
+                        <span class="keyword-tag">成長</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>記録用</h3>
+                    <p>客観的、簡潔な文章</p>
+                    <div>
+                        <span class="keyword-tag">観察</span>
+                        <span class="keyword-tag">確認</span>
+                        <span class="keyword-tag">記録</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>週報用</h3>
+                    <p>まとめと展望を含む</p>
+                    <div>
+                        <span class="keyword-tag">今週の成果</span>
+                        <span class="keyword-tag">来週の計画</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>個別観察</h3>
+                    <p>具体的な行動と分析</p>
+                    <div>
+                        <span class="keyword-tag">〜の様子</span>
+                        <span class="keyword-tag">〜が見られた</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">効果的なキーワード集</h2>
+            <div class="section-content">
+                <p>文章の質を向上させる魔法のキーワード</p>
+            </div>
+            <div class="card">
+                <div style="text-align: center;">
+                    <span class="keyword-tag">温かい雰囲気で</span>
+                    <span class="keyword-tag">具体的なエピソード</span>
+                    <span class="keyword-tag">子どもの言葉を引用</span>
+                    <span class="keyword-tag">成長の視点</span>
+                    <span class="keyword-tag">ポジティブな表現</span>
+                    <span class="keyword-tag">教育的意味</span>
+                    <span class="keyword-tag">発達段階を意識</span>
+                    <span class="keyword-tag">個性を大切に</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">実践比較テスト</h2>
+            <div class="section-content">
+                <p>同じ入力でプロンプト改善の効果を実感</p>
+            </div>
+            <div class="code-block">プール遊び。水が怖いCちゃんも参加。</div>
+            <div class="comparison-grid">
+                <div class="card before-card">
+                    <h4>改善前</h4>
+                    <p>プール遊びを行いました。<br>Cちゃんも参加しました。</p>
+                </div>
+                <div class="card after-card">
+                    <h4>改善後</h4>
+                    <p>今日は待ちに待ったプール遊び！水が苦手なCちゃんも、友達の楽しそうな声に誘われて、そーっと足から水に入ってみました。「つめたいけど、きもちいい！」という言葉が聞けて、水に慣れる大切な一歩となりました。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">園専用カスタマイズ</h2>
+            <div class="section-content">
+                <p>あなたの園に最適化したプロンプトを作成しましょう</p>
+            </div>
+            <div class="card">
+                <h3>プロンプト改善のコツ</h3>
+                <ul class="list">
+                    <li><span class="highlight">具体的に指示</span>：あいまいな表現を避ける</li>
+                    <li><span class="highlight">例を示す</span>：理想の文章例を含める</li>
+                    <li><span class="highlight">制約を設定</span>：文字数や段落数を指定</li>
+                    <li><span class="highlight">定期的に見直し</span>：使いながら改善</li>
+                    <li><span class="highlight">園の特色を反映</span>：独自の教育方針を組み込む</li>
+                </ul>
+            </div>
+            <div class="code-block">あなたは[園名]の保育士です。
+[園の教育方針]を大切にし、
+[対象（保護者/記録用）]向けに...
+
+例：
+あなたは「のびのび保育園」の保育士です。
+「子どもの主体性を重視する」教育方針を大切にし、
+保護者向けに温かく安心感のある日誌を作成してください。</div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">次のステップへ</h2>
+            <div class="section-content">
+                <p>プロンプト設計をマスター！次回は実際の現場導入方法を学びます</p>
+            </div>
+            <div class="card">
+                <h3>動画4：現場導入シナリオと活用のコツ</h3>
+                <p>作ったAIを日常業務でどう使う？</p>
+                <ul class="list">
+                    <li>午睡中の活用方法</li>
+                    <li>スマホから簡単入力</li>
+                    <li>園全体での導入ステップ</li>
+                    <li>成功する運用ルール</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>プロンプト改善チェックリスト</h3>
+                <ul class="list">
+                    <li>役割を明確に設定した</li>
+                    <li>文体・トーンを指定した</li>
+                    <li>含める要素を列挙した</li>
+                    <li>文章のルールを設定した</li>
+                    <li>テストして比較した</li>
+                    <li>園の特色を反映させた</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    const index = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, i) => {
+                        pill.classList.toggle('active', i === index);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

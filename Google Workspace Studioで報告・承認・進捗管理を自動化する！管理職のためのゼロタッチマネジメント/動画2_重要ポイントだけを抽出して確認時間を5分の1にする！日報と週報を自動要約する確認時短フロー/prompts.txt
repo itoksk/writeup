@@ -1,0 +1,188 @@
+# ゼロタッチマネジメント - 第2回 プロンプト集
+
+## 日報・週報要約プロンプト
+
+```
+You are a management assistant analyzing team reports.
+
+Report content:
+---
+{email_body}
+---
+
+Analyze this report and extract:
+
+1. **業務サマリー** (3 bullet points max)
+2. **達成した成果** (if any)
+3. **課題・懸念事項** (mark with 🚨 if critical)
+4. **相談・依頼事項** (mark with 📢 if needs response)
+5. **明日/来週の予定**
+
+Also provide:
+- Overall assessment: 順調 / 注意 / 要フォロー
+- Recommended action for manager (if any)
+
+Output in Japanese. Be concise.
+```
+
+---
+
+## Chat通知テンプレート
+
+```
+📋 **日報要約** - {sender_name} ({date})
+
+■ 業務サマリー
+{business_summary}
+
+■ 達成した成果
+{achievements}
+
+■ 課題・懸念事項
+{issues}
+
+■ 相談・依頼事項
+{requests}
+
+■ 明日の予定
+{tomorrow_plan}
+
+---
+📊 評価: {assessment}
+📎 元メール: {email_link}
+```
+
+---
+
+## 週報用拡張プロンプト
+
+```
+You are a management assistant analyzing weekly reports.
+
+Weekly report content:
+---
+{email_body}
+---
+
+Analyze this weekly report and extract:
+
+1. **今週の業務サマリー** (5 bullet points max)
+2. **達成した成果・完了タスク**
+3. **未完了タスクとその理由**
+4. **課題・懸念事項** (mark with 🚨 if critical)
+5. **相談・依頼事項** (mark with 📢 if needs response)
+6. **来週の計画**
+7. **リソース・サポート要望** (if any)
+
+Also provide:
+- Weekly assessment: 目標達成 / 概ね順調 / 遅延あり / 要支援
+- Key metrics (if mentioned in report)
+- Recommended action for manager (if any)
+
+Output in Japanese. Be concise but comprehensive.
+```
+
+---
+
+## 課題検知特化プロンプト
+
+```
+You are analyzing a team member's report for potential issues.
+
+Report content:
+---
+{email_body}
+---
+
+Identify and categorize any issues mentioned:
+
+1. **業務上の課題**
+   - Description
+   - Severity: Low / Medium / High / Critical
+   - Needs manager action: Yes / No
+
+2. **リソース・スケジュール問題**
+   - Description
+   - Impact on deadlines
+   - Suggested resolution
+
+3. **人間関係・コミュニケーション課題**
+   - Description (be tactful)
+   - Recommended approach
+
+4. **その他の懸念事項**
+   - Health/workload concerns
+   - Motivation indicators
+
+If no issues found, output: "課題検知なし - 順調に進行中"
+
+Output in Japanese.
+```
+
+---
+
+## エージェント設定サマリー
+
+### Report Summary Agent
+
+| 項目 | 設定値 |
+|------|--------|
+| Name | Report Summary Agent |
+| Description | Summarizes daily/weekly reports and highlights key points |
+| Trigger | Gmail (Subject contains 日報 OR 週報) |
+| Process | Gemini summarization |
+| Output | Chat notification + Sheets logging |
+
+### Gmail Filter設定
+
+| フィルター項目 | 値 |
+|---------------|-----|
+| Subject contains | 日報 OR 週報 |
+| From | @yourcompany.com |
+| Has attachment | Any |
+
+---
+
+## Sheets記録テンプレート
+
+| 列 | 内容 |
+|-----|------|
+| A | 日付 |
+| B | 送信者 |
+| C | レポートタイプ（日報/週報） |
+| D | 評価 |
+| E | 課題有無 |
+| F | 相談有無 |
+| G | 要約（短縮版） |
+| H | 元メールリンク |
+
+---
+
+## キーワードアラートプロンプト（拡張用）
+
+```
+Scan the following report for concerning keywords:
+
+Report:
+---
+{email_body}
+---
+
+Alert keywords to detect:
+- 退職、転職、辞めたい
+- 体調不良、病院、休養
+- 残業、深夜、週末作業
+- 遅延、間に合わない、厳しい
+- トラブル、クレーム、苦情
+- ストレス、限界、疲労
+
+If any keywords found:
+- List the keywords detected
+- Provide context (surrounding sentence)
+- Suggest manager action
+
+If no concerning keywords:
+- Output: "アラートキーワードなし"
+
+Output in Japanese.
+```

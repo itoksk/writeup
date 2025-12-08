@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：もしもに備える：ChatGPTでスケジュール/コスト影響をシナリオ比較 - 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.01) 2px,
+                    rgba(10, 14, 39, 0.01) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.6em;
+            margin-top: 0.2em;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .phase-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-left: calc(4rem + 2rem);
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 3rem;
+        }
+
+        .schedule-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .schedule-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            vertical-align: top;
+        }
+
+        .schedule-table tr:hover {
+            background: rgba(0,240,255,0.05);
+        }
+
+        .schedule-session {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            color: var(--electric);
+        }
+
+        .comparison-box {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        .highlight-box {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .tip-box {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .scenario-comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            background: white;
+        }
+
+        .scenario-comparison-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .scenario-comparison-table td {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .scenario-comparison-table td:first-child {
+            text-align: left;
+            font-weight: 700;
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .scenario-optimistic {
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .scenario-standard {
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .scenario-pessimistic {
+            background: rgba(255, 107, 107, 0.05);
+        }
+
+        .cost-value {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--coral);
+        }
+
+        .schedule-value {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--electric);
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .phase-description {
+                margin-left: 0;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .scenario-comparison-table {
+                font-size: 0.85rem;
+            }
+
+            .scenario-comparison-table td {
+                padding: 1rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">リスクマネジメント実践講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第3回 / 全4回</div>
+            <h1 class="hero-title">
+                もしもに備える
+                <span>ChatGPTでスケジュール/コスト影響をシナリオ比較</span>
+            </h1>
+            <p class="hero-description">
+                リスクが発生した場合の影響度を、楽観・標準・悲観の3シナリオで自動的に数値化。
+                「このリスクにどこまで対策コストをかけるべきか」という難しい判断を、数値根拠を持って行えるようになります。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">学習目標</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">3シナリオ自動生成</h3>
+                <p class="card-description">
+                    ChatGPTにリスク情報を渡すだけで、楽観・標準・悲観の3シナリオで影響を自動算出
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">意思決定の質向上</h3>
+                <p class="card-description">
+                    数値根拠により「どのリスクを優先すべきか」「対策コストはいくらまでか」を即座に判断
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">影響の可視化</h3>
+                <p class="card-description">
+                    シナリオ比較表とグラフでリスク影響を可視化し、ステークホルダーへの説明が容易に
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">劇的な変化</h2>
+
+        <div class="comparison-box">
+            <div class="comparison-title">Before（導入前）</div>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li>影響度を「大・中・小」で分類するが、具体的な数値が不明</li>
+                <li>手作業での試算に1リスクあたり30分以上かかる</li>
+                <li>判断根拠が感覚的で、上層部への説明が困難</li>
+                <li>複数リスクの優先順位付けに時間がかかる</li>
+                <li>対策コストをいくらまでかけるべきか判断できない</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin: 2rem 0;">
+            <div style="font-size: 3rem; color: var(--electric);">↓</div>
+        </div>
+
+        <div class="comparison-box" style="border-left-color: var(--coral);">
+            <div class="comparison-title">After（導入後）</div>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li>スケジュール影響（日数）とコスト影響（金額）を具体的に数値化</li>
+                <li>全リスク一括で5分以内に3シナリオを自動生成</li>
+                <li>数値根拠により、論理的な意思決定が可能に</li>
+                <li>期待値計算により、リスクの優先順位が明確</li>
+                <li>対策コストの上限を合理的に算出可能</li>
+            </ul>
+        </div>
+
+        <table class="schedule-table" style="margin-top: 3rem;">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>Before</th>
+                    <th>After</th>
+                    <th>改善率</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="schedule-session">影響分析時間</td>
+                    <td>1リスクあたり30分</td>
+                    <td>全リスク一括で5分</td>
+                    <td style="color: var(--coral); font-weight: 700;">▼ 90%削減</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">判断根拠</td>
+                    <td>感覚・経験則</td>
+                    <td>3シナリオの数値データ</td>
+                    <td style="color: var(--electric); font-weight: 700;">大幅改善</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">意思決定速度</td>
+                    <td>遅い（議論に時間）</td>
+                    <td>速い（数値で即判断）</td>
+                    <td style="color: var(--coral); font-weight: 700;">3倍高速化</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">WORKFLOW</div>
+        <h2 class="section-title">実装手順</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">プロジェクト背景とリスクを整理</div>
+            </div>
+            <p class="phase-description">
+                プロジェクト名、期間、予算、チーム構成、現在の進捗状況を明記。
+                影響を分析したいリスクをリストアップする。
+                具体的な情報が多いほど、出力される影響度の精度が向上する。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">ChatGPTに3シナリオ分析を依頼</div>
+            </div>
+            <p class="phase-description">
+                用意されたプロンプトにプロジェクト情報とリスクを記入し、ChatGPTに送信。
+                楽観・標準・悲観の3シナリオで、スケジュール影響とコスト影響を自動生成。
+                発生確率も考慮した期待値計算により、対策コストの上限も算出される。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">シナリオ比較表を作成</div>
+            </div>
+            <p class="phase-description">
+                ChatGPTの出力結果をスプレッドシートに貼り付け、比較表を作成。
+                「楽観影響」「標準影響」「悲観影響」「対策コスト上限」の列を追加し整形。
+                条件付き書式を使って、影響度の大きいリスクを視覚的に強調。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">04</div>
+                <div class="phase-title">グラフ化と優先順位付け</div>
+            </div>
+            <p class="phase-description">
+                横軸にスケジュール影響、縦軸にコスト影響を取った散布図を作成。
+                右上に位置するリスクほど影響が大きく、優先的に対策が必要。
+                期待値に基づき、対策コストの投資判断を行う。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROMPT EXAMPLE</div>
+        <h2 class="section-title">プロンプト例</h2>
+
+        <div class="code-block">
+あなたはプロジェクトマネジメントの専門家です。
+以下のリスクについて、発生した場合のスケジュール影響とコスト影響を、
+楽観・標準・悲観の3シナリオで見積もってください。
+
+【プロジェクト背景】
+- プロジェクト名: 新ECサイト構築
+- 期間: 6ヶ月（2025年6月〜12月）
+- 予算: 5,000万円
+- チーム構成: PM 1名、エンジニア 5名、デザイナー 2名、外部ベンダー 1社
+- 現在の進捗: 開発フェーズ（全体の40%完了）
+
+【リスク】
+1. 決済API連携の遅延
+2. チームメンバーの離脱（エンジニア1名）
+3. セキュリティ脆弱性の発見（重大度：高）
+
+【出力形式】
+各リスクについて、以下の形式で出力してください：
+
+## リスク名: [リスク名]
+
+### 影響シナリオ比較
+
+| シナリオ | スケジュール影響 | コスト影響 | 想定される状況 |
+|---------|----------------|-----------|--------------|
+| 楽観的（発生確率20%） | +XX日 | +XX万円 | [楽観的な場合の状況説明] |
+| 標準的（発生確率60%） | +XX日 | +XX万円 | [標準的な場合の状況説明] |
+| 悲観的（発生確率20%） | +XX日 | +XX万円 | [悲観的な場合の状況説明] |
+
+### 影響の内訳
+- スケジュール影響の理由: [詳細説明]
+- コスト影響の理由: [詳細説明]
+
+### リスク対策コストの目安
+- このリスクを回避するために投資すべき対策コストの上限: XX万円
+- 根拠: [期待値計算の説明]
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SCENARIO COMPARISON</div>
+        <h2 class="section-title">シナリオ比較表の例</h2>
+
+        <p style="margin-bottom: 2rem;">
+            以下は、3つのリスクに対する影響分析の例です。
+            楽観・標準・悲観の3シナリオで、スケジュール影響とコスト影響を比較します。
+        </p>
+
+        <table class="scenario-comparison-table">
+            <thead>
+                <tr>
+                    <th>リスク名</th>
+                    <th>楽観影響<br><span style="font-weight: 400; font-size: 0.8em;">(発生確率20%)</span></th>
+                    <th>標準影響<br><span style="font-weight: 400; font-size: 0.8em;">(発生確率60%)</span></th>
+                    <th>悲観影響<br><span style="font-weight: 400; font-size: 0.8em;">(発生確率20%)</span></th>
+                    <th>対策コスト上限</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>決済API連携の遅延</td>
+                    <td class="scenario-optimistic">
+                        <div class="schedule-value">+7日</div>
+                        <div class="cost-value">+120万円</div>
+                    </td>
+                    <td class="scenario-standard">
+                        <div class="schedule-value">+14日</div>
+                        <div class="cost-value">+350万円</div>
+                    </td>
+                    <td class="scenario-pessimistic">
+                        <div class="schedule-value">+30日</div>
+                        <div class="cost-value">+900万円</div>
+                    </td>
+                    <td>
+                        <div class="cost-value">420万円</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>チームメンバーの離脱</td>
+                    <td class="scenario-optimistic">
+                        <div class="schedule-value">+10日</div>
+                        <div class="cost-value">+250万円</div>
+                    </td>
+                    <td class="scenario-standard">
+                        <div class="schedule-value">+21日</div>
+                        <div class="cost-value">+500万円</div>
+                    </td>
+                    <td class="scenario-pessimistic">
+                        <div class="schedule-value">+45日</div>
+                        <div class="cost-value">+1,200万円</div>
+                    </td>
+                    <td>
+                        <div class="cost-value">610万円</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>セキュリティ脆弱性の発見</td>
+                    <td class="scenario-optimistic">
+                        <div class="schedule-value">+5日</div>
+                        <div class="cost-value">+80万円</div>
+                    </td>
+                    <td class="scenario-standard">
+                        <div class="schedule-value">+10日</div>
+                        <div class="cost-value">+200万円</div>
+                    </td>
+                    <td class="scenario-pessimistic">
+                        <div class="schedule-value">+20日</div>
+                        <div class="cost-value">+600万円</div>
+                    </td>
+                    <td>
+                        <div class="cost-value">260万円</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(124, 58, 237, 0.05); border-radius: 4px;">
+            <h4 style="font-weight: 700; margin-bottom: 0.5rem;">期待値の計算例（決済API連携の遅延）</h4>
+            <p style="font-family: 'Space Grotesk', monospace; font-size: 0.95rem;">
+                期待値 = (120万円 × 0.2) + (350万円 × 0.6) + (900万円 × 0.2) = 414万円<br>
+                → 対策コスト上限: 約420万円
+            </p>
+            <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                対策コストが420万円を超える場合、リスクを受容する方が合理的と判断できます。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">注意点・活用ポイント</h2>
+
+        <div class="highlight-box">
+            <h3 style="font-weight: 700; margin-bottom: 1rem;">⚠️ 注意点</h3>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li><strong>あくまで"仮定シナリオ"として使う：</strong> ChatGPTの出力は一般的なケースに基づく仮定。プロジェクトの実情や過去データで補正すること。</li>
+                <li><strong>期待値だけで判断しない：</strong> 悲観シナリオが致命的な場合（プロジェクト中止・法的責任など）は、期待値が小さくても対策が必要。</li>
+                <li><strong>定期的に見直す：</strong> プロジェクトの進捗に応じて影響度は変わるため、週次や月次で再評価し優先順位を更新すること。</li>
+            </ul>
+        </div>
+
+        <div class="tip-box">
+            <h3 style="font-weight: 700; margin-bottom: 1rem;">💡 活用ポイント</h3>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li><strong>ステークホルダー報告に活用：</strong> 「悲観シナリオでは900万円の損失が出る可能性があり、対策費300万円は合理的」という根拠を示せる。</li>
+                <li><strong>優先順位付けに活用：</strong> 期待値に基づき「このリスクは優先度A、このリスクは優先度B」と明確に判断できる。</li>
+                <li><strong>散布図で可視化：</strong> 横軸スケジュール、縦軸コストの散布図を作成し、右上に位置するリスクを優先的に対策。</li>
+                <li><strong>過去データと比較：</strong> 類似プロジェクトの実績データがあれば、ChatGPTの出力と比較して精度を向上させる。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" style="margin-bottom: 120px;">
+        <div class="section-label">NEXT STEP</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div style="background: var(--ink); color: var(--paper); padding: 3rem; border-radius: 4px;">
+            <h3 style="font-size: 2rem; margin-bottom: 1rem; color: var(--electric);">第4回：自動化の決定版</h3>
+            <p style="font-size: 1.2rem; line-height: 1.8;">
+                次回は、リスクの重大度を自動スコアリングし、是正計画まで自動出力する方法をお見せします。
+                「誰が・いつまでに・何をすべきか」を一気に自動化し、リスク管理の総仕上げを行います。
+            </p>
+        </div>
+    </section>
+</body>
+</html>

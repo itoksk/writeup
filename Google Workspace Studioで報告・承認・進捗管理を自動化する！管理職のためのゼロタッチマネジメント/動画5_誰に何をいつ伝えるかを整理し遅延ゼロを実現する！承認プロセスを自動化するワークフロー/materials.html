@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：承認プロセスを自動化するワークフロー | ゼロタッチマネジメント</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --ink: #0A0E27; --paper: #FEFEF8; --electric: #06B6D4; --violet: #0EA5E9; --gray: #4A5568; }
+        body { font-family: 'Zen Kaku Gothic New', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.8; }
+        nav { position: fixed; top: 0; width: 100%; background: rgba(254, 254, 248, 0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 1.5rem 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        main { max-width: 900px; margin: 0 auto; padding: 8rem 2rem 4rem; }
+        .lesson-header { text-align: center; margin-bottom: 4rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(10, 14, 39, 0.1); }
+        .lesson-number { font-size: 6rem; font-weight: 900; background: linear-gradient(135deg, var(--violet), var(--electric)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+        .lesson-title { font-size: 2rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        .lesson-subtitle { font-size: 1.1rem; color: var(--gray); }
+        section { margin-bottom: 3rem; }
+        h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; padding-left: 1rem; border-left: 4px solid var(--electric); }
+        .goal-card { background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(6, 182, 212, 0.05)); border-radius: 12px; padding: 2rem; border-left: 4px solid var(--violet); }
+        .approval-flow { background: white; border: 1px solid rgba(10, 14, 39, 0.1); border-radius: 12px; padding: 2rem; }
+        .flow-steps { display: flex; flex-direction: column; gap: 0.75rem; }
+        .flow-step { display: flex; align-items: center; gap: 1rem; }
+        .flow-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--violet), var(--electric)); color: white; border-radius: 8px; font-size: 1rem; flex-shrink: 0; }
+        .flow-text { font-size: 0.9rem; }
+        .flow-arrow { margin-left: 1rem; color: var(--gray); font-size: 1.25rem; }
+        .branch-container { display: flex; gap: 1rem; margin-left: 3rem; margin-top: 0.5rem; }
+        .branch-item { flex: 1; padding: 0.75rem; border-radius: 8px; text-align: center; font-size: 0.85rem; }
+        .branch-item.approved { background: #D1FAE5; color: #065F46; }
+        .branch-item.returned { background: #FEF3C7; color: #92400E; }
+        .branch-item.rejected { background: #FEE2E2; color: #991B1B; }
+        .rules-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .rules-table th, .rules-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(10, 14, 39, 0.1); font-size: 0.9rem; }
+        .rules-table th { background: rgba(14, 165, 233, 0.05); font-weight: 600; }
+        .agents-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .agent-card { background: white; border: 1px solid rgba(10, 14, 39, 0.1); border-radius: 12px; padding: 1.25rem; }
+        .agent-card h4 { font-size: 0.9rem; font-weight: 600; color: var(--violet); margin-bottom: 0.25rem; }
+        .agent-card p { font-size: 0.8rem; color: var(--gray); }
+        .results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .result-card { background: linear-gradient(135deg, var(--violet), var(--electric)); color: white; border-radius: 12px; padding: 1.5rem; text-align: center; }
+        .result-value { font-size: 2rem; font-weight: 900; }
+        .result-label { font-size: 0.85rem; opacity: 0.9; }
+        .comparison-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        .comparison-card { background: white; border: 1px solid rgba(10, 14, 39, 0.1); border-radius: 12px; padding: 1.5rem; }
+        .comparison-card.before { border-top: 4px solid #EF4444; }
+        .comparison-card.after { border-top: 4px solid #22C55E; }
+        .comparison-card h3 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; }
+        .comparison-card.before h3 { color: #EF4444; }
+        .comparison-card.after h3 { color: #22C55E; }
+        .comparison-card ul { list-style: none; }
+        .comparison-card li { font-size: 0.85rem; color: var(--gray); margin-bottom: 0.5rem; }
+        .summary-box { background: var(--ink); color: var(--paper); border-radius: 12px; padding: 2rem; }
+        .summary-box h3 { font-size: 1.2rem; margin-bottom: 1rem; }
+        .summary-box ul { list-style: none; }
+        .summary-box li { margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative; }
+        .summary-box li::before { content: "→"; position: absolute; left: 0; color: var(--electric); }
+        .complete-banner { margin-top: 3rem; padding: 3rem; background: linear-gradient(135deg, var(--violet), var(--electric)); border-radius: 12px; text-align: center; color: white; }
+        .complete-banner h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .complete-banner p { font-size: 1rem; opacity: 0.9; }
+        @media (max-width: 768px) { .agents-grid, .results-grid, .comparison-grid { grid-template-columns: 1fr; } .lesson-number { font-size: 4rem; } .branch-container { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <nav><div class="nav-container"><div>ゼロタッチマネジメント</div><div>第5回 / 全5回</div></div></nav>
+    <main>
+        <header class="lesson-header">
+            <div class="lesson-number">05</div>
+            <h1 class="lesson-title">承認プロセスを自動化するワークフロー</h1>
+            <p class="lesson-subtitle">誰に何をいつ伝えるかを整理し遅延ゼロを実現する</p>
+        </header>
+        <section>
+            <h2>学習目標</h2>
+            <div class="goal-card"><p>稟議・申請の承認フローを自動化し、ゼロタッチマネジメントを完成させる</p></div>
+        </section>
+        <section>
+            <h2>承認フロー</h2>
+            <div class="approval-flow">
+                <div class="flow-steps">
+                    <div class="flow-step"><div class="flow-icon">📝</div><div class="flow-text">申請受付（Gmail/Forms）</div></div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step"><div class="flow-icon">🤖</div><div class="flow-text">申請内容の自動分類（金額・種類）</div></div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step"><div class="flow-icon">👤</div><div class="flow-text">承認者の自動決定</div></div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step"><div class="flow-icon">📧</div><div class="flow-text">承認依頼の自動送信</div></div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step"><div class="flow-icon">⏰</div><div class="flow-text">承認待ち監視（リマインド・エスカレーション）</div></div>
+                    <div class="flow-arrow">↓</div>
+                </div>
+                <div class="branch-container">
+                    <div class="branch-item approved">承認 → 完了通知</div>
+                    <div class="branch-item returned">差し戻し → 修正依頼</div>
+                    <div class="branch-item rejected">却下 → 却下通知</div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>承認ルール</h2>
+            <table class="rules-table">
+                <tr><th>申請種類</th><th>金額</th><th>承認者</th></tr>
+                <tr><td>経費申請</td><td>〜5万円</td><td>直属上長</td></tr>
+                <tr><td>経費申請</td><td>5万円〜</td><td>部門長</td></tr>
+                <tr><td>稟議</td><td>全て</td><td>部門長 → 経営層</td></tr>
+                <tr><td>休暇申請</td><td>-</td><td>直属上長</td></tr>
+            </table>
+        </section>
+        <section>
+            <h2>コースで作成したエージェント</h2>
+            <div class="agents-grid">
+                <div class="agent-card"><h4>Daily Report Request</h4><p>日報・週報提出依頼</p></div>
+                <div class="agent-card"><h4>Report Summary</h4><p>日報・週報の自動要約</p></div>
+                <div class="agent-card"><h4>Quality Check</h4><p>品質チェック自動判定</p></div>
+                <div class="agent-card"><h4>Submission Check</h4><p>未提出検知・アラート</p></div>
+                <div class="agent-card"><h4>Dashboard Update</h4><p>ダッシュボード自動更新</p></div>
+                <div class="agent-card"><h4>Weekly Summary</h4><p>週次サマリー生成</p></div>
+                <div class="agent-card"><h4>Approval Request</h4><p>承認依頼自動化</p></div>
+                <div class="agent-card"><h4>Approval Monitor</h4><p>承認待ち監視</p></div>
+            </div>
+        </section>
+        <section>
+            <h2>コース全体の成果</h2>
+            <div class="results-grid">
+                <div class="result-card"><div class="result-value">70%</div><div class="result-label">管理業務削減</div></div>
+                <div class="result-card"><div class="result-value">0</div><div class="result-label">連絡漏れ</div></div>
+                <div class="result-card"><div class="result-value">即時</div><div class="result-label">進捗把握</div></div>
+            </div>
+        </section>
+        <section>
+            <h2>Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <h3>Before</h3>
+                    <ul>
+                        <li>提出依頼を手動送信</li>
+                        <li>日報確認に60分/日</li>
+                        <li>品質チェックは手動</li>
+                        <li>承認依頼を手動送信</li>
+                        <li>承認遅延に気づかない</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h3>After</h3>
+                    <ul>
+                        <li>提出依頼は自動送信</li>
+                        <li>日報確認は12分/日</li>
+                        <li>品質チェックは自動判定</li>
+                        <li>承認依頼は自動送信</li>
+                        <li>承認遅延は自動リマインド</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>今日のポイント</h2>
+            <div class="summary-box">
+                <h3>まとめ</h3>
+                <ul>
+                    <li>申請内容を自動分類し、承認者を自動決定</li>
+                    <li>承認依頼を自動送信</li>
+                    <li>承認待ちを監視してリマインド・エスカレーション</li>
+                    <li>結果に応じた自動処理（承認/差し戻し/却下）</li>
+                </ul>
+            </div>
+        </section>
+        <div class="complete-banner">
+            <h3>コース完了</h3>
+            <p>ゼロタッチマネジメントの構築が完了しました！<br>自社の業務に合わせてカスタマイズし、管理業務の自動化を実現してください。</p>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,267 @@
+# ゼロタッチマネジメント - 第5回 プロンプト集
+
+## 申請分類・承認者決定プロンプト
+
+```
+You are an approval workflow assistant.
+
+Request content:
+---
+{request_content}
+---
+
+Analyze and extract:
+1. Request type: 経費申請 / 稟議 / 休暇申請 / その他
+2. Amount (if applicable): {amount} JPY
+3. Requester: {name}
+4. Department: {department}
+5. Summary: (one sentence)
+6. Urgency: 通常 / 急ぎ / 緊急
+
+Determine approver based on rules:
+- 経費 < 50,000: Direct manager
+- 経費 >= 50,000: Department head
+- 稟議: Department head, then Executive
+- 休暇: Direct manager
+
+Output:
+---
+REQUEST_TYPE: {type}
+AMOUNT: {amount}
+REQUESTER: {name}
+DEPARTMENT: {department}
+SUMMARY: {summary}
+URGENCY: {urgency}
+APPROVER: {approver_name} ({approver_email})
+NEXT_APPROVER: {if multi-level approval}
+---
+```
+
+---
+
+## 承認依頼メールテンプレート
+
+```
+件名：【承認依頼】{request_type} - {requester}
+
+{approver}さん
+
+お疲れ様です。
+以下の申請について、承認をお願いいたします。
+
+■ 申請内容
+・種類: {request_type}
+・申請者: {requester}
+・部署: {department}
+・金額: {amount}円
+・緊急度: {urgency}
+
+■ 概要
+{summary}
+
+■ 詳細
+{request_detail}
+
+■ 対応期限
+{deadline}
+
+■ 承認・差し戻し・却下
+以下のリンクより対応をお願いいたします。
+{approval_link}
+
+よろしくお願いいたします。
+```
+
+---
+
+## 承認待ち監視プロンプト
+
+```
+You are monitoring pending approval requests.
+
+Pending approvals from Sheets:
+{pending_list}
+
+Current time: {current_time}
+
+For each pending item, check:
+1. Time since request submitted
+2. Urgency level
+3. Approver status
+
+Generate actions:
+- If pending > 48 hours (normal): Send reminder to approver
+- If pending > 72 hours (normal): Escalate to approver's manager
+- If pending > 24 hours (urgent): Send reminder
+- If pending > 48 hours (urgent): Escalate immediately
+
+Output format:
+---
+REMINDERS_TO_SEND:
+- {approver_name}: {request_summary} (pending {hours}h)
+
+ESCALATIONS:
+- {manager_name}: {request_summary} from {approver} (pending {hours}h)
+
+SUMMARY:
+- Total pending: {count}
+- Requires reminder: {count}
+- Requires escalation: {count}
+---
+Output in Japanese for messages.
+```
+
+---
+
+## 承認リマインドテンプレート
+
+```
+件名：【リマインド】承認待ち案件があります
+
+{approver}さん
+
+お疲れ様です。
+以下の承認依頼が{hours}時間以上未処理となっています。
+
+■ 承認待ち案件
+{pending_items_list}
+
+お手数ですが、ご確認・ご対応をお願いいたします。
+
+{approval_link}
+```
+
+---
+
+## エスカレーション通知テンプレート
+
+```
+件名：【エスカレーション】承認遅延案件のご確認
+
+{manager}さん
+
+お疲れ様です。
+以下の承認依頼が72時間以上未処理となっています。
+
+■ 遅延案件
+・申請: {request_summary}
+・申請者: {requester}
+・承認者: {approver}
+・経過時間: {hours}時間
+
+フォローをお願いいたします。
+```
+
+---
+
+## 承認完了通知テンプレート
+
+```
+件名：【承認完了】{request_type}が承認されました
+
+{requester}さん
+
+お疲れ様です。
+申請いただいた{request_type}が承認されました。
+
+■ 承認内容
+・種類: {request_type}
+・金額: {amount}円
+・承認者: {approver}
+・承認日時: {approval_datetime}
+
+{next_steps}
+
+ご不明点があればお知らせください。
+```
+
+---
+
+## 差し戻し通知テンプレート
+
+```
+件名：【差し戻し】{request_type}の修正をお願いします
+
+{requester}さん
+
+お疲れ様です。
+申請いただいた{request_type}について、差し戻しとなりました。
+
+■ 差し戻し理由
+{return_reason}
+
+■ 修正ポイント
+{revision_points}
+
+修正後、再度申請をお願いいたします。
+ご質問があればお気軽にお問い合わせください。
+```
+
+---
+
+## 却下通知テンプレート
+
+```
+件名：【却下】{request_type}について
+
+{requester}さん
+
+お疲れ様です。
+申請いただいた{request_type}について、残念ながら却下となりました。
+
+■ 却下理由
+{rejection_reason}
+
+ご不明点があれば、{approver}までお問い合わせください。
+```
+
+---
+
+## エージェント設定サマリー
+
+### Approval Request Agent
+
+| 項目 | 設定値 |
+|------|--------|
+| Name | Approval Request Agent |
+| Description | Processes approval requests and routes to appropriate approver |
+| Trigger | Gmail (Subject contains 申請/稟議) or Forms |
+| Process | Gemini classification + approver determination |
+| Output | Gmail (approver), Sheets (logging) |
+
+### Approval Monitor Agent
+
+| 項目 | 設定値 |
+|------|--------|
+| Name | Approval Monitor Agent |
+| Description | Monitors pending approvals and sends reminders |
+| Trigger | Schedule (10:00, 15:00 daily) |
+| Data Source | Sheets (承認待ちリスト) |
+| Output | Gmail/Chat (reminders, escalations) |
+
+---
+
+## 承認ルール設定テーブル
+
+| 申請種類 | 金額条件 | 第1承認者 | 第2承認者 | リマインド |
+|---------|---------|----------|----------|-----------|
+| 経費申請 | < 50,000 | 直属上長 | - | 48h |
+| 経費申請 | >= 50,000 | 部門長 | - | 48h |
+| 稟議 | < 500,000 | 部門長 | - | 48h |
+| 稟議 | >= 500,000 | 部門長 | 経営層 | 24h |
+| 休暇申請 | - | 直属上長 | - | 24h |
+
+---
+
+## コース全体のエージェント一覧
+
+| # | エージェント名 | 役割 | トリガー |
+|---|---------------|------|---------|
+| 1 | Daily Report Request | 提出依頼送信 | Schedule 17:00 |
+| 2 | Report Summary | 日報要約 | Gmail受信 |
+| 3 | Quality Check | 品質判定 | Gmail受信 |
+| 4 | Submission Check | 未提出検知 | Schedule 20:00 |
+| 5 | Dashboard Update | ダッシュボード更新 | Schedule 21:00 |
+| 6 | Weekly Summary | 週次サマリー | Schedule Fri 18:00 |
+| 7 | Approval Request | 承認依頼 | Gmail/Forms |
+| 8 | Approval Monitor | 承認監視 | Schedule 10:00, 15:00 |

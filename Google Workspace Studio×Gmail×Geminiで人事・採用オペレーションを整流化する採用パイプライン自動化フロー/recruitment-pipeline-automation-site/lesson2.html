@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：応募メールを自動振り分け | 採用パイプライン自動化フロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">第2回 / 全5回</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">02</div>
+            <h1 class="lesson-title">応募メールを自動振り分け</h1>
+            <p class="lesson-subtitle">Geminiによる応募判定とラベル自動付与</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>メール受信時にGeminiが応募メールかどうかを判定し、職種別ラベルを自動付与、採用担当者にChat通知するエージェントを作成する</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エージェントのフロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Email Trigger</h3>
+                        <p>新規メール受信時に起動</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Gemini Classification</h3>
+                        <p>応募メールか判定、職種を特定</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Gmail Label</h3>
+                        <p>職種別ラベルを自動付与</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Chat Notification</h3>
+                        <p>採用担当者に即時通知</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">ラベル分類</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number" style="color: #7c3aed;">エンジニア</div>
+                    <h3>採用_エンジニア</h3>
+                    <p>開発・技術職の応募</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number" style="color: #ec4899;">営業</div>
+                    <h3>採用_営業</h3>
+                    <p>営業・ビジネス開発の応募</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number" style="color: #0891b2;">バックオフィス</div>
+                    <h3>採用_バックオフィス</h3>
+                    <p>経理・総務・人事の応募</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Geminiプロンプト</h2>
+            <div class="code-block">Analyze this email and determine if it's a job application:
+
+Email: {email_content}
+Subject: {subject}
+Sender: {sender}
+
+Determine:
+1. Is this a job application? (Yes/No)
+2. If Yes, which position category?
+   - Engineer (開発・技術職)
+   - Sales (営業・ビジネス開発)
+   - BackOffice (経理・総務・人事)
+   - Other
+3. Candidate name (if available)
+4. Brief summary of qualifications
+
+Output in Japanese.</div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson1.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson3.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

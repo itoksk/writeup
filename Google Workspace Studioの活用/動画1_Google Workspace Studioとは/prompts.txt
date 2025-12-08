@@ -1,0 +1,96 @@
+# Google Workspace Studio 第1回：Google Workspace Studioとは
+# プロンプト集
+
+---
+
+## 1. エージェント作成の自然言語プロンプト例
+
+### メール要約エージェント
+```
+Every weekday at 8am, summarize my unread emails from the past 24 hours and send me the summary in Google Chat.
+```
+
+### フォーム通知エージェント
+```
+When a new response is submitted to my Google Form, send a notification to my team's Google Chat space with the response details.
+```
+
+### ファイル要約エージェント
+```
+When a new file is uploaded to my Drive folder, use Gemini to summarize its content and notify me in Chat.
+```
+
+### 会議準備エージェント
+```
+30 minutes before each meeting on my calendar, summarize the attendees and agenda, then send me a briefing in Chat.
+```
+
+---
+
+## 2. Geminiへのプロンプト例（ステップ内で使用）
+
+### メール要約プロンプト
+```
+Please analyze these emails and provide:
+1. A list of high-priority items requiring immediate action
+2. A brief summary of key updates
+3. Any deadlines mentioned
+
+Format the response in Japanese.
+```
+
+### ファイル要約プロンプト
+```
+Summarize this document in Japanese. Include:
+- Main topic and purpose
+- Key points (3-5 bullet points)
+- Any action items or next steps
+```
+
+### 感情分析プロンプト
+```
+Analyze the sentiment of this email and categorize it as:
+- Positive
+- Neutral
+- Negative
+- Urgent
+
+Also identify the main topic and any requested actions.
+```
+
+---
+
+## 3. 日本語でのプロンプト入力例
+
+### メール要約（日本語）
+```
+過去24時間の未読メールを分析し、以下の形式で要約してください：
+1. 緊急対応が必要な項目
+2. 重要な更新情報
+3. 期限のあるタスク
+```
+
+### ドキュメント要約（日本語）
+```
+このドキュメントを以下の形式で要約してください：
+- 主題と目的（1文）
+- 重要なポイント（3〜5項目）
+- アクションアイテム（あれば）
+```
+
+---
+
+## 4. 注意事項
+
+### 英語推奨
+- 公式ドキュメントでは、AIへの指示は英語で記載することが推奨されています
+- 日本語プロンプトでも動作しますが、精度を確認してください
+
+### プロンプトのコツ
+- 具体的に何をしてほしいかを明確に記述する
+- 出力形式を指定すると、一貫した結果が得られやすい
+- 複雑な処理は複数のステップに分割する
+
+### テスト実行
+- 本番運用前に必ずテスト実行で動作確認する
+- エラーが発生した場合は、プロンプトを調整して再試行

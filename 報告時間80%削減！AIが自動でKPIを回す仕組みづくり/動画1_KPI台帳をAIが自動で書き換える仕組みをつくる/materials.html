@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回:KPI台帳をAIが自動で書き換える仕組みをつくる | 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .card-description {
+            opacity: 0.8;
+        }
+
+        .phase-card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-number {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--electric) 0%, var(--violet) 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 0;
+            margin-top: 3rem;
+            border: 2px solid var(--ink);
+            position: relative;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .prompt-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            position: relative;
+            border: 2px solid var(--ink);
+            overflow-x: auto;
+        }
+
+        .prompt-box::before {
+            content: 'プロンプト（コピーして使用）';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.25rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--paper);
+            transform: scale(1.05);
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            padding: 1rem 0 1rem 3rem;
+            position: relative;
+            border-left: 2px solid var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        .step-list li::before {
+            content: attr(data-step);
+            position: absolute;
+            left: -20px;
+            top: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--ink);
+            color: var(--paper);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .highlight-box {
+            background: var(--electric);
+            color: var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .prompt-box {
+                font-size: 0.8rem;
+                padding: 1.5rem;
+            }
+
+            .copy-button {
+                position: static;
+                display: block;
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">報告時間80%削減！AIが自動でKPIを回す仕組みづくり</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第1回 / 全3回</div>
+            <h1 class="hero-title">
+                KPI台帳をAIが<br>
+                自動で書き換える<br>
+                仕組みをつくる
+            </h1>
+            <p class="hero-description">
+                毎週の報告作業に2〜3時間かかっていませんか？<br>
+                <strong>プログラミングは一切不要</strong>で、<strong>ChatGPTにコピー&ペーストするだけ</strong>でKPIの前週比を計算し、作業時間を85%削減します。<strong>ChatGPT無料版でもOK</strong>です。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">現場の課題</h2>
+
+        <div class="grid grid-4">
+            <div class="card">
+                <div class="card-number">⏰</div>
+                <h3 class="card-title">前週比の計算に30分</h3>
+                <p class="card-description">
+                    Excelの関数で計算したり、電卓で確認したり…
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">😰</div>
+                <h3 class="card-title">計算ミスのリスク</h3>
+                <p class="card-description">
+                    『前週比、計算あってる？』と何度も確認
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">📊</div>
+                <h3 class="card-title">複数指標の管理</h3>
+                <p class="card-description">
+                    売上、成約件数、問い合わせ数…全部手動計算
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">🤔</div>
+                <h3 class="card-title">報告前の慌ただしさ</h3>
+                <p class="card-description">
+                    会議直前に『あれ、この数値は？』と焦る
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">何が変わるのか</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">Before</div>
+                <div class="phase-title">手作業でKPI更新</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✗ Excelを開いて先週と今週のデータを見比べる</li>
+                <li>✗ 電卓やExcel関数で前週比を手動計算</li>
+                <li>✗ 『+15%？計算あってるかな…』と何度も確認</li>
+                <li>✗ 計算ミスで会議で指摘される…</li>
+                <li>✗ <strong>合計：30〜60分</strong></li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">After</div>
+                <div class="phase-title">ChatGPTでコピー&ペースト（プログラミング不要）</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ スプレッドシートから最新2週分のデータをコピー</li>
+                <li>✓ ChatGPTに貼り付けて『前週比を計算して』と指示</li>
+                <li>✓ ChatGPTが即座に計算結果を返してくれる</li>
+                <li>✓ 結果をコピーしてスプレッドシートに貼り付け</li>
+                <li>✓ <strong>合計：5分（85%削減）</strong></li>
+                <li>✓ <strong>ChatGPT無料版でOK！</strong></li>
+            </ul>
+        </div>
+
+        <div class="stats-card">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">期待される効果</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+                <div>
+                    <div style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">85%</div>
+                    <div style="opacity: 0.9;">作業時間削減</div>
+                </div>
+                <div>
+                    <div style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">5分</div>
+                    <div style="opacity: 0.9;">更新作業時間</div>
+                </div>
+                <div>
+                    <div style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">無料</div>
+                    <div style="opacity: 0.9;">ChatGPT無料版OK</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP BY STEP</div>
+        <h2 class="section-title">実践ステップ</h2>
+
+        <ul class="step-list">
+            <li data-step="1">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">スプレッドシートの準備</h3>
+                <p>Google Sheetsで台帳のフォーマットを作成します。日付、売上、成約件数、前週比などの列を定義します。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>必要な列：</strong><br><br>
+                    A列：日付<br>
+                    B列：売上<br>
+                    C列：成約件数<br>
+                    D列：問い合わせ数<br>
+                    E列：前週比売上（%）← ここに結果を貼り付け<br>
+                    F列：前週比成約件数（%）← ここに結果を貼り付け<br>
+                    G列：前週比問い合わせ数（%）← ここに結果を貼り付け
+                </div>
+            </li>
+
+            <li data-step="2">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">データをコピー</h3>
+                <p>Google Sheetsで最新2週分のデータ（日付、売上、成約件数、問い合わせ数）を選択して、コピーします（Ctrl+C / Cmd+C）。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>コピーする範囲：</strong><br><br>
+                    最新2行のA列〜D列を選択<br>
+                    例：<br>
+                    2024-02-05　1480000　26　118<br>
+                    2024-02-12　1650000　30　135
+                </div>
+            </li>
+
+            <li data-step="3">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">ChatGPTにプロンプトを入力</h3>
+                <p>ChatGPTを開いて、以下のプロンプトを入力し、コピーしたデータを【データ】部分に貼り付けます。</p>
+
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt(this)">コピー</button>以下のスプレッドシートデータから、前週比（%）を計算してください。
+
+【データ】
+2024-02-05	1480000	26	118
+2024-02-12	1650000	30	135
+
+【計算対象】
+- 売上（2列目）
+- 成約件数（3列目）
+- 問い合わせ数（4列目）
+
+【計算式】
+前週比（%）= ((今週の値 - 前週の値) / 前週の値) × 100
+
+【出力形式】
+以下の形式で、小数点第1位まで表示してください：
+- 売上前週比：XX.X%
+- 成約件数前週比：XX.X%
+- 問い合わせ数前週比：XX.X%</div>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>ポイント：</strong><br><br>
+                    - 【データ】部分に、実際にコピーしたデータを貼り付けてください<br>
+                    - プロンプトはテキストファイルに保存しておくと便利です<br>
+                    - 毎週、データ部分だけ差し替えればOK
+                </div>
+            </li>
+
+            <li data-step="4">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">ChatGPTの回答をコピー</h3>
+                <p>ChatGPTが計算結果を返してくれます。その結果をコピーします。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>ChatGPTの回答例：</strong><br><br>
+                    売上前週比：+11.5%<br>
+                    成約件数前週比：+15.4%<br>
+                    問い合わせ数前週比：+14.4%<br><br>
+                    この数値部分（11.5、15.4、14.4）をコピーします。
+                </div>
+            </li>
+
+            <li data-step="5">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">スプレッドシートに貼り付け</h3>
+                <p>コピーした計算結果を、スプレッドシートの前週比列（E〜G列）に貼り付けます。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>貼り付け先：</strong><br><br>
+                    E列（売上前週比）：11.5<br>
+                    F列（成約件数前週比）：15.4<br>
+                    G列（問い合わせ数前週比）：14.4<br><br>
+                    <strong>完了です！</strong> これだけで前週比の計算が終わりました。
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <div class="section-label">ADVANCED</div>
+        <h2 class="section-title">応用テクニック</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">💡</div>
+                <h3 class="card-title">複数週分をまとめて計算</h3>
+                <p class="card-description">
+                    過去4週分のデータを一度にコピーして、『各週の前週比を計算して』と指示すれば、まとめて処理できます。月末の作業に便利です。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">💡</div>
+                <h3 class="card-title">計算過程も確認</h3>
+                <p class="card-description">
+                    プロンプトに『計算過程も詳しく教えて』と追加すれば、ChatGPTが計算式も表示してくれます。上司への説明に使えます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">💡</div>
+                <h3 class="card-title">プロンプトをテンプレート化</h3>
+                <p class="card-description">
+                    一度プロンプトを作ったら、テキストファイルに保存しておきましょう。毎週、【データ】部分だけ差し替えれば5分で完了します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">💡</div>
+                <h3 class="card-title">表形式で出力</h3>
+                <p class="card-description">
+                    『Markdown表形式で出力してください』と指示すれば、スプレッドシートに貼り付けやすい形式で結果が返ってきます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">💡</div>
+                <h3 class="card-title">前月比や予算比にも応用</h3>
+                <p class="card-description">
+                    『前週比』を『前月比』や『予算比』に変更するだけで、月次データや予算管理にも使えます。汎用性が高いです。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">💡</div>
+                <h3 class="card-title">他のKPI指標にも使える</h3>
+                <p class="card-description">
+                    顧客満足度、解約率、NPSなど、どんな指標でも計算できます。【計算対象】部分を変更すればOKです。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">注意点・よくある質問</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">ChatGPT無料版でOK</h3>
+                <p class="card-description">
+                    前週比の計算程度なら、ChatGPT無料版（GPT-3.5）で十分です。有料版（GPT-4）を使うとさらに精度が上がりますが、必須ではありません。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">数値部分だけコピー</h3>
+                <p class="card-description">
+                    ChatGPTの回答から、数値部分だけを抜き出してコピーしてください。『売上前週比：+11.5%』→『11.5』のようにコピーします。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">計算結果が間違っている？</h3>
+                <p class="card-description">
+                    『計算過程も教えて』と追加で質問すれば、ChatGPTが計算式を表示してくれます。手計算で確認できます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">日付のフォーマット注意</h3>
+                <p class="card-description">
+                    日付が数値（例：45329）になってしまう場合は、スプレッドシートで「表示形式」→「書式なしテキスト」に変更してからコピーしましょう。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">前週のデータが0の場合</h3>
+                <p class="card-description">
+                    プロンプトに『前週の値が0の場合は「N/A」と表示してください』と追加すれば、エラーを防げます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">複数スプレッドシートで使える</h3>
+                <p class="card-description">
+                    同じプロンプトを使って、複数のスプレッドシートに対応できます。データ部分を差し替えるだけでOKです。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">NEXT STEP</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">第2回</div>
+                <div class="phase-title">数値の理由をAIが要約する</div>
+            </div>
+            <p style="font-size: 1.1rem; line-height: 1.8;">
+                次回は、KPI台帳に入力された数値の「変動理由」をAIが自動で分析・要約する仕組みを実演します。<br><br>
+                『数値は計算できたけど、この増減の理由は？』この疑問も、AIが差分から原因を自動抽出してくれます。<br><br>
+                さらに、<strong>カスタムGPT（GPTs）の簡単な作り方</strong>も紹介します。Instructionsを書くだけで、専用のAIアシスタントが作れます！<br><br>
+                <strong>報告書の「説明文」まで自動化</strong>して、さらに時間を削減しましょう！
+            </p>
+        </div>
+    </section>
+
+    <script>
+        function copyPrompt(button) {
+            const promptBox = button.parentElement;
+            const text = promptBox.innerText.replace('コピー', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerText;
+                button.innerText = 'コピーしました！';
+                setTimeout(() => {
+                    button.innerText = originalText;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

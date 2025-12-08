@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画2：Difyで作る！保育日誌チャットボットの基本設定</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--electric);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateX(10px);
+            border-color: var(--electric);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block::before {
+            content: 'SETUP / TEMPLATE';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .list {
+            text-align: left;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            background: var(--electric);
+            color: var(--ink);
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .navigation {
+                display: none;
+            }
+
+            .content-section {
+                padding: 3rem 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+        <div class="nav-pill" data-section="7"></div>
+    </div>
+
+    <div class="container">
+        <section class="content-section visible">
+            <h1 class="section-title">Difyで作る！<br>保育日誌チャットボットの基本設定</h1>
+            <div class="section-content">
+                <p>10分で完成！あなたの園専用の日誌作成AIチャットボット。<br>
+                プログラミング知識不要で、マウス操作だけでOK</p>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>簡単設定</h3>
+                    <p>10分でプロレベルのチャットボット完成</p>
+                </div>
+                <div class="card">
+                    <h3>園専用</h3>
+                    <p>あなたの園の方針に合わせてカスタマイズ</p>
+                </div>
+                <div class="card">
+                    <h3>即戦力</h3>
+                    <p>設定完了後すぐに実用レベルで使用可能</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">事前準備チェック</h2>
+            <div class="section-content">
+                <p>スムーズな設定のための準備項目を確認しましょう</p>
+            </div>
+            <div class="card">
+                <h3>準備項目</h3>
+                <ul class="list">
+                    <li><span class="highlight">Google AI StudioのAPIキーを準備</span></li>
+                    <li>Difyアカウントを作成済み</li>
+                    <li>ログインできる状態</li>
+                    <li>園の日誌フォーマットを手元に用意</li>
+                    <li>10分の作業時間を確保</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">APIキー設定（最重要）</h2>
+            <div class="section-content">
+                <p>Difyを継続的に使うために必須の設定</p>
+            </div>
+            <div class="grid">
+                <div class="card" style="border-color: #FF6B6B; background: rgba(255, 107, 107, 0.1);">
+                    <h3>⚠️ 重要：Difyの無料枠について</h3>
+                    <ul class="list">
+                        <li>Difyは<span class="warning">無料クレジットがある</span></li>
+                        <li>ただし<span class="warning">APIキー設定が必須</span></li>
+                        <li>APIキーがないと継続利用不可</li>
+                        <li>Google AI StudioのAPI推奨</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>APIキー設定手順</h3>
+                    <ul class="list">
+                        <li><strong>1.</strong> Difyにログイン</li>
+                        <li><strong>2.</strong> 右上のアイコン → 設定</li>
+                        <li><strong>3.</strong> 「モデルプロバイダー」選択</li>
+                        <li><strong>4.</strong> 「Google」をクリック</li>
+                        <li><strong>5.</strong> APIキーを入力</li>
+                        <li><strong>6.</strong> 「保存」をクリック</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <h3>✅ Google AI Studio APIのメリット</h3>
+                <ul class="list">
+                    <li><span class="highlight">完全無料でAPIキー取得</span></li>
+                    <li><span class="highlight">毎分15回まで無料</span></li>
+                    <li>クレジットカード不要</li>
+                    <li>日誌作成に十分な量</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">設定手順 1-2</h2>
+            <div class="section-content">
+                <p>APIキー設定後のアプリ作成</p>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3><span class="step-number">1</span>スタジオへ移動</h3>
+                    <ul class="list">
+                        <li>「スタジオ」タブをクリック</li>
+                        <li>「アプリを作成」ボタンをクリック</li>
+                        <li>アプリ作成画面が表示</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3><span class="step-number">2</span>新規アプリ作成</h3>
+                    <ul class="list">
+                        <li>アプリタイプから「チャットボット」を選択</li>
+                        <li>アプリ名を「○○保育園日誌AI」と設定</li>
+                        <li>「作成」をクリック</li>
+                        <li>編集画面が開く</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">システムプロンプト設定</h2>
+            <div class="section-content">
+                <p>園専用の日誌作成AIのためのプロンプトテンプレート</p>
+            </div>
+            <div class="code-block">あなたは保育園の日誌作成を支援するアシスタントです。
+次の入力をもとに、保育日誌形式の文章を生成してください。
+
+【記載ルール】
+- 保育士として温かみのある表現で書いてください
+- 活動の意味づけを添えてください  
+- 保護者に安心感を与えるトーンで
+- 200字以内でまとめてください
+
+入力された活動内容をもとに、以下の形式で日誌を作成してください：
+
+【今日の活動】
+- 活動内容を2〜3文で具体的に記載
+- 子どもたちの反応や様子を含める
+
+【子どもの様子】
+- 個別の観察記録を含める
+- 成長や変化を具体的に記載
+- ポジティブな表現を心がける
+
+【明日への連携】
+- 継続観察ポイントを1文で
+- 次の活動への展開を意識
+
+文体は温かく、保護者が読んで安心する表現を使用してください。</div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">設定手順 3-4</h2>
+            <div class="section-content">
+                <p>モデル選択とテスト実行</p>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h3><span class="step-number">3</span>モデル選択</h3>
+                    <ul class="list">
+                        <li><span class="highlight">推奨：</span>Gemini 1.5 Flash（高速・無料）</li>
+                        <li><span class="highlight">高品質：</span>Gemini 1.5 Pro（より精度高い）</li>
+                        <li><span class="highlight">代替：</span>GPT-3.5/GPT-4（OpenAI）</li>
+                        <li>※最初はGemini Flashで十分</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3><span class="step-number">4</span>テスト実行</h3>
+                    <p>設定後、右側のプレビュー画面でテスト入力を行い、動作を確認してください。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">テスト入力例</h2>
+            <div class="section-content">
+                <p>設定が正しく動作するかテストしてみましょう</p>
+            </div>
+            <div class="code-block">積み木遊び。Bくんが高いタワーを作った。
+みんなで拍手。</div>
+            <div class="card">
+                <h3>期待される出力例</h3>
+                <p><strong>【今日の活動】</strong><br>
+                今日は室内で積み木遊びを楽しみました。Bくんが集中して高いタワーを完成させ、みんなから自然と拍手が起こる温かい場面がありました。</p>
+                
+                <p><strong>【子どもの様子】</strong><br>
+                Bくんは慎重にバランスを取りながら積み木を重ね、見事に高いタワーを作り上げました。完成した時の達成感あふれる表情が印象的で、周りの子どもたちも一緒に喜びを共有していました。</p>
+                
+                <p><strong>【明日への連携】</strong><br>
+                構成遊びへの興味が高まっているので、明日は違う素材でも創作活動を展開したいと思います。</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">保存と公開</h2>
+            <div class="section-content">
+                <p>設定完了後の保存と園内での共有方法</p>
+            </div>
+            <div class="card">
+                <h3><span class="step-number">5</span>保存と公開手順</h3>
+                <ul class="list">
+                    <li>画面右上の「保存」ボタンをクリック</li>
+                    <li>「公開」ボタンをクリックして園内で共有</li>
+                    <li>共有URLをコピーして職員に配布</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>コスト管理のポイント</h3>
+                <ul class="list">
+                    <li>無料枠：月1000回程度（園全体で十分）</li>
+                    <li>有料プラン：月額約1000円</li>
+                    <li>APIキー：園で1つ取得し共有利用</li>
+                    <li>使用量モニタリング：ダッシュボードで確認</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">次のステップへ</h2>
+            <div class="section-content">
+                <p>基本設定完了！次回はプロンプトの改善方法を学びます</p>
+            </div>
+            <div class="card">
+                <h3>動画3：日誌文章を自然に仕上げるプロンプト設計と改善方法</h3>
+                <p>もっと自然で温かい文章にするプロンプトの工夫を学びます。</p>
+                <p>ベテラン保育士が書いたような文章を生成する魔法の言葉とは？</p>
+            </div>
+            <div class="card">
+                <h3>設定完了チェックリスト</h3>
+                <ul class="list">
+                    <li>チャットボットが作成できた</li>
+                    <li>システムプロンプトを設定した</li>
+                    <li>テスト入力で動作確認した</li>
+                    <li>保存と公開ができた</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    const index = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, i) => {
+                        pill.classList.toggle('active', i === index);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

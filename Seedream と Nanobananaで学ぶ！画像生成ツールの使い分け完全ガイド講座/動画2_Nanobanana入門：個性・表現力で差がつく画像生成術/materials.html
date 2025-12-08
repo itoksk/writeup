@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nanobanana入門：個性・表現力で差がつく画像生成術 - 学習教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --magenta: #EC4899;
+            --gray: #4A5568;
+            --success: #10B981;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.01) 2px,
+                    rgba(10, 14, 39, 0.01) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-label {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-left: 1rem;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--magenta);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--magenta);
+            font-size: 0.6em;
+            margin-top: 0.3em;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--magenta);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--magenta);
+            color: var(--paper);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 3rem 0;
+        }
+
+        .comparison-table th {
+            padding: 1.5rem 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-bottom: 3px solid var(--ink);
+        }
+
+        .comparison-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            vertical-align: top;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(236,72,153,0.05);
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--magenta);
+            opacity: 0.3;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .phase-content {
+            padding-left: 0;
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .style-tag {
+            background: var(--paper);
+            border: 2px solid var(--magenta);
+            padding: 1rem;
+            text-align: center;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .style-tag:hover {
+            background: var(--magenta);
+            color: var(--paper);
+            transform: translateY(-2px);
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--magenta);
+            padding: 1.5rem;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        .comparison-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .tool-box {
+            border: 3px solid var(--ink);
+            padding: 2rem;
+            background: var(--paper);
+        }
+
+        .tool-box h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .tool-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .seedream-box {
+            border-color: var(--electric);
+        }
+
+        .nanobanana-box {
+            border-color: var(--magenta);
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .comparison-box {
+                grid-template-columns: 1fr;
+            }
+
+            .style-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">
+                画像生成ツール使い分け講座
+                <span class="nav-label">動画2/3</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">LESSON 02</div>
+            <h1 class="hero-title">
+                Nanobanana入門
+                <span>個性・表現力で差がつく画像生成術</span>
+            </h1>
+            <p class="hero-description">
+                「リアルもいいけど、もっと"らしさ"を出したい」<br>
+                個性的で印象に残るビジュアルを作る、Nanobananaの活用法を学びます。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">表現力を求める場面での課題</h2>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Before（現状の課題）</th>
+                    <th>After（Nanobananaで実現）</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>画一的な表現</strong><br>
+                        生成される画像が「ありきたり」で、個性が出ない
+                    </td>
+                    <td>
+                        <strong>独自のスタイル</strong><br>
+                        スタイル性の高い、アーティスティックな画像が生成できる
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>表現の限界</strong><br>
+                        スタイルや個性を出そうとしても、思い通りにならない
+                    </td>
+                    <td>
+                        <strong>表現の自由度</strong><br>
+                        独自の世界観や「らしさ」を自由に表現できる
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>印象の弱さ</strong><br>
+                        リアル過ぎて、「面白み」や「印象」に欠ける
+                    </td>
+                    <td>
+                        <strong>印象的なビジュアル</strong><br>
+                        人の目を引く、印象に残る画像が作れる
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>差別化の困難</strong><br>
+                        他と似たようなビジュアルになりがち
+                    </td>
+                    <td>
+                        <strong>差別化の実現</strong><br>
+                        表現の幅が広がり、他との差別化ができる
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">FEATURES</div>
+        <h2 class="section-title">Nanobananaの3つの強み</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">表現力</h3>
+                <p class="card-description">
+                    イラスト、水彩画、アニメ風など、多様なスタイルで表現可能。
+                    独自の世界観を自由に描き出せます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">個性</h3>
+                <p class="card-description">
+                    スタイルキーワードの組み合わせで、
+                    他にはないユニークなビジュアルを生み出せます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">印象</h3>
+                <p class="card-description">
+                    リアルさより「印象」を重視。
+                    目を引く、記憶に残るビジュアルが得意です。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STYLE KEYWORDS</div>
+        <h2 class="section-title">主要なスタイルキーワード</h2>
+
+        <p style="margin-bottom: 2rem; font-size: 1.05rem; line-height: 1.8;">
+            Nanobananaでは、<strong>スタイルキーワード</strong>を使って表現の方向性を指定します。<br>
+            以下は代表的なスタイルキーワードです。組み合わせることで、さらにユニークな表現が可能になります。
+        </p>
+
+        <div class="style-grid">
+            <div class="style-tag">illustrated style</div>
+            <div class="style-tag">watercolor painting</div>
+            <div class="style-tag">anime style</div>
+            <div class="style-tag">minimalist design</div>
+            <div class="style-tag">vintage aesthetic</div>
+            <div class="style-tag">pop art</div>
+            <div class="style-tag">digital illustration</div>
+            <div class="style-tag">hand-drawn</div>
+            <div class="style-tag">abstract art</div>
+            <div class="style-tag">flat design</div>
+            <div class="style-tag">cyberpunk</div>
+            <div class="style-tag">retro style</div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">WORKFLOW</div>
+        <h2 class="section-title">Nanobanana活用の3ステップ</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">基本プロンプト作成</div>
+            </div>
+            <div class="phase-content">
+                <p style="margin-bottom: 1rem;">まず、何を描きたいかの基本プロンプトを作ります。</p>
+                <div class="code-block">
+A young woman in a coffee shop, reading a book,
+cozy atmosphere, afternoon light through window
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">スタイルキーワード追加</div>
+            </div>
+            <div class="phase-content">
+                <p style="margin-bottom: 1rem;">目指す表現に合ったスタイルキーワードを追加します。</p>
+                <div class="code-block">
++ illustrated style, warm colors, artistic
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.8;">
+                    ポイント：2〜4個のスタイルキーワードを組み合わせると効果的
+                </p>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">調整と改善</div>
+            </div>
+            <div class="phase-content">
+                <ul style="list-style-type: none; padding-left: 0;">
+                    <li style="margin-bottom: 0.8rem;">✓ スタイルモードの選択（Illustrative、Artistic など）</li>
+                    <li style="margin-bottom: 0.8rem;">✓ Color intensity（色の強さ）調整</li>
+                    <li style="margin-bottom: 0.8rem;">✓ Style strength（スタイルの強さ）調整：70〜85%推奨</li>
+                    <li style="margin-bottom: 0.8rem;">✓ 複数枚生成して最適なものを選択</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS & CAUTIONS</div>
+        <h2 class="section-title">注意点と活用ポイント</h2>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <div class="card-number">⚠️</div>
+                <h3 class="card-title">注意すべきポイント</h3>
+                <div class="card-description">
+                    <ul style="list-style-type: disc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>スタイルの強すぎ</strong>：Style strengthを85%以下に
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>固定化</strong>：同じスタイルばかり使わず、定期的に変える
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>過度な調整</strong>：調整は1〜2項目に絞る
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-number">💡</div>
+                <h3 class="card-title">活用のコツ</h3>
+                <div class="card-description">
+                    <ul style="list-style-type: disc; padding-left: 1.5rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>スタイル組み合わせ</strong>：watercolor + vintage など
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>参照画像活用</strong>：「この雰囲気で」と画像アップロード
+                        </li>
+                        <li style="margin-bottom: 0.8rem;">
+                            <strong>ムードボード作成</strong>：複数スタイルで生成してコレクション
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">COMPARISON</div>
+        <h2 class="section-title">Seedream vs Nanobanana</h2>
+
+        <div class="comparison-box">
+            <div class="tool-box seedream-box">
+                <h3>
+                    <span class="tool-icon" style="background: var(--electric); color: var(--ink);">S</span>
+                    Seedream
+                </h3>
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem; font-weight: 600;">写実性・リアルさ重視</p>
+                <ul style="list-style-type: none; padding-left: 0;">
+                    <li style="margin-bottom: 1rem;">
+                        <strong>得意：</strong><br>
+                        商品写真、風景、プレゼン背景
+                    </li>
+                    <li style="margin-bottom: 1rem;">
+                        <strong>特徴：</strong><br>
+                        最初から高品質、速い生成
+                    </li>
+                    <li style="margin-bottom: 1rem;">
+                        <strong>用途：</strong><br>
+                        リアルさが求められる場面
+                    </li>
+                </ul>
+            </div>
+
+            <div class="tool-box nanobanana-box">
+                <h3>
+                    <span class="tool-icon" style="background: var(--magenta); color: var(--paper);">N</span>
+                    Nanobanana
+                </h3>
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem; font-weight: 600;">表現力・個性重視</p>
+                <ul style="list-style-type: none; padding-left: 0;">
+                    <li style="margin-bottom: 1rem;">
+                        <strong>得意：</strong><br>
+                        イラスト、キャラクター、ブランディング
+                    </li>
+                    <li style="margin-bottom: 1rem;">
+                        <strong>特徴：</strong><br>
+                        多様なスタイル、個性的な表現
+                    </li>
+                    <li style="margin-bottom: 1rem;">
+                        <strong>用途：</strong><br>
+                        印象・個性が求められる場面
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <p style="text-align: center; font-size: 1.1rem; margin-top: 3rem; padding: 2rem; background: rgba(236,72,153,0.1); border-radius: 8px;">
+            <strong>2つのツールは補完関係</strong><br>
+            次回の動画3では、具体的な使い分けのルールを学びます
+        </p>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SUMMARY</div>
+        <h2 class="section-title">今回のまとめ</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">Nanobananaの強み</h3>
+                <p class="card-description">
+                    表現力と個性を重視。多様なスタイルで、
+                    アーティスティックな画像を生成できる。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">基本的な使い方</h3>
+                <p class="card-description">
+                    基本プロンプト + スタイルキーワードの組み合わせ。
+                    スタイルモード選択とトーン調整を活用。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">適した用途</h3>
+                <p class="card-description">
+                    キャラクターイラスト、ブランドイメージ、SNS用ビジュアルなど、
+                    印象を重視する場面で第一選択に。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="padding-bottom: 4rem;">
+        <div class="section-label">NEXT LESSON</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <div class="card-number">03</div>
+            <h3 class="card-title">Seedream vs Nanobanana 最適使い分けルールと実践判断基準</h3>
+            <p class="card-description" style="margin-bottom: 1rem;">
+                次回は最終回。2つのツールを「どの場面でどちらを使うべきか」、
+                具体的な判断基準とルールを学びます。
+            </p>
+            <p class="card-description">
+                使い分けチャートの使い方、実際の場面での比較デモ、
+                ハイブリッド利用の応用例など、実践的な内容をお届けします。
+            </p>
+        </div>
+    </section>
+</body>
+</html>

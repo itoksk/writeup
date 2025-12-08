@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：採用業務の手作業が消えない理由を見抜く | CX向上型採用オペレーションフロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #EC4899;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+            --green: #22C55E;
+            --red: #EF4444;
+        }
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .nav-back:hover { opacity: 0.7; }
+        .nav-lesson {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            color: var(--violet);
+            font-weight: 700;
+        }
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 60px;
+            background: linear-gradient(135deg, var(--ink) 0%, #1a1f3a 100%);
+            color: var(--paper);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
+            opacity: 0.15;
+        }
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-label {
+            display: inline-block;
+            background: var(--violet);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.5em;
+            margin-top: 0.5em;
+        }
+        .hero-desc {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--violet);
+            display: inline-block;
+        }
+        .goal-card {
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            padding: 2rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        .issue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .issue-card {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 2rem;
+        }
+        .issue-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--electric);
+            margin-bottom: 0.5rem;
+        }
+        .issue-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            color: var(--violet);
+        }
+        .issue-card p {
+            font-size: 0.95rem;
+            color: var(--gray);
+        }
+        .cx-highlight {
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            padding: 3rem 2rem;
+            margin: 3rem 0;
+        }
+        .cx-highlight h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .cx-highlight p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+        }
+        .cx-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+        .cx-stat {
+            text-align: center;
+        }
+        .cx-stat-value {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+        }
+        .cx-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .cx-points-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .cx-point-card {
+            background: white;
+            border: 2px solid var(--violet);
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .cx-point-card h4 {
+            font-size: 1.2rem;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .cx-point-card p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .flow-timeline {
+            position: relative;
+            padding-left: 3rem;
+            margin: 2rem 0;
+        }
+        .flow-timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--violet), var(--electric));
+        }
+        .flow-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .flow-item::before {
+            content: '';
+            position: absolute;
+            left: -3rem;
+            top: 1.5rem;
+            width: 16px;
+            height: 16px;
+            background: var(--violet);
+            border-radius: 50%;
+            transform: translateX(-6.5px);
+        }
+        .flow-item h4 {
+            font-size: 1rem;
+            color: var(--violet);
+            margin-bottom: 0.25rem;
+        }
+        .flow-item p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .agent-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        .agent-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+        }
+        .agent-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .agent-table tr:hover {
+            background: rgba(124, 58, 237, 0.03);
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .comparison-card {
+            padding: 2rem;
+        }
+        .comparison-card.before {
+            background: #FEF2F2;
+            border: 2px solid var(--red);
+        }
+        .comparison-card.after {
+            background: #F0FDF4;
+            border: 2px solid var(--green);
+        }
+        .comparison-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .comparison-card.before h3 { color: var(--red); }
+        .comparison-card.after h3 { color: var(--green); }
+        .comparison-card ul {
+            list-style: none;
+        }
+        .comparison-card li {
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .comparison-card.before li::before {
+            content: "×";
+            position: absolute;
+            left: 0;
+            color: var(--red);
+            font-weight: 700;
+        }
+        .comparison-card.after li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--green);
+            font-weight: 700;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .tool-card {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .tool-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .tool-card h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        .tool-card p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        .checklist {
+            background: rgba(124, 58, 237, 0.05);
+            border: 2px solid var(--violet);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .checklist h3 {
+            color: var(--violet);
+            margin-bottom: 1rem;
+        }
+        .checklist li {
+            margin-bottom: 0.75rem;
+            padding-left: 2rem;
+            position: relative;
+            list-style: none;
+        }
+        .checklist li::before {
+            content: '☐';
+            position: absolute;
+            left: 0;
+            color: var(--violet);
+        }
+        .sheet-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.9rem;
+        }
+        .sheet-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .sheet-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .code-block {
+            background: var(--ink);
+            color: #00F0FF;
+            padding: 1.5rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+        .highlight-box {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .highlight-box h4 {
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        .metrics-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+        }
+        .metrics-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .next-preview {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1));
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        .next-preview h3 {
+            color: var(--gray);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .next-preview p {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--violet);
+        }
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 1rem;
+        }
+        .nav-prev, .nav-next {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--ink);
+            border: 2px solid var(--ink);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-prev:hover, .nav-next:hover {
+            background: var(--ink);
+            color: var(--paper);
+        }
+        .nav-next {
+            background: var(--violet);
+            color: white;
+            border-color: var(--violet);
+        }
+        .nav-next:hover {
+            background: #6D28D9;
+            border-color: #6D28D9;
+        }
+        @media (max-width: 768px) {
+            .issue-grid { grid-template-columns: 1fr; }
+            .comparison-grid { grid-template-columns: 1fr; }
+            .cx-stats { flex-direction: column; gap: 1.5rem; }
+            .tools-grid { grid-template-columns: repeat(2, 1fr); }
+            .lesson-nav { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 1 / 5</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第1回 / 全5回</div>
+            <h1 class="hero-title">
+                採用業務の手作業が消えない理由を見抜く
+                <span>候補者連絡フローの全体像を理解する</span>
+            </h1>
+            <p class="hero-desc">
+                採用オペレーションにおける候補者連絡の課題を整理し、
+                Google Workspace Studio × Geminiによる自動化の全体像を把握します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">GOAL</div>
+        <h2 class="section-title">学習目標</h2>
+        <div class="goal-card">
+            採用オペレーションにおける候補者連絡の課題を理解し、
+            Google Workspace Studio × Geminiによる自動化の全体像を把握する
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROBLEMS</div>
+        <h2 class="section-title">候補者連絡の4つの課題</h2>
+
+        <div class="issue-grid">
+            <div class="issue-card">
+                <div class="issue-number">ISSUE 01</div>
+                <h3>連絡の遅延</h3>
+                <p>面接日程調整に3日かかる、候補者からの質問への返信が翌日になる → 他社に流れるリスク</p>
+            </div>
+            <div class="issue-card">
+                <div class="issue-number">ISSUE 02</div>
+                <h3>連絡漏れ</h3>
+                <p>「次のステップの連絡したっけ？」という状況。スプレッドシート更新忘れで漏れが発生</p>
+            </div>
+            <div class="issue-card">
+                <div class="issue-number">ISSUE 03</div>
+                <h3>連絡内容のバラつき</h3>
+                <p>担当者によって案内メールの内容が違う。候補者体験（CX）の品質が不安定</p>
+            </div>
+            <div class="issue-card">
+                <div class="issue-number">ISSUE 04</div>
+                <h3>情報共有の断絶</h3>
+                <p>面接官への事前情報共有が不十分、フィードバックが遅れて次アクションが決まらない</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cx-highlight">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <h3>CX（Candidate Experience）とは</h3>
+            <p>採用プロセス全体を通じて候補者が感じる体験の質。CXの向上が採用成功の鍵です。</p>
+            <div class="cx-stats">
+                <div class="cx-stat">
+                    <div class="cx-stat-value">78%</div>
+                    <div class="cx-stat-label">採用体験で入社意欲が変わる</div>
+                </div>
+                <div class="cx-stat">
+                    <div class="cx-stat-value">2x</div>
+                    <div class="cx-stat-label">CX悪化時の辞退率増加</div>
+                </div>
+                <div class="cx-stat">
+                    <div class="cx-stat-value">72%</div>
+                    <div class="cx-stat-label">採用体験を口コミで共有</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">CX IMPROVEMENT</div>
+        <h2 class="section-title">CX向上の3つのポイント</h2>
+
+        <div class="cx-points-grid">
+            <div class="cx-point-card">
+                <h4>スピード</h4>
+                <p>候補者を待たせない即時対応。応募確認は即時、日程調整は24時間以内</p>
+            </div>
+            <div class="cx-point-card">
+                <h4>一貫性</h4>
+                <p>どの担当者でも同じ品質の案内。テンプレート化と自動化で実現</p>
+            </div>
+            <div class="cx-point-card">
+                <h4>パーソナライズ</h4>
+                <p>候補者に合わせた情報提供。Geminiで履歴書を要約し、適切なメッセージを生成</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">COURSE STRUCTURE</div>
+        <h2 class="section-title">コース全体の構成</h2>
+
+        <div class="flow-timeline">
+            <div class="flow-item">
+                <h4>第1回：全体像の理解（今回）</h4>
+                <p>課題整理、CX向上の考え方、自動化ポイントの特定</p>
+            </div>
+            <div class="flow-item">
+                <h4>第2回：面接前準備の自動化</h4>
+                <p>Calendar連携、Gemini要約、Chat自動配信</p>
+            </div>
+            <div class="flow-item">
+                <h4>第3回：面接後作業の自動化</h4>
+                <p>面接終了検知、評価整理、関係者への自動共有</p>
+            </div>
+            <div class="flow-item">
+                <h4>第4回：リマインド自動化</h4>
+                <p>面接リマインド、評価提出リマインド、遅延アラート</p>
+            </div>
+            <div class="flow-item">
+                <h4>第5回：フロー統合</h4>
+                <p>全エージェント連携、選考フロー一本化、運用設計</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">AGENTS</div>
+        <h2 class="section-title">このコースで作る6つのエージェント</h2>
+
+        <table class="agent-table">
+            <thead>
+                <tr>
+                    <th>エージェント名</th>
+                    <th>役割</th>
+                    <th>作成回</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Interview Prep Notification</td>
+                    <td>面接前日に候補者サマリーと履歴書リンクを面接官に自動送信</td>
+                    <td>第2回</td>
+                </tr>
+                <tr>
+                    <td>Post-Interview Workflow</td>
+                    <td>面接終了後に評価依頼を自動送信、次ステップを条件分岐で処理</td>
+                    <td>第3回</td>
+                </tr>
+                <tr>
+                    <td>Interview Reminder</td>
+                    <td>面接前日と1時間前に候補者・面接官へリマインド</td>
+                    <td>第4回</td>
+                </tr>
+                <tr>
+                    <td>Evaluation Reminder</td>
+                    <td>24h・48h・72hでエスカレーション付き評価リマインド</td>
+                    <td>第4回</td>
+                </tr>
+                <tr>
+                    <td>Delay Alert</td>
+                    <td>3日以上連絡停滞の候補者を自動検知してアラート</td>
+                    <td>第4回</td>
+                </tr>
+                <tr>
+                    <td>Daily Recruiting Dashboard</td>
+                    <td>毎朝パイプライン状況を集計してチームに配信</td>
+                    <td>第5回</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">導入効果</h2>
+
+        <div class="comparison-grid">
+            <div class="comparison-card before">
+                <h3>Before</h3>
+                <ul>
+                    <li>面接日程調整：返信まで平均24時間</li>
+                    <li>面接前情報共有：面接官が自分で確認（10分/件）</li>
+                    <li>面接後フィードバック：手動で依頼（5分/件）</li>
+                    <li>リマインド：手動でカレンダー確認</li>
+                    <li>1日の連絡業務時間：2〜3時間</li>
+                </ul>
+            </div>
+            <div class="comparison-card after">
+                <h3>After</h3>
+                <ul>
+                    <li>面接日程調整：Calendar登録で即座に案内</li>
+                    <li>面接前情報共有：Geminiが自動要約してChat配信</li>
+                    <li>面接後フィードバック：終了検知で自動依頼</li>
+                    <li>リマインド：スケジュールトリガーで自動送信</li>
+                    <li>1日の連絡業務時間：30分以下</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TOOLS</div>
+        <h2 class="section-title">使用するツール</h2>
+
+        <div class="tools-grid">
+            <div class="tool-card">
+                <div class="tool-icon">📊</div>
+                <h4>Workspace Studio</h4>
+                <p>エージェント作成・管理</p>
+            </div>
+            <div class="tool-card">
+                <div class="tool-icon">🤖</div>
+                <h4>Gemini</h4>
+                <p>要約・分析・文面生成</p>
+            </div>
+            <div class="tool-card">
+                <div class="tool-icon">📧</div>
+                <h4>Gmail</h4>
+                <p>メール検知・自動返信</p>
+            </div>
+            <div class="tool-card">
+                <div class="tool-icon">📅</div>
+                <h4>Calendar</h4>
+                <p>面接予定管理</p>
+            </div>
+            <div class="tool-card">
+                <div class="tool-icon">💬</div>
+                <h4>Chat</h4>
+                <p>社内連絡・通知</p>
+            </div>
+            <div class="tool-card">
+                <div class="tool-icon">📁</div>
+                <h4>Drive</h4>
+                <p>書類保存・管理</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PREPARATION</div>
+        <h2 class="section-title">事前準備チェックリスト</h2>
+
+        <div class="checklist">
+            <h3>コース開始前に準備するもの</h3>
+            <ul>
+                <li>Google Workspaceアカウント（Business Standard以上推奨）</li>
+                <li>候補者管理スプレッドシート（下記構成で作成）</li>
+                <li>履歴書保存用Google Driveフォルダ</li>
+                <li>採用チーム用Google Chatスペース</li>
+                <li>面接用Googleカレンダー</li>
+                <li>面接評価シート（Googleフォーム）</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SHEET STRUCTURE</div>
+        <h2 class="section-title">候補者管理シートの構成</h2>
+
+        <table class="sheet-table">
+            <thead>
+                <tr>
+                    <th>列名</th>
+                    <th>内容</th>
+                    <th>更新タイミング</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>候補者名</td><td>氏名</td><td>応募時</td></tr>
+                <tr><td>メールアドレス</td><td>連絡先</td><td>応募時</td></tr>
+                <tr><td>応募ポジション</td><td>職種</td><td>応募時</td></tr>
+                <tr><td>応募日</td><td>日付</td><td>応募時</td></tr>
+                <tr><td>ステータス</td><td>選考状況</td><td>各ステップ完了時</td></tr>
+                <tr><td>最終連絡日</td><td>日付</td><td>連絡時</td></tr>
+                <tr><td>担当面接官</td><td>名前</td><td>面接設定時</td></tr>
+                <tr><td>面接日時</td><td>日時</td><td>面接設定時</td></tr>
+                <tr><td>評価結果</td><td>Proceed/Hold/Decline</td><td>評価完了時</td></tr>
+                <tr><td>次アクション</td><td>タスク</td><td>評価完了時</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROMPT EXAMPLE</div>
+        <h2 class="section-title">参考：候補者情報要約プロンプト</h2>
+        <p style="margin-bottom: 1rem;">第2回で実際に使用するプロンプトの参考例です。</p>
+
+        <div class="code-block">You are an HR assistant helping interview preparation.
+
+Summarize the following candidate information for the interviewer:
+
+Candidate Name: {candidate_name}
+Position: {position}
+Resume/CV content: {resume_content}
+Previous interview notes: {previous_notes}
+
+Provide:
+1. Key qualifications (3 bullet points)
+2. Relevant experience highlights
+3. Points to explore in interview
+4. Any concerns or gaps to address
+
+Format as a brief, scannable summary for the interviewer.
+Output in Japanese.</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">CX METRICS</div>
+        <h2 class="section-title">CX評価指標</h2>
+
+        <table class="metrics-table">
+            <thead>
+                <tr>
+                    <th>指標</th>
+                    <th>内容</th>
+                    <th>目標</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>応答時間（Response Time）</td>
+                    <td>候補者からの問い合わせへの返信時間</td>
+                    <td>24時間以内 → 自動化後：即時</td>
+                </tr>
+                <tr>
+                    <td>プロセス透明性</td>
+                    <td>候補者が自分のステータスを把握できているか</td>
+                    <td>常に次のステップが明確</td>
+                </tr>
+                <tr>
+                    <td>コミュニケーション品質</td>
+                    <td>連絡内容の一貫性と丁寧さ</td>
+                    <td>パーソナライズされた連絡</td>
+                </tr>
+                <tr>
+                    <td>候補者NPS</td>
+                    <td>採用プロセスを他者に勧めるか</td>
+                    <td>+30以上</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SUMMARY</div>
+        <h2 class="section-title">今日のポイント</h2>
+
+        <div class="highlight-box">
+            <h4>まとめ</h4>
+            <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                <li>候補者連絡の課題は「遅延・漏れ・バラつき・断絶」</li>
+                <li>CX（候補者体験）の向上が採用成功の鍵</li>
+                <li>「スピード・一貫性・パーソナライズ」を自動化で実現</li>
+                <li>5回のコースで6つのエージェントを構築</li>
+                <li>連絡業務時間を2〜3時間から30分以下に削減</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="next-preview">
+        <h3>次回予告</h3>
+        <p>面接前準備を自動化！Calendar×Gemini×Chatで候補者へ必要情報を自動送信する</p>
+    </div>
+
+    <nav class="lesson-nav">
+        <div></div>
+        <a href="lesson2.html" class="nav-next">
+            次のレッスン
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </nav>
+</body>
+</html>

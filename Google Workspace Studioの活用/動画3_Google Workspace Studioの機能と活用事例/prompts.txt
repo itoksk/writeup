@@ -1,0 +1,283 @@
+# Google Workspace Studio 第3回：機能と活用事例
+# プロンプト集
+
+---
+
+## 1. 活用事例別プロンプト
+
+### 事例1：フォーム回答の自動通知
+
+#### フォーム回答の要約・分類
+```
+Analyze this form response and provide:
+
+1. CATEGORY: (選択肢: 問い合わせ / 要望 / 苦情 / その他)
+2. PRIORITY: (選択肢: 高 / 中 / 低)
+3. SUMMARY: (1-2文で内容を要約)
+4. SUGGESTED_ACTION: (推奨される対応)
+
+Please respond in Japanese.
+```
+
+#### Chat通知メッセージ
+```
+📝 新しいフォーム回答
+
+【カテゴリ】{category}
+【優先度】{priority}
+【概要】{summary}
+【推奨対応】{suggested_action}
+
+📅 回答日時: {timestamp}
+👤 回答者: {respondent_email}
+```
+
+---
+
+### 事例2：Driveファイルの自動要約
+
+#### ファイル要約プロンプト
+```
+Summarize this document for a team notification.
+
+Include:
+1. TITLE: Document title
+2. TYPE: (報告書 / 提案書 / 議事録 / マニュアル / その他)
+3. SUMMARY: Main points in 3-5 bullet points
+4. KEY_TAKEAWAYS: Important decisions or action items
+5. TARGET_AUDIENCE: Who should read this
+
+Respond in Japanese.
+```
+
+#### Chat通知メッセージ
+```
+📄 新しいファイルがアップロードされました
+
+【タイトル】{file_title}
+【種類】{document_type}
+
+📋 概要:
+{summary}
+
+🔑 重要ポイント:
+{key_takeaways}
+
+📎 ファイルリンク: {file_link}
+```
+
+---
+
+### 事例3：会議前の自動ブリーフィング
+
+#### 会議情報の要約プロンプト
+```
+Prepare a meeting briefing with the following information:
+
+1. MEETING_TITLE: {title}
+2. DATE_TIME: {datetime}
+3. ATTENDEES: List attendees with their roles if known
+4. AGENDA: Main topics to be discussed
+5. CONTEXT: Relevant background information from recent emails/docs
+6. PREPARATION_ITEMS: What should I prepare before this meeting?
+
+Format in Japanese, be concise.
+```
+
+#### Chat通知メッセージ
+```
+🗓️ 会議ブリーフィング（30分後）
+
+【会議名】{meeting_title}
+【日時】{datetime}
+【参加者】{attendees}
+
+📋 アジェンダ:
+{agenda}
+
+📝 準備事項:
+{preparation_items}
+
+🔗 会議リンク: {meeting_link}
+```
+
+---
+
+### 事例4：サポート問い合わせのトリアージ
+
+#### サポートメールの分析プロンプト
+```
+Analyze this support email and provide a triage assessment:
+
+1. CATEGORY: (技術的問題 / 請求関連 / 機能リクエスト / 一般問い合わせ)
+2. URGENCY: (Critical / High / Medium / Low)
+3. SENTIMENT: (Positive / Neutral / Frustrated / Angry)
+4. ISSUE_SUMMARY: Brief description of the issue
+5. CUSTOMER_IMPACT: How is the customer affected?
+6. SUGGESTED_RESPONSE: Recommended action or response approach
+7. ASSIGNED_TEAM: (技術サポート / 請求チーム / 製品チーム / カスタマーサクセス)
+
+Respond in Japanese.
+```
+
+#### Chat通知メッセージ
+```
+🎫 新しいサポートリクエスト
+
+【緊急度】{urgency} | 【カテゴリ】{category}
+【顧客の状態】{sentiment}
+
+📋 問題概要:
+{issue_summary}
+
+💡 推奨対応:
+{suggested_response}
+
+👥 担当チーム: {assigned_team}
+📧 元メール: {email_link}
+```
+
+---
+
+## 2. Geminiステップ用汎用プロンプト
+
+### 感情分析
+```
+Analyze the sentiment of this text and categorize as:
+- Positive: Expressing satisfaction, gratitude, or enthusiasm
+- Neutral: Factual, informational, or business-as-usual
+- Negative: Expressing concern, frustration, or complaint
+- Urgent: Indicating immediate attention is required
+
+Provide a brief explanation for your assessment.
+```
+
+### 優先順位付け
+```
+Evaluate the priority of this item based on:
+- Impact: How many people/processes are affected?
+- Urgency: Is there a deadline or time-sensitivity?
+- Effort: How much work is required to address?
+
+Assign a priority level:
+- P1 (Critical): Immediate action required
+- P2 (High): Address within 24 hours
+- P3 (Medium): Address within this week
+- P4 (Low): Address when time permits
+```
+
+### アクションアイテム抽出
+```
+Extract all action items from this content.
+
+For each action item, provide:
+- TASK: What needs to be done
+- OWNER: Who is responsible (if mentioned)
+- DEADLINE: When it's due (if mentioned)
+- CONTEXT: Brief background
+
+Format as a checklist in Japanese.
+```
+
+---
+
+## 3. 日本語プロンプト例
+
+### フォーム回答分析
+```
+このフォーム回答を分析し、以下の情報を抽出してください：
+
+【カテゴリ】問い合わせ / 要望 / 苦情 / その他
+【優先度】高 / 中 / 低
+【概要】1-2文で内容を要約
+【推奨対応】どのように対応すべきか
+
+チームへの通知に使用します。簡潔にまとめてください。
+```
+
+### ドキュメント要約
+```
+このドキュメントをチーム向けに要約してください：
+
+・主なポイント（3-5個の箇条書き）
+・重要な決定事項やアクションアイテム
+・誰が読むべきか
+
+簡潔で分かりやすい日本語で記述してください。
+```
+
+### サポートメール分析
+```
+このサポートメールを分析し、トリアージ情報を提供してください：
+
+【緊急度】Critical / High / Medium / Low
+【カテゴリ】技術的問題 / 請求関連 / 機能リクエスト / 一般問い合わせ
+【顧客の状態】満足 / 普通 / 困惑 / 不満
+【問題の概要】簡潔に説明
+【推奨対応】どのように対応すべきか
+【担当チーム】適切なチームを指定
+```
+
+---
+
+## 4. サードパーティ連携用プロンプト
+
+### Asanaタスク作成用
+```
+Extract task information for Asana:
+
+{
+  "name": "Task title",
+  "notes": "Task description",
+  "due_date": "YYYY-MM-DD",
+  "assignee": "email or name",
+  "priority": "high/medium/low",
+  "tags": ["tag1", "tag2"]
+}
+
+Respond with JSON only.
+```
+
+### Jiraチケット作成用
+```
+Extract information for a Jira ticket:
+
+{
+  "summary": "Brief issue title",
+  "description": "Detailed description",
+  "issue_type": "Bug/Task/Story",
+  "priority": "Critical/High/Medium/Low",
+  "labels": ["label1", "label2"],
+  "components": ["component name"]
+}
+
+Respond with JSON only.
+```
+
+---
+
+## 5. 変数の活用例
+
+### よく使う変数
+- `{sender_email}` - メール送信者
+- `{subject}` - メール件名
+- `{body}` - メール本文
+- `{form_response}` - フォーム回答内容
+- `{file_name}` - ファイル名
+- `{file_link}` - ファイルへのリンク
+- `{meeting_title}` - 会議名
+- `{attendees}` - 参加者リスト
+- `{gemini_response}` - Geminiの出力
+
+### 変数を使ったメッセージ例
+```
+📧 新着メール通知
+
+From: {sender_email}
+Subject: {subject}
+
+Geminiの分析:
+{gemini_response}
+
+元メールを確認する: {email_link}
+```

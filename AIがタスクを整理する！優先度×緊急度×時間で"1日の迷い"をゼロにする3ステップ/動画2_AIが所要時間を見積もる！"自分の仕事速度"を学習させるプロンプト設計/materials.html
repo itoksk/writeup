@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画2：AIが所要時間を見積もる！"自分の仕事速度"を学習させるプロンプト設計</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.01) 2px,
+                    rgba(10, 14, 39, 0.01) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border: 2px solid var(--ink);
+        }
+
+        .comparison-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            vertical-align: top;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .highlight {
+            background: var(--electric);
+            padding: 0.2em 0.5em;
+            font-weight: 700;
+        }
+
+        .alert {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .alert-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--coral);
+        }
+
+        .info-box {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .info-box-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">AIタスク整理講座 - 動画2</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">LESSON 02</div>
+            <h1 class="hero-title">
+                AIが所要時間を見積もる！<br>
+                "自分の仕事速度"を学習させるプロンプト設計
+            </h1>
+            <p class="hero-description">
+                「このタスク、何分かかる？」という悩みをAIで解決。<br>
+                過去実績をChatGPTに学習させて、見積もり精度を30%向上させる方法をご紹介します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">Before / After</div>
+        <h2 class="section-title">従来の方法 vs AI活用後</h2>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <div class="card-number">😰</div>
+                <h3 class="card-title">Before：従来の方法</h3>
+                <div class="card-description">
+                    <p style="margin-bottom: 1rem;"><strong>所要時間見積もりプロセス：</strong></p>
+                    <ul style="list-style: none; padding-left: 0;">
+                        <li>🤔 「このタスク、何分かかるかな？」と考える（3分）</li>
+                        <li>🧠 過去の記憶を頼りに「たぶん30分くらい？」と推測</li>
+                        <li>⏱️ 実際にやってみたら1時間かかった</li>
+                        <li>😵 スケジュールが崩壊、午後の予定を全部調整</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>課題：</strong></p>
+                    <ul style="list-style: none; padding-left: 0;">
+                        <li>❓ 見積もりが感覚頼りで不正確</li>
+                        <li>🧩 過去の実績を覚えていない</li>
+                        <li>🆕 新規タスクの所要時間が全く読めない</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-number">😊</div>
+                <h3 class="card-title">After：AI活用後</h3>
+                <div class="card-description">
+                    <p style="margin-bottom: 1rem;"><strong>所要時間見積もりプロセス：</strong></p>
+                    <ul style="list-style: none; padding-left: 0;">
+                        <li>📝 過去1週間の作業実績をChatGPTに入力（1分）</li>
+                        <li>🤖 AIが類似タスクから所要時間を予測（10秒）</li>
+                        <li>📅 予測時間を基にスケジュールを組む</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>効果：</strong></p>
+                    <ul style="list-style: none; padding-left: 0;">
+                        <li>📈 見積もり精度が<span class="highlight">30%向上</span></li>
+                        <li>✅ スケジュール破綻が70%減少</li>
+                        <li>😌 心理的な負担が大幅に軽減</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">3 Steps</div>
+        <h2 class="section-title">実装手順（たった3ステップ）</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">過去実績を記録する</div>
+            </div>
+            <p>過去1週間～2週間の作業実績を記録。タスク名と所要時間をメモ帳に記録します。所要時間は<strong>5分</strong>。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">ChatGPTに学習させる</div>
+            </div>
+            <p>prompts.txtからプロンプトをコピペして、過去実績を貼り付けて送信。所要時間は<strong>2分</strong>。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">見積もりを活用する</div>
+            </div>
+            <p>AIの予測時間を基にスケジュールを組む。実際の所要時間と比較して、次回の精度を上げます。所要時間は<strong>1分</strong>（確認のみ）。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Prompt</div>
+        <h2 class="section-title">デモ用プロンプト（コピペ用）</h2>
+
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">プロンプト1：過去実績からの所要時間見積もり</h3>
+        <div class="code-block">以下は、私の過去1週間の作業実績です。
+このデータから平均所要時間を学び、新しい作業の所要時間を見積もってください。
+出力は「作業名」「予測時間（分）」「根拠コメント」で表にしてください。
+
+【過去実績】
+- 見積書作成：25分
+- 顧客メール返信：10分
+- チームミーティング準備：40分
+- 日報作成：15分
+
+【新しいタスク】
+- 来週の営業資料作成
+- 顧客データ整理</div>
+
+        <h3 style="font-size: 1.2rem; margin: 2rem 0 1rem;">想定出力例</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>作業名</th>
+                    <th>予測時間</th>
+                    <th>根拠コメント</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>来週の営業資料作成</td>
+                    <td>45分</td>
+                    <td>類似タスク「チームミーティング準備」と構成が近い</td>
+                </tr>
+                <tr>
+                    <td>顧客データ整理</td>
+                    <td>20分</td>
+                    <td>顧客メール返信の処理量から換算</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <div class="info-box-title">💡 AIの見積もりロジック</div>
+            <p>AIは「類似タスク」を見つけて、そこから所要時間を推測しています。例えば、「営業資料作成」は「チームミーティング準備」と似ているから45分、という具合です。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Advanced</div>
+        <h2 class="section-title">より詳細な分析（プロンプト2）</h2>
+
+        <p style="margin-bottom: 2rem;">過去2週間のデータを入力すると、作業タイプごとの平均時間と、バラつき（標準偏差）まで計算してくれます。</p>
+
+        <h3 style="font-size: 1.2rem; margin: 2rem 0 1rem;">出力例：各作業タイプの平均所要時間</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>作業タイプ</th>
+                    <th>平均時間</th>
+                    <th>最短</th>
+                    <th>最長</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>見積書作成</td>
+                    <td>24.3分</td>
+                    <td>20分</td>
+                    <td>30分</td>
+                </tr>
+                <tr>
+                    <td>顧客メール返信</td>
+                    <td>10分</td>
+                    <td>8分</td>
+                    <td>12分</td>
+                </tr>
+                <tr>
+                    <td>営業資料作成</td>
+                    <td>52.5分</td>
+                    <td>45分</td>
+                    <td>60分</td>
+                </tr>
+                <tr>
+                    <td>日報作成</td>
+                    <td>13.6分</td>
+                    <td>12分</td>
+                    <td>16分</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="font-size: 1.2rem; margin: 2rem 0 1rem;">出力例：作業ごとのバラつき（標準偏差）</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>作業タイプ</th>
+                    <th>標準偏差</th>
+                    <th>判定</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>見積書作成</td>
+                    <td>3.9分</td>
+                    <td>安定</td>
+                </tr>
+                <tr>
+                    <td>顧客メール返信</td>
+                    <td>1.4分</td>
+                    <td>非常に安定</td>
+                </tr>
+                <tr>
+                    <td>営業資料作成</td>
+                    <td>7.5分</td>
+                    <td>やや不安定</td>
+                </tr>
+                <tr>
+                    <td>日報作成</td>
+                    <td>1.4分</td>
+                    <td>非常に安定</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <div class="info-box-title">📊 標準偏差とは？</div>
+            <p>作業時間のバラつきを表す数値です。標準偏差が小さいほど、毎回同じくらいの時間でできる安定した作業です。例えば、「日報作成」は標準偏差1.4分で非常に安定しているので、「15分あれば確実にできる」と言えます。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Advanced</div>
+        <h2 class="section-title">個人差を考慮した見積もり（プロンプト3）</h2>
+
+        <p style="margin-bottom: 2rem;">午前中は集中力が高くて速い、金曜午後は疲れて遅い、そういう個人差もAIに教えることができます。</p>
+
+        <div class="code-block">私の作業速度の特徴を分析し、今後のタスク見積もりに活用してください。
+
+【作業速度の特徴】
+- 午前中の集中作業は平均より20%速い
+- 午後の定型作業は平均通り
+- 金曜午後は平均より10%遅い
+- 新規顧客対応は既存顧客より30%時間がかかる
+
+【明日のタスク】
+- 新規顧客向け見積書作成（午前10:00-）
+- 週報作成（午後15:00-）
+- 既存顧客へのメール返信3件（午後16:00-）
+
+上記の作業速度特徴を考慮して、各タスクの所要時間を見積もってください。</div>
+
+        <h3 style="font-size: 1.2rem; margin: 2rem 0 1rem;">想定出力例</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>タスク</th>
+                    <th>基準時間</th>
+                    <th>時間帯補正</th>
+                    <th>顧客タイプ補正</th>
+                    <th>予測時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>新規顧客向け見積書作成</td>
+                    <td>25分</td>
+                    <td>-20%（午前）</td>
+                    <td>+30%（新規）</td>
+                    <td>26分</td>
+                </tr>
+                <tr>
+                    <td>週報作成</td>
+                    <td>15分</td>
+                    <td>±0%（午後）</td>
+                    <td>-</td>
+                    <td>15分</td>
+                </tr>
+                <tr>
+                    <td>既存顧客メール返信3件</td>
+                    <td>30分</td>
+                    <td>±0%（午後）</td>
+                    <td>±0%（既存）</td>
+                    <td>30分</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 1rem;"><strong>合計予測時間：約71分（1時間11分）</strong></p>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Tips</div>
+        <h2 class="section-title">活用ポイント</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">過去実績は正確に記録する</h3>
+                <p class="card-description">
+                    AIの見積もり精度は、過去実績の記録精度に依存します。「だいたい30分くらいかな」ではなく、「正確に28分」と記録してください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">実績と比較して精度を上げる</h3>
+                <p class="card-description">
+                    AIの予測時間と、実際の所要時間を比較してください。そして、「なぜズレたのか」を記録しておくと、次回の見積もり精度が上がります。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">チームで共有する</h3>
+                <p class="card-description">
+                    チームで作業実績を共有すると、「この作業は平均何分」という基準ができます。新人教育にも使えますね。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="alert">
+            <div class="alert-title">⚠️ 注意点</div>
+            <p><strong>AIの見積もりは「参考値」です：</strong> AIの見積もりは100%正確ではありません。実際にやってみたら予測より時間がかかることもあります。特に、新規タスクや複雑なタスクは、余裕を持たせた見積もりをおすすめします。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">FAQ</div>
+        <h2 class="section-title">よくある質問</h2>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <h3 class="card-title">Q: 過去実績の記録は、手動でやらないとダメですか?</h3>
+                <p class="card-description">
+                    A: 最初は手動でOKです。慣れてきたら、タスク管理ツール（Notion、Trelloなど）と連携して自動記録する方法もあります（別講座で紹介予定）。
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Q: 作業タイプが多すぎて、記録が大変です</h3>
+                <p class="card-description">
+                    A: 最初は、主要な3-5タイプだけ記録してください。例えば、「見積書作成」「メール返信」「資料作成」「会議準備」「日報作成」など。
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Q: 標準偏差って何ですか?</h3>
+                <p class="card-description">
+                    A: 作業時間のバラつきを表す数値です。標準偏差が小さいほど、毎回同じくらいの時間でできる安定した作業です。
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Q: AIの見積もりが外れたらどうすればいい?</h3>
+                <p class="card-description">
+                    A: 実際の所要時間を記録して、次回の見積もりに反映させましょう。例えば、「新規顧客の場合は+50%で見積もる」といった補正ルールを追加できます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="card" style="background: var(--ink); color: var(--paper); border: none;">
+            <h2 style="color: var(--electric); font-size: 2rem; margin-bottom: 1rem;">次回予告</h2>
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">動画3："明日やる3つ"を自動提案！ChatGPTでブロッキングとリスケを最適化</h3>
+            <p>優先順位が分かって、所要時間も読める。でも、それをどうスケジュールに落とし込むか？次回は、AIに「明日やるべき上位3件」を提案してもらい、Googleカレンダーに貼り付けられる形式で出力する方法をお伝えします。</p>
+        </div>
+    </section>
+
+</body>
+</html>

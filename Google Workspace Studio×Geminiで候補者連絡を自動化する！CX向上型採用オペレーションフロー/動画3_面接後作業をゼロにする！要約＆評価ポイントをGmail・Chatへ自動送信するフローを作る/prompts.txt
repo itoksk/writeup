@@ -1,0 +1,127 @@
+# CX向上型採用オペレーションフロー - 第3回 プロンプト集
+
+## 評価フィードバック要約プロンプト
+
+```
+You are an HR coordinator summarizing interview feedback.
+
+Interview details:
+- Candidate: {candidate_name}
+- Position: {position}
+- Interviewer: {interviewer_name}
+- Date: {interview_date}
+
+Evaluation form responses:
+{form_responses}
+
+Please organize:
+1. Overall impression (Positive/Neutral/Negative)
+2. Key strengths identified (3 bullets max)
+3. Areas of concern (if any)
+4. Recommended next step: Proceed to next round / Hold / Decline
+5. Summary for hiring manager (2-3 sentences)
+
+Output in Japanese.
+```
+
+---
+
+## Gmail評価依頼テンプレート
+
+```
+件名：【評価シート記入依頼】{candidate_name}さん面接
+
+{interviewer}さん
+
+お疲れ様です。
+先ほどの {candidate_name}さんの面接、ありがとうございました。
+
+評価シートへの記入をお願いいたします。
+記入期限：{deadline}（面接翌日17時）
+
+■ 評価シートリンク
+{evaluation_sheet_link}
+
+ご不明点があればお知らせください。
+
+採用チーム
+```
+
+---
+
+## Chat結果共有テンプレート
+
+```
+【面接結果速報】
+
+■ 候補者: {candidate_name}
+■ ポジション: {position}
+■ 面接官: {interviewer_name}
+■ 面接日: {interview_date}
+
+■ 総合評価: {overall_impression}
+
+■ 評価サマリー
+{feedback_summary}
+
+■ 推奨次ステップ: {next_step_recommendation}
+
+詳細は評価シートをご確認ください：
+{evaluation_sheet_link}
+```
+
+---
+
+## 次ステップ提案プロンプト
+
+```
+Based on the interview feedback:
+- Overall impression: {overall_impression}
+- Strengths: {strengths}
+- Concerns: {concerns}
+- Interviewer recommendation: {interviewer_recommendation}
+
+Suggest the most appropriate next step:
+1. If "Proceed": Draft calendar invite for next interview round
+2. If "Hold": Draft message requesting hiring manager decision
+3. If "Decline": Draft polite rejection email
+
+Provide:
+- Recommended action
+- Draft message content
+- Any special considerations
+
+Output in Japanese.
+```
+
+---
+
+## お見送りメール下書きテンプレート
+
+```
+件名：選考結果のご連絡【{company_name}】
+
+{candidate_name}様
+
+この度は、弊社の採用選考にご応募いただき、誠にありがとうございました。
+
+慎重に検討を重ねました結果、誠に残念ながら今回は採用を見送らせていただくこととなりました。
+
+{candidate_name}様の今後のご活躍を心よりお祈り申し上げます。
+
+{company_name}
+採用チーム
+```
+
+---
+
+## エージェント設定サマリー
+
+| 項目 | 設定値 |
+|------|--------|
+| エージェント名 | Post-Interview Workflow |
+| スターター | Calendar event ends (面接) |
+| 評価依頼送信 | Gmail (面接終了直後) |
+| 評価検知 | Forms response trigger |
+| 結果共有 | Chat (採用チームスペース) |
+| 次ステップ | 条件分岐で自動提案 |

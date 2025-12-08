@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作業ゼロで見える化：Looker Studioで自動更新ダッシュボード</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--electric);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateX(10px);
+            box-shadow: -5px 5px 0 var(--electric);
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            position: relative;
+            overflow-x: auto;
+            box-shadow: 0 10px 30px rgba(10, 14, 39, 0.3);
+            border: 2px solid var(--electric);
+            text-align: left;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: 'SAMPLE DATA';
+            position: absolute;
+            top: -1px;
+            right: -1px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.25rem 1rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 0 6px 0 6px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .list {
+            text-align: left;
+            margin: 2rem 0;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▶';
+            color: var(--electric);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .prompt-example {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        .prompt-example pre {
+            background: rgba(0, 240, 255, 0.05);
+            border: none;
+            padding: 1rem;
+            white-space: pre-wrap;
+            font-style: normal;
+            line-height: 1.8;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--electric);
+            color: var(--ink);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 1rem;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .advanced-section {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(0, 240, 255, 0.05));
+            border: 2px dashed var(--electric);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+
+        .advanced-section h3 {
+            color: var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .navigation {
+                right: 1rem;
+            }
+
+            .content-section {
+                padding: 4rem 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+        <div class="nav-pill" data-section="7"></div>
+    </div>
+
+    <div class="container">
+        <!-- Section 1: タイトル -->
+        <section class="content-section visible" id="section-0">
+            <h1 class="section-title">作業ゼロで見える化！</h1>
+            <div class="section-content">
+                <p style="font-size: 1.8rem; margin-bottom: 2rem; color: var(--electric);">
+                    Looker Studioで自動更新ダッシュボード
+                </p>
+                <div class="card">
+                    <h3>学習目標</h3>
+                    <p>一度設定すれば、あとは自動更新。Googleスプレッドシートと連携した夢のようなダッシュボードを9分で構築します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: 現状の課題と理想の姿 -->
+        <section class="content-section" id="section-1">
+            <h2 class="section-title">現状の課題と理想の姿</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">Before：毎月の苦労</span></h3>
+                        <ul style="list-style: none; text-align: left;">
+                            <li>▶ Excelでデータ更新（30分）</li>
+                            <li>▶ グラフを作り直し（20分）</li>
+                            <li>▶ PowerPointに貼り付け（15分）</li>
+                            <li>▶ PDFに変換してメール（10分）</li>
+                        </ul>
+                        <p style="margin-top: 1rem;"><strong>合計75分の作業</strong></p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">After：自動化の実現</span></h3>
+                        <ul style="list-style: none; text-align: left;">
+                            <li>✓ Googleスプレッドシートを更新するだけ</li>
+                            <li>✓ URLを共有するだけで全員が最新データを閲覧</li>
+                            <li>✓ インタラクティブなフィルターで自由に分析</li>
+                            <li>✓ スマホからでも確認可能</li>
+                        </ul>
+                        <p style="margin-top: 1rem;"><strong>作業時間：75分→5分に短縮</strong></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Looker Studio基本セットアップ -->
+        <section class="content-section" id="section-2">
+            <h2 class="section-title">Looker Studio基本セットアップ</h2>
+            <div class="section-content">
+                <div class="card">
+                    <h3><span class="highlight">Googleスプレッドシートの準備</span></h3>
+                    <p><span class="step-number">1</span>Google Driveを開く</p>
+                    <p><span class="step-number">2</span>新規→Googleスプレッドシート</p>
+                    <p><span class="step-number">3</span>sales_data_monthly.csvをインポート</p>
+                </div>
+                <div class="prompt-example">
+                    <h3>重要なポイント</h3>
+                    <pre>
+・1行目は必ず列名にする
+・日付は統一フォーマットに（YYYY-MM-DD推奨）
+・数値にカンマは入れない
+・空白セルは避ける（0を入力）
+                    </pre>
+                </div>
+                <div class="code-block">
+                    <pre>サンプルデータ構造：
+
+日付,商品名,カテゴリ,売上金額,数量,地域
+2024-01-01,商品A,電子機器,150000,5,関東
+2024-01-02,商品B,文具,25000,10,関西
+2024-01-03,商品C,食品,45000,15,中部
+2024-01-04,商品D,電子機器,200000,3,関東
+2024-01-05,商品E,文具,15000,20,九州</pre>
+                </div>
+                <div class="card">
+                    <h3><span class="highlight">Looker Studioへの接続</span></h3>
+                    <p><span class="step-number">1</span>lookerstudio.google.comにアクセス</p>
+                    <p><span class="step-number">2</span>『空のレポート』をクリック</p>
+                    <p><span class="step-number">3</span>データソースを追加→Googleスプレッドシート</p>
+                    <p><span class="step-number">4</span>スプレッドシートを選択して『追加』</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: 実践的なダッシュボード構築 -->
+        <section class="content-section" id="section-3">
+            <h2 class="section-title">実践的なダッシュボード構築</h2>
+            <div class="section-content">
+                <div class="card">
+                    <h3><span class="highlight">最初のグラフ作成</span></h3>
+                    <p><span class="step-number">1</span>『グラフを追加』→『時系列グラフ』を選択</p>
+                    <p><span class="step-number">2</span>キャンバスにドラッグ＆ドロップ</p>
+                    <p><span class="step-number">3</span>右側のパネルで設定：</p>
+                    <ul style="list-style: none; padding-left: 2rem;">
+                        <li>• ディメンション：日付</li>
+                        <li>• 指標：売上金額（SUM）</li>
+                        <li>• 集計方法：日別→月別に変更</li>
+                    </ul>
+                </div>
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">スコアカード（KPI）</span></h3>
+                        <p>今月の売上、前月比、目標達成率を大きく表示</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">棒グラフ</span></h3>
+                        <p>商品カテゴリ別や地域別の売上比較</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">円グラフ</span></h3>
+                        <p>売上構成比を視覚的に表現</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">テーブル</span></h3>
+                        <p>詳細データの一覧表示</p>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>インタラクティブ機能の追加</h3>
+                    <pre>
+1. 日付範囲フィルター
+   『コントロールを追加』→『日付範囲』
+   期間を自由に変更可能
+
+2. ドロップダウンフィルター
+   商品カテゴリや地域でフィルタリング
+
+3. チェックボックス
+   特定の条件でデータを絞り込み
+
+※すべてのグラフが連動して更新されます！
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: 共有と運用の設定 -->
+        <section class="content-section" id="section-4">
+            <h2 class="section-title">共有と運用の設定</h2>
+            <div class="section-content">
+                <div class="card">
+                    <h3><span class="highlight">共有設定</span></h3>
+                    <p><span class="step-number">1</span>右上の『共有』ボタンをクリック</p>
+                    <p><span class="step-number">2</span>共有オプションを選択：</p>
+                    <ul style="list-style: none; padding-left: 2rem;">
+                        <li>• リンクを知っている全員が閲覧可</li>
+                        <li>• 特定のユーザーのみ</li>
+                        <li>• 編集権限の設定</li>
+                    </ul>
+                </div>
+                <div class="prompt-example">
+                    <h3>おすすめ設定</h3>
+                    <pre>
+・経営層：閲覧のみ
+・分析チーム：編集可能
+・営業チーム：閲覧＋フィルター操作
+
+※URLを共有するだけで、最新データを確認できます
+                    </pre>
+                </div>
+                <div class="card">
+                    <h3><span class="highlight">データ更新の流れ</span></h3>
+                    <p><span class="step-number">1</span>新しい売上データをCSV形式で準備</p>
+                    <p><span class="step-number">2</span>Googleスプレッドシートを開いて、既存データに追加</p>
+                    <p><span class="step-number">3</span>Looker Studioが自動的に最新データを表示</p>
+                    <p style="margin-top: 1rem;"><strong>特別な設定は不要！スプレッドシートを更新するだけ</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: デザインのカスタマイズ -->
+        <section class="content-section" id="section-5">
+            <h2 class="section-title">デザインのカスタマイズ</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">テーマの変更</span></h3>
+                        <p>『テーマとレイアウト』から会社のカラーを選択</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">ロゴの追加</span></h3>
+                        <p>『画像』から会社ロゴをアップロード</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">タイトル設定</span></h3>
+                        <p>分かりやすいタイトルとヘッダーを設定</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">モバイル対応</span></h3>
+                        <p>レスポンシブデザインで外出先でも確認可能</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: 上級テクニック -->
+        <section class="content-section" id="section-6">
+            <h2 class="section-title">上級テクニック</h2>
+            <div class="section-content">
+                <div class="advanced-section">
+                    <h3>🚀 ChatGPT GPTsを活用した分析補助</h3>
+                    <p>ChatGPTのGPTs（カスタムGPT）機能を使えば、分析をさらに効率化できます：</p>
+                    <ul style="list-style: none; text-align: left; margin-top: 1rem;">
+                        <li>▶ 売上分析専用GPTを作成</li>
+                        <li>▶ 分析プログラムファイルをアップロード</li>
+                        <li>▶ いつも同じ分析を自動実行</li>
+                        <li>▶ 月次レポートの自動生成</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>設定方法：</strong>ChatGPT Plus/Teamで「GPTを作成」から専用の分析アシスタントを構築</p>
+                </div>
+                <div class="advanced-section">
+                    <h3>⚡ Google Apps Scriptで完全自動化</h3>
+                    <div class="code-block">
+                        <pre>// 毎日定時にデータを自動更新
+function autoUpdateDashboard() {
+  // CSVファイルを自動取得
+  const csvData = fetchLatestCSV();
+  
+  // スプレッドシートに追加
+  const sheet = SpreadsheetApp.getActiveSheet();
+  const lastRow = sheet.getLastRow();
+  sheet.getRange(lastRow + 1, 1, csvData.length, csvData[0].length)
+       .setValues(csvData);
+  
+  // 重複削除
+  removeDuplicates();
+  
+  // エラー通知
+  if (hasErrors()) {
+    sendAlertEmail();
+  }
+}
+
+// トリガー設定で毎日AM9:00に実行</pre>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>計算フィールドの活用</h3>
+                    <pre>
+Looker Studioの計算フィールドで高度な分析：
+
+・前年同月比 = (今月売上 - 前年同月売上) / 前年同月売上 * 100
+・移動平均 = AVG(直近3ヶ月の売上)
+・成長率 = (当月売上 - 前月売上) / 前月売上 * 100
+
+条件付き書式：
+・目標達成率100%以上 → 緑色表示
+・90%未満 → 赤色で警告表示
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: まとめと実践課題 -->
+        <section class="content-section" id="section-7">
+            <h2 class="section-title">まとめと実践課題</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">本日の成果</span></h3>
+                        <ul class="list">
+                            <li>Googleスプレッドシートとの連携</li>
+                            <li>インタラクティブなダッシュボード作成</li>
+                            <li>自動更新の仕組み構築</li>
+                            <li>組織内での共有設定</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">削減効果</span></h3>
+                        <p><strong>月75分→5分に短縮</strong></p>
+                        <p>年間で15時間の削減</p>
+                        <p>その時間を、より価値の高い分析に活用できます</p>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>実践課題</h3>
+                    <pre>
+1. 実際の売上データでLooker Studioダッシュボードを構築
+2. 基本的なKPIから始めて、段階的に高度な機能を追加
+3. チームメンバーと共有して、フィードバックを収集
+4. 最終的には完全自動化されたビジネスインテリジェンスシステムを完成
+
+次回予告：
+「ChatGPTがうまく働かない？指示ミスを防ぐ5つの型」
+AIとの対話スキルを磨いて、真のAI活用マスターになりましょう！
+                    </pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Intersection Observer for fade-in animation
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '-10% 0px -10% 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Update navigation
+                    const sectionIndex = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, index) => {
+                        pill.classList.toggle('active', index === sectionIndex);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Navigation click handlers
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

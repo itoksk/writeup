@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：承認プロセスを自動化するワークフロー | ゼロタッチマネジメント</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #06B6D4;
+            --violet: #0EA5E9;
+            --gray: #4A5568;
+            --border: #E2E8F0;
+            --bg-light: #F8FAFC;
+        }
+        body {
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-back:hover { color: var(--electric); }
+        .nav-lesson {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem;
+        }
+        .lesson-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .lesson-number {
+            font-size: 6rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+        }
+        .lesson-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 1rem 0 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        .lesson-subtitle {
+            font-size: 1.125rem;
+            color: var(--gray);
+        }
+        section {
+            margin-bottom: 3rem;
+        }
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 4px solid var(--electric);
+        }
+        .goal-card {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(6, 182, 212, 0.05));
+            border-radius: 12px;
+            padding: 2rem;
+            border-left: 4px solid var(--violet);
+        }
+        .goal-card p {
+            font-size: 1.05rem;
+            color: var(--gray);
+            line-height: 1.8;
+        }
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .agent-card {
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            border-top: 4px solid var(--electric);
+        }
+        .agent-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+        .agent-card p {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        .status-table th,
+        .status-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .status-table th {
+            background: var(--bg-light);
+            font-weight: 600;
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: var(--electric);
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin: 1rem 0;
+            line-height: 1.6;
+        }
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .step-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            font-weight: 700;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .step-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .step-content p {
+            font-size: 0.9rem;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+        .flow-container {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+        .flow-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        .flow-icon {
+            font-size: 1.5rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 50%;
+            border: 2px solid var(--electric);
+        }
+        .flow-content h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .flow-content p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        .flow-arrow {
+            text-align: center;
+            color: var(--electric);
+            font-size: 1.25rem;
+            padding: 0.5rem 0;
+        }
+        .branch-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .branch-item {
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .branch-item.approved {
+            background: #F0FDF4;
+            color: #22C55E;
+            border: 1px solid #BBF7D0;
+        }
+        .branch-item.returned {
+            background: #FFF7ED;
+            color: #F97316;
+            border: 1px solid #FDBA74;
+        }
+        .branch-item.rejected {
+            background: #FEF2F2;
+            color: #EF4444;
+            border: 1px solid #FECACA;
+        }
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+        .checklist-item svg {
+            color: #22c55e;
+            flex-shrink: 0;
+        }
+        .checklist-item span {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        .comparison-card {
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .comparison-card.before { border-top: 4px solid #EF4444; }
+        .comparison-card.after { border-top: 4px solid #22C55E; }
+        .comparison-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .comparison-card.before .comparison-header { color: #EF4444; }
+        .comparison-card.after .comparison-header { color: #22C55E; }
+        .comparison-card ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .comparison-card li {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        .summary-box {
+            background: var(--ink);
+            color: var(--paper);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+        .summary-box h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .summary-box ul {
+            list-style: none;
+        }
+        .summary-box li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .summary-box li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .result-card {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(6, 182, 212, 0.1));
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .result-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        .complete-banner {
+            margin-top: 3rem;
+            padding: 3rem;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+        }
+        .complete-banner h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .complete-banner p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+        .nav-prev {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-light);
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-prev:hover {
+            background: var(--electric);
+            color: white;
+        }
+        .config-note {
+            background: rgba(6, 182, 212, 0.1);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            font-size: 0.875rem;
+            color: var(--gray);
+            margin-top: 1rem;
+            border-left: 3px solid var(--electric);
+        }
+        .config-note strong {
+            color: var(--ink);
+        }
+        .template-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        .template-header {
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border);
+        }
+        .template-header.approved {
+            background: #F0FDF4;
+            color: #22C55E;
+            border-bottom: 1px solid #BBF7D0;
+        }
+        .template-header.returned {
+            background: #FFF7ED;
+            color: #F97316;
+            border-bottom: 1px solid #FDBA74;
+        }
+        .template-header.rejected {
+            background: #FEF2F2;
+            color: #EF4444;
+            border-bottom: 1px solid #FECACA;
+        }
+        .template-body {
+            padding: 0;
+        }
+        .template-body .code-block {
+            margin: 0;
+            border-radius: 0;
+        }
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        .timeline-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .timeline-time {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .timeline-action {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        .agent-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .agent-summary-card {
+            padding: 1rem 1.25rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .agent-summary-num {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            font-weight: 700;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .agent-summary-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 0.25rem;
+        }
+        .agent-summary-info p {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+        @media (max-width: 768px) {
+            .lesson-number { font-size: 4rem; }
+            .lesson-title { font-size: 1.5rem; }
+            .agents-grid, .comparison-grid, .results-grid, .branch-container, .timeline-grid, .agent-summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">第5回 / 全5回（最終回）</div>
+        </div>
+    </nav>
+
+    <main>
+        <header class="lesson-header">
+            <div class="lesson-number">05</div>
+            <h1 class="lesson-title">承認プロセスを自動化するワークフロー</h1>
+            <p class="lesson-subtitle">誰に何をいつ伝えるかを整理し遅延ゼロを実現する</p>
+        </header>
+
+        <section>
+            <h2>学習目標 GOAL</h2>
+            <div class="goal-card">
+                <p>稟議・経費・休暇申請の承認フローを自動化し、申請内容の自動分類、適切な承認者への自動ルーティング、承認待ち監視とリマインド、結果に応じた自動処理を実装。8つのエージェントでゼロタッチマネジメントを完成させる</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>作成するエージェント</h2>
+            <div class="agents-grid">
+                <div class="agent-card">
+                    <h3>Approval Request Agent</h3>
+                    <p>申請内容を自動分類し、金額・種類に応じて適切な承認者を決定。承認依頼を自動送信</p>
+                </div>
+                <div class="agent-card">
+                    <h3>Approval Monitor Agent</h3>
+                    <p>承認待ち案件を監視し、設定した期間に応じてリマインド・エスカレーションを自動実行</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Approval Request Agent 設計</h2>
+            <table class="status-table">
+                <tr>
+                    <th>項目</th>
+                    <th>設定値</th>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td>Approval Request Agent</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>Processes approval requests and routes to appropriate approver</td>
+                </tr>
+                <tr>
+                    <td>Trigger</td>
+                    <td>Gmail (Subject contains 申請/稟議) or Forms submission</td>
+                </tr>
+                <tr>
+                    <td>Process</td>
+                    <td>Gemini classification + approver determination based on rules</td>
+                </tr>
+                <tr>
+                    <td>Output (Approver)</td>
+                    <td>Gmail with approval request details</td>
+                </tr>
+                <tr>
+                    <td>Output (Sheets)</td>
+                    <td>Log to 承認管理シート</td>
+                </tr>
+                <tr>
+                    <td>Output (Requester)</td>
+                    <td>Gmail confirmation of submission</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Approval Monitor Agent 設計</h2>
+            <table class="status-table">
+                <tr>
+                    <th>項目</th>
+                    <th>設定値</th>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td>Approval Monitor Agent</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>Monitors pending approvals and sends reminders/escalations</td>
+                </tr>
+                <tr>
+                    <td>Trigger</td>
+                    <td>Schedule (Daily, 10:00 and 15:00 JST)</td>
+                </tr>
+                <tr>
+                    <td>Data Source</td>
+                    <td>Sheets (承認待ちリスト)</td>
+                </tr>
+                <tr>
+                    <td>Process</td>
+                    <td>Check pending duration and urgency level</td>
+                </tr>
+                <tr>
+                    <td>Output (Approver)</td>
+                    <td>Gmail/Chat reminder</td>
+                </tr>
+                <tr>
+                    <td>Output (Manager)</td>
+                    <td>Gmail/Chat escalation (if over threshold)</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>承認ルールマトリクス</h2>
+            <table class="status-table">
+                <tr>
+                    <th>申請種類</th>
+                    <th>金額条件</th>
+                    <th>第1承認者</th>
+                    <th>第2承認者</th>
+                    <th>リマインド</th>
+                    <th>エスカレーション</th>
+                </tr>
+                <tr>
+                    <td>経費申請</td>
+                    <td>&lt; 50,000円</td>
+                    <td>直属上長</td>
+                    <td>-</td>
+                    <td>48h後</td>
+                    <td>72h後</td>
+                </tr>
+                <tr>
+                    <td>経費申請</td>
+                    <td>&gt;= 50,000円</td>
+                    <td>部門長</td>
+                    <td>-</td>
+                    <td>48h後</td>
+                    <td>72h後</td>
+                </tr>
+                <tr>
+                    <td>稟議</td>
+                    <td>&lt; 500,000円</td>
+                    <td>部門長</td>
+                    <td>-</td>
+                    <td>48h後</td>
+                    <td>72h後</td>
+                </tr>
+                <tr>
+                    <td>稟議</td>
+                    <td>&gt;= 500,000円</td>
+                    <td>部門長</td>
+                    <td>経営層</td>
+                    <td>24h後</td>
+                    <td>48h後</td>
+                </tr>
+                <tr>
+                    <td>休暇申請</td>
+                    <td>-</td>
+                    <td>直属上長</td>
+                    <td>-</td>
+                    <td>24h後</td>
+                    <td>48h後</td>
+                </tr>
+            </table>
+            <div class="config-note">
+                <strong>ポイント:</strong> 金額が大きいほど上位承認者が必要となり、緊急度に応じてリマインド・エスカレーションの間隔が短くなります。
+            </div>
+        </section>
+
+        <section>
+            <h2>承認フロー全体像</h2>
+            <div class="flow-container">
+                <div class="flow-item">
+                    <div class="flow-icon">📝</div>
+                    <div class="flow-content">
+                        <h3>申請受付</h3>
+                        <p>Gmail/Formsで申請を受け付け、Sheetsに記録</p>
+                    </div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-item">
+                    <div class="flow-icon">🤖</div>
+                    <div class="flow-content">
+                        <h3>申請内容の自動分類</h3>
+                        <p>Geminiが種類・金額・緊急度を自動判定</p>
+                    </div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-item">
+                    <div class="flow-icon">👤</div>
+                    <div class="flow-content">
+                        <h3>承認者の自動決定</h3>
+                        <p>ルールに基づき第1・第2承認者を決定</p>
+                    </div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-item">
+                    <div class="flow-icon">📧</div>
+                    <div class="flow-content">
+                        <h3>承認依頼の自動送信</h3>
+                        <p>承認者に詳細情報と承認リンクを送信</p>
+                    </div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-item">
+                    <div class="flow-icon">⏰</div>
+                    <div class="flow-content">
+                        <h3>承認待ち監視</h3>
+                        <p>設定期間経過でリマインド→エスカレーション</p>
+                    </div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="branch-container">
+                    <div class="branch-item approved">承認 → 完了通知 → 次の承認者へ（多段階の場合）</div>
+                    <div class="branch-item returned">差し戻し → 修正依頼 → 再申請待ち</div>
+                    <div class="branch-item rejected">却下 → 却下通知 → 案件クローズ</div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>申請分類・承認者決定プロンプト GEMINI PROMPT</h2>
+            <div class="code-block">You are an approval workflow assistant.
+
+Request content:
+---
+{request_content}
+---
+
+Approver directory:
+{approver_directory}
+
+Analyze and extract:
+1. Request type: 経費申請 / 稟議 / 休暇申請 / その他
+2. Amount (if applicable): {amount} JPY
+3. Requester: {name}
+4. Department: {department}
+5. Direct manager: {manager_name} ({manager_email})
+6. Summary: (one sentence description)
+7. Urgency: 通常 / 急ぎ / 緊急
+
+Determine approver based on rules:
+- 経費 < 50,000: Direct manager
+- 経費 >= 50,000: Department head
+- 稟議 < 500,000: Department head
+- 稟議 >= 500,000: Department head → Executive
+- 休暇: Direct manager
+
+Output format:
+---
+REQUEST_TYPE: {type}
+AMOUNT: {amount}
+REQUESTER: {name}
+DEPARTMENT: {department}
+SUMMARY: {summary}
+URGENCY: {urgency}
+APPROVER_1: {approver1_name} ({approver1_email})
+APPROVER_2: {approver2_name} ({approver2_email}) or "NONE"
+REMINDER_HOURS: {24 or 48}
+ESCALATION_HOURS: {48 or 72}
+---
+Output in Japanese where applicable.</div>
+        </section>
+
+        <section>
+            <h2>承認待ち監視プロンプト</h2>
+            <div class="code-block">You are monitoring pending approval requests.
+
+Current time: {current_time}
+
+Pending approvals from Sheets:
+{pending_list}
+
+For each pending item, check:
+1. Hours since request submitted
+2. Urgency level (通常/急ぎ/緊急)
+3. Reminder threshold (24h or 48h)
+4. Escalation threshold (48h or 72h)
+
+Generate actions:
+- If pending > reminder_threshold AND NOT reminded_today:
+    → Send reminder to approver
+- If pending > escalation_threshold:
+    → Escalate to approver's manager
+    → Flag as "要エスカレーション" in Sheets
+
+Output format:
+---
+REMINDERS_TO_SEND:
+- {approver_name} ({approver_email}): {request_summary} - pending {hours}h
+
+ESCALATIONS:
+- {manager_name}: {request_summary} from {requester} - approver: {approver}, pending {hours}h
+
+SUMMARY:
+- Total pending: {count}
+- Requires reminder: {count}
+- Requires escalation: {count}
+---
+Output messages in Japanese.</div>
+        </section>
+
+        <section>
+            <h2>承認依頼メールテンプレート</h2>
+            <div class="code-block">件名：【承認依頼】{request_type} - {requester}
+
+{approver}さん
+
+お疲れ様です。
+以下の申請について、承認をお願いいたします。
+
+■ 申請内容
+・種類: {request_type}
+・申請者: {requester}
+・部署: {department}
+・金額: {amount}円
+・緊急度: {urgency}
+
+■ 概要
+{summary}
+
+■ 詳細
+{request_detail}
+
+■ 対応期限
+{deadline}（{reminder_hours}時間後にリマインド送信）
+
+■ 承認・差し戻し・却下
+以下のリンクより対応をお願いいたします。
+✅ 承認: {approval_link}
+🔄 差し戻し: {return_link}
+❌ 却下: {reject_link}
+
+よろしくお願いいたします。</div>
+        </section>
+
+        <section>
+            <h2>結果別通知テンプレート</h2>
+
+            <div class="template-card">
+                <div class="template-header approved">承認完了通知</div>
+                <div class="template-body">
+                    <div class="code-block">件名：【承認完了】{request_type}が承認されました
+
+{requester}さん
+
+お疲れ様です。
+申請いただいた{request_type}が承認されました。
+
+■ 承認内容
+・種類: {request_type}
+・金額: {amount}円
+・承認者: {approver}
+・承認日時: {approval_datetime}
+
+{if has_next_approver:
+■ 次の承認者
+{next_approver}へ承認依頼を送信しました。
+引き続き対応をお待ちください。
+}
+
+{if final_approval:
+■ 次のステップ
+{next_steps}
+}
+
+ご不明点があればお知らせください。</div>
+                </div>
+            </div>
+
+            <div class="template-card">
+                <div class="template-header returned">差し戻し通知</div>
+                <div class="template-body">
+                    <div class="code-block">件名：【差し戻し】{request_type}の修正をお願いします
+
+{requester}さん
+
+お疲れ様です。
+申請いただいた{request_type}について、差し戻しとなりました。
+
+■ 差し戻し理由
+{return_reason}
+
+■ 修正が必要なポイント
+{revision_points}
+
+修正後、再度申請をお願いいたします。
+ご質問があればお気軽にお問い合わせください。</div>
+                </div>
+            </div>
+
+            <div class="template-card">
+                <div class="template-header rejected">却下通知</div>
+                <div class="template-body">
+                    <div class="code-block">件名：【却下】{request_type}について
+
+{requester}さん
+
+お疲れ様です。
+申請いただいた{request_type}について、残念ながら却下となりました。
+
+■ 却下理由
+{rejection_reason}
+
+ご不明点があれば、{approver}までお問い合わせください。</div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>リマインド・エスカレーションテンプレート</h2>
+            <div class="code-block">■ リマインドメール
+---
+件名：【リマインド】承認待ち案件があります
+
+{approver}さん
+
+お疲れ様です。
+以下の承認依頼が{hours}時間以上未処理となっています。
+
+■ 承認待ち案件
+{pending_items_list}
+
+お手数ですが、ご確認・ご対応をお願いいたします。
+
+{approval_link}
+---
+
+■ エスカレーションメール
+---
+件名：【エスカレーション】承認遅延案件のご確認
+
+{manager}さん
+
+お疲れ様です。
+以下の承認依頼が{escalation_hours}時間以上未処理となっています。
+
+■ 遅延案件
+・申請: {request_summary}
+・申請者: {requester}
+・承認者: {approver}
+・経過時間: {hours}時間
+・緊急度: {urgency}
+
+フォローをお願いいたします。
+---</div>
+        </section>
+
+        <section>
+            <h2>承認結果処理ロジック</h2>
+            <div class="code-block">// Approval Response Handler
+
+IF approval_status == "APPROVED":
+    → Update Sheets status to "承認済"
+    → Notify requester (承認完了メール)
+    → IF has_next_approver:
+        → Send to next approver (承認依頼メール)
+        → Update Sheets: current_approver = next_approver
+    → ELSE:
+        → Mark as "完了"
+        → Execute completion actions (if any)
+
+ELSE IF approval_status == "RETURNED":
+    → Update Sheets status to "差し戻し"
+    → Notify requester (差し戻しメール)
+    → Include return_reason and revision_points
+    → Enable re-submission
+
+ELSE IF approval_status == "REJECTED":
+    → Update Sheets status to "却下"
+    → Notify requester (却下メール)
+    → Include rejection_reason
+    → Close the request</div>
+        </section>
+
+        <section>
+            <h2>作成ステップ</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>承認管理シートの準備</h3>
+                        <p>承認管理シート（申請ID、申請者、種類、金額、ステータス、承認者、申請日時、承認日時、コメント）を作成</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>承認者マスタの準備</h3>
+                        <p>メンバーマスタシートに直属上長、部門長、経営層の情報を追加。承認ルーティングに使用</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Approval Request Agent 作成</h3>
+                        <p>Gmail/Forms受信 → Gemini分類 → 承認者決定 → 承認依頼送信 → Sheets記録</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Approval Monitor Agent 作成</h3>
+                        <p>Schedule 10:00/15:00 → 承認待ちチェック → リマインド送信 → エスカレーション送信</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>承認応答処理の設定</h3>
+                        <p>承認/差し戻し/却下のリンクをForms/メール返信で受け付け、結果に応じた処理を実行</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>テスト・調整</h3>
+                        <p>各パターン（承認/差し戻し/却下、単段階/多段階、リマインド/エスカレーション）をテスト</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>監視タイムライン</h2>
+            <div class="timeline-grid">
+                <div class="timeline-card">
+                    <div class="timeline-time">10:00</div>
+                    <div class="timeline-action">午前チェック<br>リマインド送信</div>
+                </div>
+                <div class="timeline-card">
+                    <div class="timeline-time">15:00</div>
+                    <div class="timeline-action">午後チェック<br>エスカレーション</div>
+                </div>
+                <div class="timeline-card">
+                    <div class="timeline-time">24h</div>
+                    <div class="timeline-action">急ぎ案件<br>リマインド</div>
+                </div>
+                <div class="timeline-card">
+                    <div class="timeline-time">48h</div>
+                    <div class="timeline-action">通常案件<br>リマインド</div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>コースで作成したエージェント一覧</h2>
+            <div class="agent-summary-grid">
+                <div class="agent-summary-card">
+                    <div class="agent-summary-num">1</div>
+                    <div class="agent-summary-info">
+                        <h4>Daily Report Request</h4>
+                        <p>Schedule 17:00 → 提出依頼送信</p>
+                    </div>
+                </div>
+                <div class="agent-summary-card">
+                    <div class="agent-summary-num">2</div>
+                    <div class="agent-summary-info">
+                        <h4>Report Summary</h4>
+                        <p>Gmail受信 → 日報要約・Chat通知</p>
+                    </div>
+                </div>
+                <div class="agent-summary-card">
+                    <div class="agent-summary-num">3</div>
+                    <div class="agent-summary-info">
+                        <h4>Quality Check</h4>
+                        <p>Gmail受信 → 品質判定・フィードバック</p>
+                    </div>
+                </div>
+                <div class="agent-summary-card">
+                    <div class="agent-summary-num">4</div>
+                    <div class="agent-summary-info">
+                        <h4>Submission Check</h4>
+                        <p>Schedule 20:00 → 未提出検知・アラート</p>
+                    </div>
+                </div>
+                <div class="agent-summary-card">
+                    <div class="agent-summary-num">5</div>
+                    <div class="agent-summary-info">
+                        <h4>Dashboard Update</h4>
+                        <p>Schedule 21:00 → ダッシュボード更新</p>
+                    </div>
+                </div>
+                <div class="agent-summary-card">
+                    <div class="agent-summary-num">6</div>
+                    <div class="agent-summary-info">
+                        <h4>Weekly Summary</h4>
+                        <p>Schedule Fri 18:00 → 週次サマリー</p>
+                    </div>
+                </div>
+                <div class="agent-summary-card">
+                    <div class="agent-summary-num">7</div>
+                    <div class="agent-summary-info">
+                        <h4>Approval Request</h4>
+                        <p>Gmail/Forms → 承認依頼・ルーティング</p>
+                    </div>
+                </div>
+                <div class="agent-summary-card">
+                    <div class="agent-summary-num">8</div>
+                    <div class="agent-summary-info">
+                        <h4>Approval Monitor</h4>
+                        <p>Schedule 10:00/15:00 → 承認監視</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>コース全体の成果</h2>
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-value">70%</div>
+                    <div class="result-label">管理業務削減</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">0件</div>
+                    <div class="result-label">連絡漏れ</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">即時</div>
+                    <div class="result-label">進捗把握</div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before</div>
+                    <ul>
+                        <li>提出依頼を毎日手動送信</li>
+                        <li>日報確認に60分/日かかる</li>
+                        <li>品質チェックは目視で手動</li>
+                        <li>未提出者の把握に時間がかかる</li>
+                        <li>承認依頼を手動でルーティング</li>
+                        <li>承認遅延に気づけない</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After</div>
+                    <ul>
+                        <li>提出依頼は17:00に自動送信</li>
+                        <li>日報確認は要約で12分/日（80%削減）</li>
+                        <li>品質チェックはAIが自動判定</li>
+                        <li>未提出者は20:00に自動アラート</li>
+                        <li>承認依頼は自動分類・ルーティング</li>
+                        <li>承認遅延は自動リマインド・エスカレーション</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>テスト確認ポイント</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>申請種類と金額が正しく分類されているか</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>適切な承認者に依頼が送信されているか</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>多段階承認（稟議50万以上）が正しく動作するか</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>リマインドが設定した時間後に送信されているか</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>エスカレーションが正しい上位者に送信されているか</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>承認・差し戻し・却下の各結果処理が正しく動作するか</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>今日のポイント SUMMARY</h2>
+            <div class="summary-box">
+                <h3>まとめ</h3>
+                <ul>
+                    <li>申請内容をGeminiが自動分類し、金額・種類に応じて承認者を自動決定</li>
+                    <li>承認依頼を適切な承認者に自動送信（単段階/多段階対応）</li>
+                    <li>承認待ちを10:00/15:00に監視し、リマインド・エスカレーションを自動実行</li>
+                    <li>承認・差し戻し・却下の結果に応じた自動処理で申請者に即時通知</li>
+                    <li>8つのエージェントで「ゼロタッチマネジメント」を完全実現</li>
+                    <li>管理業務70%削減、連絡漏れゼロ、即時進捗把握を達成</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="complete-banner">
+            <h3>コース完了おめでとうございます！</h3>
+            <p>ゼロタッチマネジメントの構築が完了しました。<br>自社の業務に合わせてカスタマイズし、管理業務の自動化を実現してください。</p>
+        </div>
+
+        <nav class="lesson-nav">
+            <a href="lesson4.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <div></div>
+        </nav>
+    </main>
+</body>
+</html>

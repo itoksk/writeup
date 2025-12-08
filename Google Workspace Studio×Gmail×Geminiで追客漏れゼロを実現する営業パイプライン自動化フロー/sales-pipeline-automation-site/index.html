@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>営業パイプライン自動化フロー | Google Workspace Studio</title>
+    <meta name="description" content="Google Workspace Studio × Gmail × Geminiで追客漏れゼロを実現する営業パイプライン自動化フロー">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-primary: #2563eb;
+            --accent-secondary: #7c3aed;
+            --accent-tertiary: #0891b2;
+            --accent-gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #0891b2 100%);
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --transition-fast: 0.15s ease;
+            --transition-base: 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition-base);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition-fast);
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-primary);
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 2rem 6rem;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-pattern {
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0);
+            background-size: 40px 40px;
+            opacity: 0.5;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .hero-title-accent {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            background: var(--accent-gradient);
+            color: white;
+            text-decoration: none;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-base);
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .section {
+            padding: 6rem 2rem;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+        }
+
+        .section-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .problem {
+            background: var(--bg-secondary);
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .problem-card {
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-base);
+        }
+
+        .problem-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .problem-card.before {
+            border-top: 4px solid #ef4444;
+        }
+
+        .problem-card.after {
+            border-top: 4px solid #22c55e;
+        }
+
+        .problem-card-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .problem-card.before .problem-card-header {
+            color: #ef4444;
+        }
+
+        .problem-card.after .problem-card-header {
+            color: #22c55e;
+        }
+
+        .problem-card-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+        }
+
+        .problem-card-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        .problem-card-list li::before {
+            content: '';
+            flex-shrink: 0;
+            width: 6px;
+            height: 6px;
+            margin-top: 0.5rem;
+            border-radius: 50%;
+        }
+
+        .problem-card.before .problem-card-list li::before {
+            background: #ef4444;
+        }
+
+        .problem-card.after .problem-card-list li::before {
+            background: #22c55e;
+        }
+
+        .curriculum-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .curriculum-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition-base);
+        }
+
+        .curriculum-item:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+            transform: translateX(8px);
+        }
+
+        .curriculum-number {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            transition: var(--transition-base);
+        }
+
+        .curriculum-item:hover .curriculum-number {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .curriculum-content {
+            flex: 1;
+        }
+
+        .curriculum-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .curriculum-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .curriculum-arrow {
+            color: var(--text-muted);
+            transition: var(--transition-fast);
+        }
+
+        .curriculum-item:hover .curriculum-arrow {
+            color: var(--accent-primary);
+            transform: translateX(4px);
+        }
+
+        .features {
+            background: var(--bg-secondary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            margin-bottom: 1.25rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .feature-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .cta {
+            background: var(--bg-primary);
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .footer {
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-text {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .footer-links a {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-primary);
+        }
+
+        @media (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 6rem 1.5rem 4rem;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .problem-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .curriculum-item {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .section {
+                padding: 4rem 1.5rem;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+
+        [id] {
+            scroll-margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-logo">Sales Pipeline Automation</div>
+            <ul class="nav-links">
+                <li><a href="#problem">課題</a></li>
+                <li><a href="#curriculum">カリキュラム</a></li>
+                <li><a href="#features">特徴</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-pattern"></div>
+        <div class="hero-content">
+            <div class="hero-badge">Google Workspace Studio Course</div>
+            <h1 class="hero-title">
+                追客漏れゼロを実現する<br>
+                <span class="hero-title-accent">営業パイプライン自動化</span>
+            </h1>
+            <p class="hero-description">
+                Google Workspace Studio と Gemini を活用して、営業メール業務を80%効率化。
+                見込み顧客メールの自動要約、追客漏れ防止、資料の自動整理を実現します。
+            </p>
+            <a href="#curriculum" class="hero-cta">
+                カリキュラムを見る
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value">80%</div>
+                    <div class="hero-stat-label">確認時間削減</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">0</div>
+                    <div class="hero-stat-label">追客漏れ</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">5</div>
+                    <div class="hero-stat-label">動画レッスン</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section problem" id="problem">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Problem & Solution</div>
+                <h2 class="section-title">営業メール業務の課題を解決</h2>
+                <p class="section-description">
+                    毎日のメール確認に追われる時間を、本来の営業活動に取り戻す
+                </p>
+            </div>
+            <div class="problem-grid">
+                <div class="problem-card before">
+                    <div class="problem-card-header">Before</div>
+                    <ul class="problem-card-list">
+                        <li>案件メールが埋もれて対応が遅れる</li>
+                        <li>重要顧客からのメールを見落とす</li>
+                        <li>追客すべきタイミングを逃して失注</li>
+                        <li>提案資料・見積書がDriveに散在して探せない</li>
+                        <li>期限が迫る案件に直前で気づく</li>
+                    </ul>
+                </div>
+                <div class="problem-card after">
+                    <div class="problem-card-header">After</div>
+                    <ul class="problem-card-list">
+                        <li>案件メールをGeminiが自動要約・優先度判定</li>
+                        <li>重要顧客メールは即座にアラート通知</li>
+                        <li>要対応案件は自動ラベル付け・次アクション提示</li>
+                        <li>提案資料・見積書は案件フォルダに自動整理</li>
+                        <li>期限監視で確度高い案件を逃さない</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="curriculum">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Curriculum</div>
+                <h2 class="section-title">5つのレッスンで完全習得</h2>
+                <p class="section-description">
+                    段階的に学び、実務で使えるエージェントを構築
+                </p>
+            </div>
+            <div class="curriculum-list">
+                <a href="lesson1.html" class="curriculum-item">
+                    <div class="curriculum-number">01</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">案件メール地獄から脱出する</h3>
+                        <p class="curriculum-description">
+                            Google Workspace Studioで営業メール仕事を分解する。営業メール業務の課題を整理し、5つのエージェントによる自動化の全体像を理解します。
+                        </p>
+                    </div>
+                    <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="lesson2.html" class="curriculum-item">
+                    <div class="curriculum-number">02</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">見込み顧客メールを10分で把握</h3>
+                        <p class="curriculum-description">
+                            要約・重要顧客優先・緊急案件アラートの自動化。毎朝、見込み顧客メールをGeminiが自動要約し、重要顧客を優先表示、緊急案件はChatでアラート通知します。
+                        </p>
+                    </div>
+                    <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="lesson3.html" class="curriculum-item">
+                    <div class="curriculum-number">03</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">追客漏れゼロの受信トレイ</h3>
+                        <p class="curriculum-description">
+                            要対応案件メールの自動ラベル化・次アクション設計。メール受信時に要対応を自動判定し、ラベル付与、Geminiが次のアクションを提案します。
+                        </p>
+                    </div>
+                    <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="lesson4.html" class="curriculum-item">
+                    <div class="curriculum-number">04</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">提案資料と見積書を完全自動整理</h3>
+                        <p class="curriculum-description">
+                            Drive保存・定期送信フローで営業資料を整流化。添付ファイルを案件フォルダに自動保存、週次で資料一覧レポートを自動送信します。
+                        </p>
+                    </div>
+                    <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="lesson5.html" class="curriculum-item">
+                    <div class="curriculum-number">05</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">キーワード監視で確度高い案件を逃さない</h3>
+                        <p class="curriculum-description">
+                            使える営業フローに仕上げる最終調整。営業キーワードを監視して確度高い案件を優先アラート、複数エージェントを統合して運用します。
+                        </p>
+                    </div>
+                    <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section features" id="features">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Features</div>
+                <h2 class="section-title">このコースで身につくスキル</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">S</div>
+                    <h3 class="feature-title">Studio基本操作</h3>
+                    <p class="feature-description">
+                        Google Workspace Studioの基本操作からエージェント作成まで、実践的に習得します。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">G</div>
+                    <h3 class="feature-title">Geminiプロンプト設計</h3>
+                    <p class="feature-description">
+                        営業業務に特化したGeminiプロンプトの設計手法を学びます。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">M</div>
+                    <h3 class="feature-title">Gmail自動化</h3>
+                    <p class="feature-description">
+                        メール検索、ラベル付与、自動返信など、Gmail操作の自動化を実装します。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">D</div>
+                    <h3 class="feature-title">Drive連携</h3>
+                    <p class="feature-description">
+                        添付ファイルの自動保存、フォルダ整理、ファイル命名規則の適用を実装します。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">C</div>
+                    <h3 class="feature-title">Chat通知</h3>
+                    <p class="feature-description">
+                        条件に応じたアラート通知、定期レポートの自動送信を実装します。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">F</div>
+                    <h3 class="feature-title">フロー設計</h3>
+                    <p class="feature-description">
+                        複数エージェントを連携させた、実務で使えるワークフローを設計します。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section cta">
+        <div class="section-container">
+            <div class="cta-content">
+                <h2 class="cta-title">営業メール業務を<br>今すぐ自動化する</h2>
+                <p class="cta-description">
+                    5つのレッスンで、追客漏れゼロの営業パイプラインを構築しましょう。
+                </p>
+                <a href="#curriculum" class="hero-cta">
+                    カリキュラムを見る
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-text">Google Workspace Studio Course</div>
+            <div class="footer-links">
+                <a href="https://studio.workspace.google.com" target="_blank">Workspace Studio</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

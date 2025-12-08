@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画3：伝わる指示はこう作る！要件定義テンプレートでAIへの指示ミスを防ぐ方法 - Vibe Coding学習資料</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', sans-serif;
+            line-height: 1.8;
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #ff6b6b;
+            font-size: 36px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #ff6b6b;
+            padding-bottom: 15px;
+        }
+        
+        h2 {
+            color: #ee5a24;
+            font-size: 28px;
+            margin: 40px 0 20px;
+            padding-left: 20px;
+            border-left: 5px solid #feca57;
+        }
+        
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .bad-example, .good-example {
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .bad-example {
+            background: #ffe5e5;
+            border: 3px solid #ff4444;
+        }
+        
+        .good-example {
+            background: #e5ffe5;
+            border: 3px solid #22aa22;
+        }
+        
+        .bad-example::before {
+            content: '❌';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 30px;
+        }
+        
+        .good-example::before {
+            content: '✅';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 30px;
+        }
+        
+        .template-box {
+            background: linear-gradient(135deg, #ffd700, #c9d1d9);
+            border: 2px solid #fdcb6e;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .template-section {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .vibe-level {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #0abde3);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 30px 0;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .vibe-stars {
+            font-size: 30px;
+        }
+        
+        .prompt-evolution {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .evolution-step {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #feca57;
+            position: relative;
+        }
+        
+        .evolution-step::before {
+            content: '↓';
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 30px;
+            color: #feca57;
+        }
+        
+        .evolution-step:last-child::before {
+            content: '';
+        }
+        
+        .magic-words {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .magic-word {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 15px;
+            border-radius: 30px;
+            text-align: center;
+            font-weight: bold;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .magic-word:hover {
+            transform: scale(1.05);
+        }
+        
+        .result-comparison {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .result-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px solid #ddd;
+        }
+        
+        .result-box.bad {
+            border-color: #ff4444;
+        }
+        
+        .result-box.good {
+            border-color: #22aa22;
+        }
+        
+        .tips-container {
+            background: linear-gradient(135deg, #ff6b6b25, #feca5725);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .tip {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tip-icon {
+            font-size: 40px;
+            margin-right: 20px;
+        }
+        
+        .vibe-template {
+            background: #2d2d2d;
+            color: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .vibe-template::before {
+            content: '🚀';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 30px;
+            opacity: 0.5;
+        }
+        
+        .template-title {
+            color: #feca57;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .template-content {
+            color: #f0f0f0;
+            line-height: 1.6;
+        }
+        
+        .highlight-yellow {
+            background: #feca57;
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-shadow: none;
+        }
+        
+        .highlight-red {
+            background: #ff6b6b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            height: 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            animation: fillProgress 2s ease-out;
+        }
+        
+        @keyframes fillProgress {
+            from { width: 0; }
+            to { width: 60%; }
+        }
+        
+        .warning-banner {
+            background: #ffebad;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .warning-icon {
+            font-size: 30px;
+            margin-right: 20px;
+        }
+        
+        .success-banner {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .success-icon {
+            font-size: 30px;
+            margin-right: 20px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.3s;
+            margin: 20px 0;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 動画3：伝わる指示はこう作る！要件定義テンプレートでAIへの指示ミスを防ぐ方法</h1>
+        
+        <div class="vibe-level">
+            <span>AIにお願いしても微妙な結果ばかり…その原因は？</span>
+            <span class="vibe-stars">
+                ⭐⭐⭐⭐⭐
+            </span>
+        </div>
+        
+        <h2>🎯 解決策：要件定義テンプレート</h2>
+        
+        <div class="warning-banner">
+            <div class="warning-icon">💡</div>
+            <div>
+                <h3>この問題には簡単な解決策があります！</h3>
+                <p>「いい感じで作って」では伝わらない → 構造化された要件定義で一発で伝える！</p>
+            </div>
+        </div>
+        
+        <div class="tips-container">
+            <div class="tip">
+                <div class="tip-icon">🚫</div>
+                <div>
+                    <h3>よくある失敗</h3>
+                    <p>「いい感じで作って」と言っても伝わらない</p>
+                </div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">🔄</div>
+                <div>
+                    <h3>何度も修正指示の繰り返し</h3>
+                    <p>結局自分で書き直すことに…</p>
+                </div>
+            </div>
+            <div class="tip">
+                <div class="tip-icon">✨</div>
+                <div>
+                    <h3>解決策</h3>
+                    <p>要件定義テンプレートで開発効率を3倍に！</p>
+                </div>
+            </div>
+        </div>
+        
+        <h2>🔄 Before/After：指示の違いで結果が変わる！</h2>
+        
+        <div class="comparison-container">
+            <div class="bad-example">
+                <h3>Before：曖昧な指示</h3>
+                <div class="template-box" style="background: #ffdddd;">
+                    <pre>Todoアプリ作って。
+使いやすい感じで。</pre>
+                </div>
+                <p><strong>AIの反応：</strong></p>
+                <ul>
+                    <li>「どのような機能が必要ですか？」</li>
+                    <li>「対象ユーザーは？」</li>
+                    <li>「技術スタックは？」</li>
+                    <li>「デザインの方向性は？」</li>
+                </ul>
+                <p style="color: #ff4444; font-weight: bold;">
+                    結果：質問の嵐で進まない → フラストレーション
+                </p>
+            </div>
+            
+            <div class="good-example">
+                <h3>After：テンプレート使用</h3>
+                <div class="template-box" style="background: #ddffdd;">
+                    <pre>【概要】個人用のシンプルなTodoアプリ
+【機能要件】
+- タスクの追加・削除・編集
+- 完了/未完了の切り替え
+- 期限設定
+【技術要件】GAS + HTML + スプレッドシート
+【制約】30分で動くMVP
+【AI活用方針】コード生成はChatGPT、UI設計はGemini</pre>
+                </div>
+                <p><strong>AIの反応：</strong></p>
+                <p>「了解しました。以下のコードで実装できます：」<br>
+                [完全なコード生成]</p>
+                <p style="color: #22aa22; font-weight: bold;">
+                    結果：一発で期待通りの結果！スムーズな開発！
+                </p>
+            </div>
+        </div>
+        
+        <h2>🚀 魔法の要件定義テンプレート（5項目）</h2>
+        
+        <div class="vibe-template">
+            <div class="template-title">【Vibe Coding要件定義テンプレート】</div>
+            <div class="template-content">
+                <div class="template-section">
+                    <strong>1.【概要】</strong><span class="highlight-yellow">何を作るか</span>（1行）
+                </div>
+                <div class="template-section">
+                    <strong>2.【機能要件】</strong><span class="highlight-yellow">必須機能3つ</span>
+                </div>
+                <div class="template-section">
+                    <strong>3.【技術要件】</strong><span class="highlight-yellow">使う技術</span>
+                </div>
+                <div class="template-section">
+                    <strong>4.【制約】</strong><span class="highlight-yellow">時間・予算・スキル</span>
+                </div>
+                <div class="template-section">
+                    <strong>5.【AI活用方針】</strong><span class="highlight-yellow">どのAIで何を</span>
+                </div>
+            </div>
+        </div>
+        
+        <h2>📈 実演：ChatGPTでテンプレートを埋める</h2>
+        
+        <div class="prompt-evolution">
+            <div class="evolution-step">
+                <h3>Step 1：テンプレートを提示</h3>
+                <pre>以下のテンプレートで請求書管理システムの要件を整理してください：
+
+【概要】
+【機能要件】（最重要3つ）
+【技術要件】
+【制約】
+【AI活用方針】
+
+私の状況：
+- GASは使える
+- 開発時間は2時間
+- 社内10人で使う</pre>
+            </div>
+            
+            <div class="evolution-step">
+                <h3>ChatGPTの出力</h3>
+                <pre>【概要】社内向けシンプル請求書管理システム
+
+【機能要件】
+1. 請求書の作成・保存
+2. 顧客情報の管理
+3. 請求書一覧の表示
+
+【技術要件】
+- Google Apps Script
+- スプレッドシート（データ保存）
+- HTMLサービス（UI）
+
+【制約】
+- 開発時間：2時間
+- ユーザー数：10人
+- 既存Googleアカウントで動作
+
+【AI活用方針】
+- ChatGPT：ロジック実装
+- Gemini：UI生成
+- Claude：テスト・デバッグ</pre>
+            </div>
+            
+            <div class="evolution-step">
+                <h3>Step 2：そのまま実装へ</h3>
+                <pre>この要件定義で、機能1の実装コードを生成してください。</pre>
+                <p>→ 完璧なコードが即座に生成！</p>
+            </div>
+            
+            <div class="evolution-step">
+                <h3>Step 3：他のAIツールへも展開</h3>
+                <pre>[Geminiへ]
+この要件定義のUIを作ってください：
+[要件定義をコピペ]</pre>
+                <p>→ 統一された理解で各ツールが協力！</p>
+            </div>
+        </div>
+        
+        <h2>💡 成功の秘訣：良い要件定義 vs 悪い要件定義</h2>
+        
+        <div class="comparison-container">
+            <div class="good-example">
+                <h3>✅ 良い要件定義</h3>
+                <ul>
+                    <li>「請求書作成を5分以内に」（解決したい課題）</li>
+                    <li>「月100件を処理」（具体的な数値）</li>
+                    <li>「既存システムと連携」（制約条件）</li>
+                </ul>
+            </div>
+            <div class="bad-example">
+                <h3>❌ 悪い要件定義</h3>
+                <ul>
+                    <li>「かっこいいUI」（曖昧）</li>
+                    <li>「最新技術を使う」（目的不明）</li>
+                    <li>「全機能搭載」（スコープ不明）</li>
+                </ul>
+            </div>
+        </div>
+        
+        <h2>⚠️ 注意点：「欲しい機能」より「何を解決したいか」</h2>
+        
+        <div class="warning-banner">
+            <div class="warning-icon">⚠️</div>
+            <div>
+                <h3>重要：完璧を求めず、60%の精度でスタート！</h3>
+                <p>機能の羅列ではなく、解決したい課題を明確に伝えることが成功の鍵です。</p>
+            </div>
+        </div>
+        
+        <h2>📊 実例：請求書管理システムの要件定義</h2>
+        
+        <div class="vibe-template">
+            <div class="template-title">実際の要件定義例</div>
+            <div class="template-content">
+                <pre>【概要】社内向けシンプル請求書管理システム
+
+【機能要件】
+1. 請求書の作成・保存
+2. 顧客情報の管理  
+3. 請求書一覧の表示
+
+【技術要件】
+- Google Apps Script
+- スプレッドシート（データ保存）
+- HTMLサービス（UI）
+
+【制約】
+- 開発時間：2時間
+- ユーザー数：10人
+- 既存Googleアカウントで動作
+
+【AI活用方針】
+- ChatGPT：ロジック実装
+- Gemini：UI生成
+- Claude：テスト・デバッグ</pre>
+            </div>
+        </div>
+        
+        <h2>🎯 段階的な要件定義作成（Step by Step）</h2>
+        
+        <div class="prompt-evolution">
+            <div class="evolution-step">
+                <h3>Step 1：最小要件から始める</h3>
+                <pre>請求書管理システムの要件を整理したい。
+まず最小限の機能から始めたいです。
+何が必要でしょうか？</pre>
+            </div>
+            
+            <div class="evolution-step">
+                <h3>Step 2：AIの提案を受けて具体化</h3>
+                <pre>提案された機能のうち、
+1. 請求書作成
+2. データ保存
+3. 一覧表示
+この3つで始めます。技術スタックはGASで。</pre>
+            </div>
+            
+            <div class="evolution-step">
+                <h3>Step 3：テンプレートに落とし込む</h3>
+                <pre>以下のテンプレートで要件を整理してください：
+[先ほどの内容を入れて]
+【概要】
+【機能要件】
+【技術要件】
+【制約】
+【AI活用方針】</pre>
+            </div>
+        </div>
+        
+        <h2>💻 デモ：同じTodoアプリの要件で比較</h2>
+        
+        <div class="comparison-container">
+            <div class="result-box bad">
+                <h3>曖昧な指示の結果</h3>
+                <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px;">Todoアプリ作って。
+使いやすい感じで。</pre>
+                <p><strong>AIの反応：</strong></p>
+                <p>「どのような機能が必要ですか？対象ユーザーは？技術スタックは？デザインの方向性は？」</p>
+                <p style="color: #ff4444;">→ 質問の嵐で進まない</p>
+            </div>
+            
+            <div class="result-box good">
+                <h3>テンプレート使用の結果</h3>
+                <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px;">【概要】個人用のシンプルなTodoアプリ
+【機能要件】
+- タスクの追加・削除・編集
+- 完了/未完了の切り替え
+- 期限設定
+【技術要件】GAS + HTML + スプレッドシート
+【制約】30分で動くMVP
+【AI活用方針】コード生成はChatGPT、UI設計はGemini</pre>
+                <p><strong>AIの反応：</strong></p>
+                <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px;">了解しました。以下のコードで実装できます：
+
+function addTodo(title, dueDate) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Todos');
+  sheet.appendRow([new Date(), title, dueDate, 'pending']);
+}
+// ... 続く</pre>
+                <p style="color: #22aa22;">→ 即座に実装可能なコード！</p>
+            </div>
+        </div>
+        
+        <h2>🚀 魔法のテンプレート（コピペ用）</h2>
+        
+        <div class="vibe-template">
+            <div class="template-title">【これをコピペして使ってください】</div>
+            <div class="template-content">
+                <pre style="font-size: 16px;">【概要】○○を解決する
+【機能要件】最重要3つ
+【技術要件】使う技術スタック
+【制約】時間・スキル・環境
+【AI活用方針】どのAIで何を</pre>
+            </div>
+        </div>
+        
+        <h2>📈 用途別テンプレート</h2>
+        
+        <div class="tips-container">
+            <div class="template-box" style="margin: 20px 0;">
+                <h3>新規プロジェクト用</h3>
+                <pre>【概要】[解決したい課題を1行で]
+【MVP機能】[今すぐ必要な機能3つ]
+【技術】[使い慣れた技術]
+【期限】[○時間以内]
+【スコープ外】[今回やらないこと]</pre>
+            </div>
+            
+            <div class="template-box" style="margin: 20px 0;">
+                <h3>機能追加用</h3>
+                <pre>【現状】[既存システムの概要]
+【追加機能】[新しく加えたい機能]
+【影響範囲】[変更が及ぶ箇所]
+【工数】[見積時間]
+【リスク】[考慮すべき点]</pre>
+            </div>
+            
+            <div class="template-box" style="margin: 20px 0;">
+                <h3>バグ修正用</h3>
+                <pre>【症状】[エラーの内容]
+【再現手順】[どうすると起きるか]
+【期待動作】[本来の動き]
+【環境】[技術スタック]
+【緊急度】[高/中/低]</pre>
+            </div>
+        </div>
+        
+        <h2>💡 まとめ：今日のポイント</h2>
+        
+        <div class="success-banner">
+            <div class="success-icon">📚</div>
+            <div>
+                <ul>
+                    <li>5項目テンプレートで構造化</li>
+                    <li>概要は「解決したい課題」を書く</li>
+                    <li>機能は3つに絞る</li>
+                    <li>制約を明確にする</li>
+                    <li>AI活用方針も決める</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <p style="font-size: 24px; color: #ff6b6b; font-weight: bold; margin-bottom: 20px;">
+                要件定義テンプレートは、Vibe Codingのナビゲーション
+            </p>
+            <div class="vibe-template" style="max-width: 600px; margin: 0 auto;">
+                <div class="template-content">
+                    <pre style="font-size: 18px;">【概要】○○を解決する
+【機能要件】最重要3つ
+【技術要件】使う技術スタック
+【制約】時間・スキル・環境
+【AI活用方針】どのAIで何を</pre>
+                </div>
+            </div>
+            <p style="font-size: 20px; color: #333; margin-top: 20px;">
+                これさえあれば、AIへの指示は完璧です！
+            </p>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="#" class="cta-button">次の動画へ進む →</a>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #ff6b6b15, #feca5715); padding: 30px; border-radius: 15px; margin-top: 40px;">
+            <h2 style="border: none; padding: 0;">🎯 次回予告</h2>
+            <h3>動画4：進捗が見えると仕事が進む！チケットで開発を見える化</h3>
+            <p>明確な要件ができたら、次は進捗管理の極意をお伝えします！</p>
+        </div>
+    </div>
+</body>
+</html>

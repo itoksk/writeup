@@ -1,0 +1,307 @@
+# 営業パイプライン自動化フロー 第4回：営業資料自動整理エージェント
+# プロンプト集
+
+---
+
+## 1. 添付ファイル分類プロンプト
+
+### 英語版（推奨）
+```
+Analyze this email with attachments and classify:
+
+Subject: {email_subject}
+Body: {email_body}
+Sender: {sender_email}
+Attachment names: {attachment_names}
+
+Provide classification in Japanese:
+
+【資料タイプ】提案書/見積書/契約書/議事録/仕様書/その他
+【顧客名】推定される顧客名（メール内容から推定）
+【案件名】推定される案件名またはプロジェクト名
+【保存フォルダ】推奨フォルダパス（形式：顧客名/案件名/資料タイプ）
+【ファイル名】推奨ファイル名（形式：YYYY-MM-DD_顧客名_資料タイプ.拡張子）
+【重要度】高/中/低
+【備考】特記事項があれば
+```
+
+### 日本語版（代替）
+```
+以下のメールと添付ファイルを分析し、分類してください：
+
+件名: {email_subject}
+本文: {email_body}
+送信者: {sender_email}
+添付ファイル名: {attachment_names}
+
+以下の形式で回答：
+【資料タイプ】提案書/見積書/契約書/議事録/仕様書/その他
+【顧客名】
+【案件名】
+【保存フォルダ】
+【ファイル名】
+【重要度】高/中/低
+【備考】
+```
+
+---
+
+## 2. Gmail検索クエリ
+
+### 添付ファイル付きメール
+```
+has:attachment from:(@重要顧客ドメイン)
+```
+
+### 特定の添付ファイル形式
+```
+has:attachment filename:pdf OR filename:xlsx OR filename:docx
+```
+
+### 過去24時間の添付ファイル付きメール
+```
+newer_than:1d has:attachment from:(@重要顧客ドメイン)
+```
+
+---
+
+## 3. Chat通知テンプレート
+
+### 保存完了通知
+```
+📁 資料を自動保存しました
+
+【送信者】{sender_name} ({sender_email})
+【ファイル名】{attachment_names}
+
+{gemini_classification}
+
+---
+📂 保存先: {drive_link}
+```
+
+### 複数ファイル保存通知
+```
+📁 資料を自動保存しました（{file_count}件）
+
+【送信者】{sender_name}
+【ファイル】
+{attachment_list}
+
+{gemini_classification}
+
+---
+📂 保存先フォルダ: {drive_folder_link}
+```
+
+---
+
+## 4. 週次レポートプロンプト
+
+### 詳細版
+```
+Create a weekly report of sales documents in Japanese:
+
+{drive_files}
+
+Format:
+📊 今週の営業資料レポート（{start_date}〜{end_date}）
+
+【新規追加ファイル】
+- ファイル名（顧客名、資料タイプ、追加日）
+...
+
+【更新されたファイル】
+- ファイル名（顧客名、資料タイプ、更新日）
+...
+
+【統計サマリー】
+- 提案書: X件
+- 見積書: X件
+- 契約書: X件
+- 議事録: X件
+- その他: X件
+- 合計: X件
+
+【注目案件】
+資料の動きが活発な顧客TOP3:
+1. 顧客A（X件の資料更新）
+2. 顧客B（X件の資料更新）
+3. 顧客C（X件の資料更新）
+
+【アクション推奨】
+フォローアップが必要と思われる案件:
+- ...
+```
+
+### 簡潔版
+```
+Summarize this week's sales documents in Japanese:
+
+{drive_files}
+
+Format:
+📊 週次資料レポート
+
+新規: X件
+更新: X件
+
+注目顧客:
+1. 顧客名（件数）
+2. 顧客名（件数）
+3. 顧客名（件数）
+```
+
+---
+
+## 5. 週次レポートChat通知
+
+```
+📊 営業資料週次レポート
+
+{gemini_report}
+
+---
+詳細はDriveをご確認ください: {drive_folder_link}
+次回レポート: 来週月曜 9:00
+```
+
+---
+
+## 6. Drive設定
+
+### フォルダパス構成
+```
+営業資料/
+├── {顧客名}/
+│   ├── {案件名}/
+│   │   ├── 提案書/
+│   │   ├── 見積書/
+│   │   ├── 契約書/
+│   │   └── その他/
+│   └── 一般/
+└── 未分類/
+```
+
+### ファイル命名規則
+```
+{YYYY-MM-DD}_{顧客名}_{資料タイプ}.{拡張子}
+
+例:
+- 2025-01-15_A社_提案書.pdf
+- 2025-01-20_B社_見積書.xlsx
+- 2025-01-22_C社_契約書.pdf
+```
+
+---
+
+## 7. エラーハンドリング
+
+### 分類不能な場合
+```
+If classification is unclear, respond with:
+
+【資料タイプ】その他
+【顧客名】不明（要確認）
+【案件名】不明（要確認）
+【保存フォルダ】未分類
+【ファイル名】{original_filename}
+【重要度】中
+【備考】自動分類できませんでした。手動での確認・整理をお願いします。
+```
+
+### 大容量ファイル対応
+```
+注意: {file_size}MBの大容量ファイルです。
+保存には時間がかかる場合があります。
+```
+
+---
+
+## 8. エージェント構成まとめ
+
+### エージェント1：営業資料自動整理エージェント
+```
+Starter: Gmail - Email received
+  - Filter: has:attachment from:(重要顧客ドメイン)
+
+Step 1: Gemini - Generate content
+  - Prompt: [添付ファイル分類プロンプト]
+  - Output: gemini_classification
+
+Step 2: Google Drive - Upload file
+  - File: {email_attachments}
+  - Folder: 営業資料/{gemini推奨フォルダ}
+  - Filename: {gemini推奨ファイル名}
+
+Step 3: Google Chat - Send message
+  - Message: [保存完了通知]
+```
+
+### エージェント2：営業資料週次レポート
+```
+Starter: Scheduled
+  - Frequency: Weekly
+  - Day: Monday
+  - Time: 9:00 AM
+  - Timezone: Asia/Tokyo
+
+Step 1: Google Drive - List files
+  - Folder: 営業資料/
+  - Modified: Last 7 days
+  - Include subfolders: Yes
+  - Output: drive_files
+
+Step 2: Gemini - Generate content
+  - Prompt: [週次レポートプロンプト]
+  - Input: {drive_files}
+  - Output: gemini_report
+
+Step 3: Google Chat - Send message
+  - Message: [週次レポート通知]
+```
+
+---
+
+## 9. 応用：資料タイプ別のアクション
+
+### 見積書の場合
+```
+If 【資料タイプ】contains "見積書":
+  - Add label: 見積もり対応
+  - Notify: 営業チーム
+  - Create follow-up reminder: 3 days
+```
+
+### 契約書の場合
+```
+If 【資料タイプ】contains "契約書":
+  - Add label: 契約対応
+  - Notify: 営業マネージャー + 法務
+  - High priority flag
+```
+
+---
+
+## 10. テスト用サンプル
+
+### テストメール1（見積書）
+```
+Subject: 御見積書送付の件
+Body:
+山田様
+お世話になっております。
+ご依頼いただいておりました見積書を送付いたします。
+ご確認のほどよろしくお願いいたします。
+Attachment: 見積書_20250115.pdf
+```
+
+### テストメール2（提案書）
+```
+Subject: 【株式会社A様】新システム提案書
+Body:
+山田様
+先日のお打ち合わせありがとうございました。
+ご検討いただいている新システムの提案書を送付いたします。
+Attachment: A社様_新システム提案書_v1.pptx
+```

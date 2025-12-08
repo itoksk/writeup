@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：面接日程調整の手間をゼロにする | 採用パイプライン自動化フロー</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --ink: #0A0E27; --paper: #FEFEF8; --electric: #00F0FF; --hr-blue: #2196F3; --calendar-green: #0F9D58; }
+        body { font-family: 'Zen Kaku Gothic New', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.7; }
+        nav { position: fixed; top: 0; width: 100%; background: rgba(254,254,248,0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 1.5rem 0; }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+        .nav-title { font-size: 1.2rem; font-weight: 700; }
+        .hero { min-height: 70vh; display: flex; align-items: center; padding: 0 2rem; margin-top: 80px; }
+        .hero-content { max-width: 1400px; margin: 0 auto; width: 100%; }
+        .hero-label { display: inline-block; background: var(--ink); color: var(--paper); padding: 0.5rem 1.5rem; font-size: 0.8rem; margin-bottom: 2rem; }
+        .hero-title { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900; line-height: 1; margin-bottom: 2rem; }
+        .hero-title span { display: block; color: var(--calendar-green); font-size: 0.5em; margin-top: 0.5em; }
+        .section { max-width: 1400px; margin: 60px auto; padding: 0 2rem; }
+        .section-label { font-family: 'Space Grotesk', monospace; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.2em; opacity: 0.5; margin-bottom: 1rem; }
+        .section-title { font-size: 2rem; font-weight: 700; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 3px solid var(--calendar-green); display: inline-block; }
+        .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; margin: 2rem 0; padding: 2rem; background: rgba(0,0,0,0.02); }
+        .flow-item { background: white; border: 2px solid var(--ink); padding: 1rem 1.5rem; font-weight: 500; text-align: center; }
+        .flow-item.calendar { border-color: var(--calendar-green); background: rgba(15,157,88,0.1); }
+        .flow-arrow { font-size: 1.5rem; color: var(--calendar-green); }
+        .code-block { background: var(--ink); color: var(--electric); padding: 1.5rem; font-family: 'Space Grotesk', monospace; font-size: 0.85rem; overflow-x: auto; margin: 1rem 0; white-space: pre-wrap; }
+        .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+        .step-card { background: white; border: 2px solid var(--ink); padding: 1.5rem; }
+        .step-number { width: 40px; height: 40px; background: var(--calendar-green); color: white; font-family: 'Space Grotesk', monospace; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+        .step-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .highlight-box { background: rgba(15,157,88,0.1); border-left: 4px solid var(--calendar-green); padding: 1.5rem; margin: 1.5rem 0; }
+        .comparison-table { width: 100%; border-collapse: collapse; margin: 2rem 0; }
+        .comparison-table th { background: var(--ink); color: var(--paper); padding: 1rem; text-align: left; }
+        .comparison-table td { padding: 1rem; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .next-preview { background: var(--ink); color: var(--paper); padding: 3rem; margin-top: 4rem; }
+        .next-preview h2 { color: var(--calendar-green); margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <nav><div class="nav-container"><div class="nav-title">採用パイプライン自動化フロー</div></div></nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第3回 / 全5回</div>
+            <h1 class="hero-title">面接日程調整の手間をゼロにする<span>Calendar連携で候補者対応を自動化</span></h1>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">FLOW</div>
+        <h2 class="section-title">エージェントのフロー</h2>
+        <div class="flow-diagram">
+            <div class="flow-item">書類通過</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item calendar">Calendar空き取得</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">Geminiメール生成</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">候補者にメール</div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEPS</div>
+        <h2 class="section-title">作成手順</h2>
+        <div class="step-grid">
+            <div class="step-card"><div class="step-number">01</div><h3 class="step-title">Starter</h3><p>手動起動 or ラベル付与トリガー</p></div>
+            <div class="step-card"><div class="step-number">02</div><h3 class="step-title">Calendar連携</h3><p>面接官の空き時間を取得</p></div>
+            <div class="step-card"><div class="step-number">03</div><h3 class="step-title">Geminiメール生成</h3><p>日程候補メールを自動作成</p></div>
+            <div class="step-card"><div class="step-number">04</div><h3 class="step-title">Gmail送信</h3><p>候補者に下書き/送信</p></div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">CALENDAR</div>
+        <h2 class="section-title">Calendar設定</h2>
+        <div class="highlight-box">
+            <h4>空き時間取得の設定</h4>
+            <ul>
+                <li><strong>Calendar:</strong> 面接官のカレンダー</li>
+                <li><strong>Date range:</strong> 今日〜2週間後</li>
+                <li><strong>Duration:</strong> 60分</li>
+                <li><strong>Working hours:</strong> 10:00-18:00</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROMPT</div>
+        <h2 class="section-title">日程案内メールプロンプト</h2>
+        <div class="code-block">Generate an interview scheduling email in Japanese:
+
+Candidate: {candidate_name}
+Position: {position}
+Available slots:
+{available_times}
+
+Create a professional email that:
+- Thanks for passing document screening
+- Offers 3-5 time slot options
+- Asks candidate to reply with preferred time
+- Mentions interview duration (60 min)</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">RESULT</div>
+        <h2 class="section-title">Before / After</h2>
+        <table class="comparison-table">
+            <thead><tr><th>項目</th><th>Before</th><th>After</th></tr></thead>
+            <tbody>
+                <tr><td>日程調整時間</td><td>15-30分/件</td><td>1-2分/件</td></tr>
+                <tr><td>空き確認</td><td>手動でカレンダー確認</td><td>自動取得</td></tr>
+                <tr><td>メール作成</td><td>毎回手動で文面作成</td><td>自動生成</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="next-preview">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+            <div class="section-label" style="color: rgba(255,255,255,0.5);">NEXT</div>
+            <h2>次回予告</h2>
+            <h3 style="font-size: 1.5rem;">第4回：履歴書・職務経歴書を自動整理</h3>
+            <p>Drive保存＆サマリ作成で選考を高速化</p>
+        </div>
+    </section>
+</body>
+</html>

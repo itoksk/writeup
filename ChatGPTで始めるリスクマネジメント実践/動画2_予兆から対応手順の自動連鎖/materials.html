@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：発生前に防ぐ：予兆→防止策→対応手順をAIで自動連鎖 - 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.01) 2px,
+                    rgba(10, 14, 39, 0.01) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.6em;
+            margin-top: 0.2em;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .phase-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-left: calc(4rem + 2rem);
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 3rem;
+        }
+
+        .schedule-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .schedule-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            vertical-align: top;
+        }
+
+        .schedule-table tr:hover {
+            background: rgba(0,240,255,0.05);
+        }
+
+        .schedule-session {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            color: var(--electric);
+        }
+
+        .comparison-box {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        .highlight-box {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .tip-box {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .flow-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 3rem 0;
+            padding: 2rem;
+            background: rgba(0, 240, 255, 0.03);
+            border: 2px solid var(--electric);
+        }
+
+        .flow-step {
+            flex: 1;
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            position: relative;
+        }
+
+        .flow-step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--electric);
+            z-index: 10;
+        }
+
+        .flow-step-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+
+        .flow-step-description {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .phase-description {
+                margin-left: 0;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .flow-diagram {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .flow-step:not(:last-child)::after {
+                content: '↓';
+                right: auto;
+                top: auto;
+                bottom: -35px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">リスクマネジメント実践講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第2回 / 全4回</div>
+            <h1 class="hero-title">
+                発生前に防ぐ
+                <span>予兆→防止策→対応手順をAIで自動連鎖</span>
+            </h1>
+            <p class="hero-description">
+                リスクをリストアップするだけでなく、「どう察知するか」「どう防ぐか」「もし起きたらどうするか」まで、
+                ChatGPTが3連鎖で自動生成。「起きてから対応」を「起きる前に防ぐ」に変える方法を実演します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">学習目標</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">3連鎖の自動生成</h3>
+                <p class="card-description">
+                    各リスクに対して、発生予兆・予防策・対応手順の3点セットをAIが自動で生成
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">予防型文化の醸成</h3>
+                <p class="card-description">
+                    予兆を早期に察知し、問題が大きくなる前に手を打つ組織文化を構築
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">対応の標準化</h3>
+                <p class="card-description">
+                    誰でも同じ手順で対応できる「リスク対応プレイブック」を整備
+                </p>
+            </div>
+        </div>
+
+        <div class="flow-diagram">
+            <div class="flow-step">
+                <div class="flow-step-title">発生予兆</div>
+                <div class="flow-step-description">早期察知のサイン</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-step-title">予防策</div>
+                <div class="flow-step-description">事前に打つ手</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-step-title">対応手順</div>
+                <div class="flow-step-description">発生時の対処法</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">劇的な変化</h2>
+
+        <div class="comparison-box">
+            <div class="comparison-title">Before（導入前）</div>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li>リスクをリストアップしても、具体的な対策まで考える時間がない</li>
+                <li>対策が事後的：問題が起きてから「あのとき気づいていれば…」と後悔</li>
+                <li>予兆を見逃す：経験値に依存し、経験の浅いメンバーは察知できない</li>
+                <li>対応が場当たり的：担当者不在時に誰も対処できない</li>
+                <li>1リスクあたり15分かけても網羅的な対策が立てられない</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin: 2rem 0;">
+            <div style="font-size: 3rem; color: var(--electric);">↓</div>
+        </div>
+
+        <div class="comparison-box" style="border-left-color: var(--coral);">
+            <div class="comparison-title">After（導入後）</div>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li>全リスク一括で3分：予兆・防止策・対応手順の3点セットを自動生成</li>
+                <li>予防型文化：予兆が出た時点で手を打ち、問題の芽を事前に摘む</li>
+                <li>予兆察知率80%：AIが網羅的に予兆を提示し、誰でも早期発見可能</li>
+                <li>対応の標準化：誰が見ても同じ手順で対処できるプレイブックを整備</li>
+                <li>過去事例とベストプラクティスを自動反映し、プロレベルの対策を実現</li>
+            </ul>
+        </div>
+
+        <table class="schedule-table" style="margin-top: 3rem;">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>Before</th>
+                    <th>After</th>
+                    <th>改善率</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="schedule-session">対策立案時間</td>
+                    <td>1リスクあたり15分</td>
+                    <td>全リスク一括で3分</td>
+                    <td style="color: var(--coral); font-weight: 700;">▼ 95%削減</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">予兆察知率</td>
+                    <td>30%（経験頼み）</td>
+                    <td>80%（AIが網羅提示）</td>
+                    <td style="color: var(--electric); font-weight: 700;">+ 167%向上</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">対応の一貫性</td>
+                    <td>低（属人化）</td>
+                    <td>高（標準化）</td>
+                    <td style="color: var(--coral); font-weight: 700;">大幅改善</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">WORKFLOW</div>
+        <h2 class="section-title">実装手順</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">リスク台帳から対象リスクを選定</div>
+            </div>
+            <p class="phase-description">
+                前回作成したリスク台帳から、予兆・防止策・対応手順を詳細化したいリスクを選定。
+                重大度の高いリスクや、発生確率の高いリスクを優先的に選ぶと効果的。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">ChatGPTにプロンプトを入力</div>
+            </div>
+            <p class="phase-description">
+                プロジェクト背景（期間、チーム構成、使用技術など）と選定したリスクをChatGPTに渡し、
+                「発生予兆」「予防策」「発生時の対応手順」の3点セットを一括生成。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">スプレッドシートに統合</div>
+            </div>
+            <p class="phase-description">
+                リスク台帳に「発生予兆」「予防策」「対応手順」の3列を追加し、
+                ChatGPTの出力結果を貼り付け。セル内改行で見やすく整形。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">04</div>
+                <div class="phase-title">予兆モニタリングの仕組み設定</div>
+            </div>
+            <p class="phase-description">
+                週次ミーティングで「どの予兆が出ているか」をチェックする時間を設ける。
+                予兆が出たらセルに色を付けるなど、視覚化して全メンバーに共有。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROMPT EXAMPLE</div>
+        <h2 class="section-title">プロンプト例</h2>
+
+        <div class="code-block">
+あなたはプロジェクトマネジメントの専門家です。
+以下のリスクについて、「発生予兆」「予防策」「発生時の対応手順」の3点セットを詳細に出力してください。
+
+【プロジェクト背景】
+- プロジェクト名: 新ECサイト構築
+- 期間: 6ヶ月（2025年6月〜12月）
+- チーム構成: PM 1名、エンジニア 5名、デザイナー 2名、外部ベンダー 1社
+
+【リスク】
+1. 決済API連携の遅延
+2. チームメンバーの離脱
+3. セキュリティ脆弱性の発見
+
+【出力形式】
+各リスクについて、以下の項目を具体的に記載してください：
+
+## リスク名: [リスク名]
+
+### 1. 発生予兆（早期に察知するためのサイン）
+- 予兆1: [具体的な兆候]
+- 予兆2: [具体的な兆候]
+- 予兆3: [具体的な兆候]
+- 予兆4: [具体的な兆候]
+
+### 2. 予防策（発生を防ぐための事前対策）
+- 予防策1: [具体的な対策]
+- 予防策2: [具体的な対策]
+- 予防策3: [具体的な対策]
+- 予防策4: [具体的な対策]
+
+### 3. 発生時の対応手順（もし発生した場合の対処法）
+- Step1（即座に行うこと）: [即時対応]
+- Step2（短期的対応）: [短期対応]
+- Step3（中長期的対応）: [中長期対応]
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h3 style="font-weight: 700; font-size: 1.5rem; margin-bottom: 1.5rem;">出力例：決済API連携の遅延</h3>
+
+            <div class="tip-box">
+                <h4 style="font-weight: 700; margin-bottom: 1rem;">1. 発生予兆（早期に察知するためのサイン）</h4>
+                <ul style="margin-left: 1.5rem; line-height: 2;">
+                    <li>予兆1: 外部ベンダーからのレスポンスが2営業日以上遅れる頻度が増える</li>
+                    <li>予兆2: APIドキュメントの更新が予定より2週間以上遅れている</li>
+                    <li>予兆3: テスト環境の準備が当初計画から1ヶ月遅れている</li>
+                    <li>予兆4: 外部ベンダーの担当者が頻繁に変わる</li>
+                </ul>
+            </div>
+
+            <div class="tip-box">
+                <h4 style="font-weight: 700; margin-bottom: 1rem;">2. 予防策（発生を防ぐための事前対策）</h4>
+                <ul style="margin-left: 1.5rem; line-height: 2;">
+                    <li>予防策1: 契約時にAPI仕様確定のマイルストーンを明記し、週次で進捗確認ミーティングを実施</li>
+                    <li>予防策2: API仕様書のレビューをプロジェクト開始後1ヶ月以内に完了させる</li>
+                    <li>予防策3: モックサーバーを用意して、実際のAPI連携前に先行開発を進める</li>
+                    <li>予防策4: バックアッププランとして、代替決済APIの調査を並行して実施</li>
+                </ul>
+            </div>
+
+            <div class="tip-box">
+                <h4 style="font-weight: 700; margin-bottom: 1rem;">3. 発生時の対応手順（もし発生した場合の対処法）</h4>
+                <ul style="margin-left: 1.5rem; line-height: 2;">
+                    <li>Step1（即座に行うこと）: PMと外部ベンダーの責任者に連絡し、遅延の原因と復旧見込みを確認</li>
+                    <li>Step2（短期的対応）: 代替API or 既存システムの延命策を検討し、技術的実現性を評価</li>
+                    <li>Step3（中長期的対応）: スケジュールを調整し、ステークホルダーに影響範囲と対策を報告</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">注意点・活用ポイント</h2>
+
+        <div class="highlight-box">
+            <h3 style="font-weight: 700; margin-bottom: 1rem;">注意点</h3>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li><strong>出力結果は現場に合わせて調整：</strong> ChatGPTの出力は一般的なベストプラクティス。プロジェクトの実情（チーム体制、予算、期間）に合わせてカスタマイズが必須。</li>
+                <li><strong>予兆を定期的にモニタリング：</strong> 予兆をリストアップしただけでは意味がない。週次ミーティングで「どの予兆が出ているか」をチェックする仕組みを作る。</li>
+                <li><strong>対応手順は全メンバーに共有：</strong> PMや特定メンバーが不在でも対処できるよう、誰でも見られる場所に保存し、全メンバーに周知。</li>
+            </ul>
+        </div>
+
+        <div class="tip-box">
+            <h3 style="font-weight: 700; margin-bottom: 1rem;">活用ポイント</h3>
+            <ul style="margin-left: 1.5rem; line-height: 2;">
+                <li><strong>リスク対応プレイブックとして活用：</strong> 新規メンバーの教育資料、過去プロジェクトの振り返り資料として長期活用。</li>
+                <li><strong>予兆が出たら即座にチーム共有：</strong> 「このリスクの予兆が出ました」と共有することで、全員が同じ認識を持ち、予防策を実施。</li>
+                <li><strong>定期的にアップデート：</strong> プロジェクトの進行に応じて、新たな予兆や対策を追加し、常に最新の状態に保つ。</li>
+                <li><strong>視覚化で見やすく：</strong> 予兆が出たセルに色を付けるなど、Googleスプレッドシートの機能を活用して視覚化。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" style="margin-bottom: 120px;">
+        <div class="section-label">NEXT STEP</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div style="background: var(--ink); color: var(--paper); padding: 3rem; border-radius: 4px;">
+            <h3 style="font-size: 2rem; margin-bottom: 1rem; color: var(--electric);">第3回：もしもに備える</h3>
+            <p style="font-size: 1.2rem; line-height: 1.8;">
+                次回は、リスクが発生した場合の「スケジュール影響」「コスト影響」を、
+                ChatGPTで自動的にシナリオ比較する方法を実演します。
+                「もしも」を数値で可視化し、意思決定を高速化する技術をお見せします。
+            </p>
+        </div>
+    </section>
+</body>
+</html>

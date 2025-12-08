@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：追客漏れゼロの受信トレイ！ | 営業パイプライン自動化フロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --sales-orange: #FF8C00;
+            --google-green: #34A853;
+        }
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-title { font-size: 1.2rem; font-weight: 700; }
+        .hero {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 2rem;
+        }
+        .hero-title span {
+            display: block;
+            color: var(--sales-orange);
+            font-size: 0.5em;
+            margin-top: 0.5em;
+        }
+        .section {
+            max-width: 1400px;
+            margin: 60px auto;
+            padding: 0 2rem;
+        }
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--sales-orange);
+            display: inline-block;
+        }
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: rgba(0,0,0,0.02);
+        }
+        .flow-item {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            text-align: center;
+            min-width: 100px;
+        }
+        .flow-item.highlight {
+            background: var(--sales-orange);
+            color: white;
+            border-color: var(--sales-orange);
+        }
+        .flow-arrow { font-size: 1.2rem; color: var(--sales-orange); }
+        .flow-branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .branch-yes, .branch-no {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        .branch-yes { background: var(--google-green); color: white; }
+        .branch-no { background: var(--coral); color: white; }
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .step-card {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+        }
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--sales-orange);
+            color: white;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .code-block {
+            background: var(--ink);
+            color: var(--electric);
+            padding: 1.5rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .highlight-box {
+            background: rgba(255, 140, 0, 0.1);
+            border-left: 4px solid var(--sales-orange);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .highlight-box h4 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .conditional-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: rgba(124, 58, 237, 0.05);
+            border: 2px solid var(--violet);
+        }
+        .condition-box {
+            background: var(--violet);
+            color: white;
+            padding: 1rem 2rem;
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+            text-align: center;
+            min-width: 200px;
+        }
+        .branch-container {
+            display: flex;
+            gap: 4rem;
+        }
+        .branch-path {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .branch-label {
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+        }
+        .branch-action {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 1rem;
+            text-align: center;
+            min-width: 150px;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        .comparison-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+        }
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .next-preview {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 3rem;
+            margin-top: 4rem;
+        }
+        .next-preview h2 {
+            color: var(--sales-orange);
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .flow-diagram { flex-direction: column; }
+            .branch-container { flex-direction: column; gap: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">営業パイプライン自動化フロー</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第3回 / 全5回</div>
+            <h1 class="hero-title">
+                追客漏れゼロの受信トレイ！
+                <span>要対応案件メールの自動ラベル化＆次アクション設計</span>
+            </h1>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">FLOW</div>
+        <h2 class="section-title">エージェントのフロー</h2>
+
+        <div class="flow-diagram">
+            <div class="flow-item">メール受信</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">Gemini分析</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item highlight">条件分岐</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-branch">
+                <div class="branch-yes">YES</div>
+                <div class="flow-item">ラベル付与</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-item">Chat通知</div>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <h4>リアルタイム vs バッチ処理</h4>
+            <p>第2回のエージェントは毎朝まとめて処理しましたが、今回はメール受信時に即座に起動します。重要な案件を見逃しません。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEPS</div>
+        <h2 class="section-title">作成手順</h2>
+
+        <div class="step-grid">
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <h3 class="step-title">Starter: Gmail受信</h3>
+                <p>「Gmail - Email received」を選択。重要顧客からのメール受信時に起動。</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <h3 class="step-title">Gemini分析</h3>
+                <p>要対応判定、緊急度、次アクションをGeminiが分析。</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <h3 class="step-title">条件分岐</h3>
+                <p>「要対応：YES」の場合のみ次のステップへ。</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">04</div>
+                <h3 class="step-title">ラベル付与</h3>
+                <p>Gmailの「要対応」ラベルを自動付与。</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">05</div>
+                <h3 class="step-title">Chat通知</h3>
+                <p>分析結果と次アクションをChatに通知。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PROMPT</div>
+        <h2 class="section-title">Geminiプロンプト</h2>
+
+        <div class="code-block">Analyze this sales email and determine if follow-up action is required:
+
+{email_content}
+
+Provide response in Japanese with the following format:
+
+【要対応判定】YES または NO
+【理由】判定の理由（1文）
+【緊急度】HIGH/MEDIUM/LOW
+【案件ステージ】問い合わせ/提案中/見積もり/契約交渉
+【次アクション】具体的に取るべきアクション
+【対応期限】推奨対応期限（例：本日中、3日以内）
+【返信ドラフト】簡潔な返信案（50文字程度）</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">CONDITIONAL</div>
+        <h2 class="section-title">条件分岐の設定</h2>
+
+        <div class="conditional-diagram">
+            <div class="condition-box">
+                {gemini_analysis} contains "YES"
+            </div>
+            <div class="branch-container">
+                <div class="branch-path">
+                    <div class="branch-label" style="color: var(--google-green);">True（YES）</div>
+                    <div class="branch-action">ラベル「要対応」を付与</div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="branch-action">Chat通知を送信</div>
+                </div>
+                <div class="branch-path">
+                    <div class="branch-label" style="color: var(--coral);">False（NO）</div>
+                    <div class="branch-action">終了（アクションなし）</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">NOTIFICATION</div>
+        <h2 class="section-title">Chat通知テンプレート</h2>
+
+        <div class="code-block">📌 要対応案件メール
+
+【送信者】{sender_name} ({sender_email})
+【件名】{email_subject}
+
+{gemini_analysis}
+
+---
+📧 元のメールを確認: {email_link}
+ラベル「要対応」を付与しました。</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">RESULT</div>
+        <h2 class="section-title">Before / After</h2>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>Before</th>
+                    <th>After</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>対応すべきメールの把握</td>
+                    <td>手動で確認</td>
+                    <td>自動でラベル付与</td>
+                </tr>
+                <tr>
+                    <td>次アクションの判断</td>
+                    <td>自分で考える</td>
+                    <td>Geminiが提案</td>
+                </tr>
+                <tr>
+                    <td>追客漏れ</td>
+                    <td>月1-2件発生</td>
+                    <td>ゼロ</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="next-preview">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+            <div class="section-label" style="color: rgba(255,255,255,0.5);">NEXT</div>
+            <h2>次回予告</h2>
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">第4回：提案資料と見積書を完全自動整理！</h3>
+            <p>Drive保存 × 定期送信フローで営業資料を整流化</p>
+        </div>
+    </section>
+</body>
+</html>

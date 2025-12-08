@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回:Driveアップロードが合図になる！Gemini要約×Chat連携の方法 | Google Workspace Flows自動化講座</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.9rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--electric);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 900;
+            line-height: 0.9;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.7em;
+            margin-top: 0.2em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .phase-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-left: calc(5rem + 2rem);
+        }
+
+        .comparison-box {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .comparison-box.after {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+        }
+
+        .comparison-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style-position: inside;
+            margin-left: 1rem;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .note {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .warning-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--coral);
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .phase-description {
+                margin-left: 0;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">Google Workspace Flows 自動化講座</div>
+            <div class="nav-menu">
+                <a href="#overview">概要</a>
+                <a href="#steps">手順</a>
+                <a href="#ai-steps">AIステップ</a>
+                <a href="#gemini-source">Geminiソース</a>
+                <a href="#notes">注意点</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第3回 / 全5回</div>
+            <h1 class="hero-title">
+                Driveアップロードが合図になる！
+                <span>Gemini要約×Chat連携の方法</span>
+            </h1>
+            <p class="hero-description">
+                Driveにファイルがアップロードされたら、Geminiが自動で要約して、Chatに通知。
+                AIステップの使い方、Geminiのソース設定、プロンプトのベストプラクティスを習得します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section" id="overview">
+        <div class="section-label">Overview</div>
+        <h2 class="section-title">Before / After</h2>
+
+        <div class="comparison-box">
+            <div class="comparison-title">Before：手作業での確認（1件あたり18分）</div>
+            <ul>
+                <li>Driveにファイルがアップロードされる</li>
+                <li>ファイルを開いて内容を確認（10分）</li>
+                <li>要点を整理してメモを作成（5分）</li>
+                <li>Chatに手動で共有（3分）</li>
+                <li><strong>合計：1件18分</strong></li>
+            </ul>
+        </div>
+
+        <div class="comparison-box after">
+            <div class="comparison-title">After：自動化後（作業時間0秒）</div>
+            <ul>
+                <li>Driveにファイルがアップロードされる</li>
+                <li><strong>Geminiが自動で要約→Chatに通知（0秒）</strong></li>
+                <li><strong>確認工数80%削減</strong></li>
+                <li>要点だけをGeminiがまとめてくれるので、すぐに確認できる</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="steps">
+        <div class="section-label">Steps</div>
+        <h2 class="section-title">構築手順（3ステップ）</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">スターター（Driveフォルダ）を設定</div>
+            </div>
+            <p class="phase-description">
+                「New agent」から新規エージェントを作成。スターターは「When a file is added to a Drive folder」（Driveフォルダにファイルが追加されたとき）を選択し、
+                監視したいDriveフォルダを指定します。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">Gemini要約ステップを追加</div>
+            </div>
+            <p class="phase-description">
+                「Add step」で「Summarize」ステップを追加します。「What to summarize」で変数「Link to the file」を選択。
+                カスタムプロンプトで、要約の内容や形式（箇条書き、トーン、文量など）を指定します。
+                <strong>Geminiのソース設定</strong>で、参照できるデータの範囲を制御できます。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">Chat通知を設定</div>
+            </div>
+            <p class="phase-description">
+                「Send a message in Chat」ステップを追加し、Chatスペースを選択。
+                メッセージに変数「Response from Gemini」（Geminiからの応答）を追加して、要約をChat通知に含めます。
+                テスト実行で動作確認し、「Turn on」で有効化します。
+            </p>
+        </div>
+    </section>
+
+    <section class="section" id="ai-steps">
+        <div class="section-label">AI Steps</div>
+        <h2 class="section-title">AIステップの種類と使い分け</h2>
+
+        <div class="grid grid-4">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">Summarize</h3>
+                <p class="card-description">
+                    テキスト要約に最適化されたAIステップ。
+                    事前定義されたオプションで簡単に設定可能。
+                    ファイルやメールの要約に最適です。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">Ask Gemini</h3>
+                <p class="card-description">
+                    一般的な質問やテキスト生成に最適。
+                    最も柔軟ですが、プロンプトの作成が必要。
+                    複雑な処理や独自の生成タスクに使用します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">Extract</h3>
+                <p class="card-description">
+                    特定の情報抽出に最適。
+                    電話番号、住所、アクションアイテムなど、
+                    構造化されたデータを取り出すのに便利です。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">Decide</h3>
+                <p class="card-description">
+                    AIを使った条件判定。
+                    複雑な条件を自然言語で指定可能。
+                    分岐処理の判断をGeminiに任せられます。
+                </p>
+            </div>
+        </div>
+
+        <div class="note">
+            <div class="note-title">💡 AIステップのチェーン</div>
+            <p>
+                複数のAIステップを組み合わせることができます。例えば：
+            </p>
+            <ul>
+                <li><strong>Extract</strong>でフォーム回答から質問を抽出</li>
+                <li><strong>Ask Gemini</strong>で抽出した質問を使って回答を生成</li>
+                <li>その回答をメールで送信</li>
+            </ul>
+            <p style="margin-top: 1rem;">
+                変数を使ってAIステップをつなげることで、高度な自動化が実現できます。
+            </p>
+        </div>
+    </section>
+
+    <section class="section" id="gemini-source">
+        <div class="section-label">Gemini Source Settings</div>
+        <h2 class="section-title">Geminiのソース設定（重要）</h2>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <h3 class="card-title">Google Workspace と Web</h3>
+                <p class="card-description">
+                    Gmail、Chat、Drive、カレンダーなど、あなたがアクセスできる<strong>すべてのWorkspaceデータとWeb</strong>を参照できます。
+                    <br><br>
+                    <strong>使用場面</strong>：組織内での要約や分析タスク。アップロードされたファイルを要約する今回のエージェントでは、このオプションを選択します。
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Web のみ</h3>
+                <p class="card-description">
+                    公開Webサイトのみを参照します。<strong>組織のデータへのアクセスは許可されません</strong>。
+                    <br><br>
+                    <strong>使用場面</strong>：Geminiからの返信を外部に自動共有するエージェント。組織データの意図しない共有を防ぐため、このオプションを選択してください。
+                </p>
+            </div>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">⚠️ セキュリティ上の重要な注意</div>
+            <p>
+                Geminiからの返信を外部（Slack、Microsoft Teamsなど）に自動共有するエージェントでは、
+                <strong>必ず「Webのみ」を選択</strong>してください。
+            </p>
+            <p style="margin-top: 0.5rem;">
+                「Google Workspace と Web」を選択すると、組織の機密情報が意図せず外部に共有される可能性があります。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Prompt Best Practices</div>
+        <h2 class="section-title">プロンプトのベストプラクティス</h2>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">コンテキストを明記</h3>
+                <p class="card-description">
+                    Geminiはエージェントの他のステップを認識しないため、
+                    プロンプトに十分なコンテキストを提供してください。
+                    <br><br>
+                    例：「以下のファイルを要約してください」
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">トーンを指定</h3>
+                <p class="card-description">
+                    出力のトーンを明確に指定します。
+                    <br><br>
+                    例：「カジュアルで寄り添うトーンで」「ビジネスライクに」「専門的な観点から」
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">文量を指定</h3>
+                <p class="card-description">
+                    どれくらいの量で出力してほしいか指定します。
+                    <br><br>
+                    例：「3行で」「5つの箇条書きで」「200文字以内で」
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">観点を指定</h3>
+                <p class="card-description">
+                    どの観点から分析してほしいか明確にします。
+                    <br><br>
+                    例：「マーケティングの観点から」「技術的な観点から」「コスト面を重視して」
+                </p>
+            </div>
+        </div>
+
+        <div class="note">
+            <div class="note-title">✍️ プロンプト例</div>
+            <pre style="background: rgba(0,0,0,0.05); padding: 1rem; border-radius: 4px; margin-top: 1rem; overflow-x: auto; font-size: 0.9rem;">
+以下のファイルを要約してください。
+要点を3つの箇条書きでまとめ、カジュアルで寄り添うトーンで書いてください。
+            </pre>
+        </div>
+    </section>
+
+    <section class="section" id="notes">
+        <div class="section-label">Important</div>
+        <h2 class="section-title">重要な注意点</h2>
+
+        <div class="warning">
+            <div class="warning-title">⚠️ 注意1：ファイル形式の対応</div>
+            <p>Geminiは、<strong>PDF、Docs、Slides、Sheets</strong>に対応しています。</p>
+            <p>画像ファイルや動画ファイルは要約できません。</p>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">⚠️ 注意2：変数の選択</div>
+            <p>要約対象は<strong>「Link to the file」</strong>を変数で指定してください。</p>
+            <p>ファイルパスやファイル名では動作しません。</p>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">⚠️ 注意3：Geminiのソース設定</div>
+            <p>外部に自動共有するエージェントでは、必ず<strong>「Webのみ」</strong>を選択してください。</p>
+            <p>組織データの意図しない共有を防ぐため、非常に重要です。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Summary</div>
+        <h2 class="section-title">今日のポイント</h2>
+
+        <div class="note">
+            <div class="note-title">✅ 今日学んだこと</div>
+            <ul>
+                <li>AIステップは<strong>Summarize, Ask Gemini, Extract, Decide</strong>など用途に応じて選択</li>
+                <li><strong>Summarize</strong>ステップで事前定義されたオプションを活用</li>
+                <li>要約対象は「<strong>Link to the file</strong>」を変数で指定</li>
+                <li><strong>Geminiのソース設定</strong>で、参照できるデータを制御</li>
+                <li>プロンプトには<strong>コンテキスト、トーン、文量、観点</strong>を明記</li>
+                <li>Geminiの応答を変数で後のステップに渡す</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Next</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div class="card">
+            <div class="card-number">04</div>
+            <h3 class="card-title">もう迷わない！Chatスペース連携エラーを確実に解消する方法</h3>
+            <p class="card-description">
+                Chatスペース連携で発生する典型的なエラーを理解し、確実に解決する方法を学びます。
+                よくあるエラーパターン、内部統合とWebhookの違い、トラブルシューティングの方法を習得します。
+            </p>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>グラフもAIにおまかせ：PythonコードをChatGPTに書かせる技術</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--electric);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateX(10px);
+            border-color: var(--electric);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: 'PYTHON CODE';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .list {
+            text-align: left;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▶';
+            color: var(--electric);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .prompt-example {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(0, 240, 255, 0.05));
+            border-left: 4px solid var(--electric);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--electric);
+            color: var(--ink);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 1rem;
+            font-family: 'Arial', sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .navigation {
+                right: 1rem;
+            }
+
+            .content-section {
+                padding: 4rem 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+        <div class="nav-pill" data-section="7"></div>
+    </div>
+
+    <div class="container">
+        <!-- Section 1: タイトル -->
+        <section class="content-section visible" id="section-0">
+            <h1 class="section-title">グラフもAIにおまかせ</h1>
+            <div class="section-content">
+                <p style="font-size: 1.8rem; margin-bottom: 2rem; color: var(--electric);">
+                    PythonコードをChatGPTに書かせる技術
+                </p>
+                <div class="card">
+                    <h3>学習目標</h3>
+                    <p>売上データをビジュアル化するPythonコードをChatGPTに生成させ、効率的なデータ分析ワークフローを構築する技術を習得します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: なぜPythonなのか -->
+        <section class="content-section" id="section-1">
+            <h2 class="section-title">なぜPythonなのか</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">豊富なライブラリ</span></h3>
+                        <p>matplotlib、seaborn、plotlyなど、データ可視化に特化したライブラリが充実しています。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">ChatGPTとの親和性</span></h3>
+                        <p>Pythonは世界中で使われているため、ChatGPTの学習データにも豊富に含まれています。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">自動化が容易</span></h3>
+                        <p>一度コードを書けば、同様の処理を繰り返し実行できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: 基本的なプロンプト設計 -->
+        <section class="content-section" id="section-2">
+            <h2 class="section-title">基本的なプロンプト設計</h2>
+            <div class="section-content">
+                <div class="prompt-example">
+                    <h3>効果的なプロンプトの構造</h3>
+                    <p><span class="step-number">1</span><strong>データの説明</strong>：CSVファイルの構造を明確に説明</p>
+                    <p><span class="step-number">2</span><strong>目的の明示</strong>：どのようなグラフを作りたいか</p>
+                    <p><span class="step-number">3</span><strong>技術要件</strong>：使用したいライブラリやスタイル</p>
+                    <p><span class="step-number">4</span><strong>出力形式</strong>：ファイル保存の有無など</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: 実践的なプロンプト例 -->
+        <section class="content-section" id="section-3">
+            <h2 class="section-title">実践的なプロンプト例</h2>
+            <div class="section-content">
+                <div class="prompt-example">
+                    <h3>売上トレンド分析のプロンプト</h3>
+                    <pre style="background: rgba(0, 240, 255, 0.05); padding: 1rem; border-radius: 8px; white-space: pre-wrap; line-height: 1.8;">
+売上データ（日付、商品名、売上金額、数量の列を持つCSV）から、
+月別売上推移を折れ線グラフで表示するPythonコードを書いてください。
+
+要件：
+- matplotlibを使用
+- 日本語表示に対応
+- グラフを'sales_trend.png'として保存
+                    </pre>
+                </div>
+                <div class="code-block" style="overflow-x: auto;">
+                    <pre style="margin: 0; white-space: pre; font-family: 'Courier New', monospace; line-height: 1.6;">
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from datetime import datetime
+
+# CSVファイルの読み込み
+df = pd.read_csv('sales_data.csv')
+df['日付'] = pd.to_datetime(df['日付'])
+
+# 月別売上の集計
+monthly_sales = df.groupby(df['日付'].dt.to_period('M'))['売上金額'].sum()
+
+# グラフの作成
+plt.figure(figsize=(12, 6))
+plt.plot(monthly_sales.index.astype(str), monthly_sales.values, marker='o')
+plt.title('月別売上推移')
+plt.xlabel('月')
+plt.ylabel('売上金額（円）')
+plt.xticks(rotation=45)
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('sales_trend.png')
+plt.show()
+                    </pre>
+plt.grid(True)
+plt.tight_layout()
+plt.savefig('sales_trend.png', dpi=300)
+plt.show()
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: 高度なグラフ作成テクニック -->
+        <section class="content-section" id="section-4">
+            <h2 class="section-title">高度なグラフ作成テクニック</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">複合グラフ</span></h3>
+                        <p>売上金額と数量を同時に表示する二軸グラフの作成方法。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">インタラクティブグラフ</span></h3>
+                        <p>plotlyを使った動的なグラフの生成技術。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">統計分析可視化</span></h3>
+                        <p>回帰線や信頼区間を含む高度な分析グラフ。</p>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>複合グラフのプロンプト例</h3>
+                    <p>「売上データから、左軸に売上金額の棒グラフ、右軸に販売数量の折れ線グラフを同時に表示する複合グラフをPythonで作成してください。色分けを明確にし、凡例も表示してください。」</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: エラー対処法 -->
+        <section class="content-section" id="section-5">
+            <h2 class="section-title">エラー対処法</h2>
+            <div class="section-content">
+                <div class="list">
+                    <h3>よくあるエラーと解決策</h3>
+                    <li><strong>文字化け問題</strong>：日本語フォントの設定方法</li>
+                    <li><strong>データ型エラー</strong>：日付データの正しい変換方法</li>
+                    <li><strong>メモリエラー</strong>：大量データの効率的な処理法</li>
+                    <li><strong>ライブラリエラー</strong>：必要なパッケージのインストール</li>
+                </div>
+                <div class="code-block">
+                    <pre># 日本語フォント設定例
+import matplotlib.pyplot as plt
+plt.rcParams['font.family'] = 'DejaVu Sans'
+# または
+from matplotlib import rcParams
+rcParams['font.family'] = 'sans-serif'
+rcParams['font.sans-serif'] = ['Hiragino Sans', 'Yu Gothic', 'Meiryo']</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: 自動化のベストプラクティス -->
+        <section class="content-section" id="section-6">
+            <h2 class="section-title">自動化のベストプラクティス</h2>
+            <div class="section-content">
+                <div class="card">
+                    <h3><span class="highlight">コードの再利用性</span></h3>
+                    <p>関数化により、異なるデータセットでも同じ処理を適用できるようにします。</p>
+                </div>
+                <div class="prompt-example">
+                    <h3>関数化のプロンプト</h3>
+                    <p>「先ほどの売上グラフ作成コードを、任意のCSVファイルとカラム名を指定できる関数として書き直してください。エラーハンドリングも含めてください。」</p>
+                </div>
+                <div class="code-block">
+                    <pre>def create_sales_trend_graph(csv_file, date_col, amount_col, output_file):
+    try:
+        df = pd.read_csv(csv_file)
+        df[date_col] = pd.to_datetime(df[date_col])
+        
+        monthly_sales = df.groupby(df[date_col].dt.to_period('M'))[amount_col].sum()
+        
+        plt.figure(figsize=(12, 6))
+        plt.plot(monthly_sales.index.astype(str), monthly_sales.values, marker='o')
+        plt.title('月別売上推移')
+        plt.savefig(output_file, dpi=300)
+        print(f"グラフを{output_file}に保存しました")
+        
+    except Exception as e:
+        print(f"エラーが発生しました: {e}")</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: まとめと次のステップ -->
+        <section class="content-section" id="section-7">
+            <h2 class="section-title">まとめと次のステップ</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">習得した技術</span></h3>
+                        <ul class="list">
+                            <li>効果的なプロンプト設計</li>
+                            <li>Python可視化コードの生成</li>
+                            <li>エラー対処法</li>
+                            <li>コードの自動化と再利用</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">次のステップ</span></h3>
+                        <ul class="list">
+                            <li>機械学習を使った予測分析</li>
+                            <li>ダッシュボードの自動生成</li>
+                            <li>リアルタイムデータ処理</li>
+                            <li>高度な統計分析の実装</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>実践課題</h3>
+                    <p>実際の売上データを使って、今回学んだ技術で複数のグラフを作成し、レポート形式でまとめてみましょう。ChatGPTに「データ分析レポートのHTML生成コード」を書いてもらうのも良い練習になります。</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Intersection Observer for fade-in animation
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '-10% 0px -10% 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Update navigation
+                    const sectionIndex = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, index) => {
+                        pill.classList.toggle('active', index === sectionIndex);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Navigation click handlers
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

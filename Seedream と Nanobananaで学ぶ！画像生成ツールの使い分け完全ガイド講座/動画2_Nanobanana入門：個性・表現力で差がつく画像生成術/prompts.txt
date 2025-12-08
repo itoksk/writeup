@@ -1,0 +1,436 @@
+# デモ用プロンプト集 - 動画2
+# Nanobanana入門：個性・表現力で差がつく画像生成術
+
+---
+
+## 🔰 初心者向け：まずはこれだけ！（最小限プロンプト）
+
+**使い方（3ステップ）:**
+1. 下のプロンプトをコピー
+2. Nanobanana（https://nanobanana.ai）に貼り付け
+3. 【ここを編集】の部分を書き換えて「Generate」ボタンを押す
+
+```
+【ここを編集：作りたいイラストを英語で書く】
+A young woman in a coffee shop, reading a book, cozy atmosphere, illustrated style, warm colors
+```
+
+**例：**
+- `A cat character in playful scene, anime style, bright colors` → 遊んでいる猫キャラクター、アニメ風、明るい色
+- `Mountain landscape at sunset, watercolor painting style` → 夕暮れの山の風景、水彩画風
+- `Modern office worker, minimalist illustration, flat colors` → 現代のオフィスワーカー、ミニマルイラスト、フラット
+
+ 色
+
+**💡 ポイント:**
+- Seedreamは「写真のようにリアル」、Nanobananaは「イラスト・アート風」
+- `illustrated style`, `anime style`, `watercolor style` などのスタイル指定が大事
+- プロンプトは英語で書く（Google翻訳でOK）
+
+---
+
+## 📝 ステップバイステップガイド（初めての方へ）
+
+### ステップ1：Nanobananaって何？SeedreamPと何が違う？
+
+**Nanobananaとは：**
+イラストやアート風の画像を生成するAIツールです。写真のようにリアルではなく、「絵」として個性的で印象的な画像が作れます。
+
+**SeedreamとNanobananaの違い：**
+
+| 項目 | Seedream | Nanobanana |
+|------|----------|------------|
+| **画像の種類** | 写真のようにリアル | イラスト・アート風 |
+| **用途** | 商品写真、プロフィール写真、風景写真 | SNS投稿、キャラクター、コンセプトアート |
+| **強み** | 本物っぽさ | 個性・表現力 |
+| **例** | カフェのコーヒー写真 | カフェのコーヒーイラスト |
+
+**どっちを使う？**
+- **写真が必要** → Seedream（例：ECサイトの商品写真、不動産写真）
+- **イラストが必要** → Nanobanana（例：SNS投稿、ブログヘッダー、絵本）
+
+### ステップ2：Nanobananaで何ができる？
+
+**できること：**
+- ✅ **キャラクターイラスト**（アニメ風、手描き風など）
+- ✅ **風景イラスト**（水彩画風、油絵風など）
+- ✅ **コンセプトアート**（抽象的な表現、メタファー）
+- ✅ **商品イラスト**（ミニマルデザイン、ポップアート風）
+
+**できないこと：**
+- ❌ 写真のようにリアルな画像（→ Seedreamを使う）
+- ❌ 複雑な文字の挿入（→ 後から別ツールで追加）
+
+### ステップ3：実際にNanobananaを使ってみる
+
+1. **Nanobananaにアクセス**
+   - ブラウザで https://nanobanana.ai を開く
+   - アカウント登録（無料版でOK）
+
+2. **プロンプトを入力**
+   - 入力欄に英語でプロンプトを貼り付け
+   - 例：`A young woman reading a book, illustrated style, warm colors`
+
+3. **スタイルを指定**
+   - プロンプトに必ず「スタイル」を含める
+   - 例：`illustrated style`, `anime style`, `watercolor style`
+
+4. **画像を生成**
+   - 「Generate」ボタンをクリック
+   - 10〜30秒待つ
+   - 画像が表示される
+
+5. **気に入らなければ再生成**
+   - 同じプロンプトでも、毎回違う画像が生成されます
+   - 気に入らなければ、もう一度「Generate」をクリック
+
+---
+
+## ❓ よくある質問（FAQ）
+
+### Q1: SeedreamとNanobanana、どっちを使えばいい？
+A: **写真が必要ならSeedream、イラストが必要ならNanobanana**です。例えば、商品写真（ECサイト）はSeedream、SNS投稿の目を引くビジュアルはNanobananaです。
+
+### Q2: スタイル指定って何？なぜ必要？
+A: スタイル指定は「どんな絵のタッチで描くか」を指定することです。例えば、`anime style`（アニメ風）、`watercolor style`（水彩画風）、`illustrated style`（イラスト風）など。**スタイル指定がないと、AIが迷って中途半端な画像になります。**
+
+良い例（スタイル指定あり）：
+```
+A mountain landscape, watercolor painting style, soft colors
+```
+
+悪い例（スタイル指定なし）：
+```
+A mountain landscape
+```
+
+### Q3: プロンプトに何を書けばいい？
+A: 以下の4要素を含めると良い画像ができます：
+
+1. **主題**：何を描くか（例：`A young woman`）
+2. **環境**：どこで、どんな状況か（例：`in a coffee shop, reading a book`）
+3. **スタイル**：どんな絵のタッチか（例：`illustrated style`）
+4. **雰囲気**：どんな印象か（例：`warm colors, cozy atmosphere`）
+
+**良い例（4要素あり）：**
+```
+[主題] A young woman [環境] in a coffee shop, reading a book, [スタイル] illustrated style, [雰囲気] warm colors, cozy atmosphere
+```
+
+### Q4: 無料版と有料版の違いは？
+A: 無料版は1日に生成できる枚数に制限がありますが、画質は同じです。まずは無料版で試してみてください。
+
+### Q5: アニメ風って著作権的に大丈夫？
+A: Nanobananaが生成する画像は、特定のアニメ作品のコピーではなく、「アニメ風のタッチ」で描かれた新しい画像です。ただし、商用利用する場合は、Nanobananaの利用規約を必ず確認してください。
+
+---
+
+## キャラクター・人物
+
+### 例1：カフェで本を読む女性（デモで使用）
+
+**プロンプト：**
+```
+A young woman in a coffee shop, reading a book, cozy atmosphere, afternoon light through window, illustrated style, warm colors, artistic
+```
+
+**日本語訳**: コーヒーショップで本を読む若い女性、居心地の良い雰囲気、窓からの午後の光、イラストスタイル、温かい色、芸術的
+
+**用途**: SNS投稿、ブログヘッダー、ライフスタイルコンテンツ
+
+**💡 カスタマイズ例：**
+- スタイルを変える：`illustrated style` → `anime style`（アニメ風）、`watercolor style`（水彩画風）
+- 色を変える：`warm colors` → `pastel colors`（パステルカラー）
+
+---
+
+### 例2：ファンタジーキャラクター
+
+**プロンプト：**
+```
+Fantasy elf character with flowing silver hair, magical forest background, ethereal atmosphere, anime style, soft pastel colors, dreamy aesthetic
+```
+
+**日本語訳**: 銀色の流れる髪を持つファンタジーエルフキャラクター、魔法の森の背景、幻想的な雰囲気、アニメスタイル、柔らかいパステルカラー、夢のような美学
+
+**用途**: ゲームキャラクター、ファンタジー小説挿絵、創作活動
+
+---
+
+### 例3：ビジネスパーソン（イラスト版）
+
+**プロンプト：**
+```
+Professional businesswoman in modern office, confident pose, minimalist design, flat colors, clean lines, contemporary illustration style
+```
+
+**日本語訳**: 現代的なオフィスのプロフェッショナルなビジネスウーマン、自信に満ちたポーズ、ミニマリストデザイン、フラットカラー、クリーンな線、現代的イラストスタイル
+
+**用途**: 企業プレゼン、ビジネス記事、インフォグラフィック
+
+**💡 カスタマイズ例：**
+- 性別を変える：`businesswoman` → `businessman`
+- スタイルを変える：`minimalist design` → `hand-drawn style`（手描き風）
+
+---
+
+## 風景・背景
+
+### 例4：幻想的な山の風景
+
+**プロンプト：**
+```
+Mountain landscape at twilight, mystical atmosphere, glowing crystals, illustrated style, vibrant purple and blue tones, fantasy art, magical realism
+```
+
+**日本語訳**: 黄昏時の山の風景、神秘的な雰囲気、光る結晶、イラストスタイル、鮮やかな紫と青のトーン、ファンタジーアート、魔法のリアリズム
+
+**用途**: ゲーム背景、ファンタジーコンテンツ、装飾用
+
+---
+
+### 例5：都市の夜景（スタイリッシュ版）
+
+**プロンプト：**
+```
+City skyline at night, neon lights, cyberpunk aesthetic, vibrant colors, digital illustration, futuristic atmosphere, high contrast
+```
+
+**日本語訳**: 夜の都市のスカイライン、ネオンライト、サイバーパンク風、鮮やかな色、デジタルイラスト、未来的な雰囲気、高コントラスト
+
+**用途**: SF系コンテンツ、テック系背景、モダンデザイン
+
+---
+
+### 例6：日本の四季（水彩画風）
+
+**プロンプト：**
+```
+Japanese garden in spring, cherry blossoms falling, koi pond, watercolor painting style, soft colors, peaceful atmosphere, traditional aesthetic
+```
+
+**日本語訳**: 春の日本庭園、桜が散る、鯉の池、水彩画スタイル、柔らかい色、穏やかな雰囲気、伝統的な美学
+
+**用途**: 和風コンテンツ、観光資料、癒し系背景
+
+---
+
+## 商品・アイテム（イラスト版）
+
+### 例7：ファンシーなカフェメニュー
+
+**プロンプト：**
+```
+Illustrated coffee and pastries on wooden table, cozy cafe setting, hand-drawn style, warm color palette, inviting atmosphere, lifestyle illustration
+```
+
+**日本語訳**: 木製テーブルの上のイラスト風コーヒーとペストリー、居心地の良いカフェの設定、手描きスタイル、温かいカラーパレット、魅力的な雰囲気、ライフスタイルイラスト
+
+**用途**: カフェメニュー、SNS投稿、フード系コンテンツ
+
+---
+
+### 例8：テック製品（ミニマルデザイン）
+
+**プロンプト：**
+```
+Modern smartphone and laptop, minimalist illustration, flat design, clean geometric shapes, tech aesthetic, professional look, blue and white color scheme
+```
+
+**日本語訳**: 現代的なスマートフォンとノートパソコン、ミニマリストイラスト、フラットデザイン、クリーンな幾何学的形状、テック風、プロフェッショナルな見た目、青と白のカラースキーム
+
+**用途**: テック系記事、製品紹介、インフォグラフィック
+
+---
+
+## 抽象・コンセプト
+
+### 例10：チームワーク（抽象表現）
+
+**プロンプト：**
+```
+Abstract representation of teamwork, interconnected figures, vibrant colors, modern illustration, dynamic composition, inspiring atmosphere, professional design
+```
+
+**日本語訳**: チームワークの抽象表現、つながった人物、鮮やかな色、現代的イラスト、ダイナミックな構成、インスピレーションを与える雰囲気、プロフェッショナルデザイン
+
+**用途**: 企業プレゼン、チームビルディング資料、ビジネスコンテンツ
+
+---
+
+### 例11：成長・発展
+
+**プロンプト：**
+```
+Growth and development concept, plant growing into tree, illustrated metaphor, watercolor style, hopeful colors, inspiring message, organic forms
+```
+
+**日本語訳**: 成長と発展のコンセプト、木に成長する植物、イラスト化されたメタファー、水彩スタイル、希望の色、インスピレーションメッセージ、有機的な形
+
+**用途**: 自己啓発、ビジネス成長、教育コンテンツ
+
+---
+
+## キッズ・教育向け
+
+### 例13：動物キャラクター
+
+**プロンプト：**
+```
+Cute animal characters in playful scene, children's book illustration style, bright cheerful colors, friendly expressions, whimsical atmosphere, educational
+```
+
+**日本語訳**: 遊び心のあるシーンのかわいい動物キャラクター、児童書イラストスタイル、明るく陽気な色、フレンドリーな表情、風変わりな雰囲気、教育的
+
+**用途**: 児童書、教育教材、キッズコンテンツ
+
+---
+
+### 例14：学習シーン
+
+**プロンプト：**
+```
+Children learning together in classroom, illustrated style, warm welcoming atmosphere, colorful educational setting, friendly characters, engaging composition
+```
+
+**日本語訳**: 教室で一緒に学ぶ子供たち、イラストスタイル、温かく歓迎的な雰囲気、カラフルな教育環境、フレンドリーなキャラクター、魅力的な構成
+
+**用途**: 教育資料、学習アプリ、学校関連コンテンツ
+
+---
+
+## 💡 スタイル指定の完全ガイド
+
+### イラスト系（汎用性が高い）
+
+- `illustrated style` → イラスト風（万能、迷ったらこれ）
+- `digital illustration` → デジタルイラスト（クリーンな印象）
+- `hand-drawn aesthetic` → 手描き風（温かみがある）
+- `sketch style` → スケッチ風（ラフな印象）
+
+### 絵画系（芸術的）
+
+- `watercolor painting` → 水彩画風（柔らかい、優しい）
+- `oil painting` → 油絵風（重厚感、クラシック）
+- `acrylic painting` → アクリル画風（鮮やか、現代的）
+- `impressionist style` → 印象派風（ぼんやり、幻想的）
+
+### アニメ・マンガ系（日本風）
+
+- `anime style` → アニメ風（目が大きい、日本アニメ）
+- `manga aesthetic` → マンガ風（モノクロ、コマ割り風）
+- `Japanese animation` → 日本アニメ風（anime styleと同じ）
+
+### モダン・デザイン系（プロフェッショナル）
+
+- `minimalist design` → ミニマルデザイン（シンプル、洗練）
+- `flat design` → フラットデザイン（ベタ塗り、シンプル）
+- `vector art` → ベクターアート（くっきり、拡大しても綺麗）
+- `geometric style` → 幾何学的（三角形、円などの図形）
+
+### ヴィンテージ・レトロ系（ノスタルジック）
+
+- `vintage aesthetic` → ヴィンテージ風（古風、レトロ）
+- `retro style` → レトロスタイル（1950〜1980年代風）
+- `nostalgic atmosphere` → ノスタルジックな雰囲気（懐かしい）
+
+### ポップ・カラフル系（目を引く）
+
+- `pop art` → ポップアート（ビビッド、大胆）
+- `vibrant colors` → 鮮やかな色（元気、明るい）
+- `neon aesthetic` → ネオン風（光る、サイバーパンク）
+
+---
+
+## 💡 使いこなしのコツ
+
+### コツ1：スタイルは必ず指定する
+
+Nanobananaで一番大事なのは**スタイル指定**です。スタイルを指定しないと、AIが迷って中途半端な画像になります。
+
+**必ず以下のいずれかを含める：**
+- `illustrated style`
+- `anime style`
+- `watercolor style`
+- `minimalist design`
+- など
+
+### コツ2：色の雰囲気を指定する
+
+色を指定すると、印象がガラッと変わります：
+
+- `warm colors` → 温かい色（赤、オレンジ、黄色）
+- `cool tones` → 涼しいトーン（青、緑、紫）
+- `pastel palette` → パステルカラー（淡い、優しい）
+- `vibrant hues` → 鮮やかな色（ビビッド、元気）
+
+### コツ3：雰囲気・感情を追加する
+
+雰囲気を追加すると、より印象的な画像になります：
+
+- `cozy atmosphere` → 居心地の良い雰囲気
+- `mystical atmosphere` → 神秘的な雰囲気
+- `energetic feeling` → エネルギッシュな感じ
+- `peaceful mood` → 穏やかな雰囲気
+
+---
+
+## 🚨 注意点
+
+### 注意点1：写真のようなリアルさは出ない
+Nanobananaは「イラスト・アート風」に特化しています。写真のようにリアルな画像が必要な場合は、Seedreamを使ってください。
+
+### 注意点2：スタイルを混ぜすぎない
+スタイルを2つ以上混ぜると、AIが混乱して変な画像になることがあります。最初は1つのスタイルだけを指定してください。
+
+悪い例（スタイルが多すぎる）：
+```
+A woman, anime style, watercolor style, oil painting style, flat design
+```
+
+良い例（スタイル1つだけ）：
+```
+A woman, anime style, warm colors
+```
+
+### 注意点3：人物の顔は何度か試す
+AIは人物の顔を生成するのが苦手な場合があります。何度か再生成して、良いものを選んでください。
+
+### 注意点4：商用利用の前に利用規約を確認
+生成した画像を商用利用する場合は、必ずNanobananaの利用規約を確認してください。
+
+---
+
+## 📊 SeedreamとNanobananaの使い分け早見表
+
+| 用途 | 推奨ツール | 理由 |
+|------|-----------|------|
+| 商品写真（ECサイト） | **Seedream** | リアルさが必要 |
+| SNS投稿（目を引く） | **Nanobanana** | 個性・印象 |
+| プロフィール写真 | **Seedream** | 本物っぽさ |
+| キャラクターイラスト | **Nanobanana** | 表現力 |
+| 風景写真 | **Seedream** | 写実的 |
+| 風景イラスト | **Nanobanana** | 芸術的 |
+| プレゼン背景（リアル） | **Seedream** | プロフェッショナル |
+| プレゼン背景（アート） | **Nanobanana** | 印象的 |
+| ブランドイメージ | **Nanobanana** | 個性 |
+| 不動産写真 | **Seedream** | リアル |
+
+---
+
+## 講師用メモ
+
+### デモのポイント
+1. SeedreamとNanobananaの違いを、実際の生成画像で比較する
+2. 同じ内容のプロンプトで、Seedream（写真風）とNanobanana（イラスト風）の違いを見せる
+3. スタイル指定あり/なしの違いを実演
+
+### 受講者への問いかけ例
+- 「みなさん、SNS投稿で目を引く画像が必要な時、どうしますか？」
+- 「Nanobananaなら、個性的でアートなビジュアルが10秒で作れます」
+- 「写真じゃなくて、イラストの方が印象に残ることもありますよね」
+
+### 注意点
+- SeedreamとNanobananaの使い分けを明確に説明する
+- スタイル指定の重要性を強調する
+- 「イラスト」が必要な場面を具体的に示す

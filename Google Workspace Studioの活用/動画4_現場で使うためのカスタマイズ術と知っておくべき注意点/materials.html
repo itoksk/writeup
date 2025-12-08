@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：現場で使うためのカスタマイズ術と知っておくべき注意点 | Google Workspace Studioの活用</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+            --google-blue: #4285F4;
+            --google-green: #34A853;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.9rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--electric);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 0.95;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--coral);
+            font-size: 0.55em;
+            margin-top: 0.3em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 2rem;
+        }
+
+        .schedule-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .schedule-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            vertical-align: top;
+        }
+
+        .schedule-table tr:hover {
+            background: rgba(0,240,255,0.05);
+        }
+
+        .schedule-session {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            color: var(--electric);
+        }
+
+        ul {
+            list-style-position: inside;
+            margin-left: 1rem;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .note {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .warning-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--coral);
+        }
+
+        .success {
+            background: rgba(52, 168, 83, 0.05);
+            border-left: 4px solid var(--google-green);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .success-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--google-green);
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            color: #eee;
+            padding: 1.5rem;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block .comment {
+            color: #6a9955;
+        }
+
+        .code-block .keyword {
+            color: #569cd6;
+        }
+
+        .code-block .string {
+            color: #ce9178;
+        }
+
+        .troubleshoot-item {
+            background: var(--paper);
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .troubleshoot-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--coral);
+        }
+
+        .troubleshoot-cause {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .troubleshoot-solution {
+            font-size: 0.9rem;
+            background: rgba(0, 240, 255, 0.05);
+            padding: 0.75rem;
+            border-radius: 4px;
+        }
+
+        .summary-box {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .summary-box h3 {
+            color: var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        .next-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .next-step-item {
+            background: linear-gradient(135deg, rgba(66, 133, 244, 0.1), rgba(124, 58, 237, 0.1));
+            border: 2px solid var(--google-blue);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .next-step-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--google-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">Google Workspace Studioの活用</div>
+            <div class="nav-menu">
+                <a href="#customize">カスタマイズ</a>
+                <a href="#apps-script">Apps Script</a>
+                <a href="#security">セキュリティ</a>
+                <a href="#troubleshoot">トラブル対処</a>
+                <a href="#best-practices">ベストプラクティス</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第4回 / 全4回（最終回）</div>
+            <h1 class="hero-title">
+                現場で使うためのカスタマイズ術と知っておくべき注意点
+                <span>安全かつ効果的にStudioを導入する</span>
+            </h1>
+            <p class="hero-description">
+                テンプレートのカスタマイズ、Apps Scriptによる拡張、セキュリティ考慮事項、
+                トラブルシューティング、導入のベストプラクティスを学びます。
+            </p>
+        </div>
+    </div>
+
+    <section class="section" id="customize">
+        <div class="section-label">Customization</div>
+        <h2 class="section-title">テンプレートのカスタマイズ</h2>
+
+        <div class="grid grid-4">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">ステップの追加</h3>
+                <p class="card-description">
+                    新しいステップを追加して機能を拡張。例：Sheetsへのログ記録を追加。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">順序変更</h3>
+                <p class="card-description">
+                    ドラッグ&ドロップでステップの順序を変更。処理フローを最適化。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">条件分岐</h3>
+                <p class="card-description">
+                    Geminiの判断結果に基づいて次のアクションを分岐。優先度別に対応を変える。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">変数の活用</h3>
+                <p class="card-description">
+                    前のステップの出力を変数として次のステップで使用。動的なメッセージ作成。
+                </p>
+            </div>
+        </div>
+
+        <div class="note">
+            <div class="note-title">よく使う変数</div>
+            <ul>
+                <li><code>{gemini_response}</code> - Geminiの出力</li>
+                <li><code>{sender_email}</code> - メール送信者</li>
+                <li><code>{file_name}</code> - ファイル名</li>
+                <li><code>{form_response}</code> - フォーム回答内容</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="apps-script">
+        <div class="section-label">Apps Script</div>
+        <h2 class="section-title">Apps Scriptによる拡張</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">カスタムAPI連携</h3>
+                <p class="card-description">
+                    社内システムやサードパーティAPIと連携する独自ステップを作成。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">複雑なデータ処理</h3>
+                <p class="card-description">
+                    標準ステップでは対応できない複雑な計算やデータ変換を実装。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">Vertex AI連携</h3>
+                <p class="card-description">
+                    GeminiとVertex AIを連携させ、より高度なAI機能を組み込み。
+                </p>
+            </div>
+        </div>
+
+        <div class="code-block">
+<span class="comment">// カスタムステップの例</span>
+<span class="keyword">function</span> processData(input) {
+  <span class="comment">// 入力データを処理</span>
+  <span class="keyword">const</span> result = {
+    processed: <span class="keyword">true</span>,
+    summary: <span class="string">'処理完了'</span>,
+    data: input
+  };
+  <span class="keyword">return</span> result;
+}
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">Apps Script使用時の注意点</div>
+            <ul>
+                <li>Apps Scriptの知識が必要</li>
+                <li>実行時間の制限あり（6分）</li>
+                <li>エラーハンドリングを適切に実装</li>
+                <li>テスト環境で十分に検証してから本番導入</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="security">
+        <div class="section-label">Security</div>
+        <h2 class="section-title">セキュリティとアクセス制御</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">アクセス制御</div>
+            </div>
+            <p>エージェントは作成したユーザーの権限で動作します。共有時は、共有相手がアクセスすべきデータのみを扱うエージェントに限定しましょう。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">データの取り扱い</div>
+            </div>
+            <p>Geminiを使用すると処理対象のデータがGeminiに送信されます。外部サービス連携時はデータが外部に送信されます。組織のセキュリティポリシーを確認してください。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">管理者の制御</div>
+            </div>
+            <p>管理者はGoogle管理コンソールから、Studioの有効化/無効化、OU/グループ単位でのアクセス制御、外部連携の許可/制限、監査ログの確認が可能です。</p>
+        </div>
+
+        <div class="success">
+            <div class="success-title">セキュリティベストプラクティス</div>
+            <ul>
+                <li><strong>最小権限の原則</strong>：必要最小限のデータのみを扱う</li>
+                <li><strong>機密データの除外</strong>：個人情報や機密情報は自動化の対象から除外</li>
+                <li><strong>定期的な監査</strong>：エージェントの動作を定期的に確認</li>
+                <li><strong>チーム内レビュー</strong>：重要なエージェントは複数人でレビュー</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="troubleshoot">
+        <div class="section-label">Troubleshooting</div>
+        <h2 class="section-title">よくあるトラブルと対処法</h2>
+
+        <div class="troubleshoot-item">
+            <div class="troubleshoot-title">トラブル1：エージェントが動作しない</div>
+            <div class="troubleshoot-cause"><strong>原因：</strong>スターターの設定ミス、権限不足、サービス側の一時的な問題</div>
+            <div class="troubleshoot-solution"><strong>対処法：</strong>スターターの条件を確認 → テスト実行で動作確認 → 管理者に権限を確認 → しばらく待ってから再試行</div>
+        </div>
+
+        <div class="troubleshoot-item">
+            <div class="troubleshoot-title">トラブル2：Geminiの出力が期待と異なる</div>
+            <div class="troubleshoot-cause"><strong>原因：</strong>プロンプトが曖昧、入力データが複雑すぎる、言語設定の問題</div>
+            <div class="troubleshoot-solution"><strong>対処法：</strong>プロンプトをより具体的に記述 → 出力形式を明確に指定 → 「日本語で回答して」を追加 → 入力データを事前に整理</div>
+        </div>
+
+        <div class="troubleshoot-item">
+            <div class="troubleshoot-title">トラブル3：Chat通知が届かない</div>
+            <div class="troubleshoot-cause"><strong>原因：</strong>Chatスペースへのアクセス権限がない、スペースIDの設定ミス、Chatアプリが無効化</div>
+            <div class="troubleshoot-solution"><strong>対処法：</strong>Chatスペースのメンバーシップを確認 → スペースを再選択 → 管理者にChatの設定を確認</div>
+        </div>
+
+        <div class="troubleshoot-item">
+            <div class="troubleshoot-title">トラブル4：外部連携エラー</div>
+            <div class="troubleshoot-cause"><strong>原因：</strong>API認証の問題、サービス側の制限、ネットワークの問題</div>
+            <div class="troubleshoot-solution"><strong>対処法：</strong>連携を再認証 → サービスの状態を確認 → 管理者に問い合わせ</div>
+        </div>
+    </section>
+
+    <section class="section" id="best-practices">
+        <div class="section-label">Best Practices</div>
+        <h2 class="section-title">導入時のベストプラクティス</h2>
+
+        <div class="next-steps">
+            <div class="next-step-item">
+                <div class="next-step-number">1</div>
+                <h4>小さく始める</h4>
+                <p>シンプルなエージェントから</p>
+            </div>
+            <div class="next-step-item">
+                <div class="next-step-number">2</div>
+                <h4>効果を測定</h4>
+                <p>時間削減を数値化</p>
+            </div>
+            <div class="next-step-item">
+                <div class="next-step-number">3</div>
+                <h4>チームに展開</h4>
+                <p>共有機能で配布</p>
+            </div>
+            <div class="next-step-item">
+                <div class="next-step-number">4</div>
+                <h4>継続的に改善</h4>
+                <p>定期的に見直し</p>
+            </div>
+        </div>
+
+        <div class="note">
+            <div class="note-title">導入の推奨ステップ</div>
+            <ul>
+                <li><strong>Step 1：</strong>まずは自分だけで使うエージェントから開始</li>
+                <li><strong>Step 2：</strong>テンプレートをそのまま使い、1つのエージェントで1つの目的</li>
+                <li><strong>Step 3：</strong>作業時間の削減、対応スピードの向上、エラーの減少を測定</li>
+                <li><strong>Step 4：</strong>効果が確認できたらエージェントを共有機能で配布</li>
+                <li><strong>Step 5：</strong>実行履歴を確認し、プロンプトや設定を継続的に調整</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Summary</div>
+        <h2 class="section-title">講座全体の振り返り</h2>
+
+        <div class="summary-box">
+            <h3>第1回：Google Workspace Studioとは</h3>
+            <p>Gemini 3搭載のAIエージェント作成プラットフォーム。プログラミング不要で自然言語で構築。</p>
+        </div>
+
+        <div class="summary-box">
+            <h3>第2回：登録と基本操作</h3>
+            <p>studio.workspace.google.comにアクセス。テンプレートからエージェントを作成し、テスト実行で動作確認。</p>
+        </div>
+
+        <div class="summary-box">
+            <h3>第3回：機能と活用事例</h3>
+            <p>スターター、Geminiステップ、サードパーティ連携。フォーム通知、ファイル要約、会議準備、サポートトリアージの事例。</p>
+        </div>
+
+        <div class="summary-box">
+            <h3>第4回：カスタマイズと注意点</h3>
+            <p>テンプレートのカスタマイズ、Apps Script拡張、セキュリティ考慮事項、導入のベストプラクティス。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Next Steps</div>
+        <h2 class="section-title">次のアクション</h2>
+
+        <div class="next-steps">
+            <div class="next-step-item">
+                <div class="next-step-number">1</div>
+                <h4>業務を1つ選ぶ</h4>
+                <p>自動化できそうな作業を特定</p>
+            </div>
+            <div class="next-step-item">
+                <div class="next-step-number">2</div>
+                <h4>エージェント作成</h4>
+                <p>テンプレートを使って構築</p>
+            </div>
+            <div class="next-step-item">
+                <div class="next-step-number">3</div>
+                <h4>1週間運用</h4>
+                <p>効果を測定して検証</p>
+            </div>
+            <div class="next-step-item">
+                <div class="next-step-number">4</div>
+                <h4>チームに共有</h4>
+                <p>共有機能で展開</p>
+            </div>
+        </div>
+
+        <div class="success">
+            <div class="success-title">講座を受講いただきありがとうございました！</div>
+            <p>Google Workspace Studioを活用して、業務を効率化されることを願っています。</p>
+        </div>
+    </section>
+</body>
+</html>

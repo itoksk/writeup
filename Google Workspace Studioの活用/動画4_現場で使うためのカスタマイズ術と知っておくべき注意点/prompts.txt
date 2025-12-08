@@ -1,0 +1,273 @@
+# Google Workspace Studio 第4回：カスタマイズ術と注意点
+# プロンプト集
+
+---
+
+## 1. 条件分岐用プロンプト
+
+### 優先度判定
+```
+Analyze this content and determine the priority level:
+
+- HIGH: Requires immediate action (within 1 hour)
+- MEDIUM: Requires action today
+- LOW: Can be addressed this week
+
+Respond with only the priority level (HIGH, MEDIUM, or LOW).
+```
+
+### カテゴリ分類
+```
+Categorize this request into one of the following:
+
+- TECHNICAL: Technical issues, bugs, system problems
+- BILLING: Payment, invoice, subscription issues
+- FEATURE: Feature requests, suggestions
+- GENERAL: General inquiries, other
+
+Respond with only the category name.
+```
+
+### 感情判定
+```
+Analyze the sentiment of this message:
+
+- POSITIVE: Satisfied, grateful, happy
+- NEUTRAL: Factual, business-like
+- NEGATIVE: Frustrated, concerned, unhappy
+- URGENT: Expressing immediate need for help
+
+Respond with only the sentiment level.
+```
+
+---
+
+## 2. 複雑な処理用プロンプト
+
+### 複数アクションの抽出と分類
+```
+From this email, extract all action items and classify each:
+
+For each action item, provide:
+1. ACTION: What needs to be done
+2. PRIORITY: HIGH/MEDIUM/LOW
+3. DEADLINE: If mentioned, otherwise "Not specified"
+4. ASSIGNEE: If mentioned, otherwise "Unassigned"
+
+Format as JSON array:
+[
+  {
+    "action": "...",
+    "priority": "...",
+    "deadline": "...",
+    "assignee": "..."
+  }
+]
+```
+
+### 複合分析
+```
+Perform a comprehensive analysis of this support ticket:
+
+1. ISSUE_TYPE: (Bug / Feature Request / How-to Question / Other)
+2. URGENCY: (Critical / High / Medium / Low)
+3. CUSTOMER_SENTIMENT: (Positive / Neutral / Frustrated / Angry)
+4. TECHNICAL_COMPLEXITY: (Simple / Moderate / Complex)
+5. ESTIMATED_EFFORT: (Quick Fix / 1-2 hours / Half day / Multiple days)
+6. RECOMMENDED_TEAM: (L1 Support / L2 Support / Engineering / Product)
+7. KEY_ISSUES: (List main problems, max 3)
+8. SUGGESTED_RESPONSE: (Brief response approach)
+
+Respond in JSON format.
+```
+
+---
+
+## 3. 変数活用テンプレート
+
+### 動的メッセージテンプレート
+```
+📬 新着通知
+
+【送信者】{sender_email}
+【件名】{subject}
+【受信日時】{timestamp}
+
+📋 AI分析結果:
+{gemini_analysis}
+
+---
+優先度: {priority_level}
+推奨対応: {suggested_action}
+
+🔗 元のメールを確認: {email_link}
+```
+
+### 条件付きメッセージ
+```
+{if priority == "HIGH"}
+🚨 緊急対応が必要です！
+
+{gemini_summary}
+
+今すぐ確認してください。
+{endif}
+
+{if priority == "MEDIUM"}
+📋 本日中の対応をお願いします
+
+{gemini_summary}
+{endif}
+
+{if priority == "LOW"}
+📝 確認事項
+
+{gemini_summary}
+
+お時間のある時に確認してください。
+{endif}
+```
+
+---
+
+## 4. エラーハンドリング用プロンプト
+
+### 入力検証
+```
+Validate this input and check for:
+1. Required fields present
+2. Format correctness
+3. Potential issues
+
+If valid, respond: VALID
+If invalid, respond: INVALID - [reason]
+```
+
+### フォールバック処理
+```
+Attempt to process this request. If the main task cannot be completed:
+
+1. Identify what went wrong
+2. Provide a fallback summary
+3. Suggest next steps
+
+Always provide some useful output even if full processing fails.
+```
+
+---
+
+## 5. セキュリティ考慮プロンプト
+
+### 機密情報の除外
+```
+Summarize this content, but:
+- DO NOT include any personal names
+- DO NOT include email addresses
+- DO NOT include phone numbers
+- DO NOT include specific account numbers
+- Replace sensitive data with [REDACTED]
+
+Provide a sanitized summary suitable for team sharing.
+```
+
+### 外部共有用の要約
+```
+Create a summary of this internal document suitable for external sharing:
+
+- Remove any internal-only information
+- Generalize specific numbers or dates
+- Focus on publicly shareable insights
+- Mark any potentially sensitive items with [INTERNAL ONLY]
+```
+
+---
+
+## 6. Apps Script連携用
+
+### JSON出力用プロンプト
+```
+Process this data and return a JSON object with the following structure:
+
+{
+  "status": "success" or "error",
+  "data": {
+    // processed data here
+  },
+  "metadata": {
+    "processed_at": "ISO timestamp",
+    "items_count": number
+  }
+}
+
+Respond with valid JSON only, no additional text.
+```
+
+### API呼び出し用データ整形
+```
+Extract information from this content and format for API submission:
+
+Required fields:
+- title: Brief title (max 100 chars)
+- description: Detailed description
+- category: One of [A, B, C]
+- priority: 1-5 (1=highest)
+- tags: Array of relevant tags
+
+Return as JSON.
+```
+
+---
+
+## 7. トラブルシューティング用
+
+### プロンプトデバッグ
+```
+Before processing, validate:
+1. Input received: [YES/NO]
+2. Input format: [VALID/INVALID]
+3. Input length: [APPROPRIATE/TOO_LONG/TOO_SHORT]
+
+Then process if all checks pass. If not, explain the issue.
+```
+
+### 出力検証
+```
+After generating the response, verify:
+1. Response is in the requested language
+2. Response follows the specified format
+3. Response contains required fields
+4. No errors or placeholders remain
+
+If verification fails, regenerate the response.
+```
+
+---
+
+## 8. ベストプラクティス用テンプレート
+
+### 日本語出力の確実な指定
+```
+[Your main instruction here]
+
+IMPORTANT:
+- Respond entirely in Japanese
+- Use polite business Japanese (敬語)
+- Format dates as YYYY年MM月DD日
+- Format times as HH時MM分
+```
+
+### 出力形式の厳密な指定
+```
+Provide your response in the following exact format:
+
+【件名】[1行で簡潔に]
+【概要】[2-3文で説明]
+【重要度】[高/中/低]
+【対応期限】[YYYY年MM月DD日 または "指定なし"]
+【推奨アクション】
+・[アクション1]
+・[アクション2]
+・[アクション3]
+
+Do not add any text outside this format.
+```

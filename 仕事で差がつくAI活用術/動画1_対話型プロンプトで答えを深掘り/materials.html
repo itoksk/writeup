@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIを相棒にする質問力 - 対話型プロンプトで答えを深掘り</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--electric);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateX(10px);
+            border-color: var(--electric);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: 'PROMPT';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .list {
+            text-align: left;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 3rem 0;
+        }
+
+        .comparison-card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .comparison-card.before {
+            border-left-color: #ff4757;
+            border-left-width: 6px;
+        }
+
+        .comparison-card.after {
+            border-left-color: var(--electric);
+            border-left-width: 6px;
+        }
+
+        .process-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+
+        .process-step {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .process-step::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: var(--electric);
+        }
+
+        .process-step:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            background: var(--electric);
+            color: var(--ink);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .techniques-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .technique-card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .technique-card:hover {
+            transform: translateX(10px);
+            border-color: var(--electric);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .navigation {
+                display: none;
+            }
+
+            .content-section {
+                padding: 3rem 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .process-flow {
+                flex-direction: column;
+            }
+
+            .process-step::after {
+                content: '↓';
+                right: 50%;
+                top: 100%;
+                transform: translateX(50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+        <div class="nav-pill" data-section="7"></div>
+        <div class="nav-pill" data-section="8"></div>
+    </div>
+
+    <div class="container">
+        <section class="content-section visible">
+            <h1 class="section-title">AIを相棒にする質問力<br>対話型プロンプトで答えを深掘り</h1>
+            <div class="section-content">
+                <p>自然な対話でAIの真の力を引き出し、<br>
+                単純な質問から深い洞察へと導く技術</p>
+            </div>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-number">80%</div>
+                    <p>の人が1往復で対話を終了</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3倍</div>
+                    <p>情報の深さが向上</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10倍</div>
+                    <p>価値創出の可能性</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">こんな経験ありませんか？</h2>
+            <div class="section-content">
+                <p>多くの人が陥る「1往復で終了」の罠</p>
+            </div>
+            <div class="card">
+                <div class="code-block">👤 「新規事業のアイデアを教えて」
+🤖 「オンライン教育サービスはどうですか」</div>
+                <p style="text-align: center; margin-top: 2rem; font-size: 1.5rem; font-weight: 700; color: #ff4757;">
+                    これで終了...?
+                </p>
+                <p style="text-align: center; margin-top: 1rem;">
+                    実は、AIとの対話を<strong class="highlight">1往復で終わらせる人が80%</strong>
+                </p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">対話を続けると、こんなに変わる</h2>
+            <div class="section-content">
+                <p>Before/Afterの驚きの違い</p>
+            </div>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <h4 style="color: #ff4757; margin-bottom: 1rem;">❌ Before（1往復）</h4>
+                    <ul class="list">
+                        <li>Q: 新規事業のアイデアを教えて</li>
+                        <li>A: オンライン教育サービス</li>
+                    </ul>
+                    <p style="color: #ff4757; font-style: italic; margin-top: 1rem;">→ 一般的な回答で終了</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4 style="color: var(--electric); margin-bottom: 1rem;">✓ After（対話型）</h4>
+                    <ul class="list">
+                        <li>Q1: 新規事業のアイデアを教えて</li>
+                        <li>Q2: なぜそれが今必要？</li>
+                        <li>Q3: 競合との差別化は？</li>
+                        <li>Q4: 初期投資の規模は？</li>
+                    </ul>
+                    <p style="color: var(--electric); font-style: italic; margin-top: 1rem;">→ 実行可能な具体案に！</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">対話型プロンプトの威力</h2>
+            <div class="section-content">
+                <p>3つの段階で価値を最大化</p>
+            </div>
+            <div class="process-flow">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h4>深さ</h4>
+                    <p>表面的な回答から、本質的な洞察へ</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h4>具体性</h4>
+                    <p>抽象的なアイデアから、実行可能な計画へ</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h4>カスタマイズ</h4>
+                    <p>一般論から、あなただけの解決策へ</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">実践例：マーケティング戦略の立案</h2>
+            <div class="section-content">
+                <p>4ラウンドで一般論から実行可能なプランへ</p>
+            </div>
+            <div class="process-flow">
+                <div class="process-step" style="background: #e6f7ff;">
+                    <div class="step-number" style="background: #1890ff;">第1ラウンド</div>
+                    <p>「SNSマーケティングの戦略を教えて」</p>
+                    <p style="color: #666; font-size: 0.9rem;">→ 一般的な戦略リスト</p>
+                </div>
+                <div class="process-step" style="background: #f6ffed;">
+                    <div class="step-number" style="background: #52c41a;">第2ラウンド</div>
+                    <p>「B2B向けのSaaS製品の場合は？」</p>
+                    <p style="color: #666; font-size: 0.9rem;">→ 業界特化の戦略に進化</p>
+                </div>
+                <div class="process-step" style="background: #fff7e6;">
+                    <div class="step-number" style="background: #fa8c16;">第3ラウンド</div>
+                    <p>「予算が月10万円の場合の優先順位は？」</p>
+                    <p style="color: #666; font-size: 0.9rem;">→ 実行可能な計画に</p>
+                </div>
+                <div class="process-step" style="background: #f9f0ff;">
+                    <div class="step-number" style="background: #722ed1;">第4ラウンド</div>
+                    <p>「最初の1ヶ月で何をすべき？」</p>
+                    <p style="color: #666; font-size: 0.9rem;">→ 明日から使えるアクションプラン完成！</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">5つの深掘り質問テクニック</h2>
+            <div class="section-content">
+                <p>これらを組み合わせて、AIとの対話を深めよう！</p>
+            </div>
+            <div class="techniques-grid">
+                <div class="technique-card">
+                    <h4 style="color: var(--electric);">1. なぜ？を3回</h4>
+                    <p>根本原因まで掘り下げる</p>
+                </div>
+                <div class="technique-card">
+                    <h4 style="color: var(--electric);">2. 具体例で</h4>
+                    <p>「例えば？」で具体化</p>
+                </div>
+                <div class="technique-card">
+                    <h4 style="color: var(--electric);">3. 条件を追加</h4>
+                    <p>「もし〜なら？」で精緻化</p>
+                </div>
+                <div class="technique-card">
+                    <h4 style="color: var(--electric);">4. 比較して</h4>
+                    <p>「AとBの違いは？」</p>
+                </div>
+                <div class="technique-card">
+                    <h4 style="color: var(--electric);">5. ステップ分解</h4>
+                    <p>「手順を教えて」で実践的に</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">成果の違いは歴然</h2>
+            <div class="section-content">
+                <p>対話型アプローチがもたらす定量的効果</p>
+            </div>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--electric);">3倍</div>
+                    <p>情報の深さ</p>
+                    <p style="font-size: 0.9rem; color: #666;">表面的→本質的</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--electric);">5倍</div>
+                    <p>実用性</p>
+                    <p style="font-size: 0.9rem; color: #666;">抽象的→具体的</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--electric);">10倍</div>
+                    <p>価値創出</p>
+                    <p style="font-size: 0.9rem; color: #666;">一般論→カスタマイズ</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">今日から実践！3つのステップ</h2>
+            <div class="section-content">
+                <p>習慣化のための具体的アクション</p>
+            </div>
+            <div class="process-flow">
+                <div class="process-step" style="background: linear-gradient(135deg, #e6f7ff, #ffffff);">
+                    <div class="step-number" style="background: #1890ff;">STEP 1</div>
+                    <h4>最初の質問は広めに</h4>
+                    <p>全体像を把握してから詳細へ</p>
+                </div>
+                <div class="process-step" style="background: linear-gradient(135deg, #f6ffed, #ffffff);">
+                    <div class="step-number" style="background: #52c41a;">STEP 2</div>
+                    <h4>最低3往復は対話する</h4>
+                    <p>1回目：概要 → 2回目：詳細 → 3回目：実践</p>
+                </div>
+                <div class="process-step" style="background: linear-gradient(135deg, #f9f0ff, #ffffff);">
+                    <div class="step-number" style="background: #722ed1;">STEP 3</div>
+                    <h4>次の質問を考えながら読む</h4>
+                    <p>回答を読みながら「次は何を聞こう？」</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">まとめ：AIを相棒にする質問力</h2>
+            <div class="section-content">
+                <p class="highlight" style="font-size: 2rem; font-weight: 900; margin: 2rem 0;">
+                    AIとの対話は、1往復で終わらせない
+                </p>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h4>深掘り</h4>
+                    <p>なぜ？を繰り返す</p>
+                </div>
+                <div class="card">
+                    <h4>具体化</h4>
+                    <p>条件を追加する</p>
+                </div>
+                <div class="card">
+                    <h4>実践</h4>
+                    <p>手順に落とす</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 3rem;">
+                <p style="font-size: 1.25rem;">
+                    次回：「Gemini ProとFlashを使い分ける」
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    const index = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, i) => {
+                        pill.classList.toggle('active', i === index);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

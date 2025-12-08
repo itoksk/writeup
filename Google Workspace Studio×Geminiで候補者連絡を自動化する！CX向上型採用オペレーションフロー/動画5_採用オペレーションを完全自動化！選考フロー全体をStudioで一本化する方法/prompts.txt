@@ -1,0 +1,138 @@
+# CX向上型採用オペレーションフロー - 第5回 プロンプト集
+
+## 日次ダッシュボード生成プロンプト
+
+```
+You are an HR analytics assistant creating a daily recruiting summary.
+
+Candidate data from sheet:
+{sheet_data}
+
+Today's interviews from calendar:
+{today_interviews}
+
+Generate a daily recruiting dashboard including:
+
+1. Pipeline Overview (count by status)
+2. Today's Interview Schedule
+3. Candidates requiring follow-up (3+ days no contact)
+4. This Week's Metrics (applications, interviews, offers)
+
+Format as a Chat message, use Japanese.
+Keep it scannable and actionable.
+```
+
+---
+
+## 日次サマリーテンプレート
+
+```
+【採用パイプライン日次サマリー】
+
+■ パイプライン概況
+・応募受付: {count_応募受付}名
+・書類選考中: {count_書類選考中}名
+・面接予定: {count_面接予定}名
+・評価待ち: {count_評価待ち}名
+・内定: {count_内定}名
+
+■ 本日の面接予定
+{today_interviews}
+
+■ 要フォロー（3日以上連絡なし）
+{delayed_candidates}
+
+■ 今週の採用活動
+・新規応募: {week_applications}名
+・面接実施: {week_interviews}件
+・内定承諾: {week_acceptances}名
+```
+
+---
+
+## ステータス自動更新クエリ
+
+```
+Update Google Sheets:
+- Sheet: 候補者管理
+- Row: {candidate_row}
+- Column: ステータス
+- Value: "{new_status}"
+- Column: 最終連絡日
+- Value: =TODAY()
+- Column: 更新者
+- Value: "Agent: {agent_name}"
+```
+
+---
+
+## 候補者管理シート構成
+
+| 列名 | 内容 | 更新タイミング |
+|------|------|----------------|
+| 候補者名 | 氏名 | 応募時 |
+| メールアドレス | 連絡先 | 応募時 |
+| 応募ポジション | 職種 | 応募時 |
+| 応募日 | 日付 | 応募時 |
+| ステータス | 選考状況 | 各ステップ完了時 |
+| 最終連絡日 | 日付 | 連絡時 |
+| 担当面接官 | 名前 | 面接設定時 |
+| 面接日時 | 日時 | 面接設定時 |
+| 評価結果 | Proceed/Hold/Decline | 評価完了時 |
+| 次アクション | タスク | 評価完了時 |
+| 備考 | 自由記述 | 随時 |
+
+---
+
+## ステータス定義
+
+| ステータス | 意味 | トリガー |
+|-----------|------|----------|
+| 応募受付 | 応募書類受領 | 応募メール受信 |
+| 書類選考中 | 履歴書確認中 | 手動 |
+| 一次面接予定 | 面接日程確定 | Calendar登録 |
+| 一次面接完了 | 評価待ち | イベント終了 |
+| 二次面接予定 | 次面接確定 | Calendar登録 |
+| 二次面接完了 | 評価待ち | イベント終了 |
+| 最終面接予定 | 最終面接確定 | Calendar登録 |
+| 最終面接完了 | 採否判定中 | イベント終了 |
+| 内定 | オファー提示 | 手動 |
+| 内定承諾 | 入社確定 | 手動 |
+| 辞退 | 候補者辞退 | 手動 |
+| 不採用 | 選考終了 | 手動 |
+
+---
+
+## 週次レポートプロンプト（拡張用）
+
+```
+You are an HR analytics assistant creating a weekly recruiting report.
+
+This week's data:
+- New applications: {week_applications}
+- Interviews conducted: {week_interviews}
+- Offers extended: {week_offers}
+- Offers accepted: {week_acceptances}
+- Candidates declined: {week_declines}
+
+Generate a weekly report including:
+1. Key metrics summary
+2. Conversion rates (application to interview, interview to offer, offer to accept)
+3. Notable trends or concerns
+4. Recommendations for next week
+
+Output in Japanese.
+```
+
+---
+
+## エージェント一覧サマリー
+
+| エージェント名 | 役割 | トリガー |
+|---------------|------|----------|
+| Interview Prep Notification | 面接前準備 | Schedule (Daily 9AM) |
+| Post-Interview Workflow | 面接後作業 | Calendar event ends |
+| Interview Reminder | 面接リマインド | Schedule (Daily 9AM, Hourly) |
+| Evaluation Reminder | 評価リマインド | Schedule (Daily 10AM) |
+| Delay Alert | 遅延アラート | Schedule (Daily 9AM) |
+| Daily Recruiting Dashboard | 日次サマリー | Schedule (Daily 9AM) |

@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回:AIが作るWBRサマリー＆是正案 | 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .card-description {
+            opacity: 0.8;
+        }
+
+        .phase-card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-number {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--electric) 0%, var(--violet) 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 0;
+            margin-top: 3rem;
+            border: 2px solid var(--ink);
+            position: relative;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .prompt-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            position: relative;
+            border: 2px solid var(--ink);
+            overflow-x: auto;
+        }
+
+        .prompt-box::before {
+            content: 'プロンプト（コピーして使用）';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.25rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--paper);
+            transform: scale(1.05);
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            padding: 1rem 0 1rem 3rem;
+            position: relative;
+            border-left: 2px solid var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        .step-list li::before {
+            content: attr(data-step);
+            position: absolute;
+            left: -20px;
+            top: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--ink);
+            color: var(--paper);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .highlight-box {
+            background: var(--electric);
+            color: var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .warning-box {
+            background: #FFF3E0;
+            color: var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 3px solid #FF9800;
+            position: relative;
+        }
+
+        .warning-box::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: #FF9800;
+            z-index: -1;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .prompt-box {
+                font-size: 0.8rem;
+                padding: 1.5rem;
+            }
+
+            .copy-button {
+                position: static;
+                display: block;
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">報告時間80%削減！AIが自動でKPIを回す仕組みづくり</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第3回（最終回）/ 全3回</div>
+            <h1 class="hero-title">
+                AIが作る<br>
+                WBRサマリー＆是正案：<br>
+                報告が5分で終わる世界
+            </h1>
+            <p class="hero-description">
+                KPIは自動更新、変動理由も自動分析。でも、報告書のまとめに60〜90分かかっていませんか？<br>
+                この最終回では、<strong>週次報告書（WBR）のサマリーと是正案までAIが自動生成</strong>し、報告準備を完全自動化します。<strong>ChatGPT無料版でもOK</strong>です。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">最後のステップ：報告書のまとめ</h2>
+
+        <div class="grid grid-4">
+            <div class="card">
+                <div class="card-number">📊</div>
+                <h3 class="card-title">KPI台帳を確認</h3>
+                <p class="card-description">
+                    データを見ながら、整理して、文章化
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">📝</div>
+                <h3 class="card-title">スライドに整形</h3>
+                <p class="card-description">
+                    PowerPointで見栄え良く調整
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">💡</div>
+                <h3 class="card-title">是正案を検討</h3>
+                <p class="card-description">
+                    『次に何をすべきか』を考えて記述
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">⏰</div>
+                <h3 class="card-title">会議直前に慌てて修正</h3>
+                <p class="card-description">
+                    『あれも追加しなきゃ！』と焦る
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">報告準備95%削減</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">Before</div>
+                <div class="phase-title">手作業で報告書作成</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✗ KPI台帳、営業日報、変動理由を確認</li>
+                <li>✗ PowerPointに整形</li>
+                <li>✗ ハイライトを箇条書きで整理</li>
+                <li>✗ 是正案を検討</li>
+                <li>✗ <strong>合計：60〜90分</strong></li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">After</div>
+                <div class="phase-title">ChatGPTで自動生成（プログラミング不要）</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ KPIデータ、変動理由をコピー</li>
+                <li>✓ ChatGPTに貼り付けて送信</li>
+                <li>✓ WBR報告書が自動生成される</li>
+                <li>✓ スライドに貼り付けるだけ</li>
+                <li>✓ <strong>合計：5分（95%削減）</strong></li>
+                <li>✓ <strong>ChatGPT無料版でOK！</strong></li>
+            </ul>
+        </div>
+
+        <div class="stats-card">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">期待される効果</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+                <div>
+                    <div style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">95%</div>
+                    <div style="opacity: 0.9;">作業時間削減</div>
+                </div>
+                <div>
+                    <div style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">5分</div>
+                    <div style="opacity: 0.9;">報告書作成時間</div>
+                </div>
+                <div>
+                    <div style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">無料</div>
+                    <div style="opacity: 0.9;">ChatGPT無料版OK</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP BY STEP</div>
+        <h2 class="section-title">実践ステップ（基本編）</h2>
+
+        <ul class="step-list">
+            <li data-step="1">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">報告データの準備</h3>
+                <p>Google Sheetsで以下のデータを確認します：</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>必要なデータ：</strong><br><br>
+                    • KPIデータ：今週と前週の数値、前週比<br>
+                    • 変動理由：前回（第2回）で作成した分析結果<br>
+                    • 営業日報：今週の主要案件<br>
+                    • イベント情報（あれば）<br><br>
+                    これらを選択して、コピーします（Ctrl+C / Cmd+C）
+                </div>
+            </li>
+
+            <li data-step="2">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">ChatGPTにプロンプトを入力</h3>
+                <p>ChatGPTを開いて、以下のプロンプトを入力します：</p>
+
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt(this)">コピー</button>以下のデータから、週次ビジネスレビュー（WBR）報告書を作成してください。
+
+【今週のKPIデータ】
+売上：前週1,480,000円 → 今週1,650,000円（+11.5%）
+成約件数：前週26件 → 今週30件（+15.4%）
+問い合わせ数：前週118件 → 今週135件（+14.4%）
+
+【変動理由】
+✅ プラス要因
+- B社プロジェクト（420万円）が成約（2/10）
+- 新商品キャンペーンの反響が好調（問い合わせ+14.4%）
+- ウェビナー開催（2/8）による新規リード増加（25件）
+
+⚠️ マイナス要因・注意すべき点
+- 既存顧客のリピート率は微減（-3%）：要注意
+
+【営業日報（今週の主要案件）】
+2024-02-10	B社プロジェクト	4,200,000	成約	新規大口案件
+2024-02-12	C社追加発注	800,000	成約	既存顧客リピート
+
+【出力形式】
+以下の形式でWBR報告書を作成してください：
+
+## 📊 今週のKPIサマリー
+- KPI項目ごとに、前週比を含めて記載
+
+## ✅ 今週のハイライト
+【主要成果】
+- 具体的な案件名、金額、日付を含めて記載
+
+【注意すべき点】
+- リスクや懸念事項があれば記載
+
+## 💡 次週へのアクション
+- 具体的で実行可能なアクションプランを3〜5個提案
+- 優先順位の高い順に記載</div>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>ポイント：</strong><br><br>
+                    • 【データ】部分に、実際にコピーしたデータを貼り付けてください<br>
+                    • プロンプトはテキストファイルに保存しておくと便利です<br>
+                    • 毎週、データ部分だけ差し替えればOK
+                </div>
+            </li>
+
+            <li data-step="3">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">ChatGPTが報告書を生成</h3>
+                <p>送信すると、ChatGPTが10秒程度で報告書を生成してくれます。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>生成例：</strong><br><br>
+                    === 週次ビジネスレビュー（WBR）===<br>
+                    期間：2024年2月5日〜2月12日<br><br>
+
+                    ## 📊 今週のKPIサマリー<br>
+                    - 売上：1,650,000円（前週比+11.5% / +170,000円）<br>
+                    - 成約件数：30件（前週比+15.4% / +4件）<br>
+                    - 問い合わせ数：135件（前週比+14.4% / +17件）<br><br>
+
+                    ## ✅ 今週のハイライト<br>
+                    【主要成果】<br>
+                    - B社プロジェクト（420万円）成約：今週最大の成果<br>
+                    - ウェビナー開催（2/8）で新規リード25件獲得<br>
+                    - 新商品キャンペーン開始、初動反響が好調<br><br>
+
+                    【注意すべき点】<br>
+                    - 既存顧客のリピート率が微減（-3%）：要フォロー<br><br>
+
+                    ## 💡 次週へのアクション<br>
+                    1. ウェビナー参加者25件への迅速フォローアップ（目標：5件商談化）<br>
+                    2. 既存顧客の満足度調査を実施し、リピート率改善策を検討<br>
+                    3. B社のような大口案件の発掘強化：類似企業へのアプローチを優先
+                </div>
+            </li>
+
+            <li data-step="4">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">結果をコピーしてスライドに貼り付け</h3>
+                <p>ChatGPTの出力をそのままコピーして、PowerPointやGoogleスライドのテキストボックスに貼り付けます。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>完了です！</strong><br><br>
+                    Markdown形式で出力されるので、見出しや箇条書きが自動でフォーマットされます。<br>
+                    5分で報告書が完成しました！
+                </div>
+            </li>
+
+            <li data-step="5">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">プロンプトをテンプレート化</h3>
+                <p>このプロンプトをテキストファイル（.txt）やメモアプリに保存しておきましょう。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>毎週の作業：</strong><br><br>
+                    1. テキストファイルからプロンプトをコピー<br>
+                    2. 【データ】部分だけ今週のデータに差し替え<br>
+                    3. ChatGPTに送信<br>
+                    4. 結果をスライドに貼り付け<br><br>
+                    これだけで5分で報告書が完成します！
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <div class="section-label">ADVANCED</div>
+        <h2 class="section-title">応用編：GPTsで専用アシスタントを作る（オプション）</h2>
+
+        <div class="warning-box">
+            <h3 style="font-weight: 700; margin-bottom: 1rem;">⚠️ 注意</h3>
+            <p>GPTsを作成するには<strong>ChatGPT Plus（月20ドル）が必要</strong>です。無料版でも十分使えるので、まずは基本編から試してみてください。</p>
+        </div>
+
+        <ul class="step-list">
+            <li data-step="1">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">GPTsを作成</h3>
+                <p>ChatGPTで『Explore GPTs』→『Create a GPT』を選択します。</p>
+            </li>
+
+            <li data-step="2">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">Configureタブを開く</h3>
+                <p>『Configure』タブを開いて、『Instructions』欄に以下を入力します：</p>
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt(this)">コピー</button>あなたはビジネスレポート作成の専門家です。
+ユーザーがKPIデータ、変動理由、営業日報を貼り付けたら、週次ビジネスレビュー（WBR）報告書を作成してください。
+
+【役割】
+1. 提供されたデータを分析し、WBR報告書を作成
+2. KPIサマリー、ハイライト、次週へのアクションの3つに分けて整理
+3. 具体的な案件名、金額、日付、数値を含めて記載
+
+【出力形式】
+## 📊 今週のKPIサマリー
+- KPI項目ごとに前週比を含めて記載
+- プラス/マイナスを明確に表示
+
+## ✅ 今週のハイライト
+【主要成果】
+- 具体的な成果を3〜5個記載
+- 案件名、金額、日付を必ず含める
+
+【注意すべき点】
+- リスクや課題があれば記載
+- 数値の根拠を示す
+
+## 💡 次週へのアクション
+- 具体的で実行可能なアクションを3〜5個提案
+- 優先順位の高い順に記載
+- 期待される効果も簡潔に記載
+
+【注意事項】
+- 推測ではなく、提供されたデータに基づいた分析のみ行う
+- 固有名詞（案件名、顧客名、イベント名）と数値（金額、件数、日付）を必ず含める
+- 簡潔に、要点を絞って記載
+- 次週へのアクションは具体的かつ実行可能なものに限定
+- ビジネス報告として適切なトーンを維持</div>
+            </li>
+
+            <li data-step="3">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">保存して完了</h3>
+                <p>名前を『WBRレポート作成アシスタント』などに設定して、保存します。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>これで完了！</strong><br><br>
+                    毎週データをコピー&ペーストするだけで、専用アシスタントが報告書を作成してくれます。
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">活用のコツ・注意点</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">報告書の最終確認は必須</h3>
+                <p class="card-description">
+                    AIが生成した報告書は、必ず最終確認してください。数値やファクトは正確ですが、表現や優先順位は微調整が必要な場合があります。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">データの鮮度に注意</h3>
+                <p class="card-description">
+                    WBR生成の前に、必ずKPI台帳と変動理由が最新の状態になっているか確認してください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">プロンプトのカスタマイズ</h3>
+                <p class="card-description">
+                    会社や部署の報告フォーマットに合わせて、プロンプトを調整できます。『図表を含めて』『5W1Hで記載して』など、指示を追加できます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">複数バージョンを作る</h3>
+                <p class="card-description">
+                    役員向け、チーム向け、取引先向けなど、複数のバージョンのプロンプトを用意しておくと便利です。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">フィードバックで改善</h3>
+                <p class="card-description">
+                    ChatGPTの出力が期待と違う場合は、フィードバックを与えて改善：『もっと簡潔に』『もっと詳しく』など。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">月次・四半期報告にも応用</h3>
+                <p class="card-description">
+                    週次データをまとめて入力すれば、月次報告（MBR）や四半期報告（QBR）にも使えます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">FINAL SUMMARY</div>
+        <h2 class="section-title">全3回のまとめ：報告時間92%削減達成！</h2>
+
+        <div class="highlight-box">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">講座全体で学んだこと</h3>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ <strong>第1回：</strong>KPI台帳をAIが自動で書き換える - 30分→5分（85%削減）</li>
+                <li>✓ <strong>第2回：</strong>数値の理由をAIが要約する - 60分→5分（92%削減）</li>
+                <li>✓ <strong>第3回：</strong>AIが作るWBRサマリー＆是正案 - 90分→5分（95%削減）</li>
+            </ul>
+        </div>
+
+        <div class="stats-card">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">合計削減時間</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                <div>
+                    <div style="font-size: 4rem; font-weight: 900; margin-bottom: 0.5rem; font-family: 'Bebas Neue', cursive;">180分 → 15分</div>
+                    <div style="font-size: 1.2rem; opacity: 0.9;">3時間 → 15分</div>
+                </div>
+                <div>
+                    <div style="font-size: 4rem; font-weight: 900; margin-bottom: 0.5rem; font-family: 'Bebas Neue', cursive;">92%</div>
+                    <div style="font-size: 1.2rem; opacity: 0.9;">作業時間削減</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-card" style="background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%); margin-top: 3rem;">
+            <div class="phase-header">
+                <div class="phase-number" style="background: var(--coral);">重要</div>
+                <div class="phase-title">最も大切なこと</div>
+            </div>
+            <p style="font-size: 1.2rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                <strong>『浮いた時間で、本質的な意思決定に集中してください。』</strong>
+            </p>
+            <p style="font-size: 1.1rem; line-height: 1.8;">
+                データ入力や整形ではなく：
+            </p>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2; margin-top: 1rem;">
+                <li>✓ 『なぜこの数値が変わったのか』を深く考える</li>
+                <li>✓ 『次に何をすべきか』を戦略的に検討する</li>
+                <li>✓ チームとのコミュニケーションに時間を使う</li>
+            </ul>
+            <p style="font-size: 1.2rem; line-height: 1.8; margin-top: 1.5rem; font-weight: 600;">
+                これこそが、AIを活用する真の目的です。
+            </p>
+        </div>
+
+        <div class="warning-box" style="margin-top: 3rem;">
+            <h3 style="font-weight: 700; margin-bottom: 1rem;">⚠️ セキュリティとプライバシー</h3>
+            <p style="font-size: 1.1rem; line-height: 1.8;">
+                <strong>機密情報や個人情報を含むデータは、ChatGPTに入力しないでください。</strong><br>
+                会社のセキュリティポリシーを確認してから使用してください。<br>
+                必要に応じて、データの匿名化やマスキングを行ってください。
+            </p>
+        </div>
+
+        <p style="text-align: center; margin-top: 4rem; font-size: 2rem; font-weight: 900; font-family: 'Bebas Neue', cursive; letter-spacing: 0.05em;">
+            ありがとうございました！
+        </p>
+    </section>
+
+    <script>
+        function copyPrompt(button) {
+            const promptBox = button.parentElement;
+            const text = promptBox.innerText.replace('コピー', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerText;
+                button.innerText = 'コピーしました！';
+                setTimeout(() => {
+                    button.innerText = originalText;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

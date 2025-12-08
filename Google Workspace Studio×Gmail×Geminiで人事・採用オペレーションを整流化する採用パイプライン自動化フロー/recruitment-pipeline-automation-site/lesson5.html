@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：選考ステータス追跡と長期フォローアラート | 採用パイプライン自動化フロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">第5回 / 全5回</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">05</div>
+            <h1 class="lesson-title">選考ステータス追跡と長期フォローアラート</h1>
+            <p class="lesson-subtitle">候補者の進捗管理と対応漏れ防止の仕組み</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>候補者の選考ステータスをGeminiが自動追跡し、一定期間対応がない場合にアラートを発信、複数エージェントを統合した採用フローを完成させる</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">選考ステータス</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number" style="color: #7c3aed;">ステージ 1</div>
+                    <h3>書類選考</h3>
+                    <p>履歴書・職務経歴書の確認中</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number" style="color: #a855f7;">ステージ 2</div>
+                    <h3>一次面接</h3>
+                    <p>人事面接の調整・実施中</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number" style="color: #ec4899;">ステージ 3</div>
+                    <h3>二次面接</h3>
+                    <p>部門面接の調整・実施中</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number" style="color: #0891b2;">ステージ 4</div>
+                    <h3>最終面接</h3>
+                    <p>役員面接の調整・実施中</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">統合フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>応募受信</h3>
+                        <p>自動振り分け・ラベル付与・通知</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>書類整理</h3>
+                        <p>候補者フォルダへ自動保存</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>朝のブリーフィング</h3>
+                        <p>毎朝8:30に状況サマリー配信</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>ステータス追跡</h3>
+                        <p>選考進捗を自動更新</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>フォローアラート</h3>
+                        <p>3日間対応なしでリマインド</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">コース全体のまとめ</h2>
+            <div class="agent-list">
+                <div class="agent-item">
+                    <div class="agent-badge">70%削減</div>
+                    <h3>メール処理時間</h3>
+                    <p>自動振り分けと朝のブリーフィングで大幅時短</p>
+                </div>
+                <div class="agent-item">
+                    <div class="agent-badge">ゼロ</div>
+                    <h3>対応漏れ</h3>
+                    <p>フォローアラートで候補者を逃さない</p>
+                </div>
+                <div class="agent-item">
+                    <div class="agent-badge">自動</div>
+                    <h3>書類管理</h3>
+                    <p>候補者フォルダで一元管理、検索時間ゼロ</p>
+                </div>
+                <div class="agent-item">
+                    <div class="agent-badge">共有</div>
+                    <h3>情報の可視化</h3>
+                    <p>チーム全員が同じ情報をリアルタイム共有</p>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson4.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="index.html" class="nav-next">
+                コース一覧へ
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：プロが使い分ける！メール作成におけるプロンプト設計の最適解とは？</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--ink) 0%, var(--electric) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin: 2rem 0 1rem;
+            color: var(--ink);
+            border-bottom: 2px solid var(--electric);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 1.5rem 0 1rem;
+            color: var(--ink);
+        }
+
+        .section-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: white;
+            border: var(--border-width) solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 0 var(--ink);
+        }
+
+        .card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--electric);
+        }
+
+        .card h3 {
+            color: var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+        }
+
+        .prompt-example {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(0, 240, 255, 0.05));
+            border-left: 4px solid var(--electric);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .prompt-example pre {
+            margin: 0;
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--electric);
+            color: var(--ink);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 1rem;
+            font-family: 'Arial', sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        th, td {
+            border: 1px solid var(--ink);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        tr:hover {
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .list {
+            margin: 2rem 0;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▶';
+            color: var(--electric);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .navigation {
+                right: 1rem;
+            }
+
+            .content-section {
+                padding: 4rem 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+    </div>
+
+    <div class="container">
+        <!-- Section 1: タイトル -->
+        <section class="content-section visible" id="section-0">
+            <h1 class="section-title">プロが使い分ける！</h1>
+            <div class="section-content">
+                <p style="font-size: 1.8rem; margin-bottom: 2rem; color: var(--electric); text-align: center;">
+                    メール作成におけるプロンプト設計の最適解とは？
+                </p>
+                <div class="card">
+                    <h3>状況別の最適な選択と組み合わせ技</h3>
+                    <p>これまで学んだプロンプト手法を、実際の業務でどう使い分けるか。状況別の最適な選択基準と、プロが実践している組み合わせ技を紹介します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: シーン別適用マトリクス -->
+        <section class="content-section" id="section-1">
+            <h2 class="section-title">シーン別適用マトリクス</h2>
+            <div class="section-content">
+                <div class="card">
+                    <h3>業務シーン別の最適な手法</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>業務シーン</th>
+                                <th>基本手法</th>
+                                <th>プロンプト型</th>
+                                <th>理由</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>クレーム対応</td>
+                                <td>フューショット</td>
+                                <td>Structured</td>
+                                <td>一貫性と品質の両立</td>
+                            </tr>
+                            <tr>
+                                <td>初回挨拶</td>
+                                <td>ワンショット</td>
+                                <td>Freeform</td>
+                                <td>親しみやすさ重視</td>
+                            </tr>
+                            <tr>
+                                <td>定例報告</td>
+                                <td>フューショット</td>
+                                <td>Structured</td>
+                                <td>効率性重視</td>
+                            </tr>
+                            <tr>
+                                <td>イベント案内</td>
+                                <td>ワンショット</td>
+                                <td>Freeform + Structured</td>
+                                <td>バランス型</td>
+                            </tr>
+                            <tr>
+                                <td>緊急連絡</td>
+                                <td>ゼロショット</td>
+                                <td>Structured</td>
+                                <td>スピード重視</td>
+                            </tr>
+                            <tr>
+                                <td>お礼・感謝</td>
+                                <td>ワンショット</td>
+                                <td>Freeform</td>
+                                <td>感情表現重視</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-block">
+                    <pre>
+【判断フローチャート】
+
+スタート
+   ↓
+時間的余裕は？
+├─ なし → 緊急度で判断
+│         ├─ 超緊急 → ゼロショット
+│         └─ 通常急ぎ → ワンショット
+└─ あり → 用途で判断
+          ├─ 定型業務 → フューショット + Structured
+          ├─ 感情重視 → Freeform
+          └─ バランス → ハイブリッド
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: ハイブリッド実演 - Freeformのみ -->
+        <section class="content-section" id="section-2">
+            <h2 class="section-title">ハイブリッド実演：Freeformのみ</h2>
+            <div class="section-content">
+                <div class="card">
+                    <h3>シナリオ</h3>
+                    <ul style="list-style: none;">
+                        <li>▶ 宛先：セミナー参加者（100名）</li>
+                        <li>▶ 内容：参加への感謝と次回案内</li>
+                        <li>▶ 要件：温かみと情報の正確さの両立</li>
+                    </ul>
+                </div>
+
+                <div class="prompt-example">
+                    <h3>Freeformプロンプト</h3>
+                    <pre>
+セミナーに参加いただいた方へのお礼メールを書いてください。
+
+・心からの感謝が伝わる温かい文面
+・また参加したくなるような前向きな締めくくり
+・親しみやすいトーン
+                    </pre>
+                </div>
+
+                <div class="card">
+                    <h3>結果分析</h3>
+                    <ul style="list-style: none;">
+                        <li style="color: green;">✓ 温かみがある</li>
+                        <li style="color: red;">✗ 構成にばらつき</li>
+                        <li style="color: red;">✗ 必要情報の漏れ</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: ハイブリッド実演 - Structuredのみ -->
+        <section class="content-section" id="section-3">
+            <h2 class="section-title">ハイブリッド実演：Structuredのみ</h2>
+            <div class="section-content">
+                <div class="prompt-example">
+                    <h3>Structuredプロンプト</h3>
+                    <pre>
+【入力情報】
+イベント名：AI活用セミナー
+参加者数：100名
+次回予定：3月20日
+
+【出力構成】
+1. 件名
+2. 挨拶
+3. 参加への感謝
+4. セミナーの振り返り
+5. 次回案内
+6. 締めの言葉
+                    </pre>
+                </div>
+
+                <div class="card">
+                    <h3>結果分析</h3>
+                    <ul style="list-style: none;">
+                        <li style="color: green;">✓ 構成が整っている</li>
+                        <li style="color: green;">✓ 情報漏れなし</li>
+                        <li style="color: red;">✗ やや機械的</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: ハイブリッド実演 - 組み合わせ -->
+        <section class="content-section" id="section-4">
+            <h2 class="section-title">ハイブリッド実演：最適な組み合わせ</h2>
+            <div class="section-content">
+                <div class="prompt-example">
+                    <h3>ハイブリッドプロンプト</h3>
+                    <pre>
+セミナー参加者へのお礼メールを作成してください。
+
+【基本情報】
+イベント：AI活用セミナー
+参加者：100名
+次回：3月20日
+
+【構成】
+1. 件名：感謝の気持ちが伝わるもの
+2. 導入：温かみのある挨拶
+3. 本文：
+   - 参加への心からの感謝（Freeform的表現で）
+   - セミナーのハイライト（3点を箇条書き）
+   - 次回案内（期待感を持たせる表現）
+4. 締め：また会えることを楽しみにする言葉
+
+【トーン】
+プロフェッショナルでありながら親しみやすく、
+次回も参加したくなるような前向きな雰囲気
+                    </pre>
+                </div>
+
+                <div class="card">
+                    <h3>結果分析</h3>
+                    <ul style="list-style: none;">
+                        <li style="color: green;">✓ 構成が整っている</li>
+                        <li style="color: green;">✓ 自然な表現</li>
+                        <li style="color: green;">✓ 感情と情報のバランス</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: プロのワークフロー -->
+        <section class="content-section" id="section-5">
+            <h2 class="section-title">プロのワークフロー</h2>
+            <div class="section-content">
+                <div class="card">
+                    <h3>3ステップアプローチ</h3>
+                    <div class="code-block">
+                        <pre>
+Step 1：用途を判断
+・誰に送るか（社内/社外）
+・何のためか（連絡/依頼/感謝）
+・重要度は（高/中/低）
+
+Step 2：基本型を選択
+・時間 → ゼロ/ワン/フュー
+・品質 → Freeform/Structured
+
+Step 3：カスタマイズ
+・必要に応じて要素を追加
+・トーン調整
+・チェック項目追加
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>チーム展開の方法</h3>
+                    <div class="code-block">
+                        <pre>
+【営業部プロンプト集】
+
+1. 新規開拓メール
+   - 手法：ワンショット + Freeform
+   - テンプレート：[リンク]
+   - 更新：2024/01
+
+2. 見積書送付
+   - 手法：Structured
+   - テンプレート：[リンク]
+   - 更新：2024/01
+
+3. クレーム対応
+   - 手法：フューショット + Structured
+   - テンプレート：[リンク]
+   - 更新：2023/12
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: まとめ -->
+        <section class="content-section" id="section-6">
+            <h2 class="section-title">まとめ</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">学習内容サマリー</span></h3>
+                        <ol>
+                            <li>基本3型（ゼロ/ワン/フュー）</li>
+                            <li>Freeform（感情表現）</li>
+                            <li>Structured（品質管理）</li>
+                            <li>ハイブリッド（最適化）</li>
+                        </ol>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">実践のポイント</span></h3>
+                        <p>プロンプト設計は『意図の明確化』が全てです。何を優先するか――スピードか、品質か、感情表現か――を明確にして、適切な手法を選びましょう。</p>
+                    </div>
+                </div>
+
+                <div class="prompt-example">
+                    <h3>アクションプラン</h3>
+                    <pre>
+1. 自部署の主要メール10種類をリストアップ
+2. それぞれに最適な手法を選定
+3. テンプレートを作成
+4. チームで共有・改善
+
+プロンプト設計をマスターして、
+業務効率を大幅に改善していきましょう！
+                    </pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    const index = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, i) => {
+                        pill.classList.toggle('active', i === index);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回:KPIツリーをAIで即構築：目標を「数値と行動」に落とすプロンプト設計術 | 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .card-description {
+            opacity: 0.8;
+        }
+
+        .phase-card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-number {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--violet) 0%, var(--coral) 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 0;
+            margin-top: 3rem;
+            border: 2px solid var(--ink);
+            position: relative;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .prompt-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            position: relative;
+            border: 2px solid var(--ink);
+            overflow-x: auto;
+        }
+
+        .prompt-box::before {
+            content: 'プロンプト（コピーして使用）';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--violet);
+            color: var(--paper);
+            padding: 0.25rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--violet);
+            color: var(--paper);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--paper);
+            color: var(--ink);
+            transform: scale(1.05);
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            padding: 1rem 0 1rem 3rem;
+            position: relative;
+            border-left: 2px solid var(--violet);
+            margin-bottom: 1rem;
+        }
+
+        .step-list li::before {
+            content: attr(data-step);
+            position: absolute;
+            left: -20px;
+            top: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--ink);
+            color: var(--paper);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .highlight-box {
+            background: var(--violet);
+            color: var(--paper);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .tree-structure {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            position: relative;
+        }
+
+        .tree-structure::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .tree-level-1 {
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 1rem;
+        }
+
+        .tree-level-2 {
+            margin-left: 1.5rem;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+
+        .tree-level-3 {
+            margin-left: 3rem;
+            color: var(--gray);
+            margin-bottom: 0.3rem;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--paper);
+            border: 2px solid var(--ink);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid var(--gray);
+        }
+
+        th {
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .prompt-box {
+                font-size: 0.8rem;
+                padding: 1.5rem;
+            }
+
+            .copy-button {
+                position: static;
+                display: block;
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">AIで戦略展開！OKR・KPI設計マスター講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第2回 / 全3回</div>
+            <h1 class="hero-title">
+                KPIツリーをAIで即構築：<br>
+                目標を「数値と行動」に<br>
+                落とすプロンプト設計術
+            </h1>
+            <p class="hero-description">
+                ChatGPTを"行動化テンプレート"として使い、OKRをKPIツリー（3階層構造）に自動展開します。<br>
+                「何を」「いつまでに」「どれくらい」やるべきかを明確にしましょう。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">この回で学ぶこと</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">前回作成したOKRを入力</h3>
+                <p class="card-description">
+                    前回ChatGPTで生成した部門OKRを使い、KPIツリーに展開します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">3階層構造のKPIツリー生成</h3>
+                <p class="card-description">
+                    第1階層（Key Results）→ 第2階層（中間指標）→ 第3階層（行動レベルKPI）の3階層構造を自動生成します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">行動・担当・頻度を明確化</h3>
+                <p class="card-description">
+                    第3階層には具体的なアクション、担当者、頻度・期限を含め、すぐに実行可能な形にします。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">何が変わるのか</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">Before</div>
+                <div class="phase-title">OKRは作ったが動かない</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✗ OKRは作ったが、KPIが抽象的で進捗を測れない</li>
+                <li>✗ 「顧客満足度を向上」といった定性的な目標が多い</li>
+                <li>✗ 現場が具体的なアクションを取れず、進捗が滞る</li>
+                <li>✗ KPIの設定に会議で1〜2時間かかる</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">After</div>
+                <div class="phase-title">AIが行動レベルまで自動展開</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ AIが「数値・行動・担当」を自動出力</li>
+                <li>✓ KPIツリー（3階層構造）で目標が具体化</li>
+                <li>✓ 各Key Resultに対応する具体行動が明確</li>
+                <li>✓ KPI設定が10分で完了、すぐに実行フェーズへ</li>
+            </ul>
+        </div>
+
+        <div class="stats-card">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">KPIツリーの3階層構造</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                <div>
+                    <div style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem;">第1階層</div>
+                    <div style="opacity: 0.9;">Key Results<br>（戦略目標）</div>
+                </div>
+                <div>
+                    <div style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem;">第2階層</div>
+                    <div style="opacity: 0.9;">中間指標<br>（進捗測定）</div>
+                </div>
+                <div>
+                    <div style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem;">第3階層</div>
+                    <div style="opacity: 0.9;">行動レベルKPI<br>（具体的アクション）</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP BY STEP</div>
+        <h2 class="section-title">実践ステップ</h2>
+
+        <ul class="step-list">
+            <li data-step="1">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">前回作成したOKRをChatGPTに入力</h3>
+                <p>前回作成した部門OKRを使います。今回は営業部のOKRを例にとって、KPIツリーを作成します。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>営業部のOKR：</strong><br><br>
+                    Objective：売上高を大幅に増加させる<br><br>
+                    Key Results：<br>
+                    1. 新規顧客獲得数を前年比30%増加<br>
+                    2. 既存顧客との契約更新率を95%以上に維持<br>
+                    3. 四半期ごとの売上目標を100%達成
+                </div>
+            </li>
+
+            <li data-step="2">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">KPIツリー生成のプロンプトを入力</h3>
+                <p>OKRをそのまま貼り付けるだけでは不十分です。KPIツリーを3階層構造で生成するプロンプトを追加します。</p>
+
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt(this)">コピー</button>以下のOKRに基づき、KPIツリーを3階層構造で生成してください。
+
+【OKR（営業部）】
+Objective：売上高を大幅に増加させる
+Key Results：
+1. 新規顧客獲得数を前年比30%増加
+2. 既存顧客との契約更新率を95%以上に維持
+3. 四半期ごとの売上目標を100%達成
+
+【出力形式】
+- 第1階層：Key Results（そのまま）
+- 第2階層：Key Resultsを達成するための中間指標（2〜3個）
+- 第3階層：第2階層を達成するための具体的な行動レベルのKPI（2〜3個）
+
+【第3階層の行動レベルKPIには以下を含めること】
+- 具体的なアクション（例：週次分析、顧客ヒアリング回数など）
+- 担当者（例：営業マネージャー、営業チーム）
+- 頻度・期限（例：週1回、月末まで）
+
+【出力形式】
+- 表形式またはツリー構造で出力
+- 各階層を明確に区別</div>
+            </li>
+
+            <li data-step="3">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">ChatGPTの出力を確認</h3>
+                <p>プロンプトを送信すると、KPIツリーが3階層で出力されます。具体的な行動、担当者、頻度まで明記されているか確認します。</p>
+
+                <div class="tree-structure" style="margin-top: 1rem;">
+                    <div class="tree-level-1">第1階層: 新規顧客獲得数を前年比30%増加</div>
+                    <div class="tree-level-2">├─ 第2階層: リード数を月間100件以上獲得</div>
+                    <div class="tree-level-3">│   ├─ 週1回の市場調査を実施し、新規見込み客リストを作成（営業マネージャー / 週次）</div>
+                    <div class="tree-level-3">│   ├─ 月2回のウェビナーを開催し、参加者50名以上を目標（マーケティング連携 / 月次）</div>
+                    <div class="tree-level-3">│   └─ SNS広告経由のリード獲得数を週15件以上（営業チーム / 週次）</div>
+                    <br>
+                    <div class="tree-level-2">├─ 第2階層: 商談化率を25%以上に向上</div>
+                    <div class="tree-level-3">│   ├─ 初回商談の事前準備を100%実施（営業担当者 / 商談ごと）</div>
+                    <div class="tree-level-3">│   ├─ 週次で商談結果を分析し、改善点を抽出（営業マネージャー / 週次）</div>
+                    <div class="tree-level-3">│   └─ 顧客ニーズヒアリングシートを全商談で使用（営業チーム / 商談ごと）</div>
+                    <br>
+                    <div class="tree-level-2">└─ 第2階層: 成約率を20%以上に維持</div>
+                    <div class="tree-level-3">    ├─ 提案書のテンプレートを統一し、品質を均一化（営業マネージャー / 四半期初）</div>
+                    <div class="tree-level-3">    ├─ 四半期ごとに顧客満足度アンケートを実施（カスタマーサクセス連携 / 四半期ごと）</div>
+                    <div class="tree-level-3">    └─ 失注理由を月次で分析し、改善策を共有（営業チーム / 月次）</div>
+                </div>
+
+                <p style="margin-top: 1rem;">
+                    「週1回の市場調査」「月2回のウェビナー」「週次で商談結果を分析」といった具体的な行動が出力されています。担当者や頻度も明記されています。
+                </p>
+            </li>
+
+            <li data-step="4">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">Excelまたはスプレッドシートでツリーを整理</h3>
+                <p>ChatGPTの出力をExcelまたはGoogleスプレッドシートに貼り付けて、ツリー構造を整理します。階層構造を視覚的に分かりやすくするために、インデントや色分けを使います。</p>
+
+                <table style="margin-top: 1rem;">
+                    <thead>
+                        <tr>
+                            <th>階層</th>
+                            <th>KPI</th>
+                            <th>担当</th>
+                            <th>頻度/期限</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: #E3F2FD;">
+                            <td><strong>第1階層</strong></td>
+                            <td><strong>新規顧客獲得数を前年比30%増加</strong></td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr style="background: #F3E5F5;">
+                            <td>第2階層</td>
+                            <td>リード数を月間100件以上獲得</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>第3階層</td>
+                            <td>週1回の市場調査を実施し、新規見込み客リストを作成</td>
+                            <td>営業マネージャー</td>
+                            <td>週1回</td>
+                        </tr>
+                        <tr>
+                            <td>第3階層</td>
+                            <td>月2回のウェビナーを開催し、参加者50名以上を目標</td>
+                            <td>マーケティング連携</td>
+                            <td>月2回</td>
+                        </tr>
+                        <tr>
+                            <td>第3階層</td>
+                            <td>SNS広告経由のリード獲得数を週15件以上</td>
+                            <td>営業チーム</td>
+                            <td>週次</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p style="margin-top: 1rem;">
+                    このように整理することで、KPIツリー全体が見渡せます。進捗管理もしやすくなりますね。
+                </p>
+            </li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">注意点・活用ポイント</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">出力が長い場合は1部門ずつ</h3>
+                <p class="card-description">
+                    今回は営業部のOKRだけを例にしましたが、全部門を一度に出力すると長くなりすぎます。「1部門ずつ出力」としてください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">定性的指標は数値化条件を追加</h3>
+                <p class="card-description">
+                    「顧客満足度」のような定性的指標は抽象的になることがあります。「顧客満足度→アンケートNPSスコア」といった数値化条件を追加しましょう。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">タスク管理ツールに連携</h3>
+                <p class="card-description">
+                    第3階層の行動レベルKPIは、そのままAsana、Trello、Notionなどのタスク管理ツールに転記できます。KPIとタスクが直結します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">四半期ごとに見直し</h3>
+                <p class="card-description">
+                    KPIツリーは四半期ごとに見直しましょう。達成状況に応じて、第2階層・第3階層のKPIを調整することで、PDCAサイクルが回ります。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">進捗管理をビジュアル化</h3>
+                <p class="card-description">
+                    スプレッドシートの条件付き書式を使って、達成率に応じて色分けすると、進捗状況が一目で分かります。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">現実的な頻度・期限に調整</h3>
+                <p class="card-description">
+                    ChatGPTの出力をそのまま使わず、担当者の負荷を考慮して、現実的に実行可能な頻度・期限に調整してください。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">NEXT STEP</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">第3回</div>
+                <div class="phase-title">ズレを可視化するAI整合性診断</div>
+            </div>
+            <p style="font-size: 1.1rem; line-height: 1.8;">
+                次回は、部門OKR間のズレを、AIが一瞬で明らかにします。<br><br>
+                「A部門とB部門のOKRが矛盾してる気がする…」──そんな会議のモヤモヤを、ChatGPTが可視化します。<br><br>
+                <strong>戦略整合性を「数値と構造」で可視化する方法</strong>をお見せします。お楽しみに！
+            </p>
+        </div>
+    </section>
+
+    <script>
+        function copyPrompt(button) {
+            const promptBox = button.parentElement;
+            const text = promptBox.innerText.replace('コピー', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerText;
+                button.innerText = 'コピーしました！';
+                setTimeout(() => {
+                    button.innerText = originalText;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

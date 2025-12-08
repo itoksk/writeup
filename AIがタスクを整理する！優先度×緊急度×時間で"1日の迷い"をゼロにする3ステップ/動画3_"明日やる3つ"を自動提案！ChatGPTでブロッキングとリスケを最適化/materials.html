@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画3："明日やる3つ"を自動提案！ChatGPTでブロッキングとリスケを最適化</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.01) 2px,
+                    rgba(10, 14, 39, 0.01) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            background: linear-gradient(to right, var(--paper) 50%, transparent 50%);
+            background-size: 20px 1px;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+            border: 2px solid var(--ink);
+        }
+
+        .comparison-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            vertical-align: top;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .highlight {
+            background: var(--electric);
+            padding: 0.2em 0.5em;
+            font-weight: 700;
+        }
+
+        .alert {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .alert-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--coral);
+        }
+
+        .info-box {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .info-box-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+
+        .success-box {
+            background: rgba(0, 240, 255, 0.1);
+            border-left: 4px solid var(--electric);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .success-box-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--electric);
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">AIタスク整理講座 - 動画3</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">LESSON 03 - FINAL</div>
+            <h1 class="hero-title">
+                "明日やる3つ"を自動提案！<br>
+                ChatGPTでブロッキングとリスケを最適化
+            </h1>
+            <p class="hero-description">
+                優先順位も所要時間も分かった。次は、それをスケジュールに落とし込む方法。<br>
+                AIに「明日やる3つ」を提案してもらい、Googleカレンダーにコピペするだけで完成。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">Before / After</div>
+        <h2 class="section-title">従来の方法 vs AI活用後</h2>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <div class="card-number">😰</div>
+                <h3 class="card-title">Before：従来の方法</h3>
+                <div class="card-description">
+                    <p style="margin-bottom: 1rem;"><strong>スケジュール作成プロセス：</strong></p>
+                    <ul style="list-style: none; padding-left: 0;">
+                        <li>🌅 当日の朝、「今日は何しようかな」と考える（10分）</li>
+                        <li>📋 タスク一覧を見ながら、優先順位を考える（5分）</li>
+                        <li>🤔 「これ、何分かかるかな？」と悩む（5分）</li>
+                        <li>📅 ようやくスケジュールを組む（5分）</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>課題：</strong></p>
+                    <ul style="list-style: none; padding-left: 0;">
+                        <li>⏰ 朝の25分が無駄になる</li>
+                        <li>📆 当日に決めるので、前日の準備ができない</li>
+                        <li>💔 スケジュールが破綻しやすい</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-number">😊</div>
+                <h3 class="card-title">After：AI活用後</h3>
+                <div class="card-description">
+                    <p style="margin-bottom: 1rem;"><strong>スケジュール作成プロセス：</strong></p>
+                    <ul style="list-style: none; padding-left: 0;">
+                        <li>🌙 前日の夜、タスクをChatGPTに入力（2分）</li>
+                        <li>🤖 AIが「明日やる3つ」を提案（10秒）</li>
+                        <li>📋 Googleカレンダーにコピペ（1分）</li>
+                        <li>🌅 翌朝、カレンダーを見て即スタート</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>効果：</strong></p>
+                    <ul style="list-style: none; padding-left: 0;">
+                        <li>⚡ 朝のスタートが<span class="highlight">5分に短縮</span>（80%削減）</li>
+                        <li>💪 前日に決めるので、心の準備ができる</li>
+                        <li>✅ スケジュール破綻が70%減少</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">3 Steps</div>
+        <h2 class="section-title">実装手順（たった3ステップ）</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">タスクデータを準備する</div>
+            </div>
+            <p>動画1で整理したタスク（優先度・緊急度）と、動画2で見積もった所要時間を、ChatGPTに入力する形式にまとめます。所要時間は<strong>2分</strong>。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">ChatGPTに「明日やる3つ」を提案してもらう</div>
+            </div>
+            <p>prompts.txtからプロンプトをコピペして、タスクデータを貼り付けて送信。所要時間は<strong>1分</strong>。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">Googleカレンダーに入力する</div>
+            </div>
+            <p>AIの出力をコピペして、カレンダーに登録。翌朝、カレンダーを見て即スタート。所要時間は<strong>2分</strong>。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Prompt</div>
+        <h2 class="section-title">デモ用プロンプト（コピペ用）</h2>
+
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">プロンプト1：明日やるべき上位3件の提案</h3>
+        <div class="code-block">以下のタスクデータを基に、
+優先度・緊急度・所要時間の3要素から"明日やるべき上位3件"を提案してください。
+各タスクに推奨時間帯（午前/午後）を添えてください。
+最後に、Googleカレンダーに貼り付けられる形式でも出力してください。
+
+【タスクデータ】
+
+■ 上司への報告資料修正
+- 優先度：高
+- 緊急度：高
+- 所要時間：25分
+
+■ 新規顧客への初回メール
+- 優先度：高
+- 緊急度：低
+- 所要時間：15分
+
+■ 顧客データ整理
+- 優先度：低
+- 緊急度：中
+- 所要時間：20分
+
+■ チームミーティング準備
+- 優先度：低
+- 緊急度：高
+- 所要時間：40分
+
+■ 来週の営業資料作成
+- 優先度：中
+- 緊急度：高
+- 所要時間：45分</div>
+
+        <h3 style="font-size: 1.2rem; margin: 2rem 0 1rem;">想定出力例：明日やるべき上位3件</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>タスク</th>
+                    <th>推奨時間帯</th>
+                    <th>優先理由</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>上司への報告資料修正</td>
+                    <td>午前</td>
+                    <td>締切が迫っており影響度が高い</td>
+                </tr>
+                <tr>
+                    <td>来週の営業資料作成</td>
+                    <td>午後</td>
+                    <td>集中時間に適している</td>
+                </tr>
+                <tr>
+                    <td>新規顧客への初回メール</td>
+                    <td>午前</td>
+                    <td>反応を当日中に得られる</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="success-box">
+            <div class="success-box-title">📋 Googleカレンダー入力形式</div>
+            <div class="code-block" style="background: rgba(0, 240, 255, 0.2); color: var(--ink);">10:00-10:30 上司への報告資料修正
+11:00-11:15 新規顧客への初回メール
+13:00-13:45 来週の営業資料作成</div>
+            <p style="margin-top: 1rem;">この形式をコピーして、Googleカレンダーに貼り付けるだけで、スケジュールが完成します。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Advanced</div>
+        <h2 class="section-title">タイムブロッキング形式での1日スケジュール（プロンプト2）</h2>
+
+        <p style="margin-bottom: 2rem;">より詳細な1日のスケジュールを組みたい場合は、タイムブロッキング形式でAIに提案してもらうこともできます。</p>
+
+        <h3 style="font-size: 1.2rem; margin: 2rem 0 1rem;">出力例：タイムブロッキング形式スケジュール</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>時間</th>
+                    <th>タスク</th>
+                    <th>優先度</th>
+                    <th>理由</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>09:00-09:30</td>
+                    <td>上司への報告資料修正</td>
+                    <td>高/高</td>
+                    <td>締切が迫っており、午前の集中力を活用</td>
+                </tr>
+                <tr>
+                    <td>09:35-10:20</td>
+                    <td>来週の営業資料作成</td>
+                    <td>中/高</td>
+                    <td>集中力が必要な作業を午前に配置</td>
+                </tr>
+                <tr>
+                    <td>10:25-10:45</td>
+                    <td>チームミーティング準備</td>
+                    <td>低/高</td>
+                    <td>緊急度が高いため午前中に完了</td>
+                </tr>
+                <tr>
+                    <td>10:50-11:05</td>
+                    <td>新規顧客への初回メール</td>
+                    <td>高/低</td>
+                    <td>重要だが短時間で完了可能</td>
+                </tr>
+                <tr>
+                    <td>11:10-11:40</td>
+                    <td>メール返信10件</td>
+                    <td>中/中</td>
+                    <td>ランチ前の軽作業</td>
+                </tr>
+                <tr>
+                    <td>12:00-13:00</td>
+                    <td>🍴 ランチ休憩</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>13:00-13:20</td>
+                    <td>顧客データ整理</td>
+                    <td>低/中</td>
+                    <td>午後のウォームアップ</td>
+                </tr>
+                <tr>
+                    <td>13:25-13:40</td>
+                    <td>週報作成</td>
+                    <td>低/低</td>
+                    <td>定型作業を午後に配置</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <div class="info-box-title">💡 タイムブロッキングのメリット</div>
+            <p>タスク間に5分のバッファを入れることで、トイレ休憩や水分補給の時間を確保できます。また、午後に自由時間を確保することで、会議や突発対応にも柔軟に対応できます。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Advanced</div>
+        <h2 class="section-title">リスケジュール提案（プロンプト3）</h2>
+
+        <p style="margin-bottom: 2rem;">スケジュールを組んでも、緊急タスクが入ることはあります。そのときは、AIに「リスケジュール提案」を依頼してください。</p>
+
+        <div class="alert">
+            <div class="alert-title">🚨 緊急タスクが発生！</div>
+            <p>急遽「クライアントからのクレーム対応（60分）」が発生しました。このタスクを優先的に組み込み、他のタスクを調整したスケジュールをAIに提案してもらいます。</p>
+        </div>
+
+        <h3 style="font-size: 1.2rem; margin: 2rem 0 1rem;">出力例：調整後スケジュール</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>時間</th>
+                    <th>タスク</th>
+                    <th>変更内容</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>09:00-10:00</td>
+                    <td><strong>🚨 クライアントからのクレーム対応</strong></td>
+                    <td><strong>【緊急追加】</strong></td>
+                </tr>
+                <tr>
+                    <td>10:05-10:30</td>
+                    <td>上司への報告資料修正</td>
+                    <td>開始時刻を1時間遅らせ</td>
+                </tr>
+                <tr>
+                    <td>10:35-11:20</td>
+                    <td>来週の営業資料作成</td>
+                    <td>開始時刻を1時間遅らせ</td>
+                </tr>
+                <tr>
+                    <td>11:25-11:40</td>
+                    <td>新規顧客への初回メール</td>
+                    <td>開始時刻を調整</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="font-size: 1.2rem; margin: 2rem 0 1rem;">明日以降に回すタスク</h3>
+        <ul style="padding-left: 1.5rem;">
+            <li>チームミーティング準備（明日午前）</li>
+            <li>顧客データ整理（明日午後）</li>
+            <li>週報作成（明日午後）</li>
+        </ul>
+
+        <div class="info-box">
+            <div class="info-box-title">📌 調整理由</div>
+            <ol style="padding-left: 1.5rem;">
+                <li><strong>クレーム対応を最優先</strong>：顧客満足度に直結するため、朝一番で対応</li>
+                <li><strong>報告資料は本日中に完了</strong>：締切が今日のため、午前中に確保</li>
+                <li><strong>その他は明日以降に回す</strong>：優先度が低く、影響が小さいタスクは明日以降に</li>
+            </ol>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Tips</div>
+        <h2 class="section-title">活用ポイント</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">毎晩のルーティンにする</h3>
+                <p class="card-description">
+                    夜8時に「明日やる3つ」をAIに提案してもらう。これを習慣にすると、朝のスタートが劇的に変わります。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">緊急タスクが入ったらリスケを依頼</h3>
+                <p class="card-description">
+                    AIに「リスケジュール提案」を依頼すれば、優先度の低いタスクを明日以降に回す提案をしてくれます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">週間スケジュールにも応用</h3>
+                <p class="card-description">
+                    prompts.txtのプロンプト4を使えば、AIが1週間のスケジュールを提案してくれます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">FAQ</div>
+        <h2 class="section-title">よくある質問</h2>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <h3 class="card-title">Q: Googleカレンダーへの自動連携はできますか?</h3>
+                <p class="card-description">
+                    A: 今回のデモでは手動コピペですが、Google Apps Script（GAS）を使えば自動連携も可能です（別講座で紹介予定）。
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Q: 緊急タスクが頻繁に発生する場合は?</h3>
+                <p class="card-description">
+                    A: AIに「リスケジュール提案」を依頼してください。優先度の低いタスクを明日以降に回す提案をしてくれます。
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Q: 週間スケジュールも作れますか?</h3>
+                <p class="card-description">
+                    A: はい、prompts.txtのプロンプト4を使えば、AIが1週間のスケジュールを提案してくれます。
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Q: 「3つ」にこだわらないといけませんか?</h3>
+                <p class="card-description">
+                    A: 「3つ」はあくまで目安です。タスクが多い日は5つでも、少ない日は2つでもOKです。重要なのは、「明日の優先順位が明確になる」ことです。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Series Summary</div>
+        <h2 class="section-title">シリーズ全体のまとめ</h2>
+
+        <p style="margin-bottom: 2rem; font-size: 1.1rem;">この3本の動画で、AIを使ったタスク整理の全体像をお伝えしました。</p>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">優先度と緊急度をAIで判断</h3>
+                <p class="card-description">
+                    朝の迷いをゼロに（15分→3分）
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">所要時間をAIで見積もる</h3>
+                <p class="card-description">
+                    スケジュール破綻を70%減少
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">「明日やる3つ」をAIで提案</h3>
+                <p class="card-description">
+                    前日に決めて、朝のスタートが速くなる
+                </p>
+            </div>
+        </div>
+
+        <div class="card" style="background: var(--ink); color: var(--paper); border: none; margin-top: 3rem;">
+            <h2 style="color: var(--electric); font-size: 2rem; margin-bottom: 1rem;">クロージングメッセージ</h2>
+            <p style="font-size: 1.2rem; line-height: 1.8;">
+                AIは、あなたの代わりに考えてくれる「第二の頭脳」です。<br>
+                優先順位を決め、時間を見積もり、明日の予定まで提案してくれる。<br>
+                もう「やるべきこと」で悩む時間は要りません。<br>
+                <strong style="color: var(--electric);">1日の迷いをAIに預けて、行動だけに集中しましょう。</strong>
+            </p>
+        </div>
+    </section>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：遅延しない採用運用 | CX向上型採用オペレーションフロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --ink: #0A0E27; --paper: #FEFEF8; --electric: #EC4899; --violet: #7C3AED; --gray: #4A5568; }
+        body { font-family: 'Zen Kaku Gothic New', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.8; }
+        nav { position: fixed; top: 0; width: 100%; background: rgba(254, 254, 248, 0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 1.5rem 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        main { max-width: 900px; margin: 0 auto; padding: 8rem 2rem 4rem; }
+        .lesson-header { text-align: center; margin-bottom: 4rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(10, 14, 39, 0.1); }
+        .lesson-number { font-size: 6rem; font-weight: 900; background: linear-gradient(135deg, var(--violet), var(--electric)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+        .lesson-title { font-size: 2rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        .lesson-subtitle { font-size: 1.1rem; color: var(--gray); }
+        section { margin-bottom: 3rem; }
+        h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; padding-left: 1rem; border-left: 4px solid var(--electric); }
+        .goal-card { background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(236, 72, 153, 0.05)); border-radius: 12px; padding: 2rem; border-left: 4px solid var(--violet); }
+        .reminder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .reminder-card { background: white; border: 1px solid rgba(10, 14, 39, 0.1); border-radius: 12px; padding: 1.5rem; }
+        .reminder-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--violet); }
+        .reminder-card p { font-size: 0.9rem; color: var(--gray); }
+        .escalation-timeline { position: relative; padding-left: 2rem; }
+        .escalation-timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--violet), var(--electric)); }
+        .escalation-item { position: relative; margin-bottom: 1.5rem; padding-left: 1.5rem; }
+        .escalation-item::before { content: ''; position: absolute; left: -2rem; top: 0.5rem; width: 12px; height: 12px; border-radius: 50%; transform: translateX(-5px); }
+        .escalation-item.mild::before { background: #22C55E; }
+        .escalation-item.medium::before { background: #F59E0B; }
+        .escalation-item.urgent::before { background: #DC2626; }
+        .escalation-item h4 { font-size: 1rem; margin-bottom: 0.25rem; }
+        .escalation-item p { font-size: 0.9rem; color: var(--gray); }
+        .code-block { background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; margin: 1rem 0; }
+        .tips-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .tip-card { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 1rem; }
+        .tip-card h4 { font-size: 0.9rem; color: #16A34A; margin-bottom: 0.25rem; }
+        .tip-card p { font-size: 0.85rem; color: var(--gray); }
+        .summary-box { background: var(--ink); color: var(--paper); border-radius: 12px; padding: 2rem; }
+        .summary-box h3 { font-size: 1.2rem; margin-bottom: 1rem; }
+        .summary-box ul { list-style: none; }
+        .summary-box li { margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative; }
+        .summary-box li::before { content: "→"; position: absolute; left: 0; color: var(--electric); }
+        .next-preview { margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1)); border-radius: 12px; text-align: center; }
+        @media (max-width: 768px) { .reminder-grid, .tips-grid { grid-template-columns: 1fr; } .lesson-number { font-size: 4rem; } }
+    </style>
+</head>
+<body>
+    <nav><div class="nav-container"><div>CX向上型採用オペレーションフロー</div><div>第4回 / 全5回</div></div></nav>
+    <main>
+        <header class="lesson-header">
+            <div class="lesson-number">04</div>
+            <h1 class="lesson-title">遅延しない採用運用</h1>
+            <p class="lesson-subtitle">面接リマインド・評価提出リマインドを自動化する</p>
+        </header>
+        <section>
+            <h2>学習目標</h2>
+            <div class="goal-card"><p>面接リマインド、評価シート提出リマインド、遅延アラートを自動化するエージェントを作成する</p></div>
+        </section>
+        <section>
+            <h2>3種類のリマインド</h2>
+            <div class="reminder-grid">
+                <div class="reminder-card"><h3>面接リマインド</h3><p>候補者と面接官に前日と1時間前に通知</p></div>
+                <div class="reminder-card"><h3>評価提出リマインド</h3><p>未提出の場合、翌日と翌々日にリマインド</p></div>
+                <div class="reminder-card"><h3>遅延アラート</h3><p>連絡が3日以上滞っている場合にアラート</p></div>
+            </div>
+        </section>
+        <section>
+            <h2>評価提出エスカレーション</h2>
+            <div class="escalation-timeline">
+                <div class="escalation-item mild"><h4>24時間経過</h4><p>1回目リマインド（丁寧なトーン）</p></div>
+                <div class="escalation-item medium"><h4>48時間経過</h4><p>2回目リマインド（緊急度アップ）</p></div>
+                <div class="escalation-item urgent"><h4>72時間経過</h4><p>マネージャーにエスカレーション</p></div>
+            </div>
+        </section>
+        <section>
+            <h2>遅延判定式（Sheets）</h2>
+            <div class="code-block">=IF(TODAY() - [最終連絡日] >= 3, "要フォロー", "OK")</div>
+        </section>
+        <section>
+            <h2>運用のポイント</h2>
+            <div class="tips-grid">
+                <div class="tip-card"><h4>頻度の調整</h4><p>候補者への連絡は前日と1時間前の2回に留める</p></div>
+                <div class="tip-card"><h4>トーンの使い分け</h4><p>1回目は丁寧に、2回目以降は緊急度を上げる</p></div>
+                <div class="tip-card"><h4>エスカレーションルール</h4><p>何日でマネージャーに上げるかチームで合意</p></div>
+                <div class="tip-card"><h4>シート更新の習慣化</h4><p>最終連絡日の更新を自動化または習慣化</p></div>
+            </div>
+        </section>
+        <section>
+            <h2>今日のポイント</h2>
+            <div class="summary-box">
+                <h3>まとめ</h3>
+                <ul>
+                    <li>面接リマインド: 前日と1時間前に自動送信</li>
+                    <li>評価提出リマインド: 24h・48h・72hでエスカレーション</li>
+                    <li>遅延アラート: 3日以上連絡なしでチームに通知</li>
+                    <li>トーンと頻度の調整が重要</li>
+                    <li>候補者管理シートとの連携で正確な検知</li>
+                </ul>
+            </div>
+        </section>
+        <div class="next-preview"><h3>次回予告</h3><p>採用オペレーションを完全自動化！選考フロー全体をStudioで一本化する方法</p></div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画3：使いやすいアプリは見た目で決まる！フォームと一覧ビューの整え方</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap');
+
+        :root {
+            /* Literary Editorial Design System Colors */
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --paper-shadow: #F5F5F0;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+
+            /* Typography */
+            --font-primary: 'Zen Kaku Gothic New', sans-serif;
+            --font-secondary: 'Space Grotesk', monospace;
+            --font-serif: 'Noto Serif JP', serif;
+
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(10, 14, 39, 0.1);
+            --shadow-md: 0 4px 16px rgba(10, 14, 39, 0.15);
+            --shadow-lg: 0 8px 32px rgba(10, 14, 39, 0.2);
+            --shadow-xl: 0 16px 48px rgba(10, 14, 39, 0.25);
+
+            /* Border */
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+            padding: var(--space-lg) 0;
+        }
+
+        /* Paper Texture Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.03) 2px,
+                    rgba(10, 14, 39, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.02) 2px,
+                    rgba(10, 14, 39, 0.02) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-sm);
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+
+        .subtitle {
+            font-family: var(--font-secondary);
+            font-size: 1.25rem;
+            color: var(--ink);
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+
+        /* Navigation */
+        nav {
+            margin-bottom: var(--space-lg);
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-pill {
+            padding: var(--space-xs) var(--space-md);
+            background: var(--paper);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 50px;
+            font-family: var(--font-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        .nav-pill:hover::before {
+            left: 0;
+        }
+
+        .nav-pill:hover {
+            color: var(--paper);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Content Section */
+        .content-section {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .content-section:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .section-number {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--electric);
+            background: var(--ink);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        /* Content Typography */
+        .content-section h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            margin-bottom: var(--space-lg);
+            color: var(--ink);
+            position: relative;
+            line-height: 1.2;
+        }
+
+        .content-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+
+        .content-section h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            color: var(--ink);
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+        }
+
+        .content-section p {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-md);
+        }
+
+        .content-section ul {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-md) 0;
+        }
+
+        .content-section li {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-sm);
+            padding-left: var(--space-lg);
+            position: relative;
+        }
+
+        .content-section li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Card */
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-number {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-family: var(--font-secondary);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--electric);
+            opacity: 0.3;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: var(--space-md);
+            border-radius: 8px;
+            font-family: var(--font-secondary);
+            font-size: 0.9rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            margin: var(--space-md) 0;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-block::before {
+            content: 'DEMO';
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--electric);
+            opacity: 0.5;
+        }
+
+        /* Highlight Box */
+        .highlight {
+            background: linear-gradient(135deg, var(--electric), var(--coral));
+            padding: 3px;
+            border-radius: 8px;
+            margin: var(--space-md) 0;
+        }
+
+        .highlight-content {
+            background: var(--paper);
+            padding: var(--space-md);
+            border-radius: 5px;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .grid-item {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 180px;
+        }
+
+        .grid-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--electric), var(--coral));
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .grid-item:hover::after {
+            transform: translateY(0);
+        }
+
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: var(--space-lg);
+            margin: var(--space-md) 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--ink);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: var(--space-md);
+            padding-left: var(--space-md);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--electric);
+            border: 3px solid var(--ink);
+        }
+
+        /* Step Box */
+        .step-box {
+            background: #fff;
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            border-left: 6px solid var(--electric);
+        }
+
+        .step-number {
+            font-family: var(--font-secondary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--electric);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: #fff;
+            border: 2px solid var(--coral);
+            border-left: 6px solid var(--coral);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .warning-box h4 {
+            color: var(--coral);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: var(--space-lg) 0;
+            border-top: 3px solid var(--ink);
+            margin-top: var(--space-xl);
+            font-family: var(--font-secondary);
+            letter-spacing: 0.05em;
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background: var(--ink);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 2px solid var(--ink);
+        }
+
+        .dark-mode-toggle::before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: var(--paper);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .dark-mode-toggle.active {
+            background: var(--electric);
+            border-color: var(--electric);
+        }
+
+        .dark-mode-toggle.active::before {
+            transform: translateX(30px);
+            background: var(--ink);
+        }
+
+        /* Dark Mode Styles */
+        .dark-mode {
+            --ink: #FEFEF8;
+            --paper: #0A0E27;
+            --paper-shadow: #1A1E37;
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .dark-mode {
+            --shadow-sm: 0 2px 8px rgba(255, 255, 255, 0.1);
+            --shadow-md: 0 4px 16px rgba(255, 255, 255, 0.15);
+            --shadow-lg: 0 8px 32px rgba(255, 255, 255, 0.2);
+            --shadow-xl: 0 16px 48px rgba(255, 255, 255, 0.25);
+        }
+
+        .dark-mode .code-block {
+            background: #1a1a2e;
+            color: #eee;
+            border: 1px solid #444;
+        }
+
+        .dark-mode .section-number {
+            background: var(--paper);
+            color: var(--electric);
+            border: 1px solid var(--electric);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content-section h2 {
+                font-size: 2rem;
+            }
+
+            .content-section h3 {
+                font-size: 1.5rem;
+            }
+
+            .content-section p, .content-section li {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">使いやすいアプリは見た目で決まる！<br>フォームと一覧ビューの整え方</h1>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="content-section">
+                <span class="section-number">01</span>
+                <h2>講座ゴール</h2>
+                <p>本動画では、5テーブル構成（顧客、社員、サービス、注文、注文詳細）に基づいて、使いやすいフォームと一覧画面を作成します。</p>
+
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h3>学習目標</h3>
+                        <ul>
+                            <li>Form ViewとCard Viewの違いを理解する</li>
+                            <li>注文フォームのカスタマイズ方法を学ぶ</li>
+                            <li>注文一覧のカスタマイズ方法を学ぶ</li>
+                            <li>初期値設定とバリデーションルールを実装する</li>
+                            <li>親子関係による関連データ表示を確認する</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <span class="section-number">02</span>
+                <h2>ビュー構成の設計図</h2>
+                <p>5テーブル構成におけるビュー設計の全体像を把握しましょう。</p>
+
+                <div class="grid">
+                    <div class="grid-item">
+                        <h3>注文テーブル</h3>
+                        <ul>
+                            <li><strong>注文_Form</strong>: 新規注文の入力フォーム</li>
+                            <li><strong>注文</strong> (Card View): 注文一覧のカード表示</li>
+                            <li><strong>注文_Detail</strong>: 1件の注文の詳細画面</li>
+                        </ul>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>注文詳細テーブル</h3>
+                        <ul>
+                            <li><strong>注文詳細_Form</strong>: サービスと数量の入力フォーム</li>
+                            <li><strong>注文詳細</strong> (Table View): 注文詳細の一覧表示</li>
+                        </ul>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>マスタテーブル</h3>
+                        <ul>
+                            <li><strong>顧客_Form</strong>: 顧客登録フォーム</li>
+                            <li><strong>社員_Form</strong>: 社員登録フォーム</li>
+                            <li><strong>サービス_Form</strong>: サービス登録フォーム</li>
+                            <li>各テーブルのTable View: 一覧表示</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>ビュー設計のポイント</h3>
+                    <p><strong>1. 操作の目的を明確にする</strong></p>
+                    <p>「閲覧」「登録」「確認」のどれかに絞って、ビューごとに表示項目を調整します。</p>
+
+                    <p><strong>2. 親子関係を活用する</strong></p>
+                    <p>注文詳細画面では、「Related 注文詳細s」を表示することで、親レコードから子レコードを自動的に表示できます。</p>
+
+                    <p><strong>3. ステータス別のビューを作成する</strong></p>
+                    <p>同じテーブルに対して、フィルタの異なるビューを複数作成することで、業務の進捗が一目で把握できます。</p>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <span class="section-number">03</span>
+                <h2>注文フォーム（Form View）のカスタマイズ</h2>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h3>ステップ1: 表示項目の選択</h3>
+                        <p>自動生成される項目（ID注文、見積番号、請求番号、仮想カラムなど）は非表示にします。</p>
+                        <div class="code-block">非表示にする項目:
+- ID注文（自動生成）
+- 見積番号（自動生成）
+- 請求番号（自動生成）
+- 納入単価合計（仮想カラムで自動計算）
+- 消費税（仮想カラムで自動計算）
+- 合計金額（仮想カラムで自動計算）</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h3>ステップ2: 並び順の調整</h3>
+                        <p>業務の入力フローに合わせて、項目の並び順を調整します。</p>
+                        <div class="code-block">推奨の並び順:
+1. ID顧客（参照型：顧客テーブルから選択）
+2. ID社員（参照型：社員テーブルから選択）
+3. ステータス（見積作成中、見積発行済、受注、納品完了）
+4. 発行日
+5. 有効期限
+6. 納品先
+7. 納品先名
+8. 受注日
+9. 納入期日
+10. 納入場所
+11. 御支払い条件
+12. 備考
+13. 振込期限</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h3>ステップ3: 初期値の設定</h3>
+                        <p>頻繁に入力する項目には、初期値を設定して入力負担を減らします。</p>
+                        <div class="code-block">発行日の初期値:
+TODAY()
+
+ステータスの初期値:
+"見積作成中"
+
+ID社員の初期値:
+USEREMAIL()</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h3>ステップ4: 必須項目の設定</h3>
+                        <p>業務上必須の項目には、Required?をYesに設定します。</p>
+                        <div class="code-block">必須項目:
+- ID顧客
+- ID社員
+- ステータス
+- 発行日</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <span class="section-number">04</span>
+                <h2>注文一覧（Card View）のカスタマイズ</h2>
+
+                <div class="step-box">
+                    <div class="step-number">Primary Header</div>
+                    <p>カードの一番上に表示される最も重要な情報です。</p>
+                    <div class="code-block">Primary Header: ID顧客
+
+→ 顧客名がカードの一番上に表示される</div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">Secondary Header</div>
+                    <p>カードの2行目に表示される補足情報です。</p>
+                    <div class="code-block">Secondary Header: ステータス
+
+→ 見積作成中、見積発行済、受注、納品完了などが表示される</div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">Summary Column</div>
+                    <p>カードの3行目以降に表示される詳細情報です。</p>
+                    <div class="code-block">Summary Column:
+- 発行日
+- 見積番号
+- 合計金額
+
+→ 注文の概要が一目で把握できる</div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">フィルタ</div>
+                    <p>特定の条件に合致するレコードだけを表示します。</p>
+                    <div class="code-block">見積作成中一覧のフィルタ:
+[ステータス] = "見積作成中"
+
+見積発行済一覧のフィルタ:
+[ステータス] = "見積発行済"
+
+受注一覧のフィルタ:
+[ステータス] = "受注"</div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">ソート</div>
+                    <p>レコードの表示順序を設定します。</p>
+                    <div class="code-block">Sort: 発行日
+Sort Order: Descending（降順）
+
+→ 新しい注文が一番上に表示される</div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <span class="section-number">05</span>
+                <h2>注文詳細フォームのカスタマイズ</h2>
+
+                <p>注文詳細テーブルは、注文テーブルの子テーブルです。注文詳細フォームでは、サービスと数量を入力します。</p>
+
+                <div class="card">
+                    <h3>表示項目</h3>
+                    <ul>
+                        <li><strong>IDサービス</strong> (Ref): サービステーブルから選択</li>
+                        <li><strong>数量</strong>: 数値入力</li>
+                    </ul>
+                    <p>「単価」と「納入金額」は自動計算されるため、入力不要です。</p>
+                </div>
+
+                <div class="card">
+                    <h3>バリデーションルール</h3>
+                    <ul>
+                        <li><strong>数量</strong>: Required? = Yes、Min Value = 1</li>
+                        <li><strong>IDサービス</strong>: Required? = Yes</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>親子関係による表示</h3>
+                    <p>注文詳細画面では、「Related 注文詳細s」という仮想カラムが自動生成され、その注文に紐づく注文詳細が一覧表示されます。</p>
+                    <div class="code-block">親レコード（注文）から子レコード（注文詳細）を参照:
+[Related 注文詳細s]
+
+子レコードの合計を計算:
+SUM([Related 注文詳細s][納入金額])</div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <span class="section-number">06</span>
+                <h2>フォーム設計のベストプラクティス</h2>
+
+                <div class="grid">
+                    <div class="grid-item">
+                        <h3>1. 必要最小限のフィールド</h3>
+                        <p>自動生成される項目や自動計算される項目は非表示にし、入力が必要な項目だけを表示します。</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>2. 初期値で入力負担を軽減</h3>
+                        <p>発行日=TODAY()、担当者=USEREMAIL()など、頻繁に入力する項目には初期値を設定します。</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>3. バリデーションで入力ミスを防止</h3>
+                        <p>必須項目や最小値・最大値を設定して、不正なデータの入力を防ぎます。</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>4. ステータス別ビューで進捗を可視化</h3>
+                        <p>同じテーブルに対して、フィルタの異なるビューを複数作成します。</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>5. Card Viewで視認性を向上</h3>
+                        <p>Primary Header、Secondary Header、Summary Columnを適切に設定して、一目で内容が把握できるようにします。</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>6. 親子関係を活用</h3>
+                        <p>親レコードから子レコードを自動表示することで、データの整合性を保ちます。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <span class="section-number">07</span>
+                <h2>初期値設定の例</h2>
+
+                <div class="card">
+                    <div class="card-number">01</div>
+                    <h3>注文テーブルの初期値</h3>
+                    <div class="code-block">発行日: TODAY()
+→ フォームを開いた日付が自動入力される
+
+ステータス: "見積作成中"
+→ 新規注文は自動的に「見積作成中」ステータスになる
+
+ID社員: USEREMAIL()
+→ ログインしている社員が自動的に選択される
+
+有効期限: TODAY() + 30
+→ 発行日の30日後が自動入力される</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-number">02</div>
+                    <h3>注文詳細テーブルの初期値</h3>
+                    <div class="code-block">数量: 1
+→ デフォルトで1が入力される
+
+単価: [IDサービス].[価格]
+→ 選択したサービスの価格が自動入力される
+
+納入金額: [数量] * [単価]
+→ 数量と単価から自動計算される</div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <span class="section-number">08</span>
+                <h2>バリデーションルールの例</h2>
+
+                <div class="warning-box">
+                    <h4>注文テーブルのバリデーション</h4>
+                    <div class="code-block">ID顧客: Required? = Yes
+→ 顧客が選択されていない場合、保存できない
+
+ID社員: Required? = Yes
+→ 担当者が選択されていない場合、保存できない
+
+ステータス: Required? = Yes
+→ ステータスが選択されていない場合、保存できない
+
+発行日: Required? = Yes
+→ 発行日が入力されていない場合、保存できない</div>
+                </div>
+
+                <div class="warning-box">
+                    <h4>注文詳細テーブルのバリデーション</h4>
+                    <div class="code-block">IDサービス: Required? = Yes
+→ サービスが選択されていない場合、保存できない
+
+数量: Required? = Yes, Min Value = 1
+→ 数量が1以上でない場合、保存できない</div>
+                </div>
+
+                <div class="card">
+                    <h3>カスタムバリデーション式の例</h3>
+                    <p>より複雑なバリデーションが必要な場合は、Valid_If式を使います。</p>
+                    <div class="code-block">有効期限が発行日より後であることを確認:
+[有効期限] > [発行日]
+
+エラーメッセージ:
+"有効期限は発行日より後の日付を入力してください"</div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <span class="section-number">09</span>
+                <h2>よくある失敗例と対策</h2>
+
+                <div class="grid">
+                    <div class="grid-item">
+                        <h3>失敗例1</h3>
+                        <p><strong>すべてのフィールドを表示してしまう</strong></p>
+                        <p><strong>対策:</strong> 自動生成される項目や自動計算される項目は非表示にする。入力が必要な項目だけを表示する。</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>失敗例2</h3>
+                        <p><strong>初期値を設定していない</strong></p>
+                        <p><strong>対策:</strong> 発行日=TODAY()、担当者=USEREMAIL()など、頻繁に入力する項目には初期値を設定する。</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>失敗例3</h3>
+                        <p><strong>バリデーションルールが不十分</strong></p>
+                        <p><strong>対策:</strong> 必須項目や最小値・最大値を設定して、不正なデータの入力を防ぐ。</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>失敗例4</h3>
+                        <p><strong>Card ViewのPrimary Headerが適切でない</strong></p>
+                        <p><strong>対策:</strong> 最も重要な情報（顧客名など）をPrimary Headerに設定する。</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>失敗例5</h3>
+                        <p><strong>ステータス別のビューを作成していない</strong></p>
+                        <p><strong>対策:</strong> 同じテーブルに対して、フィルタの異なるビューを複数作成する。</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h3>失敗例6</h3>
+                        <p><strong>親子関係を活用していない</strong></p>
+                        <p><strong>対策:</strong> 注文詳細画面で「Related 注文詳細s」を表示して、親レコードから子レコードを自動表示する。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <span class="section-number">10</span>
+                <h2>本回のチェックリスト</h2>
+
+                <div class="card">
+                    <h3>注文フォームのカスタマイズ</h3>
+                    <ul>
+                        <li>自動生成される項目を非表示にした</li>
+                        <li>表示項目の並び順を調整した</li>
+                        <li>初期値（TODAY()、USEREMAIL()など）を設定した</li>
+                        <li>必須項目を設定した</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>注文一覧のカスタマイズ</h3>
+                    <ul>
+                        <li>Primary Headerを設定した</li>
+                        <li>Secondary Headerを設定した</li>
+                        <li>Summary Columnを設定した</li>
+                        <li>フィルタを設定した</li>
+                        <li>ソートを設定した</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>注文詳細フォームのカスタマイズ</h3>
+                    <ul>
+                        <li>表示項目を選択した</li>
+                        <li>必須項目を設定した</li>
+                        <li>最小値を設定した</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>親子関係の確認</h3>
+                    <ul>
+                        <li>「Related 注文詳細s」が自動生成されていることを確認した</li>
+                        <li>注文詳細画面で関連データが表示されることを確認した</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <h2>まとめと次回予告</h2>
+                <p>本動画では、5テーブル構成に基づいて、使いやすいフォームと一覧画面を作成しました。</p>
+                <p>注文フォーム、注文一覧、注文詳細フォームのカスタマイズ方法を学び、初期値設定とバリデーションルールを実装しました。</p>
+
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h3>次回の動画4</h3>
+                        <p><strong>「テンプレートから見積書・請求書を出力する」</strong></p>
+                        <p>Googleドキュメントのテンプレートを使って、注文データから見積書や請求書を自動生成する方法を実践します。</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>AppSheetで営業事務の"紙地獄"を脱出！ゼロから作る見積・請求アプリ</p>
+            <p>動画3/5: 使いやすいアプリは見た目で決まる！フォームと一覧ビューの整え方</p>
+        </footer>
+    </div>
+</body>
+</html>

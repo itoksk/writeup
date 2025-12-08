@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：遅延しない採用運用！ | CX向上型採用オペレーションフロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #EC4899;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+            --green: #22C55E;
+            --red: #EF4444;
+            --amber: #F59E0B;
+        }
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .nav-back:hover { opacity: 0.7; }
+        .nav-lesson {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            color: var(--violet);
+            font-weight: 700;
+        }
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 60px;
+            background: linear-gradient(135deg, var(--ink) 0%, #1a1f3a 100%);
+            color: var(--paper);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
+            opacity: 0.15;
+        }
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-label {
+            display: inline-block;
+            background: var(--violet);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.5em;
+            margin-top: 0.5em;
+        }
+        .hero-desc {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--violet);
+            display: inline-block;
+        }
+        .goal-card {
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            padding: 2rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .agent-card {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 1.5rem;
+        }
+        .agent-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--electric);
+            margin-bottom: 0.5rem;
+        }
+        .agent-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+        .agent-card p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        .config-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+        }
+        .config-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .config-table tr:hover {
+            background: rgba(124, 58, 237, 0.03);
+        }
+        .code-block {
+            background: var(--ink);
+            color: #00F0FF;
+            padding: 1.5rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+        .escalation-timeline {
+            position: relative;
+            padding-left: 3rem;
+            margin: 2rem 0;
+        }
+        .escalation-timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--amber), var(--red));
+        }
+        .escalation-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .escalation-item::before {
+            content: '';
+            position: absolute;
+            left: -3rem;
+            top: 1.5rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            transform: translateX(-8px);
+        }
+        .escalation-item.level-1::before { background: var(--amber); }
+        .escalation-item.level-2::before { background: #F97316; }
+        .escalation-item.level-3::before { background: var(--red); }
+        .escalation-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        .escalation-item.level-1 .escalation-badge { background: var(--amber); }
+        .escalation-item.level-2 .escalation-badge { background: #F97316; }
+        .escalation-item.level-3 .escalation-badge { background: var(--red); }
+        .escalation-item h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+        .escalation-item p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .points-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .point-card {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 1.5rem;
+        }
+        .point-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--electric);
+            margin-bottom: 0.5rem;
+        }
+        .point-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+        .point-card p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        .checklist {
+            background: rgba(124, 58, 237, 0.05);
+            border: 2px solid var(--violet);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .checklist h3 {
+            color: var(--violet);
+            margin-bottom: 1rem;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+        .checklist-item:last-child { border-bottom: none; }
+        .checklist-item svg { color: var(--violet); flex-shrink: 0; }
+        .template-section {
+            background: rgba(10, 14, 39, 0.03);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .template-section h3 {
+            color: var(--violet);
+            margin-bottom: 1rem;
+        }
+        .highlight-box {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .highlight-box h4 {
+            color: var(--violet);
+            margin-bottom: 0.5rem;
+        }
+        .formula-box {
+            background: var(--ink);
+            color: #00F0FF;
+            padding: 1rem 1.5rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            display: inline-block;
+        }
+        .step-list {
+            margin: 2rem 0;
+        }
+        .step-item {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid rgba(10, 14, 39, 0.1);
+        }
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--violet), var(--electric));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .step-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--violet);
+        }
+        .step-content p {
+            font-size: 0.95rem;
+            color: var(--gray);
+        }
+        .next-preview {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1));
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        .next-preview h3 {
+            color: var(--gray);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .next-preview p {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--violet);
+        }
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 1rem;
+        }
+        .nav-prev, .nav-next {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--ink);
+            border: 2px solid var(--ink);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-prev:hover, .nav-next:hover {
+            background: var(--ink);
+            color: var(--paper);
+        }
+        .nav-next {
+            background: var(--violet);
+            color: white;
+            border-color: var(--violet);
+        }
+        .nav-next:hover {
+            background: #6D28D9;
+            border-color: #6D28D9;
+        }
+        @media (max-width: 768px) {
+            .agent-grid { grid-template-columns: 1fr; }
+            .points-grid { grid-template-columns: 1fr; }
+            .lesson-nav { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 4 / 5</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第4回 / 全5回</div>
+            <h1 class="hero-title">
+                遅延しない採用運用！
+                <span>面接リマインド・評価提出リマインドを自動化する</span>
+            </h1>
+            <p class="hero-desc">
+                面接リマインド、評価シート提出リマインド、遅延アラートを自動化するエージェントを作成。
+                24h・48h・72hの段階的エスカレーションで漏れゼロを実現します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">GOAL</div>
+        <h2 class="section-title">学習目標</h2>
+        <div class="goal-card">
+            面接リマインド、評価シート提出リマインド、遅延アラートを自動化するエージェントを作成する
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">AGENTS</div>
+        <h2 class="section-title">3種類のリマインドエージェント</h2>
+
+        <div class="agent-grid">
+            <div class="agent-card">
+                <div class="agent-number">AGENT 01</div>
+                <h3>Interview Reminder</h3>
+                <p>候補者と面接官に前日と1時間前にリマインド通知。面接忘れを防止し、CX向上に貢献</p>
+            </div>
+            <div class="agent-card">
+                <div class="agent-number">AGENT 02</div>
+                <h3>Evaluation Reminder</h3>
+                <p>評価シート未提出の場合、24h・48h・72hで段階的エスカレーション。迅速な評価収集を実現</p>
+            </div>
+            <div class="agent-card">
+                <div class="agent-number">AGENT 03</div>
+                <h3>Delay Alert</h3>
+                <p>候補者への連絡が3日以上滞っている場合にアラート通知。連絡漏れを防止</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">INTERVIEW REMINDER</div>
+        <h2 class="section-title">Interview Reminder 設計</h2>
+
+        <table class="config-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>設定値</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>エージェント名</td>
+                    <td>Interview Reminder</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>Sends reminders to candidates and interviewers before interviews</td>
+                </tr>
+                <tr>
+                    <td>スターター1</td>
+                    <td>Schedule (Daily, 9:00 AM) - 前日リマインド</td>
+                </tr>
+                <tr>
+                    <td>スターター2</td>
+                    <td>Schedule (Hourly) - 1時間前リマインド</td>
+                </tr>
+                <tr>
+                    <td>データソース</td>
+                    <td>Calendar（翌日/1時間後の面接イベント）</td>
+                </tr>
+                <tr>
+                    <td>出力</td>
+                    <td>Gmail (候補者), Chat (面接官)</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEPS</div>
+        <h2 class="section-title">Interview Reminder 作成手順</h2>
+
+        <div class="step-list">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>新規エージェント作成</h3>
+                    <p>Google Workspace Studio → 「Create agent」→ エージェント名「Interview Reminder」を入力</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>前日リマインドトリガー設定</h3>
+                    <p>「Add starter」→「Schedule」を選択 → Daily 9:00 AM<br>
+                    Calendarから翌日の面接イベントを検索</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>1時間前リマインドトリガー設定</h3>
+                    <p>「Add starter」→「Schedule」を選択 → Hourly<br>
+                    Calendarから1時間後の面接イベントを検索</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Gmail送信設定（候補者向け）</h3>
+                    <p>「Add step」→「Send Gmail」を選択 → 候補者への前日リマインドメールを送信</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Chat送信設定（面接官向け）</h3>
+                    <p>「Add step」→「Send Chat message」→ 面接官に1時間前リマインドをChat通知</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">CANDIDATE REMINDER</div>
+        <h2 class="section-title">面接リマインド - 候補者向け（前日）</h2>
+
+        <div class="code-block">件名：【明日の面接のご案内】{company_name}
+
+{candidate_name}様
+
+明日の面接についてご案内いたします。
+
+■ 日時: {interview_date} {interview_time}
+■ 場所: {location}
+■ 面接官: {interviewer_name}
+■ 所要時間: 約{duration}分
+■ 形式: {interview_format}
+
+■ ご準備いただきたいもの
+・身分証明書
+・履歴書（コピー）
+・筆記用具
+
+■ 会場アクセス
+{access_info}
+
+■ 当日の緊急連絡先
+{emergency_contact}
+
+ご不明点があればお気軽にお問い合わせください。
+お会いできることを楽しみにしております。
+
+{company_name}
+採用チーム</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">INTERVIEWER REMINDER</div>
+        <h2 class="section-title">面接リマインド - 面接官向け（1時間前）</h2>
+
+        <div class="code-block">【面接リマインド】
+
+1時間後に面接があります。
+
+■ 候補者: {candidate_name}
+■ ポジション: {position}
+■ 時間: {interview_time}
+■ 場所: {location}
+■ 所要時間: 約{duration}分
+
+■ 候補者サマリー
+{candidate_summary}
+
+■ 前回面接（あれば）
+{previous_interview_notes}
+
+■ 確認すべきポイント
+{interview_focus_points}
+
+■ 履歴書リンク
+{resume_link}
+
+■ 評価シートリンク
+{evaluation_sheet_link}</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">EVALUATION REMINDER</div>
+        <h2 class="section-title">Evaluation Reminder 設計</h2>
+
+        <table class="config-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>設定値</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>エージェント名</td>
+                    <td>Evaluation Reminder</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>Reminds interviewers to submit evaluation forms with escalation</td>
+                </tr>
+                <tr>
+                    <td>スターター</td>
+                    <td>Schedule (Daily, 10:00 AM)</td>
+                </tr>
+                <tr>
+                    <td>データソース</td>
+                    <td>候補者管理シート（評価未提出レコード）</td>
+                </tr>
+                <tr>
+                    <td>条件分岐</td>
+                    <td>24h, 48h, 72h経過でエスカレーション</td>
+                </tr>
+                <tr>
+                    <td>出力</td>
+                    <td>Gmail (面接官), Chat (マネージャー)</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">ESCALATION</div>
+        <h2 class="section-title">評価提出エスカレーション</h2>
+
+        <div class="escalation-timeline">
+            <div class="escalation-item level-1">
+                <div class="escalation-badge">24時間経過</div>
+                <h4>1回目リマインド（丁寧なトーン）</h4>
+                <p>面接終了から24時間経過 & 未提出 → 面接官にリマインドメール送信<br>
+                「お忙しいところ恐縮ですが、本日中にご記入いただけますと幸いです」</p>
+            </div>
+            <div class="escalation-item level-2">
+                <div class="escalation-badge">48時間経過</div>
+                <h4>2回目リマインド（緊急度アップ）</h4>
+                <p>面接終了から48時間経過 & 未提出 → 緊急度を上げたリマインド<br>
+                「候補者への次のステップ案内のため、本日中の記入をお願いできますでしょうか」</p>
+            </div>
+            <div class="escalation-item level-3">
+                <div class="escalation-badge">72時間経過</div>
+                <h4>マネージャーにエスカレーション</h4>
+                <p>面接終了から72時間経過 & 未提出 → 採用マネージャーにChat通知<br>
+                「以下の面接について、評価シートが72時間以上未提出です。フォローをお願いいたします」</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">24H TEMPLATE</div>
+        <h2 class="section-title">評価提出リマインド - 1回目（24時間経過）</h2>
+
+        <div class="code-block">件名：【リマインド】評価シート記入のお願い - {candidate_name}さん
+
+{interviewer}さん
+
+お疲れ様です。
+{interview_date}に実施された{candidate_name}さんの面接について、
+評価シートの記入をお願いいたします。
+
+■ 候補者: {candidate_name}
+■ ポジション: {position}
+■ 面接日: {interview_date}
+
+■ 評価シートリンク
+{evaluation_sheet_link}
+
+お忙しいところ恐縮ですが、本日中にご記入いただけますと幸いです。
+候補者体験（CX）向上のため、迅速な対応にご協力をお願いいたします。
+
+採用チーム</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">48H TEMPLATE</div>
+        <h2 class="section-title">評価提出リマインド - 2回目（48時間経過）</h2>
+
+        <div class="code-block">件名：【再リマインド・本日期限】評価シート記入のお願い - {candidate_name}さん
+
+{interviewer}さん
+
+お疲れ様です。
+{candidate_name}さんの面接評価シートについて、再度ご連絡いたします。
+
+■ 候補者: {candidate_name}
+■ ポジション: {position}
+■ 面接日: {interview_date}
+■ 経過時間: 48時間
+
+候補者への次のステップ案内のため、本日中の記入をお願いできますでしょうか。
+
+■ 評価シートリンク
+{evaluation_sheet_link}
+
+■ 記入が難しい場合
+口頭でのフィードバックも可能です。
+採用担当 {recruiter_name}（{recruiter_contact}）までご連絡ください。
+
+ご多忙のところ恐縮ですが、よろしくお願いいたします。
+
+採用チーム</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">72H TEMPLATE</div>
+        <h2 class="section-title">評価提出リマインド - エスカレーション（72時間経過）</h2>
+
+        <div class="code-block">【エスカレーション】評価シート未提出
+
+以下の面接について、評価シートが72時間以上未提出です。
+
+■ 候補者: {candidate_name}
+■ ポジション: {position}
+■ 面接日: {interview_date}
+■ 面接官: {interviewer}
+■ 経過時間: {hours_elapsed}時間
+
+■ 候補者の現在のステータス
+{current_status}
+
+■ 影響
+・候補者への連絡が遅延しています
+・CX（候補者体験）に影響する可能性があります
+
+マネージャーからのフォローをお願いいたします。
+
+■ 対応オプション
+1. 面接官に直接フォロー
+2. 口頭フィードバックを代理記入
+3. 評価シートなしで次ステップ判断</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">DELAY ALERT</div>
+        <h2 class="section-title">Delay Alert 設計</h2>
+
+        <table class="config-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>設定値</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>エージェント名</td>
+                    <td>Delay Alert</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>Alerts recruiting team when candidate communication is delayed</td>
+                </tr>
+                <tr>
+                    <td>スターター</td>
+                    <td>Schedule (Daily, 9:00 AM)</td>
+                </tr>
+                <tr>
+                    <td>データソース</td>
+                    <td>候補者管理シート（最終連絡日列）</td>
+                </tr>
+                <tr>
+                    <td>条件</td>
+                    <td>最終連絡から3日以上経過</td>
+                </tr>
+                <tr>
+                    <td>出力</td>
+                    <td>Chat (採用チームスペース)</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">FORMULA</div>
+        <h2 class="section-title">候補者管理シート - 遅延判定式</h2>
+
+        <p>候補者管理シートに以下の数式を追加して、遅延状態を自動判定します。</p>
+
+        <div class="formula-box">=IF(TODAY() - [最終連絡日] >= 3, "要フォロー", "OK")</div>
+
+        <div class="highlight-box">
+            <h4>列構成の例</h4>
+            <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                <li><strong>I列：最終連絡日</strong> - 候補者との最後の連絡日（手動更新またはエージェント自動更新）</li>
+                <li><strong>J列：経過日数</strong> - =TODAY()-I2 で自動計算</li>
+                <li><strong>K列：フォロー状態</strong> - 上記数式で「要フォロー」「OK」を判定</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">DELAY TEMPLATE</div>
+        <h2 class="section-title">遅延アラート - 採用チーム向け</h2>
+
+        <div class="code-block">【遅延アラート】候補者フォロー必要
+
+以下の候補者への連絡が3日以上滞っています。
+
+■ 要フォロー候補者一覧
+
+1. {candidate_name_1}（{position_1}）
+   最終連絡: {last_contact_date_1}（{days_elapsed_1}日経過）
+   ステータス: {status_1}
+   担当: {recruiter_1}
+
+2. {candidate_name_2}（{position_2}）
+   最終連絡: {last_contact_date_2}（{days_elapsed_2}日経過）
+   ステータス: {status_2}
+   担当: {recruiter_2}
+
+■ 本日のフォロー数: {follow_up_count}名
+■ 平均遅延日数: {avg_delay_days}日
+
+早急にフォローをお願いします。
+CX向上のため、候補者への迅速な連絡を心がけましょう。</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">DETECTION PROMPT</div>
+        <h2 class="section-title">遅延検知プロンプト</h2>
+
+        <div class="code-block">You are an HR operations assistant detecting communication delays.
+
+Today's date: {today_date}
+
+Candidate management sheet data:
+{sheet_data}
+
+Identify candidates where:
+1. Last contact date is 3 or more days ago
+2. Status is NOT "内定", "辞退", "不採用" (active candidates only)
+
+For each delayed candidate, extract:
+- Candidate name
+- Position
+- Last contact date
+- Days elapsed
+- Current status
+- Assigned recruiter
+
+Output format:
+---
+DELAYED_CANDIDATES:
+- {name} ({position})
+  Last contact: {date} ({days} days)
+  Status: {status}
+  Recruiter: {recruiter}
+
+SUMMARY:
+- Total delayed: {count}
+- Average delay: {avg_days} days
+- Most delayed: {name} ({max_days} days)
+---
+
+Output in Japanese.</div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEST PRACTICES</div>
+        <h2 class="section-title">運用のポイント</h2>
+
+        <div class="points-grid">
+            <div class="point-card">
+                <div class="point-number">POINT 01</div>
+                <h3>リマインド頻度の調整</h3>
+                <p>候補者への連絡は前日と1時間前の2回に留める。多すぎると逆効果でCXを損なう可能性あり</p>
+            </div>
+            <div class="point-card">
+                <div class="point-number">POINT 02</div>
+                <h3>トーンの使い分け</h3>
+                <p>1回目は丁寧に、2回目以降は緊急度アップ。ただし責めるトーンは避け、協力を依頼する姿勢で</p>
+            </div>
+            <div class="point-card">
+                <div class="point-number">POINT 03</div>
+                <h3>エスカレーションルール</h3>
+                <p>何日でマネージャーに上げるかチームで合意。72時間が推奨。事前にルールを共有しておく</p>
+            </div>
+            <div class="point-card">
+                <div class="point-number">POINT 04</div>
+                <h3>シート更新の習慣化</h3>
+                <p>「最終連絡日」の更新を習慣化。第3回で作成したPost-Interview Workflowと連携して自動更新も可能</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TESTING</div>
+        <h2 class="section-title">テスト確認ポイント</h2>
+
+        <div class="checklist">
+            <h3>動作確認チェックリスト</h3>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>前日リマインドが候補者のGmailに届くか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>1時間前リマインドが面接官のChatに届くか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>評価未提出の検知が正しく動作するか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>24h/48h/72hで段階的にエスカレーションされるか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>3日以上連絡なしの候補者が正しく検出されるか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>遅延アラートがチームスペースに届くか</span>
+            </div>
+            <div class="checklist-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>終了ステータスの候補者がアラート対象外になるか</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SUMMARY</div>
+        <h2 class="section-title">今日のポイント</h2>
+
+        <div class="highlight-box">
+            <h4>まとめ</h4>
+            <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                <li><strong>Interview Reminder:</strong> 前日と1時間前に候補者・面接官に自動送信</li>
+                <li><strong>Evaluation Reminder:</strong> 24時間・48時間・72時間でエスカレーション</li>
+                <li><strong>Delay Alert:</strong> 3日以上連絡なしで採用チームに通知</li>
+                <li>トーンと頻度の調整が重要（多すぎるとCXを損なう）</li>
+                <li>候補者管理シートとの連携で正確な検知を実現</li>
+                <li>エスカレーションルールを事前にチームで合意</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="next-preview">
+        <h3>次回予告</h3>
+        <p>採用オペレーションを完全自動化！選考フロー全体をStudioで一本化する方法</p>
+    </div>
+
+    <nav class="lesson-nav">
+        <a href="lesson3.html" class="nav-prev">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            前のレッスン
+        </a>
+        <a href="lesson5.html" class="nav-next">
+            次のレッスン
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </nav>
+</body>
+</html>

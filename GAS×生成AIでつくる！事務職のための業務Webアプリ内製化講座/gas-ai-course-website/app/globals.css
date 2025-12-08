@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer components {
+  .materials-content {
+    /* Ensure materials content is not hidden behind sticky header */
+    position: relative;
+  }
+
+  .materials-content .hero,
+  .materials-content > div:first-child {
+    /* Add padding to account for sticky header */
+    padding-top: 2rem;
+  }
+
+  .prose-custom {
+    @apply max-w-none;
+  }
+
+  .prose-custom h1 {
+    @apply text-3xl font-bold mb-4 mt-8;
+  }
+
+  .prose-custom h2 {
+    @apply text-2xl font-bold mb-3 mt-6;
+  }
+
+  .prose-custom h3 {
+    @apply text-xl font-bold mb-2 mt-4;
+  }
+
+  .prose-custom p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .prose-custom a {
+    @apply text-primary-600 hover:text-primary-700 underline;
+  }
+
+  .prose-custom code {
+    @apply bg-gray-100 px-1 py-0.5 rounded text-sm font-mono;
+  }
+
+  .prose-custom pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-4;
+  }
+
+  .prose-custom pre code {
+    @apply bg-transparent p-0;
+  }
+
+  .prose-custom ul {
+    @apply list-disc list-inside mb-4 space-y-2;
+  }
+
+  .prose-custom ol {
+    @apply list-decimal list-inside mb-4 space-y-2;
+  }
+
+  .prose-custom blockquote {
+    @apply border-l-4 border-gray-300 pl-4 italic my-4;
+  }
+
+  .prose-custom table {
+    @apply w-full border-collapse mb-4;
+  }
+
+  .prose-custom th {
+    @apply bg-gray-100 border border-gray-300 px-4 py-2 text-left font-semibold;
+  }
+
+  .prose-custom td {
+    @apply border border-gray-300 px-4 py-2;
+  }
+}

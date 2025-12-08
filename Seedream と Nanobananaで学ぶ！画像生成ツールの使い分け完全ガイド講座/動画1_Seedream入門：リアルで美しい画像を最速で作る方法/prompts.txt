@@ -1,0 +1,391 @@
+# デモ用プロンプト集 - 動画1
+# Seedream入門：リアルで美しい画像を最速で作る方法
+
+---
+
+## 🔰 初心者向け：まずはこれだけ！（最小限プロンプト）
+
+**使い方（3ステップ）:**
+1. 下のプロンプトをコピー
+2. Seedream（https://seedream.ai）に貼り付け
+3. 【ここを編集】の部分を書き換えて「Generate」ボタンを押す
+
+```
+【ここを編集：作りたい画像を英語で書く】
+A serene mountain lake at sunrise, with mist rising from the water, surrounded by pine trees, photorealistic, high detail
+```
+
+**例：**
+- `A cozy coffee shop interior with warm lighting` → 温かい照明の居心地の良いカフェ
+- `Modern office with large windows and city view` → 大きな窓と都市の景色のある現代的なオフィス
+- `Steaming cup of coffee on wooden table` → 木製テーブルの上の湯気の出るコーヒー
+
+**💡 ポイント:**
+- プロンプトは**英語**で書く必要があります（日本語だとうまく動きません）
+- 英語が苦手でも大丈夫！Google翻訳で日本語→英語に翻訳してコピペでOK
+- `photorealistic, high detail` を最後に付けると、よりリアルな画像になります
+
+---
+
+## 📝 ステップバイステップガイド（初めての方へ）
+
+### ステップ1：Seedreamって何？
+
+**Seedreamとは：**
+写真のようにリアルな画像を、文章（プロンプト）を入力するだけで自動生成してくれるAIツールです。
+
+**何ができる？**
+- 商品写真（カフェのコーヒー、高級腕時計など）
+- 風景写真（山の湖、都市の夕暮れなど）
+- オフィス・会議室の写真
+- 人物写真（プロフィール写真など）
+
+**Seedreamの特徴：**
+- ✅ **リアル**：写真と見分けがつかないくらい本物っぽい
+- ✅ **速い**：10秒〜30秒で画像ができる
+- ✅ **簡単**：文章を入力するだけ
+
+### ステップ2：英語が苦手でも大丈夫！3つの方法
+
+**方法1：Google翻訳を使う（一番簡単）**
+1. Google翻訳（https://translate.google.com）を開く
+2. 左側に日本語で「朝日が昇る静かな山の湖」と入力
+3. 右側に英語で "A serene mountain lake at sunrise" と出る
+4. 英語をコピーしてSeedreamに貼り付け
+
+**方法2：ChatGPTに翻訳してもらう**
+1. ChatGPTに「朝日が昇る静かな山の湖」を英語に翻訳して」と入力
+2. 英語が返ってくる
+3. コピーしてSeedreamに貼り付け
+
+**方法3：この資料の例文をコピペして使う**
+1. 下の「風景画像」「商品・物撮り」のセクションから好きな例文をコピー
+2. Seedreamに貼り付け
+3. 必要なら一部だけ書き換える（例：`mountain lake` → `ocean beach`）
+
+### ステップ3：実際にSeedreamを使ってみる
+
+1. **Seedreamにアクセス**
+   - ブラウザで https://seedream.ai を開く
+   - アカウント登録（無料版でOK）
+
+2. **プロンプトを入力**
+   - 入力欄に英語でプロンプトを貼り付け
+   - 例：`A serene mountain lake at sunrise, photorealistic`
+
+3. **画像を生成**
+   - 「Generate」ボタンをクリック
+   - 10〜30秒待つ
+   - 画像が表示される
+
+4. **気に入らなければ再生成**
+   - 同じプロンプトでも、毎回違う画像が生成されます
+   - 気に入らなければ、もう一度「Generate」をクリック
+
+---
+
+## ❓ よくある質問（FAQ）
+
+### Q1: なぜ英語で書かないといけないの？日本語じゃダメ？
+A: Seedreamは英語で学習されたAIなので、日本語だとうまく理解してくれません。Google翻訳やChatGPTで日本語→英語に翻訳してから使ってください。
+
+### Q2: 英語のスペルミスがあっても大丈夫？
+A: 多少のスペルミスは大丈夫です。AIが自動で補正してくれます。ただし、正確なスペルの方が精度が高いです。
+
+### Q3: プロンプトはどれくらいの長さがいい？
+A: 短すぎても長すぎてもダメです。**15〜30単語**くらいが理想です。短すぎると曖昧、長すぎるとAIが混乱します。
+
+良い例（20単語）：
+```
+A modern coffee shop interior with vintage furniture, warm lighting, wooden floor, cozy atmosphere, photorealistic, high detail
+```
+
+悪い例（短すぎる、5単語）：
+```
+Coffee shop interior
+```
+
+悪い例（長すぎる、50単語以上）：
+```
+A very modern and contemporary coffee shop interior with lots of vintage and antique furniture pieces including wooden chairs and tables and comfortable sofas with warm yellow lighting from hanging lamps and string lights and a beautiful wooden floor with plants everywhere creating a very cozy and welcoming atmosphere...
+```
+
+### Q4: 無料版と有料版の違いは？
+A: 無料版は1日に生成できる枚数に制限がありますが、画質は同じです。まずは無料版で試してみて、もっと使いたくなったら有料版を検討してください。
+
+### Q5: 生成した画像は商用利用できる？
+A: Seedreamの利用規約を確認してください。一般的に、有料プランなら商用利用OKですが、無料プランは個人利用のみの場合が多いです。
+
+---
+
+## 風景画像
+
+### 例1：山の湖（デモで使用）
+
+**プロンプト：**
+```
+A serene mountain lake at sunrise, with mist rising from the water, surrounded by pine trees, photorealistic, high detail
+```
+
+**日本語訳**: 朝日が昇る静かな山の湖、水面から霧が立ち上る、松の木に囲まれた、写実的、高詳細
+
+**用途**: プレゼン背景、ウェブサイトヘッダー、自然系コンテンツ
+
+**💡 カスタマイズ例：**
+- 時間帯を変える：`sunrise` → `sunset`（夕暮れ）、`midday`（真昼）
+- 季節を変える：`in autumn`（秋に）、`in winter with snow`（冬、雪あり）
+
+---
+
+### 例2：都市の夕暮れ
+
+**プロンプト：**
+```
+Modern city skyline at golden hour, skyscrapers reflecting warm sunlight, bustling streets below, cinematic lighting, ultra realistic, 8k quality
+```
+
+**日本語訳**: ゴールデンアワーの現代的な都市のスカイライン、温かい太陽光を反射する超高層ビル、下の賑やかな通り、映画的な照明、超リアル、8k品質
+
+**用途**: 都市開発プレゼン、不動産資料、ビジネスコンテンツ
+
+**💡 カスタマイズ例：**
+- 都市を指定：`Modern Tokyo city skyline`（東京の都市）
+- 天候を追加：`on a rainy evening`（雨の夜に）
+
+---
+
+### 例3：日本庭園
+
+**プロンプト：**
+```
+Traditional Japanese zen garden in autumn, colorful maple trees, stone lanterns, koi pond with clear water, peaceful atmosphere, professional photography style
+```
+
+**日本語訳**: 秋の伝統的な日本の禅庭園、色鮮やかな紅葉、石灯籠、透明な水の鯉池、穏やかな雰囲気、プロの写真スタイル
+
+**用途**: 観光資料、文化コンテンツ、リラックス系背景
+
+---
+
+## 商品・物撮り
+
+### 例4：高級腕時計
+
+**プロンプト：**
+```
+Luxury wristwatch on marble surface, soft studio lighting, shallow depth of field, metallic details visible, professional product photography, high resolution
+```
+
+**日本語訳**: 大理石の表面に置かれた高級腕時計、柔らかなスタジオ照明、浅い被写界深度、金属の細部が見える、プロの商品写真、高解像度
+
+**用途**: ECサイト、カタログ、広告素材
+
+**💡 カスタマイズ例：**
+- 商品を変える：`Luxury wristwatch` → `Smartphone`（スマホ）、`Perfume bottle`（香水）
+- 背景を変える：`marble surface` → `wooden table`（木製テーブル）
+
+---
+
+### 例5：カフェのコーヒー
+
+**プロンプト：**
+```
+Steaming cup of latte art coffee on wooden table, cozy cafe interior in background, morning natural light, Instagram-worthy shot, photorealistic
+```
+
+**日本語訳**: 木製テーブルの上の湯気の出るラテアートコーヒー、背景に居心地の良いカフェインテリア、朝の自然光、インスタ映えするショット、写実的
+
+**用途**: 飲食店メニュー、SNS投稿、カフェ紹介
+
+**💡 カスタマイズ例：**
+- 飲み物を変える：`latte art coffee` → `green tea`（緑茶）、`hot chocolate`（ホットチョコレート）
+
+---
+
+### 例6：電子機器
+
+**プロンプト：**
+```
+Modern smartphone on clean desk, minimalist setup, dramatic side lighting, reflections on screen, tech product photography style, sharp focus
+```
+
+**日本語訳**: 清潔なデスクの上の現代的なスマートフォン、ミニマリストなセットアップ、劇的なサイドライティング、画面の反射、テック製品写真スタイル、シャープフォーカス
+
+**用途**: テック系レビュー、製品紹介、マニュアル
+
+---
+
+## ビジネス・オフィス
+
+### 例7：会議室
+
+**プロンプト：**
+```
+Modern corporate meeting room with large windows, city view, conference table with laptops, professional business environment, natural daylight, architectural photography style
+```
+
+**日本語訳**: 大きな窓のある現代的な企業会議室、都市の景色、ノートパソコンのある会議テーブル、プロフェッショナルなビジネス環境、自然な昼光、建築写真スタイル
+
+**用途**: 企業紹介、採用サイト、オフィス紹介
+
+---
+
+### 例8：ビジネスパーソン
+
+**プロンプト：**
+```
+Professional businesswoman working on laptop in bright modern office, focused expression, business casual attire, natural window light, corporate photography style, realistic
+```
+
+**日本語訳**: 明るい現代的なオフィスでノートパソコンで作業するプロフェッショナルなビジネスウーマン、集中した表情、ビジネスカジュアルの服装、自然な窓光、企業写真スタイル、リアル
+
+**用途**: 企業サイト、採用ページ、ビジネス記事
+
+**💡 カスタマイズ例：**
+- 性別を変える：`businesswoman` → `businessman`（ビジネスマン）
+- 年齢を指定：`young businesswoman`（若いビジネスウーマン）
+
+---
+
+## インテリア
+
+### 例11：リビングルーム
+
+**プロンプト：**
+```
+Luxurious modern living room with large windows, comfortable sofa, indoor plants, warm ambient lighting, interior design magazine style, photorealistic rendering
+```
+
+**日本語訳**: 大きな窓のある豪華な現代的なリビングルーム、快適なソファ、観葉植物、温かな環境照明、インテリアデザイン雑誌スタイル、写実的なレンダリング
+
+**用途**: 不動産、インテリアデザイン、ホームステージング
+
+---
+
+### 例12：カフェインテリア
+
+**プロンプト：**
+```
+Cozy coffee shop interior, vintage furniture, hanging plants, warm string lights, wooden floor, welcoming atmosphere, lifestyle photography, high detail
+```
+
+**日本語訳**: 居心地の良いコーヒーショップのインテリア、ヴィンテージ家具、吊るされた植物、温かなストリングライト、木の床、歓迎的な雰囲気、ライフスタイル写真、高詳細
+
+**用途**: 店舗紹介、メニュー、SNS投稿
+
+---
+
+## 食べ物
+
+### 例13：高級料理
+
+**プロンプト：**
+```
+Gourmet plated dish on white ceramic, fine dining presentation, garnished with fresh herbs, shallow depth of field, professional food photography, natural light from side
+```
+
+**日本語訳**: 白いセラミックに盛り付けられたグルメ料理、高級ダイニングのプレゼンテーション、新鮮なハーブで飾られた、浅い被写界深度、プロのフード写真、サイドからの自然光
+
+**用途**: レストランメニュー、料理本、グルメサイト
+
+---
+
+### 例14：デザート
+
+**プロンプト：**
+```
+Elegant chocolate cake slice with berries, powdered sugar dusting, on vintage plate, soft afternoon light, dessert photography style, mouthwatering presentation
+```
+
+**日本語訳**: ベリーとパウダーシュガーをまぶしたエレガントなチョコレートケーキのスライス、ヴィンテージプレートの上、柔らかな午後の光、デザート写真スタイル、食欲をそそるプレゼンテーション
+
+**用途**: カフェメニュー、SNS、スイーツ紹介
+
+---
+
+## 💡 プロンプト作成のコツ
+
+### コツ1：3要素で構成する
+
+効果的なSeedreamプロンプトは、以下の3要素で構成されます：
+
+1. **主題（Subject）**：何を描くか
+   - 例：`A modern coffee shop`, `Luxury wristwatch`, `Mountain lake`
+
+2. **環境・背景（Environment）**：どこで、どんな状況か
+   - 例：`on marble surface`, `in modern office`, `at sunrise`
+
+3. **スタイル指示（Style）**：どのような表現で
+   - 例：`photorealistic`, `professional photography`, `high detail`
+
+**良い例（3要素あり）：**
+```
+[主題] A modern coffee shop interior,
+[環境] with vintage furniture and warm lighting,
+[スタイル] professional photography, photorealistic
+```
+
+**悪い例（主題だけ）：**
+```
+A coffee shop
+```
+
+### コツ2：リアルにする「魔法の言葉」を最後に追加
+
+以下の言葉をプロンプトの最後に追加すると、よりリアルな画像になります：
+
+- `photorealistic` → 写真のようにリアル
+- `high detail` → 高詳細
+- `8k quality` → 8k品質（超高画質）
+- `professional photography` → プロの写真のように
+- `sharp focus` → ピントがシャープ
+
+**例：**
+```
+A mountain lake at sunrise, photorealistic, high detail
+```
+
+### コツ3：照明を指定するとプロっぽくなる
+
+照明を指定すると、写真のような雰囲気が出ます：
+
+- `golden hour lighting` → ゴールデンアワー（夕方の暖かい光）
+- `soft studio lighting` → 柔らかいスタジオ照明
+- `natural daylight` → 自然な昼光
+- `warm lighting` → 温かい照明
+- `dramatic side lighting` → 劇的なサイドライト
+
+---
+
+## 🚨 注意点
+
+### 注意点1：AIは完璧ではない
+Seedreamは優秀ですが、100%思い通りの画像が1回で出るとは限りません。何度か試して、一番良いものを選んでください。
+
+### 注意点2：人物の顔は苦手
+AIは人物の顔を生成するのが苦手な場合があります。特に、日本人の顔は欧米人の顔よりも難しいです。何度か試してみて、良いものが出るまで粘りましょう。
+
+### 注意点3：文字は入れられない
+Seedreamは画像に文字を入れるのが苦手です。ロゴや看板の文字を入れたい場合は、画像生成後に別のツール（PhotoshopやCanvaなど）で追加してください。
+
+### 注意点4：商用利用の前に利用規約を確認
+生成した画像を商用利用する場合は、必ずSeedreamの利用規約を確認してください。無料プランは個人利用のみの場合が多いです。
+
+---
+
+## 講師用メモ
+
+### デモのポイント
+1. Google翻訳を使って日本語→英語に翻訳するデモを実演
+2. 同じプロンプトでも毎回違う画像が出ることを見せる
+3. `photorealistic, high detail` を付けた場合と付けない場合の違いを比較
+
+### 受講者への問いかけ例
+- 「みなさん、商品写真を撮るのにカメラマンを雇うといくらかかりますか？」
+- 「Seedreamなら10秒で、しかも無料です」
+- 「英語が苦手でも大丈夫。Google翻訳でコピペするだけです」
+
+### 注意点
+- 英語が苦手な受講者のために、Google翻訳の使い方を丁寧に説明する
+- プロンプトの例文を豊富に用意して、コピペで使えるようにする
+- AIの限界（人物の顔が苦手、文字が入れられない）も正直に伝える

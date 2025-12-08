@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：チェックリストを自動で判定する審査フロー | ゼロタッチマネジメント</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --ink: #0A0E27; --paper: #FEFEF8; --electric: #06B6D4; --violet: #0EA5E9; --gray: #4A5568; }
+        body { font-family: 'Zen Kaku Gothic New', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.8; }
+        nav { position: fixed; top: 0; width: 100%; background: rgba(254, 254, 248, 0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 1.5rem 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        main { max-width: 900px; margin: 0 auto; padding: 8rem 2rem 4rem; }
+        .lesson-header { text-align: center; margin-bottom: 4rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(10, 14, 39, 0.1); }
+        .lesson-number { font-size: 6rem; font-weight: 900; background: linear-gradient(135deg, var(--violet), var(--electric)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+        .lesson-title { font-size: 2rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        .lesson-subtitle { font-size: 1.1rem; color: var(--gray); }
+        section { margin-bottom: 3rem; }
+        h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; padding-left: 1rem; border-left: 4px solid var(--electric); }
+        .goal-card { background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(6, 182, 212, 0.05)); border-radius: 12px; padding: 2rem; border-left: 4px solid var(--violet); }
+        .judgment-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .judgment-card { background: white; border-radius: 12px; padding: 1.5rem; text-align: center; border: 2px solid; }
+        .judgment-card.approved { border-color: #22C55E; }
+        .judgment-card.revision { border-color: #F59E0B; }
+        .judgment-card.resubmit { border-color: #EF4444; }
+        .judgment-card h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .judgment-card.approved h3 { color: #22C55E; }
+        .judgment-card.revision h3 { color: #F59E0B; }
+        .judgment-card.resubmit h3 { color: #EF4444; }
+        .judgment-card p { font-size: 0.85rem; color: var(--gray); }
+        .checklist-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .checklist-table th, .checklist-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(10, 14, 39, 0.1); font-size: 0.9rem; }
+        .checklist-table th { background: rgba(14, 165, 233, 0.05); font-weight: 600; }
+        .required { color: #EF4444; font-weight: 600; }
+        .optional { color: var(--gray); }
+        .code-block { background: #1e1e1e; color: #06B6D4; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; margin: 1rem 0; }
+        .flow-diagram { background: white; border: 1px solid rgba(10, 14, 39, 0.1); border-radius: 12px; padding: 2rem; }
+        .flow-row { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .flow-box { padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; }
+        .flow-box.trigger { background: var(--ink); color: white; }
+        .flow-box.process { background: linear-gradient(135deg, var(--violet), var(--electric)); color: white; }
+        .flow-box.approved { background: #22C55E; color: white; }
+        .flow-box.revision { background: #F59E0B; color: white; }
+        .flow-box.resubmit { background: #EF4444; color: white; }
+        .flow-arrow { font-size: 1.25rem; color: var(--gray); }
+        .results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .result-card { background: linear-gradient(135deg, var(--violet), var(--electric)); color: white; border-radius: 12px; padding: 1.5rem; text-align: center; }
+        .result-value { font-size: 2rem; font-weight: 900; }
+        .result-label { font-size: 0.85rem; opacity: 0.9; }
+        .summary-box { background: var(--ink); color: var(--paper); border-radius: 12px; padding: 2rem; }
+        .summary-box h3 { font-size: 1.2rem; margin-bottom: 1rem; }
+        .summary-box ul { list-style: none; }
+        .summary-box li { margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative; }
+        .summary-box li::before { content: "→"; position: absolute; left: 0; color: var(--electric); }
+        .next-preview { margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(6, 182, 212, 0.1)); border-radius: 12px; text-align: center; }
+        @media (max-width: 768px) { .judgment-grid, .results-grid { grid-template-columns: 1fr; } .lesson-number { font-size: 4rem; } .flow-row { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <nav><div class="nav-container"><div>ゼロタッチマネジメント</div><div>第3回 / 全5回</div></div></nav>
+    <main>
+        <header class="lesson-header">
+            <div class="lesson-number">03</div>
+            <h1 class="lesson-title">チェックリストを自動で判定する審査フロー</h1>
+            <p class="lesson-subtitle">合格・要修正・再提出を条件分岐で仕分ける</p>
+        </header>
+        <section>
+            <h2>学習目標</h2>
+            <div class="goal-card"><p>提出物の品質をGeminiが自動チェックし、合格/要修正/再提出を自動判定するエージェントを作成する</p></div>
+        </section>
+        <section>
+            <h2>3段階の判定</h2>
+            <div class="judgment-grid">
+                <div class="judgment-card approved">
+                    <h3>合格</h3>
+                    <p>全必須項目OK<br>軽微な指摘0〜1件</p>
+                </div>
+                <div class="judgment-card revision">
+                    <h3>要修正</h3>
+                    <p>必須項目OK<br>軽微な指摘2件以上</p>
+                </div>
+                <div class="judgment-card resubmit">
+                    <h3>再提出</h3>
+                    <p>必須項目に不備あり</p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>チェックリスト例</h2>
+            <table class="checklist-table">
+                <tr><th>項目</th><th>必須</th><th>チェック内容</th></tr>
+                <tr><td>業務内容</td><td class="required">○</td><td>具体的な作業が記載されているか</td></tr>
+                <tr><td>進捗状況</td><td class="required">○</td><td>数値や達成率が含まれているか</td></tr>
+                <tr><td>課題</td><td class="optional">△</td><td>課題がある場合に記載されているか</td></tr>
+                <tr><td>翌日予定</td><td class="required">○</td><td>翌日の計画が記載されているか</td></tr>
+                <tr><td>文字数</td><td class="required">○</td><td>最低100文字以上か</td></tr>
+            </table>
+        </section>
+        <section>
+            <h2>判定フロー</h2>
+            <div class="flow-diagram">
+                <div class="flow-row">
+                    <div class="flow-box trigger">提出物受信</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box process">Geminiでチェック</div>
+                </div>
+                <div class="flow-row">
+                    <div class="flow-box approved">合格 → 承認通知</div>
+                    <div class="flow-box revision">要修正 → 修正依頼</div>
+                    <div class="flow-box resubmit">再提出 → 再提出依頼</div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>Geminiプロンプト（抜粋）</h2>
+            <div class="code-block">For each item, output:
+- Status: OK / NG / N/A
+- Comment (if NG): specific issue found
+
+Then provide overall judgment:
+- APPROVED: All required items OK, minor issues 0-1
+- NEEDS_REVISION: All required items OK, minor issues 2+
+- RESUBMIT: Any required item NG
+
+JUDGMENT: [APPROVED/NEEDS_REVISION/RESUBMIT]
+FEEDBACK: [具体的なフィードバック（日本語）]</div>
+        </section>
+        <section>
+            <h2>達成した効果</h2>
+            <div class="results-grid">
+                <div class="result-card"><div class="result-value">90%</div><div class="result-label">チェック時間削減</div></div>
+                <div class="result-card"><div class="result-value">統一</div><div class="result-label">判定基準</div></div>
+                <div class="result-card"><div class="result-value">即時</div><div class="result-label">フィードバック</div></div>
+            </div>
+        </section>
+        <section>
+            <h2>今日のポイント</h2>
+            <div class="summary-box">
+                <h3>まとめ</h3>
+                <ul>
+                    <li>チェックリストベースの自動判定を実装</li>
+                    <li>3段階の判定で適切に分岐</li>
+                    <li>具体的なフィードバックを自動生成</li>
+                    <li>ステータス管理をSheetsで自動化</li>
+                </ul>
+            </div>
+        </section>
+        <div class="next-preview"><h3>次回予告</h3><p>Driveとスプレッドシートを連携する！進捗ダッシュボードが自動で更新される仕組み</p></div>
+    </main>
+</body>
+</html>

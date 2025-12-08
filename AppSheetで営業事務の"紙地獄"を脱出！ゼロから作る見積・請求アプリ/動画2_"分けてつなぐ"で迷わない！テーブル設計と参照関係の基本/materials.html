@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画2："分けてつなぐ"で迷わない！テーブル設計と参照関係の基本</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap');
+
+        :root {
+            /* Literary Editorial Design System Colors */
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --paper-shadow: #F5F5F0;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+
+            /* Typography */
+            --font-primary: 'Zen Kaku Gothic New', sans-serif;
+            --font-secondary: 'Space Grotesk', monospace;
+            --font-serif: 'Noto Serif JP', serif;
+
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(10, 14, 39, 0.1);
+            --shadow-md: 0 4px 16px rgba(10, 14, 39, 0.15);
+            --shadow-lg: 0 8px 32px rgba(10, 14, 39, 0.2);
+            --shadow-xl: 0 16px 48px rgba(10, 14, 39, 0.25);
+
+            /* Border */
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+            padding: var(--space-lg) 0;
+        }
+
+        /* Paper Texture Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.03) 2px,
+                    rgba(10, 14, 39, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.02) 2px,
+                    rgba(10, 14, 39, 0.02) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-sm);
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+
+        .subtitle {
+            font-family: var(--font-secondary);
+            font-size: 1.25rem;
+            color: var(--ink);
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+
+        /* Navigation */
+        nav {
+            margin-bottom: var(--space-lg);
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-pill {
+            padding: var(--space-xs) var(--space-md);
+            background: var(--paper);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 50px;
+            font-family: var(--font-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        .nav-pill:hover::before {
+            left: 0;
+        }
+
+        .nav-pill:hover {
+            color: var(--paper);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Content Section */
+        .content-section {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .content-section:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .section-number {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--electric);
+            background: var(--ink);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        /* Content Typography */
+        .content-section h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            margin-bottom: var(--space-lg);
+            color: var(--ink);
+            position: relative;
+            line-height: 1.2;
+        }
+
+        .content-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+
+        .content-section h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            color: var(--ink);
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+        }
+
+        .content-section p {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-md);
+        }
+
+        .content-section ul {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-md) 0;
+        }
+
+        .content-section li {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-sm);
+            padding-left: var(--space-lg);
+            position: relative;
+        }
+
+        .content-section li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Card */
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-number {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-family: var(--font-secondary);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--electric);
+            opacity: 0.3;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: var(--space-md);
+            border-radius: 8px;
+            font-family: var(--font-secondary);
+            font-size: 0.9rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            margin: var(--space-md) 0;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-block::before {
+            content: 'DEMO';
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--electric);
+            opacity: 0.5;
+        }
+
+        /* Highlight Box */
+        .highlight {
+            background: linear-gradient(135deg, var(--electric), var(--coral));
+            padding: 3px;
+            border-radius: 8px;
+            margin: var(--space-md) 0;
+        }
+
+        .highlight-content {
+            background: var(--paper);
+            padding: var(--space-md);
+            border-radius: 5px;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .grid-item {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 180px;
+        }
+
+        .grid-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--electric), var(--coral));
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .grid-item:hover::after {
+            transform: translateY(0);
+        }
+
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Relation Diagram */
+        .relation-diagram {
+            margin: var(--space-lg) auto;
+            max-width: 960px;
+            background: #fff;
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .relation-diagram svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .relation-caption {
+            text-align: center;
+            font-family: var(--font-secondary);
+            font-size: 0.9rem;
+            margin-top: var(--space-sm);
+            color: rgba(10, 14, 39, 0.7);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: var(--space-lg);
+            margin: var(--space-md) 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--ink);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: var(--space-md);
+            padding-left: var(--space-md);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--electric);
+            border: 3px solid var(--ink);
+        }
+
+        /* Step Box */
+        .step-box {
+            background: #fff;
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            border-left: 6px solid var(--electric);
+        }
+
+        .step-number {
+            font-family: var(--font-secondary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--electric);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: #fff;
+            border: 2px solid var(--coral);
+            border-left: 6px solid var(--coral);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .warning-box h4 {
+            color: var(--coral);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: var(--space-lg) 0;
+            border-top: 3px solid var(--ink);
+            margin-top: var(--space-xl);
+            font-family: var(--font-secondary);
+            letter-spacing: 0.05em;
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background: var(--ink);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 2px solid var(--ink);
+        }
+
+        .dark-mode-toggle::before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: var(--paper);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .dark-mode-toggle.active {
+            background: var(--electric);
+            border-color: var(--electric);
+        }
+
+        .dark-mode-toggle.active::before {
+            transform: translateX(30px);
+            background: var(--ink);
+        }
+
+        /* Dark Mode Styles */
+        .dark-mode {
+            --ink: #FEFEF8;
+            --paper: #0A0E27;
+            --paper-shadow: #1A1E37;
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .dark-mode {
+            --shadow-sm: 0 2px 8px rgba(255, 255, 255, 0.1);
+            --shadow-md: 0 4px 16px rgba(255, 255, 255, 0.15);
+            --shadow-lg: 0 8px 32px rgba(255, 255, 255, 0.2);
+            --shadow-xl: 0 16px 48px rgba(255, 255, 255, 0.25);
+        }
+
+        .dark-mode .code-block {
+            background: #1a1a2e;
+            color: #eee;
+            border: 1px solid #444;
+        }
+
+        .dark-mode .section-number {
+            background: var(--paper);
+            color: var(--electric);
+            border: 1px solid var(--electric);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content-section h2 {
+                font-size: 2rem;
+            }
+
+            .content-section h3 {
+                font-size: 1.5rem;
+            }
+
+            .content-section p, .content-section li {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">"分けてつなぐ"で迷わない！<br>テーブル設計と参照関係の基本</h1>
+            </div>
+        </header>
+
+        <nav>
+            <a href="#goal" class="nav-pill">今日のゴール</a>
+            <a href="#data-model" class="nav-pill">5テーブルの役割</a>
+            <a href="#diagram" class="nav-pill">リレーション図</a>
+            <a href="#ref-setup" class="nav-pill">Ref設定手順</a>
+            <a href="#parent-child" class="nav-pill">親子関係と仮想カラム</a>
+            <a href="#formulas" class="nav-pill">自動計算の数式</a>
+            <a href="#practice" class="nav-pill">実践タスク</a>
+            <a href="#troubleshooting" class="nav-pill">トラブル対処</a>
+        </nav>
+
+        <main class="main-content">
+            <section id="goal" class="content-section">
+                <span class="section-number">01</span>
+                <h2>今日のゴール</h2>
+                <p>データを「分けて」「つなぐ」ための設計ルールを体験し、アプリの土台となる5テーブルを正しくモデリングできる状態を目指します。</p>
+                <div class="grid">
+                    <div class="grid-item">
+                        <h3>全体設計を描ける</h3>
+                        <p>顧客・社員・サービス・注文・注文詳細の役割と接続関係を説明できる。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>Ref型を設定できる</h3>
+                        <p>外部キーに相当するRef型カラムを追加し、参照先一覧から選択できる状態にする。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>親子関係を活用できる</h3>
+                        <p>注文 ↔ 注文詳細の「Is a part of?」設定で、関連レコードの自動生成と削除を理解する。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>自動計算を試せる</h3>
+                        <p>仮想カラムと式を用いて、合計金額や番号付与を自動化できる。</p>
+                    </div>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>ポイント:</strong> 「スプレッドシートの1シート = AppSheetの1テーブル」。シートを増やす前に、まず役割と関係性をメモに整理しましょう。
+                    </div>
+                </div>
+            </section>
+
+            <section id="data-model" class="content-section">
+                <span class="section-number">02</span>
+                <h2>5テーブルの役割と主なカラム</h2>
+                <p>以下の5つのテーブルを組み合わせると、見積〜請求〜入金管理までを一貫して扱えるモデルになります。</p>
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>顧客テーブル</h4>
+                        <ul>
+                            <li>ID顧客（KEY）</li>
+                            <li>顧客名 / カテゴリ</li>
+                            <li>住所・電話・メール</li>
+                        </ul>
+                        <p>営業先の属性を保持。「ID顧客」を他テーブルから参照します。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>社員テーブル</h4>
+                        <ul>
+                            <li>ID社員（KEY）</li>
+                            <li>社員名 / 役職</li>
+                            <li>電話・メール</li>
+                        </ul>
+                        <p>担当者マスタ。`USEREMAIL()` を使うとログインユーザーと紐付け可能。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>サービステーブル</h4>
+                        <ul>
+                            <li>IDサービス（KEY）</li>
+                            <li>サービス名 / 価格</li>
+                            <li>詳細説明</li>
+                        </ul>
+                        <p>見積明細に挿入する単価情報を管理。価格は注文詳細の初期値に利用します。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>注文テーブル（親）</h4>
+                        <ul>
+                            <li>ID注文（KEY）</li>
+                            <li>ID顧客 / ID社員（Ref）</li>
+                            <li>ステータス・発行日</li>
+                            <li>見積番号・請求番号</li>
+                        </ul>
+                        <p>案件のヘッダー情報。Refで顧客・社員とつながります。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>注文詳細テーブル（子）</h4>
+                        <ul>
+                            <li>ID注文詳細（KEY）</li>
+                            <li>ID注文（Ref）</li>
+                            <li>IDサービス（Ref）</li>
+                            <li>数量・単価・納入金額</li>
+                        </ul>
+                        <p>1件の注文に複数レコードが紐づく「1対多」の子テーブルです。</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <span class="card-number">Model Memo</span>
+                    <p><strong>メモ例:</strong> 注文 ←Ref→ 顧客 / 注文 ←Ref→ 社員 / 注文 ←1対多→ 注文詳細 ←Ref→ サービス。紙の業務フローを矢印で描いてからテーブルに落とし込みましょう。</p>
+                </div>
+            </section>
+
+            <section id="diagram" class="content-section">
+                <span class="section-number">03</span>
+                <h2>リレーション図で全体像を掴む</h2>
+                <p>テーブル間のつながりを一枚で俯瞰できるように、親子関係と参照方向を図示しました。青い矢印は「1 ➡ N」を表し、どのテーブルがマスタ（1）で、どこに複数レコードが紐づく（N）のかが分かります。</p>
+
+                <div class="relation-diagram">
+                    <svg viewBox="0 0 900 420" role="img" aria-labelledby="relation-title relation-desc">
+                        <title id="relation-title">見積・請求アプリのテーブルリレーション図</title>
+                        <desc id="relation-desc">顧客と社員から注文へ参照し、注文から注文詳細への親子関係、注文詳細からサービスへの参照を示す図</desc>
+                        <defs>
+                            <marker id="arrow-head" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto">
+                                <path d="M0,0 L12,6 L0,12 z" fill="#00F0FF" />
+                            </marker>
+                        </defs>
+
+                        <!-- 顧客 -->
+                        <rect x="80" y="40" width="220" height="90" rx="12" ry="12" fill="#FEFEF8" stroke="#0A0E27" stroke-width="2"/>
+                        <text x="190" y="80" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="20" font-weight="700">顧客</text>
+                        <text x="190" y="108" text-anchor="middle" font-family="Space Grotesk, monospace" font-size="12">KEY: ID顧客 / LABEL: 顧客名</text>
+
+                        <!-- 社員 -->
+                        <rect x="600" y="40" width="220" height="90" rx="12" ry="12" fill="#FEFEF8" stroke="#0A0E27" stroke-width="2"/>
+                        <text x="710" y="80" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="20" font-weight="700">社員</text>
+                        <text x="710" y="108" text-anchor="middle" font-family="Space Grotesk, monospace" font-size="12">KEY: ID社員 / LABEL: 社員名</text>
+
+                        <!-- 注文 -->
+                        <rect x="340" y="170" width="220" height="120" rx="12" ry="12" fill="#FEFEF8" stroke="#0A0E27" stroke-width="2"/>
+                        <text x="450" y="210" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="22" font-weight="700">注文（親）</text>
+                        <text x="450" y="238" text-anchor="middle" font-family="Space Grotesk, monospace" font-size="12">KEY: ID注文</text>
+                        <text x="450" y="258" text-anchor="middle" font-family="Space Grotesk, monospace" font-size="12">Ref: ID顧客 → 顧客 / ID社員 → 社員</text>
+
+                        <!-- サービス -->
+                        <rect x="80" y="300" width="220" height="90" rx="12" ry="12" fill="#FEFEF8" stroke="#0A0E27" stroke-width="2"/>
+                        <text x="190" y="340" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="20" font-weight="700">サービス</text>
+                        <text x="190" y="368" text-anchor="middle" font-family="Space Grotesk, monospace" font-size="12">KEY: IDサービス / 単価</text>
+
+                        <!-- 注文詳細 -->
+                        <rect x="600" y="300" width="220" height="90" rx="12" ry="12" fill="#FEFEF8" stroke="#0A0E27" stroke-width="2"/>
+                        <text x="710" y="340" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="20" font-weight="700">注文詳細（子）</text>
+                        <text x="710" y="368" text-anchor="middle" font-family="Space Grotesk, monospace" font-size="12">KEY: ID注文詳細 / Ref: ID注文, IDサービス</text>
+
+                        <!-- Arrows -->
+                        <line x1="300" y1="130" x2="340" y2="190" stroke="#00F0FF" stroke-width="4" marker-end="url(#arrow-head)"/>
+                        <line x1="600" y1="130" x2="560" y2="190" stroke="#00F0FF" stroke-width="4" marker-end="url(#arrow-head)"/>
+                        <line x1="450" y1="290" x2="600" y2="300" stroke="#00F0FF" stroke-width="4" marker-end="url(#arrow-head)"/>
+                        <line x1="300" y1="300" x2="600" y2="340" stroke="#00F0FF" stroke-width="4" marker-end="url(#arrow-head)"/>
+
+                        <!-- Arrow Labels -->
+                        <text x="320" y="172" font-family="Space Grotesk, monospace" font-size="12" fill="#0A0E27">1 ➡ N</text>
+                        <text x="580" y="172" font-family="Space Grotesk, monospace" font-size="12" fill="#0A0E27">1 ➡ N</text>
+                        <text x="530" y="284" font-family="Space Grotesk, monospace" font-size="12" fill="#0A0E27">1 ➡ N</text>
+                        <text x="460" y="335" font-family="Space Grotesk, monospace" font-size="12" fill="#0A0E27">1 ➡ N</text>
+                    </svg>
+                    <p class="relation-caption">青い矢印の向きが参照元（1）から参照先・子テーブル（N）への流れを示します。</p>
+                </div>
+
+                <div class="note-box">
+                    <p><strong>読み解き方:</strong> 上段がマスタデータ（顧客・社員）、中央がヘッダーテーブル（注文）、下段が明細とマスタの組み合わせ（注文詳細・サービス）です。動画2のワークを始める前に、チーム内共有用の資料として活用してください。</p>
+                </div>
+            </section>
+
+            <section id="ref-setup" class="content-section">
+                <span class="section-number">04</span>
+                <h2>Ref設定ワークフロー</h2>
+                <p>AppSheet Editorの <strong>Data ▶ Columns</strong> で、各カラムを順番にRef型へ変換します。以下のステップで迷わず設定しましょう。</p>
+                <div class="step-box">
+                    <div class="step-number">STEP 1</div>
+                    <h3>注文テーブルに顧客を紐づける</h3>
+                    <p>`ID顧客` カラムを開き、<strong>Type</strong> を <strong>Ref</strong> に変更 → <strong>Source table</strong> で「顧客」を選択。表示名（Label）は「顧客名」に設定すると一覧が見やすくなります。</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">STEP 2</div>
+                    <h3>担当社員のRef設定</h3>
+                    <p>`ID社員` カラムをRef化し、<strong>Source table = 社員</strong> を指定。<strong>Initial value</strong> に `USEREMAIL()` を入れると、ログインユーザーが初期選択されます。</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">STEP 3</div>
+                    <h3>注文詳細に親注文を紐付ける</h3>
+                    <p>`ID注文` カラムをRef化し、<strong>Is a part of? = ON</strong>。これで親レコードのフォームから子レコードをその場で追加できるようになります。</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">STEP 4</div>
+                    <h3>注文詳細にサービスを参照させる</h3>
+                    <p>`IDサービス` をRef → Source table「サービス」。<strong>Initial value</strong> に `[IDサービス].[価格]` を設定して、単価の自動入力を確認しましょう。</p>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>Verification:</strong> プレビューの注文フォームで顧客と社員がプルダウン表示され、注文詳細の子テーブルがフォーム内で追加できれば設定完了です。
+                    </div>
+                </div>
+            </section>
+
+            <section id="parent-child" class="content-section">
+                <span class="section-number">05</span>
+                <h2>親子関係で得られる自動生成カラム</h2>
+                <p>Refと <strong>Is a part of?</strong> の組み合わせにより、AppSheetが自動で仮想カラムを作成します。これらを活用して集計や自動番号を実装します。</p>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h3>Related 注文詳細s</h3>
+                        <p>注文テーブルに自動生成される仮想カラム。`[Related 注文詳細s]` で子レコードの一覧を取得し、`COUNT()` や `SUM()` の集計に利用できます。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>合計・税額の仮想カラム</h3>
+                        <p>注文テーブルに <code>納入単価合計</code> や <code>合計金額</code> の仮想カラムを追加すると、明細の変更に合わせて金額がリアルタイム更新されます。</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>ナンバリングの自動生成</h3>
+                        <p>発行日ごとの連番を生成する式で、見積番号と請求番号を自動作成。紙の台帳で行っていた転記作業をなくせます。</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <span class="card-number">デバッグTips</span>
+                    <p>仮想カラムが期待通りに計算されない場合は <strong>Columns ▶ Virtual columns ▶ Test</strong> ボタンで該当レコードを確認。Refが未設定だと値が取得できません。</p>
+                </div>
+            </section>
+
+            <section id="formulas" class="content-section">
+                <span class="section-number">06</span>
+                <h2>よく使う自動計算の式</h2>
+                <p>スプレッドシートの関数感覚で式を組めます。以下のコードをコピペして構文に慣れましょう。</p>
+<pre class="code-block">-- 見積番号（発行日ごとの連番）
+CONCATENATE(
+  "MT",
+  TEXT([発行日], "YYYYMMDD"),
+  "-",
+  RIGHT("0" &amp; (COUNT(SELECT(注文[_ROWNUMBER], [発行日] = [_THISROW].[発行日])) + 1), 2)
+)
+
+-- 請求番号（見積番号の接頭辞を変換）
+SUBSTITUTE([見積番号], "MT", "SK")
+
+-- 合計金額計算
+SUM([Related 注文詳細s][納入金額])
+
+-- 注文詳細の金額
+[数量] * [単価]</pre>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>メモ:</strong> 数式を更新したら <strong>Save &amp; Verify changes</strong> を必ず押して、構文エラーをその場で解消しましょう。
+                    </div>
+                </div>
+            </section>
+
+            <section id="practice" class="content-section">
+                <span class="section-number">07</span>
+                <h2>演習タスクで腕試し</h2>
+                <div class="card">
+                    <span class="card-number">Practice 01</span>
+                    <p>デモデータ（demo_data/注文.csv など）を接続し、全5テーブルがアプリに読み込まれているか確認する。</p>
+                </div>
+                <div class="card">
+                    <span class="card-number">Practice 02</span>
+                    <p>注文フォームから新規レコードを作成し、明細を2件追加。保存後に Related 注文詳細s が2件表示されるかチェック。</p>
+                </div>
+                <div class="card">
+                    <span class="card-number">Practice 03</span>
+                    <p>顧客テーブルに新しい取引先を追加 → 注文フォームで即座に選択できるか確認。Ref設定が正しいとドロップダウンが更新されます。</p>
+                </div>
+            </section>
+
+            <section id="troubleshooting" class="content-section">
+                <span class="section-number">08</span>
+                <h2>つまずきポイントと対処法</h2>
+                <div class="warning-box">
+                    <h4>Refカラムが空欄で選択できない</h4>
+                    <p>Source table で選択したテーブルの <strong>Key</strong> や <strong>Label</strong> が設定されているか確認。スプレッドシート側でヘッダー名が変わっていると読み込みに失敗します。</p>
+                </div>
+                <div class="warning-box">
+                    <h4>Related 注文詳細s が表示されない</h4>
+                    <p>子テーブル側の <strong>Is a part of?</strong> がONになっているか、親カラム名が一致しているかをチェック。テーブルのセキュリティフィルタが原因のケースもあります。</p>
+                </div>
+                <div class="warning-box">
+                    <h4>連番が重複する</h4>
+                    <p>見積番号の式で参照している日付カラム（例: 発行日）に値が入っているか確認。データを削除して再度追加すると連番がズレるので、`UNIQUEID()` を補助キーに用意すると安心です。</p>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>次回予告:</strong> Video3では、今回作成したテーブルをベースにフォームUIと一覧表示を磨き上げます。注文フォームのプレビューを開いたまま準備しておきましょう。
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>AppSheetで営業事務の"紙地獄"を脱出！ゼロから作る見積・請求アプリ</p>
+            <p>動画2/5: "分けてつなぐ"で迷わない！テーブル設計と参照関係の基本</p>
+        </footer>
+    </div>
+</body>
+</html>

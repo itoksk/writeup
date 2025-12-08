@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最初の一言で差がつく！“伝わる資料”をAIに書かせるための指示設計</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gray: #4A4E6A;
+            --muted: rgba(10, 14, 39, 0.65);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-size: 18px;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.75;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 20% 10%, rgba(0, 240, 255, 0.09), transparent 45%),
+                        radial-gradient(circle at 80% 90%, rgba(255, 107, 107, 0.08), transparent 40%);
+            z-index: -1;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(12px);
+            background: rgba(254, 254, 248, 0.9);
+            color: var(--ink);
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 40px;
+            z-index: 10;
+        }
+
+        body.dark-mode header {
+            background: rgba(10, 14, 39, 0.88);
+            color: var(--paper);
+            border-bottom-color: rgba(254, 254, 248, 0.1);
+        }
+
+        .course-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .course-meta span {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.08em;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .dark-mode-toggle {
+            border: 1px solid currentColor;
+            background: transparent;
+            color: inherit;
+            padding: 8px 20px;
+            border-radius: 999px;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            align-items: center;
+            padding: 48px clamp(32px, 5vw, 72px) 72px;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 32px 20px 56px;
+            }
+        }
+
+        .content-section {
+            width: min(1100px, 100%);
+            background: rgba(254, 254, 248, 0.92);
+            padding: clamp(32px, 4vw, 48px);
+            margin-bottom: 32px;
+            border-radius: 28px;
+            box-shadow: 0 20px 48px rgba(10, 14, 39, 0.08);
+        }
+
+        body.dark-mode .content-section {
+            background: rgba(10, 14, 39, 0.82);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+        }
+
+        .section-title {
+            font-size: 28px;
+            letter-spacing: 0.04em;
+            margin-bottom: 18px;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        body.dark-mode .section-subtitle {
+            color: rgba(254, 254, 248, 0.6);
+        }
+
+        .section-content p {
+            margin: 14px 0;
+        }
+
+        .section-content ul,
+        .section-content ol {
+            margin: 18px 0;
+            padding-left: 24px;
+        }
+
+        .section-content li {
+            margin-bottom: 10px;
+        }
+
+        .badge-set {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 240, 255, 0.14);
+            color: var(--ink);
+            border-radius: 999px;
+            padding: 6px 16px;
+            font-size: 12px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        body.dark-mode .badge {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--paper);
+        }
+
+        .callout {
+            border-left: 3px solid var(--electric);
+            background: rgba(0, 240, 255, 0.1);
+            padding: 18px 24px;
+            border-radius: 18px;
+            margin: 22px 0;
+        }
+
+        body.dark-mode .callout {
+            border-left-color: var(--coral);
+            background: rgba(255, 107, 107, 0.14);
+        }
+
+        .callout strong {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid.two {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        .grid-card {
+            border: 1px solid rgba(10, 14, 39, 0.12);
+            border-radius: 24px;
+            padding: clamp(24px, 3.2vw, 36px);
+            background: rgba(254, 254, 248, 0.96);
+            line-height: 1.8;
+        }
+
+        body.dark-mode .grid-card {
+            background: rgba(10, 14, 39, 0.86);
+            border-color: rgba(254, 254, 248, 0.16);
+        }
+
+        .grid-card strong {
+            display: block;
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+
+        .transformation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .prompt-card {
+            border: 1px solid rgba(10, 14, 39, 0.12);
+            border-radius: 24px;
+            padding: clamp(24px, 3vw, 36px);
+            background: rgba(254, 254, 248, 0.96);
+            line-height: 1.8;
+        }
+
+        body.dark-mode .prompt-card {
+            background: rgba(10, 14, 39, 0.86);
+            border-color: rgba(254, 254, 248, 0.16);
+        }
+
+        .prompt-card h3 {
+            margin-top: 0;
+            font-size: 18px;
+            letter-spacing: 0.04em;
+        }
+        
+        .transformation-card {
+            border: 1px solid rgba(10, 14, 39, 0.12);
+            border-radius: 24px;
+            padding: clamp(24px, 3.2vw, 36px);
+            background: rgba(254, 254, 248, 0.96);
+            line-height: 1.8;
+        }
+
+        body.dark-mode .transformation-card {
+            background: rgba(10, 14, 39, 0.86);
+            border-color: rgba(254, 254, 248, 0.16);
+        }
+        
+        .code-wrapper {
+            position: relative;
+            margin: 24px 0;
+        }
+
+        .code-block {
+            background: rgba(10, 14, 39, 0.85);
+            color: #F8F8FF;
+            padding: 24px;
+            border-radius: 18px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        body.dark-mode .code-block {
+            background: rgba(254, 254, 248, 0.12);
+            color: var(--paper);
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(254, 254, 248, 0.9);
+            color: var(--ink);
+            border: 1px solid rgba(10, 14, 39, 0.2);
+            border-radius: 999px;
+            padding: 6px 16px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .copy-button:hover {
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .copy-button {
+            background: rgba(10, 14, 39, 0.88);
+            color: var(--paper);
+            border-color: rgba(254, 254, 248, 0.18);
+        }
+
+        .nav-dots {
+            position: fixed;
+            right: clamp(16px, 4vw, 48px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            z-index: 9;
+        }
+
+        @media (max-width: 1200px) {
+            .nav-dots {
+                display: none;
+            }
+        }
+
+        .nav-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.25);
+            border: 2px solid rgba(10, 14, 39, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        body.dark-mode .nav-dot {
+            background: rgba(254, 254, 248, 0.25);
+            border-color: rgba(254, 254, 248, 0.4);
+        }
+
+        .nav-dot.active {
+            transform: scale(1.2);
+            background: var(--electric);
+            border-color: var(--electric);
+        }
+
+        body.dark-mode .nav-dot.active {
+            background: var(--coral);
+            border-color: var(--coral);
+        }
+
+        a.inline-link {
+            color: var(--electric);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        a.inline-link:hover {
+            border-bottom-color: currentColor;
+        }
+
+        body.dark-mode a.inline-link {
+            color: var(--coral);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="course-meta">
+            <span>module 1</span>
+            <strong>最初の一言で差がつく！“伝わる資料”をAIに書かせるための指示設計</strong>
+        </div>
+        <button class="dark-mode-toggle" type="button">Toggle Dark Mode</button>
+    </header>
+
+    <nav class="nav-dots" aria-label="セクションのショートカット">
+        <button class="nav-dot" data-target="intro" aria-label="イントロ"></button>
+        <button class="nav-dot" data-target="transformation" aria-label="ビフォーアフター"></button>
+        <button class="nav-dot" data-target="frictions" aria-label="現状の課題"></button>
+        <button class="nav-dot" data-target="principle" aria-label="原則"></button>
+        <button class="nav-dot" data-target="workflow" aria-label="ワークフロー"></button>
+        <button class="nav-dot" data-target="template" aria-label="テンプレート"></button>
+        <button class="nav-dot" data-target="prompts" aria-label="プロンプト"></button>
+        <button class="nav-dot" data-target="bestpractices" aria-label="ベストプラクティス"></button>
+        <button class="nav-dot" data-target="action" aria-label="アクション"></button>
+    </nav>
+
+    <main>
+        <section class="content-section" id="intro" data-section>
+            <div class="section-subtitle">Overview</div>
+            <h2 class="section-title">最初の一言で差がつく！“伝わる資料”をAIに書かせるための指示設計</h2>
+            <div class="section-content">
+                <p>AIが生成した資料が狙いどおりに仕上がらない原因の約8割は、最初に伝えた要件が曖昧なことにあります。このモジュールでは、AIを「ヒアリング担当」に変え、短時間で要件を言語化する方法を習得します。</p>
+                <div class="callout">
+                    <strong>学習ゴール</strong>
+                    - AIが迷わず資料を作れる「ヒアリングプロンプト」を自分のテーマに合わせて活用できる。<br>
+                    - 回答を整理するテンプレートに抜け漏れなく要件を記入できる。<br>
+                    - 次工程（デザイン指示・HTML化）で使うキーワードを抽出できる。
+                </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section" id="transformation" data-section>
+            <div class="section-subtitle">Shift</div>
+            <h2 class="section-title">要件ヒアリングでこう変わる</h2>
+            <div class="section-content">
+                <div class="transformation-grid">
+                    <div class="transformation-card">
+                        <span class="badge">Before</span>
+                        <ul>
+                            <li>AIに資料作成を依頼すると出来栄えが毎回ばらつき、レビューに時間がかかる</li>
+                            <li>ターゲット・利用シーンが曖昧で、関係者ごとに説明をやり直す手間が発生</li>
+                            <li>成果物に必要な形式や要素が固まらず、次の工程に着手できない</li>
+                        </ul>
+                    </div>
+                    <div class="transformation-card">
+                        <span class="badge">After</span>
+                        <ul>
+                            <li>ヒアリングプロンプトで5項目が揃い、AIの出力品質が安定する</li>
+                            <li>要件シートを共有するだけで関係者の認識合わせが数分で完了</li>
+                            <li>テンプレートに沿って次工程へ連携でき、HTML化・デザイン指示が即開始できる</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section class="content-section" id="frictions" data-section>
+            <div class="section-subtitle">Why</div>
+            <h2 class="section-title">AIが“惜しい資料”を作る3つの構造的ズレ</h2>
+            <div class="section-content">
+                <p>日常的に寄せられる失敗例を分析すると、以下の3点に情報欠落が集中しています。あらかじめ観点を抑えておくことで、AIの補完を最小限に抑えられます。</p>
+                <div class="grid two">
+                    <div class="grid-card">
+                        <strong>1. ターゲット情報がない</strong>
+                        <p>対象者の部署・役職・スキルレベルが不明だと、AIは一般論に逃げる。<br>→ 例：「営業部の新任マネージャー」「クラウドサービス経験者」などをセットで提示。</p>
+                    </div>
+                    <div class="grid-card">
+                        <strong>2. 利用シーンが曖昧</strong>
+                        <p>会議かオンデマンドか、プレゼンか配布資料かで情報量が変わる。<br>→ 使用場面と閲覧デバイスを最初に明示する。</p>
+                    </div>
+                    <div class="grid-card">
+                        <strong>3. 成果物形式が指定されていない</strong>
+                        <p>HTMLなのかPDFなのか、要点メモなのかを明言しないと、AIが独自判断で装飾を増やしがち。<br>→ 「Googleサイトに埋め込むHTML資料」のように形式と用途をセットで伝える。</p>
+                    </div>
+                </div>
+                <div class="callout">
+                    <strong>確認チェック</strong>
+                    - 誰が読む／聞くのかを1文で言えるか？<br>
+                    - どこで表示する資料なのか、ライフサイクルは明確か？<br>
+                    - 仕上がりのフォーマットと分量の目安を決めているか？
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section" id="principle" data-section>
+            <div class="section-subtitle">Key Principle</div>
+            <h2 class="section-title">AIをヒアリング担当に任命し、要件を言語化する</h2>
+            <div class="section-content">
+                <p>AIに“答えを出させる”前に、“質問させる”フェーズを挟むことで、思考の抜け漏れを補完できます。ヒアリングで押さえるべき5項目は以下の通りです。</p>
+                <ol>
+                    <li><strong>ターゲット</strong>：部署・役職・スキルレベル・人数</li>
+                    <li><strong>利用シーン</strong>：利用場所、表示デバイス、閲覧タイミング</li>
+                    <li><strong>目的・KPI</strong>：達成したい状態、測定方法</li>
+                    <li><strong>成果物形式</strong>：HTML／PDF／ノートなどの種別と必須要素</li>
+                    <li><strong>強調メッセージ</strong>：忘れずに伝えたいキーフレーズ、CTA</li>
+                </ol>
+                <p>これらの情報が揃っていれば、次のステップであるデザイン指示やHTML生成にスムーズに移行できます。</p>
+            </div>
+        </section>
+
+        <section class="content-section" id="workflow" data-section>
+            <div class="section-subtitle">Practice</div>
+            <h2 class="section-title">ヒアリングプロンプトと回答整理のワークフロー</h2>
+            <div class="section-content">
+                <ol>
+                    <li><strong>ステップ1：チャットを開く</strong><br>ChatGPTやClaudeなど、会話履歴を残せるAIを準備。テーマ概要を一文で伝えてからヒアリングを依頼する。</li>
+                    <li><strong>ステップ2：ヒアリングプロンプトを投げる</strong><br>以下のプロンプトをそのまま使用し、AIに順番に質問してもらう。</li>
+                </ol>
+                <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block">あなたは研修資料づくりを支援するファシリテーターです。
+以下の順に私へ質問し、回答を整理してください。
+1. 研修対象者の部署・役職・スキルレベル
+2. 資料を使うシーン（オンライン会議・オンデマンド視聴など）
+3. ゴールと評価したい指標
+4. 期待する成果物の形式
+5. 受講者が躓きやすいポイント
+質問は一つずつ行い、最後にMarkdownの箇条書きで要件を要約してください。</pre></div>
+                <ol start="3">
+                    <li><strong>ステップ3：回答する</strong><br>短文でも構わないので、具体例を交えながら回答。途中で迷った場合は「一旦こう考えている」と仮の答えを返す。</li>
+                    <li><strong>ステップ4：要約をテンプレートに移す</strong><br>AIがまとめた要約をそのままコピーし、次のセクションのテンプレートに貼り付ける。</li>
+                    <li><strong>ステップ5：不足項目を補記する</strong><br>人数、デバイス、既存資料、期待するアクションなどAIが拾いきれない情報を自分で追記する。</li>
+                </ol>
+                <div class="callout">
+                    <strong>実務でのコツ</strong>
+                    - 回答を毎回同じ場所（Notion／Googleドキュメント）に集約しておくと、プロジェクト単位の知識ベースが形成される。<br>
+                    - ヒアリングは1テーマにつき最大5分を目安に。時間を決めると回答が端的になりやすい。<br>
+                    - 回答後は「他に確認すべき点は？」とAIに問い返し、補足質問を引き出すと精度が上がる。
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section" id="template" data-section>
+            <div class="section-subtitle">Template</div>
+            <h2 class="section-title">要件シートテンプレートと補強チェック</h2>
+            <div class="section-content">
+                <p>以下の雛形にヒアリング結果を貼り付け、必要な要素を埋めていきます。メモ欄は自由に追記可能です。</p>
+                <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block">### プロジェクト名
+- ターゲット：
+- 利用シーン：
+- 目的・KPI：
+- 成果物の形式：
+- 強調すべきメッセージ：
+- 想定される質問＆回答：
+- 参考にしたい資料・事例：
+- 配布後に求めるアクション：
+- 共有・承認フロー：
+</pre></div>
+                <p>記入後は次の観点をチェックします。</p>
+                <ul>
+                    <li>ターゲット情報に人数・経験年数が含まれているか。</li>
+                    <li>利用シーンに表示デバイス・会議形式などの具体性があるか。</li>
+                    <li>目的・KPIが定量または定性的な指標で表現されているか。</li>
+                    <li>成果物形式に構造の指示（セクション数、必須要素）が書かれているか。</li>
+                    <li>参考資料のURLやファイルパスが紐付けられているか。</li>
+                </ul>
+                <div class="callout">
+                    <strong>テンプレート運用アイデア</strong>
+                    - Notionで「AI資料要件DB」を作り、テンプレートを毎回複製して履歴を管理。<br>
+                    - Googleスプレッドシートで列ごとに要素を並べ、複数案件を横断チェック。<br>
+                    - DifyやMakeを使い、テンプレート記入後に自動でAI生成フローに渡す。
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section" id="prompts" data-section>
+            <div class="section-subtitle">Sample Prompts</div>
+            <h2 class="section-title">ヒアリングで使えるプロンプト集</h2>
+            <div class="section-content">
+                <p>シナリオ別にヒアリングの粒度を変えられるよう、3種類のプロンプトをそのままコピーできる形式でまとめました。</p>
+                <div class="prompt-grid">
+                    <div class="prompt-card">
+                        <h3>標準ヒアリング</h3>
+                        <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block">あなたは研修資料づくりを支援するファシリテーターです。以下の順に私へ質問し、回答を整理してください。
+1. 研修対象者の部署・役職・スキルレベル
+2. 資料を使うシーン（オンライン会議・オンデマンド視聴など）
+3. ゴールと評価したい指標
+4. 期待する成果物の形式
+5. 受講者が躓きやすいポイント
+質問は一つずつ行い、最後にMarkdownの箇条書きで要件を要約してください。</pre></div>
+                    </div>
+                    <div class="prompt-card">
+                        <h3>不足情報の洗い出し</h3>
+                        <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block">あなたは社内研修のプロジェクトマネージャーです。以下の設計メモを踏まえて、質問を通じて不足情報を引き出してください。
+- 前提：営業DXチーム向けのオンボーディング資料を作成予定
+- 既知：対象者はSalesforce経験が浅い
+- 不明点：利用シーン、成果指標、配布形式、想定質問
+質問はチェックリスト形式で進め、回答ごとに短い要約を添えてください。最後に不足情報があれば追加質問を提案してください。</pre></div>
+                    </div>
+                    <div class="prompt-card">
+                        <h3>ワークショップ仕様</h3>
+                        <div class="code-wrapper"><button class="copy-button" type="button">Copy</button><pre class="code-block">あなたはワークショップ設計を支援するファシリテーターです。以下の手順で私へのヒアリングを進めてください。
+1. 受講者のペルソナを3つの観点（役割・経験年数・困りごと）で分解する。
+2. 当日のプログラム構成（導入／実演／演習／クロージング）をヒアリングし、必要な資料形式を提案する。
+3. 成果測定に使える指標を3案出し、どれを採用するか確認する。
+4. 想定される反論や質問を洗い出し、回答例を付けてリスト化する。
+会話の最後にヒアリング結果をMarkdownテーブルで要約し、抜け漏れがあれば追質問を提示してください。</pre></div>
+                    </div>
+                </div>
+            </div>
+                <section class="content-section" id="bestpractices" data-section>
+            <div class="section-subtitle">Best Practice</div>
+            <h2 class="section-title">プロンプトとヒアリングを成功させるコツ</h2>
+            <div class="section-content">
+                <div class="grid two">
+                    <div class="grid-card">
+                        <strong>プロンプト設計のポイント</strong>
+                        <ul>
+                            <li>冒頭で「目的・ターゲット・成果物形式」の順に記述し、AIの推測余地を減らす。</li>
+                            <li>必要な制約は小見出しや箇条書きで明示し、「必須」と「任意」を区別する。</li>
+                            <li>参考資料や既存の言い回しがある場合はURLや抜粋を貼り、AIに引用形式を指示する。</li>
+                            <li>出力後は「不足があれば質問して」と追記し、AIに再ヒアリングさせてから確定させる。</li>
+                        </ul>
+                    </div>
+                    <div class="grid-card">
+                        <strong>ヒアリング運用のポイント</strong>
+                        <ul>
+                            <li>回答は1〜2文でよいので必ず埋める。迷った場合は「仮の答え」と明記して後で修正する。</li>
+                            <li>AIの質問に対し、数値・頻度・デバイスなどの定量情報を追加して精度を上げる。</li>
+                            <li>回答後はAIに「想定される抜け漏れ」を尋ね、チェックリストを生成してフォローする。</li>
+                            <li>完成した要件シートは関係者と共有し、コメントをもらってから次工程へ渡す。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+</section>
+
+
+
+        <section class="content-section" id="action" data-section>
+            <div class="section-subtitle">Next Action</div>
+            <h2 class="section-title">モジュール後に完了させるタスク</h2>
+            <div class="section-content">
+                <ul>
+                    <li>ヒアリングプロンプトを使って、担当テーマの要件を5分以内で洗い出す。</li>
+                    <li>テンプレートに貼り付けた要約を自分の言葉で補強し、抜けた観点を追記する。</li>
+                    <li>次モジュールで扱う「デザイン指示」に使いたいキーワード（キービジュアル、配色、トーンなど）をメモする。</li>
+                </ul>
+                <p>次回のモジュールでは、この要件シートを土台にして「AIっぽくない」デザイン指示とHTML生成に進みます。ここで整えた情報が、デザインのクオリティを左右します。</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const navDots = document.querySelectorAll('.nav-dot');
+        const sections = document.querySelectorAll('[data-section]');
+        const toggle = document.querySelector('.dark-mode-toggle');
+
+        navDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const target = document.getElementById(dot.dataset.target);
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navDots.forEach(dot => dot.classList.toggle('active', dot.dataset.target === entry.target.id));
+                }
+            });
+        }, { threshold: 0.6 });
+
+        sections.forEach(section => observer.observe(section));
+
+        toggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            toggle.textContent = document.body.classList.contains('dark-mode') ? 'Toggle Light Mode' : 'Toggle Dark Mode';
+        });
+
+        const copyButtons = document.querySelectorAll('.copy-button');
+
+        function showCopyState(button, text, revert = 'Copy') {
+            const original = button.textContent;
+            button.textContent = text;
+            setTimeout(() => {
+                button.textContent = revert === 'Copy' ? original : revert;
+            }, 1500);
+        }
+
+        function fallbackCopy(text, button) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'fixed';
+            textarea.style.top = '-1000px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            textarea.setSelectionRange(0, textarea.value.length);
+            let succeeded = false;
+            try {
+                succeeded = document.execCommand('copy');
+            } catch (err) {
+                succeeded = false;
+            }
+            document.body.removeChild(textarea);
+            if (succeeded) {
+                showCopyState(button, 'Copied!');
+            } else {
+                showCopyState(button, 'Copy failed', 'Copy');
+            }
+        }
+
+        async function handleCopy(button) {
+            const code = button.nextElementSibling.textContent;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(code);
+                    showCopyState(button, 'Copied!');
+                    return;
+                } catch (err) {
+                    // fall back to execCommand path
+                }
+            }
+            fallbackCopy(code, button);
+        }
+
+        copyButtons.forEach((button) => {
+            button.addEventListener('click', () => handleCopy(button));
+        });
+    </script>
+</body>
+</html>

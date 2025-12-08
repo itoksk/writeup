@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画4：請求書の自動出力＆作成ボタンをまとめて実装する</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap');
+
+        :root {
+            /* Literary Editorial Design System Colors */
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --paper-shadow: #F5F5F0;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+
+            /* Typography */
+            --font-primary: 'Zen Kaku Gothic New', sans-serif;
+            --font-secondary: 'Space Grotesk', monospace;
+            --font-serif: 'Noto Serif JP', serif;
+
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(10, 14, 39, 0.1);
+            --shadow-md: 0 4px 16px rgba(10, 14, 39, 0.15);
+            --shadow-lg: 0 8px 32px rgba(10, 14, 39, 0.2);
+            --shadow-xl: 0 16px 48px rgba(10, 14, 39, 0.25);
+
+            /* Border */
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+            padding: var(--space-lg) 0;
+        }
+
+        /* Paper Texture Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.03) 2px,
+                    rgba(10, 14, 39, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.02) 2px,
+                    rgba(10, 14, 39, 0.02) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-sm);
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+
+        .subtitle {
+            font-family: var(--font-secondary);
+            font-size: 1.25rem;
+            color: var(--ink);
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+
+        /* Navigation */
+        nav {
+            margin-bottom: var(--space-lg);
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-pill {
+            padding: var(--space-xs) var(--space-md);
+            background: var(--paper);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 50px;
+            font-family: var(--font-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        .nav-pill:hover::before {
+            left: 0;
+        }
+
+        .nav-pill:hover {
+            color: var(--paper);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Content Section */
+        .content-section {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .content-section:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .section-number {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--electric);
+            background: var(--ink);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        /* Content Typography */
+        .content-section h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            margin-bottom: var(--space-lg);
+            color: var(--ink);
+            position: relative;
+            line-height: 1.2;
+        }
+
+        .content-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+
+        .content-section h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            color: var(--ink);
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+        }
+
+        .content-section p {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-md);
+        }
+
+        .content-section ul {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-md) 0;
+        }
+
+        .content-section li {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-sm);
+            padding-left: var(--space-lg);
+            position: relative;
+        }
+
+        .content-section li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Card */
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-number {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-family: var(--font-secondary);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--electric);
+            opacity: 0.3;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: var(--space-md);
+            border-radius: 8px;
+            font-family: var(--font-secondary);
+            font-size: 0.9rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            margin: var(--space-md) 0;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-block::before {
+            content: 'DEMO';
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--electric);
+            opacity: 0.5;
+        }
+
+        /* Highlight Box */
+        .highlight {
+            background: linear-gradient(135deg, var(--electric), var(--coral));
+            padding: 3px;
+            border-radius: 8px;
+            margin: var(--space-md) 0;
+        }
+
+        .highlight-content {
+            background: var(--paper);
+            padding: var(--space-md);
+            border-radius: 5px;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .grid-item {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 180px;
+        }
+
+        .grid-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--electric), var(--coral));
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .grid-item:hover::after {
+            transform: translateY(0);
+        }
+
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: var(--space-lg);
+            margin: var(--space-md) 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--ink);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: var(--space-md);
+            padding-left: var(--space-md);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--electric);
+            border: 3px solid var(--ink);
+        }
+
+        /* Step Box */
+        .step-box {
+            background: #fff;
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            border-left: 6px solid var(--electric);
+        }
+
+        .step-number {
+            font-family: var(--font-secondary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--electric);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: #fff;
+            border: 2px solid var(--coral);
+            border-left: 6px solid var(--coral);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .warning-box h4 {
+            color: var(--coral);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: var(--space-lg) 0;
+            border-top: 3px solid var(--ink);
+            margin-top: var(--space-xl);
+            font-family: var(--font-secondary);
+            letter-spacing: 0.05em;
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background: var(--ink);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 2px solid var(--ink);
+        }
+
+        .dark-mode-toggle::before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: var(--paper);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .dark-mode-toggle.active {
+            background: var(--electric);
+            border-color: var(--electric);
+        }
+
+        .dark-mode-toggle.active::before {
+            transform: translateX(30px);
+            background: var(--ink);
+        }
+
+        /* Dark Mode Styles */
+        .dark-mode {
+            --ink: #FEFEF8;
+            --paper: #0A0E27;
+            --paper-shadow: #1A1E37;
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .dark-mode {
+            --shadow-sm: 0 2px 8px rgba(255, 255, 255, 0.1);
+            --shadow-md: 0 4px 16px rgba(255, 255, 255, 0.15);
+            --shadow-lg: 0 8px 32px rgba(255, 255, 255, 0.2);
+            --shadow-xl: 0 16px 48px rgba(255, 255, 255, 0.25);
+        }
+
+        .dark-mode .code-block {
+            background: #1a1a2e;
+            color: #eee;
+            border: 1px solid #444;
+        }
+
+        .dark-mode .section-number {
+            background: var(--paper);
+            color: var(--electric);
+            border: 1px solid var(--electric);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content-section h2 {
+                font-size: 2rem;
+            }
+
+            .content-section h3 {
+                font-size: 1.5rem;
+            }
+
+            .content-section p, .content-section li {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">Googleドキュメントテンプレートで<br>見積書・請求書を自動出力する</h1>
+            </div>
+        </header>
+
+        <nav>
+            <a href="#goal" class="nav-pill">今日のゴール</a>
+            <a href="#materials" class="nav-pill">準備物</a>
+            <a href="#calc-columns" class="nav-pill">計算カラム設定</a>
+            <a href="#template" class="nav-pill">テンプレート設計</a>
+            <a href="#bot" class="nav-pill">Bot設定</a>
+            <a href="#verification" class="nav-pill">動作確認</a>
+            <a href="#troubleshooting" class="nav-pill">トラブル対策</a>
+        </nav>
+
+        <main class="main-content">
+            <section id="goal" class="content-section">
+                <span class="section-number">01</span>
+                <h2>今日のゴール</h2>
+                <p>Googleドキュメントを雛形に、注文データから見積書/請求書PDFを自動生成できる状態を作ります。</p>
+                <div class="grid">
+                    <div class="grid-item">
+                        <h3>テンプレート設計</h3>
+                        <p>ヘッダー情報・明細行に適したプレースホルダーを書けるようにする。参照型カラムと繰り返しセクションの記法を習得。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>Bot設定</h3>
+                        <p>Automation機能でデータ変更をトリガーにPDF生成を自動実行する仕組みを構築。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>自動出力</h3>
+                        <p>PDF生成・Google Driveへの保存まで自動化し、手作業を完全に排除。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>運用チェック</h3>
+                        <p>再発行時のファイル名重複や、テンプレートの差し戻しポイントを認識する。</p>
+                    </div>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>事前準備:</strong> 動画開始前に Google Drive 上に「テンプレート」「出力先」フォルダを作成しておきましょう。
+                    </div>
+                </div>
+            </section>
+
+            <section id="materials" class="content-section">
+                <span class="section-number">02</span>
+                <h2>事前準備と素材</h2>
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>Googleドキュメント</h4>
+                        <p>見積書・請求書テンプレートをそれぞれ1ファイルずつ用意します。社内ロゴや社判画像があれば挿入。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>フォルダ構成</h4>
+                        <ul>
+                            <li>テンプレート置き場（読み取り専用推奨）</li>
+                            <li>出力ファイル保存先（Google Drive）</li>
+                        </ul>
+                    </div>
+                    <div class="grid-item">
+                        <h4>AppSheet側データ</h4>
+                        <p>動画2で設定した5テーブルが読み込まれていることを確認。注文テーブルには見積番号・請求番号の式を設定済みの想定です。</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <span class="card-number">フォルダ命名例</span>
+                    <p><code>/AppSheetテンプレート/見積書テンプレート.docx</code><br><code>/AppSheet出力/見積書/{顧客名}/</code></p>
+                </div>
+            </section>
+
+            <section id="calc-columns" class="content-section">
+                <span class="section-number">03</span>
+                <h2>テンプレートに差し込む計算カラムの設定</h2>
+                <p>demo_dataを読み込むと、合計金額や単価などの列が表示されます。AppSheet上では以下のように <strong>数式を設定（または仮想カラム化）</strong> して、自動計算されるように整えましょう。</p>
+
+                <div class="card">
+                    <span class="card-number">Step 1</span>
+                    <h3>注文テーブルの計算カラム</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>カラム名</th>
+                                <th>設定方法</th>
+                                <th>App formula（例）</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>納入単価合計</td>
+                                <td>仮想カラム（Decimal）に変更</td>
+                                <td><code>SUM([Related 注文詳細s][納入金額])</code></td>
+                            </tr>
+                            <tr>
+                                <td>消費税</td>
+                                <td>仮想カラム（Decimal）</td>
+                                <td><code>[納入単価合計] * 0.1</code></td>
+                            </tr>
+                            <tr>
+                                <td>合計金額</td>
+                                <td>仮想カラム（Decimal）</td>
+                                <td><code>[納入単価合計] + [消費税]</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>※ 10%以外の税率を使う場合は、式内の <code>0.1</code> を変更します。</p>
+                </div>
+
+                <div class="card">
+                    <span class="card-number">Step 2</span>
+                    <h3>注文詳細テーブルの単価と金額</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>カラム名</th>
+                                <th>設定方法</th>
+                                <th>App formula / Initial value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>サービス名</td>
+                                <td>通常カラム（Text）</td>
+                                <td><code>[IDサービス].[サービス名]</code> を <strong>Initial value</strong> に設定</td>
+                            </tr>
+                            <tr>
+                                <td>単価</td>
+                                <td>通常カラム（Price）</td>
+                                <td><code>[IDサービス].[価格]</code> を <strong>Initial value</strong> に設定</td>
+                            </tr>
+                            <tr>
+                                <td>納入金額</td>
+                                <td>仮想カラム（Price）</td>
+                                <td><code>[数量] * [単価]</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>単価を自由に変更できるようにする場合は、Initial valueに式を入れつつ <strong>App formulaは空欄</strong> にしておくと運用しやすくなります。</p>
+                </div>
+
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>設定手順:</strong> Data ▶ Columns で対象テーブルを開き、各カラムを選択 → 「Column type」「App formula」「Initial value」を上記の通りに設定します。demo_dataの数値は検証用のサンプルなので、アプリ側で保存すると式が再計算されます。
+                    </div>
+                </div>
+            </section>
+
+            <section id="template" class="content-section">
+                <span class="section-number">04</span>
+                <h2>Googleドキュメントでテンプレートを設計</h2>
+                <p>テンプレートは <strong>&lt;&lt;[カラム名]&gt;&gt;</strong> のプレースホルダーを埋め込むことで、AppSheetからデータが差し込まれます。</p>
+                <div class="step-box">
+                    <div class="step-number">STEP 1</div>
+                    <h3>ヘッダー情報のプレースホルダー</h3>
+                    <div class="code-block">見積番号: &lt;&lt;[見積番号]&gt;&gt;
+発行日: &lt;&lt;[発行日]&gt;&gt;
+顧客名: &lt;&lt;[ID顧客].[顧客名]&gt;&gt;
+顧客住所: &lt;&lt;[ID顧客].[住所]&gt;&gt;
+担当者名: &lt;&lt;[ID社員].[社員名]&gt;&gt;</div>
+                    <p>参照カラムは <code>[Refカラム].[参照先カラム]</code> 形式で記述します。</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">STEP 2</div>
+                    <h3>明細行（Repeated Section）</h3>
+                    <div class="code-block">&lt;&lt;Start:[Related 注文詳細s]&gt;&gt;
+&lt;&lt;[IDサービス].[サービス名]&gt;&gt; | &lt;&lt;[数量]&gt;&gt; | &lt;&lt;[単価]&gt;&gt; | &lt;&lt;[納入金額]&gt;&gt;
+&lt;&lt;End:[Related 注文詳細s]&gt;&gt;</div>
+                    <p><strong>Start~End</strong> ブロック内の行が、子テーブルのレコード数だけ繰り返されます。</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">STEP 3</div>
+                    <h3>フッターと合計</h3>
+                    <div class="code-block">小計: &lt;&lt;[納入単価合計]&gt;&gt; 円
+消費税: &lt;&lt;[消費税]&gt;&gt; 円
+合計金額: &lt;&lt;[合計金額]&gt;&gt; 円
+お支払い条件: &lt;&lt;[御支払い条件]&gt;&gt;</div>
+                    <p>金額カラムは仮想カラムで計算済みの値を利用。テンプレート上で再計算する必要はありません。</p>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>テンプレートチェック:</strong> プレースホルダーを挿入後、必ず <strong>ファイル ▶ 版を管理 ▶ 版を固定</strong> して、誤編集を防止しましょう。
+                    </div>
+                </div>
+            </section>
+
+            <section id="bot" class="content-section">
+                <span class="section-number">05</span>
+                <h2>BotでPDF生成を自動化する</h2>
+                <p>データ変更をトリガーに、テンプレートからPDFを生成し、Google Driveへ保存します。</p>
+                <div class="step-box">
+                    <div class="step-number">STEP 1</div>
+                    <h3>イベントを設定（トリガー条件）</h3>
+                    <ul>
+                        <li>Automation ▶ Bots ▶ <strong>New Bot</strong></li>
+                        <li><strong>Bot Name</strong>: 見積書自動生成</li>
+                        <li><strong>Event</strong>: Data change ▷ Table = 注文</li>
+                        <li><strong>Event Type</strong>: Adds and Updates（新規作成と更新の両方で実行）</li>
+                        <li><strong>Condition</strong>: 必要に応じて条件を設定（例：ステータスが特定の値になったとき）</li>
+                    </ul>
+                    <p><strong>補足:</strong> すべての注文に対して実行する場合は、Conditionを空欄にします。後でアクション機能と組み合わせてフラグ制御することも可能です（次回動画で学習）。</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">STEP 2</div>
+                    <h3>プロセスでファイルを生成</h3>
+                    <ul>
+                        <li><strong>Process</strong>: Run a task → <strong>Add a step</strong></li>
+                        <li><strong>Step Type</strong>: Create a file from a template</li>
+                        <li><strong>Template File</strong>: Google Driveから「見積書テンプレート」を選択</li>
+                        <li><strong>Output File Name</strong>: <code>CONCATENATE("見積書_", [見積番号], ".pdf")</code></li>
+                        <li><strong>Output Folder</strong>: Driveの出力用フォルダを選択</li>
+                        <li><strong>Output Format</strong>: PDF</li>
+                    </ul>
+                    <p><strong>ファイル名のポイント:</strong> 見積番号を含めることで、ファイルが一意になり、上書きを防げます。顧客名も含める場合は、<code>CONCATENATE("見積書_", [見積番号], "_", SUBSTITUTE([ID顧客].[顧客名], " ", "_"), ".pdf")</code> のように記述します。</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">STEP 3</div>
+                    <h3>Botを有効化</h3>
+                    <ul>
+                        <li>Botの設定画面に戻り、<strong>Status</strong> を「Enabled」に変更</li>
+                        <li>「Save」ボタンをクリックして設定を保存</li>
+                    </ul>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">STEP 4</div>
+                    <h3>請求書Botも同様に作成</h3>
+                    <p>見積書Botと同じ手順で、請求書テンプレートを使った「請求書自動生成」Botを作成します。</p>
+                    <ul>
+                        <li><strong>Bot Name</strong>: 請求書自動生成</li>
+                        <li><strong>Template File</strong>: 請求書テンプレート</li>
+                        <li><strong>Output File Name</strong>: <code>CONCATENATE("請求書_", [請求番号], ".pdf")</code></li>
+                    </ul>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>次回予告:</strong> 次回の動画5では、アクション機能を使って「見積書発行」「請求作成」などのボタンを追加し、ユーザーがボタン1つでBot を起動できるようにします。
+                    </div>
+                </div>
+            </section>
+
+            <section id="verification" class="content-section">
+                <span class="section-number">06</span>
+                <h2>動作確認チェックリスト</h2>
+                <div class="card">
+                    <span class="card-number">Check 01</span>
+                    <p>注文詳細を含むレコードを新規作成または更新し、Automation Monitor に成功ログが出るか確認。</p>
+                </div>
+                <div class="card">
+                    <span class="card-number">Check 02</span>
+                    <p>Google Drive でPDFが生成され、ファイル名に見積番号が含まれているか確認。</p>
+                </div>
+                <div class="card">
+                    <span class="card-number">Check 03</span>
+                    <p>PDFの内容を開いて、プレースホルダーが正しくデータで置き換わっているか確認。特に参照型カラム（顧客名、社員名など）と繰り返しセクション（注文詳細）を重点的にチェック。</p>
+                </div>
+                <div class="card">
+                    <span class="card-number">Check 04</span>
+                    <p>請求書Botも同様にテストし、請求番号・フォルダが期待通りか確認。</p>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>Automation Monitor:</strong> Automation タブの「Monitor」セクションで、Botの実行履歴とエラーログを確認できます。エラーが発生した場合は、詳細なエラーメッセージが表示されるので、トラブルシューティングに活用してください。
+                    </div>
+                </div>
+            </section>
+
+            <section id="troubleshooting" class="content-section">
+                <span class="section-number">07</span>
+                <h2>トラブル対策と改善アイデア</h2>
+                <div class="warning-box">
+                    <h3>PDFが生成されない</h3>
+                    <p>Botの <strong>Event condition</strong> が TRUE になっているかを確認。Automation Monitor のログでテンプレート参照URLが有効かチェックしましょう。</p>
+                </div>
+                <div class="warning-box">
+                    <h3>ファイル名が文字化けする</h3>
+                    <p>日本語を含む場合は <code>SANITIZEFILEURL()</code> や <code>SUBSTITUTE()</code> で半角英数字に置換。Drive上で同名ファイルがあると上書きされるので、日付や時刻を付けると安全です。</p>
+                </div>
+                <div class="warning-box">
+                    <h3>テンプレートの差し込みがズレる</h3>
+                    <p>テンプレート内で表に変換する際は列数が固定されるため、見出し行とデータ行でセル結合を使いすぎないよう注意。ズレた場合はシンプルなテーブル構造に戻して検証。</p>
+                </div>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <strong>Next Step:</strong> 動画5では、今回作成したボタンとBotを連携し、ステータス自動更新や一括処理で運用を強化します。
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>AppSheetで営業事務の"紙地獄"を脱出！ゼロから作る見積・請求アプリ</p>
+            <p>動画4/5: 請求書の自動出力＆作成ボタンをまとめて実装する</p>
+        </footer>
+    </div>
+</body>
+</html>

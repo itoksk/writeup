@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：毎朝の採用ブリーフィング自動配信 | 採用パイプライン自動化フロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">第4回 / 全5回</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">04</div>
+            <h1 class="lesson-title">毎朝の採用ブリーフィング自動配信</h1>
+            <p class="lesson-subtitle">応募状況サマリーとアクションアイテムの自動生成</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>毎朝、前日の応募状況をGeminiがサマリーし、職種別の応募数、要対応アイテム、今日の面接予定をChatで自動配信するエージェントを作成する</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エージェントのフロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Schedule Trigger</h3>
+                        <p>毎朝8:30に自動起動</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Gmail Search</h3>
+                        <p>過去24時間の採用関連メールを取得</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Calendar Check</h3>
+                        <p>今日の面接予定を確認</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Gemini Summary</h3>
+                        <p>ブリーフィングレポート生成</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Chat Delivery</h3>
+                        <p>採用チームへ配信</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">ブリーフィング内容</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">セクション 1</div>
+                    <h3>新規応募サマリー</h3>
+                    <p>職種別の応募数と注目候補者</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">セクション 2</div>
+                    <h3>要対応アイテム</h3>
+                    <p>返信待ち・書類確認待ちの案件</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">セクション 3</div>
+                    <h3>今日の面接予定</h3>
+                    <p>候補者名・時間・面接官</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Geminiプロンプト</h2>
+            <div class="code-block">Create a morning recruitment briefing in Japanese:
+
+New applications (last 24h): {applications}
+Pending actions: {pending_emails}
+Today's interviews: {calendar_events}
+
+Generate a briefing report with:
+1. 📊 新規応募サマリー
+   - 職種別応募数
+   - 注目候補者（経験豊富な方）
+2. ⚠️ 要対応アイテム
+   - 返信が必要なメール
+   - 確認待ち書類
+3. 📅 本日の面接予定
+   - 時間・候補者名・面接官
+
+Format for Chat message (concise, actionable).</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before</div>
+                    <ul>
+                        <li>朝イチでメールを30分確認</li>
+                        <li>チームで情報共有に時間がかかる</li>
+                        <li>対応漏れに気づくのが遅い</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After</div>
+                    <ul>
+                        <li>5分で全体状況を把握</li>
+                        <li>チーム全員が同じ情報を共有</li>
+                        <li>要対応が明確でアクション早い</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson3.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson5.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

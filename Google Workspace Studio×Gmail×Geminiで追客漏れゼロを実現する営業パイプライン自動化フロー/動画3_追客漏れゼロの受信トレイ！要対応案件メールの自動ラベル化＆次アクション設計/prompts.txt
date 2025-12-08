@@ -1,0 +1,284 @@
+# 営業パイプライン自動化フロー 第3回：追客漏れゼロエージェント
+# プロンプト集
+
+---
+
+## 1. メイン分析プロンプト（Geminiステップ用）
+
+### 英語版（推奨）
+```
+Analyze this sales email and determine if follow-up action is required:
+
+{email_content}
+
+Provide response in Japanese with the following format:
+
+【要対応判定】YES または NO
+【理由】判定の理由（1文）
+【緊急度】HIGH/MEDIUM/LOW
+【案件ステージ】問い合わせ/提案中/見積もり/契約交渉
+【次アクション】具体的に取るべきアクション
+【対応期限】推奨対応期限（例：本日中、3日以内）
+【返信ドラフト】簡潔な返信案（50文字程度）
+```
+
+### 日本語版（代替）
+```
+以下の営業メールを分析し、フォローアップが必要かどうか判定してください：
+
+{email_content}
+
+以下の形式で回答：
+【要対応判定】YES または NO
+【理由】判定の理由（1文）
+【緊急度】高/中/低
+【案件ステージ】問い合わせ/提案中/見積もり/契約交渉
+【次アクション】具体的に取るべきアクション
+【対応期限】推奨対応期限
+【返信ドラフト】簡潔な返信案
+```
+
+---
+
+## 2. 条件分岐の条件式
+
+### 要対応判定
+```
+{gemini_analysis} contains "YES"
+```
+
+### 緊急度HIGH判定
+```
+{gemini_analysis} contains "HIGH"
+```
+
+### 複合条件（要対応かつ緊急）
+```
+{gemini_analysis} contains "YES" AND {gemini_analysis} contains "HIGH"
+```
+
+---
+
+## 3. Chat通知テンプレート
+
+### 通常通知
+```
+📌 要対応案件メール
+
+【送信者】{sender_name} ({sender_email})
+【件名】{email_subject}
+
+{gemini_analysis}
+
+---
+📧 元のメールを確認: {email_link}
+ラベル「要対応」を付与しました。
+```
+
+### 緊急アラート
+```
+🚨 緊急対応が必要な案件です！
+
+【送信者】{sender_name}
+【件名】{email_subject}
+
+{gemini_analysis}
+
+---
+至急確認してください。
+```
+
+### 日次まとめ通知
+```
+📋 本日の要対応案件まとめ
+
+件数: {count}件
+
+{summary}
+
+---
+ラベル「要対応」でフィルターしてご確認ください。
+```
+
+---
+
+## 4. 要対応判定の詳細プロンプト
+
+### 判定基準を明確にしたバージョン
+```
+Analyze this sales email and determine if follow-up action is required.
+
+{email_content}
+
+判定基準:
+- YES: 返信、確認、対応が必要なメール
+  - 質問が含まれている
+  - 期限が設定されている
+  - 見積もり・提案の依頼
+  - 契約・発注に関する内容
+  - 問題・クレームの報告
+
+- NO: 対応不要なメール
+  - 情報共有のみ（返信不要と明記）
+  - 自動返信・通知メール
+  - ニュースレター・メルマガ
+
+上記基準に基づき、以下の形式で回答:
+
+【要対応判定】YES または NO
+【理由】判定の理由（1文）
+【緊急度】HIGH/MEDIUM/LOW
+【案件ステージ】問い合わせ/提案中/見積もり/契約交渉
+【次アクション】具体的に取るべきアクション
+【対応期限】推奨対応期限
+【返信ドラフト】簡潔な返信案（50文字程度）
+```
+
+---
+
+## 5. 返信ドラフト生成プロンプト
+
+### 詳細な返信ドラフト
+```
+Based on this email, draft a professional reply in Japanese:
+
+{email_content}
+
+Requirements:
+- Start with appropriate greeting
+- Acknowledge their message
+- Address each point raised
+- Propose clear next steps
+- End with professional closing
+- Keep under 200 characters
+
+Format:
+【件名案】Re: {original_subject}
+【本文】
+...
+```
+
+### シーン別テンプレート
+```
+Generate an appropriate response template based on email type:
+
+{email_content}
+
+If inquiry: Thank and propose meeting/call
+If quote request: Confirm receipt and timeline
+If complaint: Apologize and propose solution
+If negotiation: Confirm understanding and next steps
+
+Output in Japanese, under 100 characters.
+```
+
+---
+
+## 6. ラベル付与設定
+
+### Gmail Add Label設定
+```
+Action: Add label
+Email: {trigger_email}
+Label: 要対応
+```
+
+### 複数ラベル（案件ステージ別）
+```
+Action: Add label
+Email: {trigger_email}
+Labels:
+  - 要対応
+  - {stage_label} (問い合わせ/提案中/見積もり/契約交渉)
+```
+
+---
+
+## 7. 追加条件分岐パターン
+
+### 案件ステージ別の分岐
+```
+Condition 1: {gemini_analysis} contains "見積もり"
+  → Action: 見積もりラベル付与 + 見積もり担当者に通知
+
+Condition 2: {gemini_analysis} contains "契約交渉"
+  → Action: 契約ラベル付与 + 営業マネージャーに通知
+
+Condition 3: {gemini_analysis} contains "問い合わせ"
+  → Action: 問い合わせラベル付与 + 標準対応
+```
+
+### 緊急度別の分岐
+```
+Condition 1: {gemini_analysis} contains "HIGH"
+  → Action: Chat アラート（全員） + スター付与
+
+Condition 2: {gemini_analysis} contains "MEDIUM"
+  → Action: Chat 通知（担当者のみ）
+
+Condition 3: {gemini_analysis} contains "LOW"
+  → Action: ラベルのみ（通知なし）
+```
+
+---
+
+## 8. エージェント構成まとめ
+
+```
+エージェント名: 追客漏れゼロエージェント
+
+Starter: Gmail - Email received
+  - Filter: from:(@重要顧客ドメイン)
+
+Step 1: Gemini - Generate content
+  - Prompt: [メイン分析プロンプト]
+  - Input: {email_content}
+  - Output: gemini_analysis
+
+Step 2: Conditional
+  - Condition: {gemini_analysis} contains "YES"
+
+  True branch:
+    Step 2a: Gmail - Add label
+      - Label: 要対応
+
+    Step 2b: Google Chat - Send message
+      - Message: [Chat通知テンプレート]
+
+    Step 2c (Optional): Conditional
+      - Condition: {gemini_analysis} contains "HIGH"
+      - True: 追加アラート送信
+
+  False branch:
+    - 終了（アクションなし）
+```
+
+---
+
+## 9. テスト用サンプルメール
+
+### YES判定されるべきメール
+```
+件名: 見積書のご依頼
+
+山田様
+
+お世話になっております。
+先日ご提案いただいた件について、正式に見積書をお願いしたいと思います。
+できれば来週月曜日までにいただけると助かります。
+
+よろしくお願いいたします。
+```
+
+### NO判定されるべきメール
+```
+件名: 【ご参考】業界レポート送付
+
+山田様
+
+いつもお世話になっております。
+ご参考までに、最新の業界レポートをお送りします。
+ご返信は不要です。
+
+今後ともよろしくお願いいたします。
+```

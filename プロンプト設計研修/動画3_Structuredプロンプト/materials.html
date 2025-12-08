@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：「精密な制御」Structuredプロンプト - 構造化された指示設計術</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap');
+        
+        :root {
+            /* Primary Colors - Paper & Ink */
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --paper-shadow: #F5F5F0;
+            
+            /* Accent Colors */
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+            
+            /* Typography Scale */
+            --font-primary: 'Zen Kaku Gothic New', sans-serif;
+            --font-secondary: 'Space Grotesk', monospace;
+            --font-serif: 'Noto Serif JP', serif;
+            
+            /* Spacing System */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+            
+            /* Border & Shadow */
+            --border-width: 2px;
+            --shadow-sm: 0 2px 8px rgba(10, 14, 39, 0.1);
+            --shadow-md: 0 4px 16px rgba(10, 14, 39, 0.15);
+            --shadow-lg: 0 8px 32px rgba(10, 14, 39, 0.2);
+            --shadow-xl: 0 16px 48px rgba(10, 14, 39, 0.25);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        /* Paper Texture Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.03) 2px,
+                    rgba(10, 14, 39, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.02) 2px,
+                    rgba(10, 14, 39, 0.02) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: var(--space-md);
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Header */
+        header {
+            border-bottom: var(--border-width) solid var(--ink);
+            padding: var(--space-lg) 0;
+            margin-bottom: var(--space-xl);
+            position: relative;
+        }
+        
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: var(--space-sm);
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+        
+        .subtitle {
+            font-family: var(--font-secondary);
+            font-size: 1.25rem;
+            color: var(--ink);
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Navigation */
+        nav {
+            margin-bottom: var(--space-lg);
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .nav-pill {
+            padding: var(--space-xs) var(--space-md);
+            background: var(--paper);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 50px;
+            font-family: var(--font-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+        
+        .nav-pill:hover::before {
+            left: 0;
+        }
+        
+        .nav-pill:hover {
+            color: var(--paper);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .nav-pill.active {
+            background: var(--ink);
+            color: var(--paper);
+        }
+        
+        /* Content Section */
+        .content-section {
+            background: var(--paper);
+            border: var(--border-width) solid var(--ink);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .content-section:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .section-number {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--electric);
+            background: var(--ink);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            z-index: 10;
+        }
+        
+        /* Content Typography */
+        .content-section h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            margin-bottom: var(--space-lg);
+            color: var(--ink);
+            position: relative;
+            line-height: 1.2;
+        }
+        
+        .content-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+        
+        .content-section h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            color: var(--ink);
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+        }
+        
+        .content-section p {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-md);
+        }
+        
+        .content-section ul {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-md) 0;
+        }
+        
+        .content-section li {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-sm);
+            padding-left: var(--space-lg);
+            position: relative;
+        }
+        
+        .content-section li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        /* Card System */
+        .card {
+            background: var(--paper);
+            border: var(--border-width) solid var(--ink);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .card-number {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            font-family: var(--font-secondary);
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--electric);
+            opacity: 0.3;
+            line-height: 1;
+        }
+        
+        .card h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .grid-item {
+            background: var(--paper);
+            border: var(--border-width) solid var(--ink);
+            padding: var(--space-md);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .grid-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--electric), var(--coral));
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .grid-item:hover::after {
+            transform: translateY(0);
+        }
+        
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Code Block */
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: var(--space-md);
+            border-radius: 4px;
+            font-family: var(--font-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: var(--space-md) 0;
+            position: relative;
+        }
+        
+        .code-block::before {
+            content: 'PROMPT';
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--electric);
+            opacity: 0.5;
+        }
+        
+        /* Highlight Box */
+        .highlight {
+            background: linear-gradient(135deg, var(--electric), var(--coral));
+            padding: 2px;
+            border-radius: 4px;
+            margin: var(--space-md) 0;
+        }
+        
+        .highlight-content {
+            background: var(--paper);
+            padding: var(--space-md);
+            border-radius: 2px;
+        }
+        
+        /* Quote Block */
+        .quote {
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+            margin: var(--space-md) 0;
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            font-style: italic;
+            position: relative;
+        }
+        
+        .quote::before {
+            content: '"';
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            font-size: 4rem;
+            color: var(--electric);
+            opacity: 0.2;
+            font-family: var(--font-serif);
+        }
+        
+        /* Footer */
+        footer {
+            border-top: var(--border-width) solid var(--ink);
+            padding: var(--space-lg) 0;
+            margin-top: var(--space-xl);
+            text-align: center;
+            font-family: var(--font-secondary);
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--space-sm);
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Dark Mode Styles - Using CSS Variables for better control */
+        .dark-mode {
+            --ink: #FEFEF8;
+            --paper: #0A0E27;
+            --paper-shadow: #1A1E37;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+            background: var(--paper);
+            color: var(--ink);
+        }
+        
+        /* Update shadow colors in dark mode */
+        .dark-mode {
+            --shadow-sm: 0 2px 8px rgba(255, 255, 255, 0.1);
+            --shadow-md: 0 4px 16px rgba(255, 255, 255, 0.15);
+            --shadow-lg: 0 8px 32px rgba(255, 255, 255, 0.2);
+            --shadow-xl: 0 16px 48px rgba(255, 255, 255, 0.25);
+        }
+        
+        /* Preserve media content colors */
+        .dark-mode img,
+        .dark-mode video,
+        .dark-mode iframe {
+            opacity: 0.9;
+        }
+        
+        /* Special handling for code blocks - they already have dark backgrounds */
+        .dark-mode .code-block {
+            background: #1a1a2e;
+            color: #eee;
+            border: 1px solid #444;
+        }
+        
+        /* Update section numbers in dark mode */
+        .dark-mode .section-number {
+            background: var(--paper);
+            color: var(--electric);
+            border: 1px solid var(--electric);
+        }
+        
+        /* Card hover effects in dark mode - simplified without color inversion */
+        .dark-mode .card:hover {
+            border-color: var(--electric);
+        }
+        
+        .dark-mode .content-section:hover {
+            border-color: var(--electric);
+        }
+        
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background: var(--ink);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 2px solid var(--ink);
+        }
+        
+        .dark-mode-toggle::before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: var(--paper);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        
+        .dark-mode-toggle.active {
+            background: var(--electric);
+            border-color: var(--electric);
+        }
+        
+        .dark-mode-toggle.active::before {
+            transform: translateX(30px);
+            background: var(--ink);
+        }
+    </style>
+</head>
+<body>
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle" id="darkModeToggle"></div>
+    <div class="container">
+        <header>
+            <h1>プロンプト設計研修</h1>
+            <p class="subtitle">第3回：「精密な制御」Structuredプロンプト - 構造化された指示設計術</p>
+        </header>
+        
+        <nav>
+            <div class="nav-pill">概要</div>
+            <div class="nav-pill">構造化の原理</div>
+            <div class="nav-pill">テンプレート設計</div>
+            <div class="nav-pill">階層的指示</div>
+            <div class="nav-pill">実践</div>
+        </nav>
+        
+        <main>
+            <!-- Title Section -->
+            <div class="content-section">
+                <span class="section-number">01</span>
+                <h2>精密制御のStructuredプロンプト</h2>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <p>明確な構造と論理的な階層により、<br>AIの出力品質と一貫性を最大化する技術</p>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>構造化設計</h4>
+                        <p>論理的な階層で指示を整理</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>テンプレート活用</h4>
+                        <p>再利用可能な枠組みを構築</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>精密制御</h4>
+                        <p>細部まで意図通りの出力実現</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Structure Principles Section -->
+            <div class="content-section">
+                <span class="section-number">02</span>
+                <h3>構造化プロンプトの原理</h3>
+                <p>明確な区分けと階層構造により、AIが処理しやすい指示形式を構築</p>
+                
+                <div class="card">
+                    <span class="card-number">01</span>
+                    <h4>構造化の利点</h4>
+                    <ul>
+                        <li>指示の明確性と理解しやすさ</li>
+                        <li>一貫した高品質な出力</li>
+                        <li>効率的な指示の再利用</li>
+                    </ul>
+                </div>
+                
+                <div class="code-block">【非構造化 vs 構造化の比較】
+
+❌ 非構造化プロンプト：
+「商品レビューを分析して、顧客満足度を教えて」
+
+⭕ 構造化プロンプト：
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+## 分析タスク定義
+- 対象：商品レビューデータ
+- 目的：顧客満足度の定量的評価
+
+## 分析観点
+1. 評価点数の分布分析
+2. 感情極性の判定（ポジティブ/ネガティブ/ニュートラル）  
+3. 頻出キーワードの抽出と分類
+
+## 出力形式
+- 満足度スコア：0-100の数値
+- 主な評価理由：箇条書き形式
+- 改善提案：具体的なアクション項目
+━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            </div>
+            
+            <!-- Template Design Section -->
+            <div class="content-section">
+                <span class="section-number">03</span>
+                <h3>テンプレート設計技術</h3>
+                <p>再利用可能で拡張性のあるプロンプト構造の設計方法</p>
+                
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>セクション分割</h4>
+                        <p>## タイトル形式での明確な区分け</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>階層構造</h4>
+                        <p>1. > - での論理的な階層表現</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>変数化</h4>
+                        <p>[変数名] での汎用化対応</p>
+                    </div>
+                </div>
+                
+                <div class="code-block">【汎用テンプレート例：コンテンツ作成】
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+## 作成指示
+- コンテンツ種類：[CONTENT_TYPE]
+- ターゲット：[TARGET_AUDIENCE]  
+- 目的：[PRIMARY_OBJECTIVE]
+
+## 品質要件
+1. 文字数：[WORD_COUNT]文字程度
+2. トーン：[TONE_STYLE]
+3. 構成：[STRUCTURE_FORMAT]
+
+## 必須要素
+- キーメッセージ：[KEY_MESSAGE]
+- 行動促進：[CALL_TO_ACTION]
+- SEOキーワード：[SEO_KEYWORDS]
+
+## 制約条件
+- 禁止表現：[PROHIBITED_TERMS]
+- 参考情報：[REFERENCE_MATERIALS]
+
+## 出力形式
+[OUTPUT_FORMAT_SPECIFICATION]
+━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            </div>
+            
+            <!-- Hierarchical Instructions Section -->
+            <div class="content-section">
+                <span class="section-number">04</span>
+                <h3>階層的指示の設計</h3>
+                <p>複雑なタスクを段階的に分解し、AIが処理しやすい形に構造化</p>
+                
+                <div class="card">
+                    <span class="card-number">02</span>
+                    <h4>階層設計のポイント</h4>
+                    <ul>
+                        <li>大きなタスクを小さな単位に分解</li>
+                        <li>各階層での成果物を明確化</li>
+                        <li>段階的な判定・検証ポイント設定</li>
+                    </ul>
+                </div>
+                
+                <div class="code-block">【階層的指示の実例：プレゼン資料作成】
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+## 第1階層：全体設計
+### 1.1 目的設定
+- プレゼン目標：[PRESENTATION_GOAL]
+- 聞き手分析：[AUDIENCE_ANALYSIS]
+### 1.2 構成設計
+- スライド枚数：[SLIDE_COUNT]
+- 時間配分：[TIME_ALLOCATION]
+
+## 第2階層：コンテンツ作成
+### 2.1 各スライドの設計
+- タイトル：[SLIDE_TITLE]
+- 核となるメッセージ：[CORE_MESSAGE]
+- サポート情報：[SUPPORTING_DATA]
+### 2.2 ストーリーライン
+- 論理的な流れの確認
+- 転換点の明確化
+
+## 第3階層：詳細調整
+### 3.1 視覚的構成
+- レイアウト最適化
+- 図表・画像配置
+### 3.2 品質チェック
+- メッセージの一貫性
+- 理解しやすさの検証
+━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            </div>
+            
+            <!-- Business Applications Section -->
+            <div class="content-section">
+                <span class="section-number">05</span>
+                <h3>ビジネス活用パターン</h3>
+                
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h4>業務別Structuredプロンプト活用例</h4>
+                    </div>
+                </div>
+                
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>企画書作成</h4>
+                        <p>背景→目的→手段→効果→実行計画の構造化</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>データ分析</h4>
+                        <p>仮説→データ→分析→考察→提案の段階設計</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>問題解決</h4>
+                        <p>現状→課題→原因→対策→実行の体系化</p>
+                    </div>
+                </div>
+                
+                <div class="code-block">【実践例：市場調査レポート作成】
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+## A. 調査概要の整理
+### A1. 調査目的
+- 業界動向把握：[INDUSTRY_FOCUS]
+- 競合分析の観点：[COMPETITOR_ANALYSIS_ANGLE]
+### A2. 調査範囲
+- 対象市場：[TARGET_MARKET]  
+- 調査期間：[RESEARCH_PERIOD]
+
+## B. データ収集・分析
+### B1. 定量データ
+- 市場規模・成長率
+- シェア分布・価格動向
+### B2. 定性情報
+- 顧客ニーズ・満足度
+- 業界トレンド・技術動向
+
+## C. 洞察の抽出
+### C1. 機会の特定
+- 成長エリアの発見
+- 競合空白地帯の把握
+### C2. リスクの評価
+- 脅威要因の分析
+- 対策の優先順位付け
+
+## D. 戦略提案
+### D1. 短期アクション（3-6か月）
+### D2. 中期戦略（1-2年）
+### D3. 成功指標・KPI設定
+━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            </div>
+            
+            <!-- Advanced Techniques Section -->
+            <div class="content-section">
+                <span class="section-number">06</span>
+                <h3>高度な構造化テクニック</h3>
+                
+                <div class="card">
+                    <h4>プロフェッショナル技術</h4>
+                    <ul>
+                        <li>条件分岐を含む動的構造の設計</li>
+                        <li>エラーハンドリングとフォールバック</li>
+                        <li>品質チェック機能の組み込み</li>
+                        <li>段階的改善のフィードバックループ</li>
+                    </ul>
+                </div>
+                
+                <div class="quote">
+                構造化は単なる整理ではなく、AIの思考プロセスを導く道筋です。明確な構造により、複雑なタスクでも確実に成果を生み出すことができます。
+                </div>
+            </div>
+            
+            <!-- Workshop Section -->
+            <div class="content-section">
+                <span class="section-number">07</span>
+                <h3>ワークショップ：構造設計実習</h3>
+                
+                <div class="card">
+                    <h4>設計演習</h4>
+                    <p>以下の業務シーンでStructuredプロンプトを作成してください</p>
+                    <ul>
+                        <li>新規事業の事業計画書作成</li>
+                        <li>顧客アンケートの分析とレポート</li>
+                        <li>研修プログラムのカリキュラム設計</li>
+                    </ul>
+                </div>
+                
+                <div class="code-block">【構造設計テンプレート】
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+## 大項目：[MAJOR_SECTION]
+### 中項目1：[SUB_SECTION_1]
+- 詳細項目：[DETAIL_ITEM_1]
+- 成果物：[DELIVERABLE_1]
+- 品質基準：[QUALITY_CRITERIA_1]
+
+### 中項目2：[SUB_SECTION_2]  
+- 詳細項目：[DETAIL_ITEM_2]
+- 成果物：[DELIVERABLE_2]
+- 品質基準：[QUALITY_CRITERIA_2]
+
+## 最終確認項目
+□ [CHECKLIST_ITEM_1]
+□ [CHECKLIST_ITEM_2]  
+□ [CHECKLIST_ITEM_3]
+
+## 出力仕様
+- 形式：[OUTPUT_FORMAT]
+- 文字数：[WORD_LIMIT]
+- 構成：[STRUCTURE_REQUIREMENT]
+━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            </div>
+            
+            <!-- Summary Section -->
+            <div class="content-section">
+                <span class="section-number">08</span>
+                <h3>まとめ：構造が生み出す価値</h3>
+                
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h4>本日学んだこと</h4>
+                        <ul>
+                            <li>構造化プロンプトの設計原理</li>
+                            <li>再利用可能なテンプレート作成技術</li>
+                            <li>階層的指示による複雑タスクの制御</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4>次回予告</h4>
+                    <p>「プロンプト使い分け戦略」<br>
+                    状況に応じた最適な手法選択とハイブリッド活用</p>
+                </div>
+                
+                <p style="text-align: center; margin-top: var(--space-lg);">
+                    <strong>構造的思考でAIを最大活用しましょう</strong>
+                </p>
+            </div>
+        </main>
+        
+        <footer>
+            <p>© 2024 プロンプト設計研修 - Literary Editorial Design System</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Navigation pills functionality
+        document.querySelectorAll('.nav-pill').forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                // Remove active class from all pills
+                document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                
+                // Scroll to corresponding section
+                const sections = document.querySelectorAll('.content-section');
+                if (sections[index]) {
+                    sections[index].scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add fade-in animation to content sections on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    
+                    // Update active nav pill based on current section
+                    const sectionIndex = Array.from(document.querySelectorAll('.content-section')).indexOf(entry.target);
+                    const navPills = document.querySelectorAll('.nav-pill');
+                    
+                    navPills.forEach(pill => pill.classList.remove('active'));
+                    if (navPills[sectionIndex]) {
+                        navPills[sectionIndex].classList.add('active');
+                    }
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all content sections and cards
+        document.querySelectorAll('.content-section, .card, .grid-item').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add fade animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            .fade-in {
+                animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            
+            .content-section {
+                scroll-margin-top: 2rem;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Set first nav pill as active initially
+        const firstNavPill = document.querySelector('.nav-pill');
+        if (firstNavPill) {
+            firstNavPill.classList.add('active');
+        }
+        
+        // Dark Mode Toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            body.classList.add('dark-mode');
+            darkModeToggle.classList.add('active');
+        }
+        
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            darkModeToggle.classList.toggle('active');
+            
+            // Save preference
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', null);
+            }
+        });
+    </script>
+</body>
+</html>

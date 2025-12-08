@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回:AIと一緒に作る！日報管理アプリの下書き生成 | 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .card-description {
+            opacity: 0.8;
+        }
+
+        .phase-card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-number {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--electric) 0%, var(--violet) 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 0;
+            margin-top: 3rem;
+            border: 2px solid var(--ink);
+            position: relative;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .prompt-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            position: relative;
+            border: 2px solid var(--ink);
+            overflow-x: auto;
+        }
+
+        .prompt-box::before {
+            content: 'プロンプト（コピーして使用）';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.25rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--paper);
+            transform: scale(1.05);
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            padding: 1rem 0 1rem 3rem;
+            position: relative;
+            border-left: 2px solid var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        .step-list li::before {
+            content: attr(data-step);
+            position: absolute;
+            left: -20px;
+            top: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--ink);
+            color: var(--paper);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .highlight-box {
+            background: var(--electric);
+            color: var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .prompt-box {
+                font-size: 0.8rem;
+                padding: 1.5rem;
+            }
+
+            .copy-button {
+                position: static;
+                display: block;
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">GAS×AI 業務アプリ講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第2回 / 全5回</div>
+            <h1 class="hero-title">
+                AIと一緒に作る！<br>
+                日報管理アプリの<br>
+                下書き生成
+            </h1>
+            <p class="hero-description">
+                Googleフォームを手動で作成し、AIにGASコードを生成してもらいます。<br>
+                コードをApps Scriptエディタに貼り付けるだけで下書きが完成します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">この回で学ぶこと</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">Googleフォームを手動で作成</h3>
+                <p class="card-description">
+                    日報に必要な4つの項目（日付、氏名、業務内容、所感）を持つ
+                    Googleフォームを手動で作成します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">フォームと連携したスプレッドシートを作成</h3>
+                <p class="card-description">
+                    フォームの「回答」タブから、回答を記録するスプレッドシートを
+                    自動作成します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">AIにGASコードを書いてもらう</h3>
+                <p class="card-description">
+                    フォーム送信時にスプレッドシートに自動転記するコードを
+                    AIに書いてもらい、Apps Scriptエディタに貼り付けます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">何が変わるのか</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">Before</div>
+                <div class="phase-title">手作業で日報管理</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✗ 紙やExcelでバラバラに管理</li>
+                <li>✗ 集計に30分かかる</li>
+                <li>✗ GASのコードが書けない</li>
+                <li>✗ 自動化なんて無理だと思っている</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">After</div>
+                <div class="phase-title">AIの力で自動化の第一歩</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ GoogleフォームとGASの基本構造が理解できる</li>
+                <li>✓ AIにコードを書いてもらう経験ができる</li>
+                <li>✓ Apps Scriptエディタの使い方が分かる</li>
+                <li>✓ 次回のトリガー設定で完全自動化へ</li>
+            </ul>
+        </div>
+
+        <div class="stats-card">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700;">学習のゴール</h3>
+            <p style="font-size: 1.1rem; line-height: 2;">
+                この回では、まだ自動化は完成しません。<br>
+                しかし、<strong>「AIがコードを書いてくれる」</strong>という体験を通じて、<br>
+                プログラミング未経験でも業務アプリが作れることを実感できます！
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP 1</div>
+        <h2 class="section-title">Googleフォームを作成</h2>
+
+        <ul class="step-list">
+            <li data-step="1">Google Drive（drive.google.com）を開く</li>
+            <li data-step="2">左上の「新規」→「Googleフォーム」→「空白のフォーム」</li>
+            <li data-step="3">フォームのタイトル: <code>業務日報</code><br>
+                説明: <code>毎日の業務内容を記録します</code></li>
+            <li data-step="4">質問を追加（4つの項目）：
+                <ul style="margin-top: 0.5rem; padding-left: 2rem;">
+                    <li><strong>日付</strong>（日付形式、必須）</li>
+                    <li><strong>氏名</strong>（記述式、必須）</li>
+                    <li><strong>業務内容</strong>（段落形式、必須）</li>
+                    <li><strong>所感・気づき</strong>（段落形式、任意）</li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="highlight-box">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">✅ ここまでできたら成功！</h3>
+            <p style="font-size: 1.1rem;">
+                Googleフォームが完成しました。まだデータは送信しないでください。<br>
+                次のステップでスプレッドシートと連携させます。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP 2</div>
+        <h2 class="section-title">スプレッドシートを連携</h2>
+
+        <ul class="step-list">
+            <li data-step="1">作成したGoogleフォームで、「回答」タブをクリック</li>
+            <li data-step="2">右上の緑色のスプレッドシートアイコン（Excelマーク）をクリック</li>
+            <li data-step="3">「新しいスプレッドシートを作成」を選択 → 「作成」</li>
+            <li data-step="4">スプレッドシートが自動で開きます<br>
+                A列に「タイムスタンプ」、B列以降にフォーム項目が並んでいることを確認</li>
+        </ul>
+
+        <div class="highlight-box">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">🎯 重要なポイント</h3>
+            <p style="font-size: 1.1rem;">
+                このスプレッドシートは、フォームから送信されたデータを記録する場所です。<br>
+                次のステップで、このスプレッドシートにGASコードを追加します。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP 3</div>
+        <h2 class="section-title">🤖 AIにGASコードを書いてもらう</h2>
+
+        <p style="font-size: 1.1rem; margin-bottom: 2rem;">
+            次に、フォーム送信時にスプレッドシートに自動転記するGASコードをAIに書いてもらいます。<br>
+            以下のプロンプトを<strong>全文コピー</strong>して、ChatGPT、Gemini、またはClaudeに貼り付けてください。
+        </p>
+
+        <div class="prompt-box" id="onFormSubmitPrompt">Google Apps Scriptで、Googleフォームの送信内容をスプレッドシートに転記するコードを作成してください。
+
+【技術仕様】
+- プラットフォーム: Google Apps Script
+- イベントトリガー: フォーム送信時（onFormSubmit）
+- 対象サービス: Googleフォーム、Googleスプレッドシート
+
+【フォーム項目（項目順）】
+1. 日付（日付形式）
+2. 氏名（短い回答）
+3. 業務内容（段落形式）
+4. 所感・気づき（段落形式）
+
+【スプレッドシートの列構成】
+- A列: タイムスタンプ（送信日時）
+- B列: 日付
+- C列: 氏名
+- D列: 業務内容
+- E列: 所感・気づき
+- シート名: 「シート1」
+
+【処理フロー】
+1. フォーム送信イベント（e）を受け取る
+2. 送信内容（itemResponses）を取得
+3. タイムスタンプを生成（new Date()）
+4. 各項目の値を取得
+5. スプレッドシートの最終行に追加（appendRow）
+
+【コード要件】
+- 関数名: onFormSubmit
+- 引数: e（フォーム送信イベントオブジェクト）
+- 各行に日本語コメントを付ける
+- 変数名は分かりやすい名前を使用
+
+上記の仕様に従って、Google Apps Scriptのコードを生成してください。</div>
+        <button class="copy-button" onclick="copyPrompt('onFormSubmitPrompt')">コピー</button>
+
+        <div class="highlight-box" style="margin-top: 3rem;">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">📝 AIが返してくれるコード例</h3>
+            <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                AIは以下のような<code>onFormSubmit</code>関数を返してくれます：
+            </p>
+            <div style="background: #1e1e1e; color: #d4d4d4; padding: 1.5rem; border-radius: 6px; font-family: 'Consolas', monospace; font-size: 0.85rem; overflow-x: auto;">
+<pre style="margin: 0;">function onFormSubmit(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('シート1');
+  var timestamp = new Date();
+  var itemResponses = e.response.getItemResponses();
+  
+  var date = itemResponses[0].getResponse();
+  var name = itemResponses[1].getResponse();
+  var content = itemResponses[2].getResponse();
+  var feedback = itemResponses[3].getResponse();
+  
+  sheet.appendRow([timestamp, date, name, content, feedback]);
+}</pre>
+            </div>
+            <p style="font-size: 1.1rem; margin-top: 1rem;">
+                このコードを次のステップでApps Scriptエディタに貼り付けます。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP 4</div>
+        <h2 class="section-title">Apps Scriptエディタにコードを貼り付け</h2>
+
+        <ul class="step-list">
+            <li data-step="1">スプレッドシートで、メニューバーの「拡張機能」→「Apps Script」を選択</li>
+            <li data-step="2">Apps Scriptエディタが開きます<br>
+                既存の<code>function myFunction() { }</code>を全て削除</li>
+            <li data-step="3">AIが生成したコードを貼り付け</li>
+            <li data-step="4">フロッピーディスクアイコンをクリック、または Ctrl+S（Mac: Cmd+S）で保存</li>
+            <li data-step="5">プロジェクト名を「日報管理システム」などに変更（任意）</li>
+        </ul>
+
+        <div class="highlight-box">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">⚠️ 重要な注意点</h3>
+            <p style="font-size: 1.1rem;">
+                この時点では、まだコードは自動実行されません。<br>
+                <strong>次回（第3回）でトリガーを設定</strong>して、フォーム送信時に自動実行されるようにします。<br>
+                今回は、コードを貼り付けて保存するだけでOKです！
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SUMMARY</div>
+        <h2 class="section-title">この回のまとめ</h2>
+
+        <div class="stats-card">
+            <h3 style="font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: 900;">🎉 下書きが完成しました！</h3>
+            <p style="font-size: 1.2rem; line-height: 2; margin-bottom: 1.5rem;">
+                おめでとうございます！日報管理アプリの基本構造が完成しました。
+            </p>
+            <ul style="font-size: 1.1rem; line-height: 2; list-style: none; padding: 0;">
+                <li>✓ Googleフォームで入力画面を作成</li>
+                <li>✓ スプレッドシートでデータ保存先を作成</li>
+                <li>✓ AIがGASコードを生成</li>
+                <li>✓ Apps Scriptエディタにコードを配置</li>
+            </ul>
+            <p style="font-size: 1.1rem; margin-top: 1.5rem; line-height: 2;">
+                次回は、トリガー設定で自動実行を完成させ、<br>
+                さらにHTMLアプリを作ってGoogleサイトで公開します！
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Q&A</div>
+        <h2 class="section-title">よくある質問</h2>
+
+        <div class="phase-card">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Q1: AIが生成したコードが少し違う</h3>
+            <p style="font-size: 1.1rem;">
+                <strong>A:</strong> AIは毎回少し異なるコードを生成しますが、機能は同じです。<br>
+                コメントの有無や変数名が違うことがありますが、問題ありません。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Q2: フォーム項目の順番を間違えた</h3>
+            <p style="font-size: 1.1rem;">
+                <strong>A:</strong> フォームで項目の順番を変更するか、GASコードの配列番号を調整してください。<br>
+                <code>itemResponses[0]</code>が1番目の質問、<code>itemResponses[1]</code>が2番目の質問です。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Q3: コードを貼り付けたが、何も起きない</h3>
+            <p style="font-size: 1.1rem;">
+                <strong>A:</strong> 正常です！トリガー設定をしていないので、今は何も起きません。<br>
+                次回（第3回）でトリガーを設定すれば、フォーム送信時に自動実行されるようになります。
+            </p>
+        </div>
+
+        <div class="phase-card">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Q4: Apps Scriptエディタが開かない</h3>
+            <p style="font-size: 1.1rem;">
+                <strong>A:</strong> スプレッドシートから「拡張機能」→「Apps Script」を選択してください。<br>
+                フォームからではなく、<strong>スプレッドシートから</strong>開く必要があります。
+            </p>
+        </div>
+    </section>
+
+    <section class="section" style="margin-bottom: 5rem;">
+        <div class="section-label">NEXT</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div class="highlight-box">
+            <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">第3回：完成！GASで動く日報アプリとGoogleサイト公開</h3>
+            <p style="font-size: 1.1rem; line-height: 2;">
+                次回は、トリガー設定で自動転記を完成させた後、<br>
+                <strong>HTMLアプリを作成してWebアプリとして公開</strong>し、<br>
+                Googleサイトに埋め込んでチーム全員で閲覧できるようにします。<br>
+                これが本当の「Webアプリ内製化」です！
+            </p>
+        </div>
+    </section>
+
+    <script>
+        function copyPrompt(id) {
+            const promptText = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'コピーしました！';
+                button.style.background = '#4ade80';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            }).catch(err => {
+                alert('コピーに失敗しました。手動でコピーしてください。');
+            });
+        }
+    </script>
+</body>
+</html>

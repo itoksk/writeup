@@ -1,0 +1,227 @@
+# ゼロタッチマネジメント - 第4回 プロンプト集
+
+## 未提出検知プロンプト
+
+```
+You are checking daily report submissions.
+
+Member list:
+{member_list}
+
+Today's submissions from log:
+{today_submissions}
+
+Identify:
+1. Members who have NOT submitted today's report
+2. Members who submitted LATE (after 17:00)
+
+Output format:
+---
+MISSING_SUBMISSIONS:
+- {member_name} ({email})
+
+LATE_SUBMISSIONS:
+- {member_name} - submitted at {time}
+
+SUMMARY:
+- Total members: {count}
+- Submitted: {count}
+- Missing: {count}
+- Late: {count}
+- Submission rate: {percentage}%
+---
+Output in Japanese.
+```
+
+---
+
+## 週次サマリー生成プロンプト
+
+```
+You are generating a weekly submission summary.
+
+This week's data:
+{weekly_submission_log}
+
+Generate a summary including:
+1. 週次提出率（日報・週報別）
+2. 提出率ランキング（上位3名）
+3. 要フォロー（提出率80%未満）
+4. 前週との比較
+5. 改善提案（if any）
+
+Output in Japanese, formatted for Chat message.
+```
+
+---
+
+## 未提出アラートテンプレート
+
+```
+⚠️ **日報未提出アラート**
+
+以下のメンバーが本日の日報を提出していません。
+
+■ 未提出者
+{missing_members_list}
+
+■ 遅延提出
+{late_members_list}
+
+■ 本日の提出状況
+・提出済: {submitted_count}名
+・未提出: {missing_count}名
+・提出率: {submission_rate}%
+
+フォローをお願いします。
+```
+
+---
+
+## 週次サマリーテンプレート
+
+```
+📊 **週次提出サマリー** ({week_start} 〜 {week_end})
+
+■ 提出率
+・日報: {daily_rate}% ({daily_submitted}/{daily_total})
+・週報: {weekly_rate}%
+
+■ 提出率ランキング
+🥇 {rank1_name}: {rank1_rate}%
+🥈 {rank2_name}: {rank2_rate}%
+🥉 {rank3_name}: {rank3_rate}%
+
+■ 要フォロー（80%未満）
+{low_rate_members}
+
+■ 前週比較
+・日報提出率: {daily_diff}%ポイント
+・週報提出率: {weekly_diff}%ポイント
+
+■ 所感・提案
+{ai_suggestions}
+```
+
+---
+
+## ダッシュボード更新用シート構成
+
+### 提出ログシート
+
+| 列 | 列名 | データ型 | 例 |
+|----|------|---------|-----|
+| A | 日付 | Date | 2024/01/15 |
+| B | 提出者 | Text | 山田太郎 |
+| C | 種類 | Text | 日報 |
+| D | 提出時刻 | Time | 17:30 |
+| E | ステータス | Text | 提出済 |
+| F | 品質判定 | Text | 合格 |
+| G | Driveリンク | URL | (添付がある場合) |
+
+### メンバーマスタシート
+
+| 列 | 列名 | データ型 |
+|----|------|---------|
+| A | メンバー名 | Text |
+| B | メールアドレス | Email |
+| C | 部署 | Text |
+| D | 上長 | Text |
+| E | 日報必須 | Boolean |
+
+### ダッシュボードシート
+
+| セル | 内容 |
+|------|------|
+| B2 | 本日の提出数 |
+| B3 | 本日の提出率 |
+| B4 | 未提出者数 |
+| B5 | 遅延提出数 |
+| A8:D20 | 個人別ステータス表 |
+
+---
+
+## エージェント設定サマリー
+
+### Submission Check Agent
+
+| 項目 | 設定値 |
+|------|--------|
+| Name | Submission Check Agent |
+| Description | Detects missing submissions and sends alerts |
+| Trigger | Schedule (Daily, 20:00 JST) |
+| Data Source | Sheets (提出ログ, メンバーマスタ) |
+| Output | Chat (alert if missing) |
+
+### Dashboard Update Agent
+
+| 項目 | 設定値 |
+|------|--------|
+| Name | Dashboard Update Agent |
+| Description | Updates dashboard with daily stats |
+| Trigger | Schedule (Daily, 21:00 JST) |
+| Process | Aggregate today's data, update cells |
+| Output | Sheets (ダッシュボード更新) |
+
+### Weekly Summary Agent
+
+| 項目 | 設定値 |
+|------|--------|
+| Name | Weekly Summary Agent |
+| Description | Generates weekly submission summary |
+| Trigger | Schedule (Friday, 18:00 JST) |
+| Process | Gemini analysis of weekly data |
+| Output | Chat (管理者チャンネル) |
+
+---
+
+## Drive連携設定
+
+### フォルダ構成
+
+```
+日報週報/
+├── 2024/
+│   ├── 01/
+│   │   ├── 20240115_山田太郎_報告書.pdf
+│   │   └── 20240115_佐藤花子_添付資料.xlsx
+│   └── 02/
+└── 2025/
+```
+
+### 添付ファイル保存プロンプト
+
+```
+When processing email with attachment:
+1. Extract attachment
+2. Determine folder path: 日報週報/{year}/{month}
+3. Rename file: {date}_{sender_name}_{original_filename}
+4. Save to Drive
+5. Return Drive link for Sheets logging
+
+Output:
+- drive_link: {url}
+- saved_path: {path}
+```
+
+---
+
+## 提出リマインドプロンプト（補助エージェント用）
+
+```
+You are sending a reminder for report submission.
+
+Missing members:
+{missing_list}
+
+Current time: {current_time}
+Deadline: 17:00
+
+Generate a polite but firm reminder message in Japanese.
+Include:
+- Remaining time until deadline (or overtime)
+- List of missing members
+- Link to submission template/form
+
+Keep it professional and brief.
+```

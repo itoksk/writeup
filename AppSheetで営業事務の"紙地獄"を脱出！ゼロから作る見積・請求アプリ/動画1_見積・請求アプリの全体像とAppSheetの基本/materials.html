@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動画1：見積・請求アプリの全体像とAppSheetの基本</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap');
+
+        :root {
+            /* Literary Editorial Design System Colors */
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --paper-shadow: #F5F5F0;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+
+            /* Typography */
+            --font-primary: 'Zen Kaku Gothic New', sans-serif;
+            --font-secondary: 'Space Grotesk', monospace;
+            --font-serif: 'Noto Serif JP', serif;
+
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(10, 14, 39, 0.1);
+            --shadow-md: 0 4px 16px rgba(10, 14, 39, 0.15);
+            --shadow-lg: 0 8px 32px rgba(10, 14, 39, 0.2);
+            --shadow-xl: 0 16px 48px rgba(10, 14, 39, 0.25);
+
+            /* Border */
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+            padding: var(--space-lg) 0;
+        }
+
+        /* Paper Texture Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.03) 2px,
+                    rgba(10, 14, 39, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.02) 2px,
+                    rgba(10, 14, 39, 0.02) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-sm);
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+
+        .subtitle {
+            font-family: var(--font-secondary);
+            font-size: 1.25rem;
+            color: var(--ink);
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+
+        /* Navigation */
+        nav {
+            margin-bottom: var(--space-lg);
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-pill {
+            padding: var(--space-xs) var(--space-md);
+            background: var(--paper);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 50px;
+            font-family: var(--font-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: var(--ink);
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        .nav-pill:hover::before {
+            left: 0;
+        }
+
+        .nav-pill:hover {
+            color: var(--paper);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Content Section */
+        .content-section {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .content-section:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .section-number {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--electric);
+            background: var(--ink);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        /* Content Typography */
+        .content-section h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 900;
+            margin-bottom: var(--space-lg);
+            color: var(--ink);
+            position: relative;
+            line-height: 1.2;
+        }
+
+        .content-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+
+        .content-section h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: var(--space-lg);
+            margin-bottom: var(--space-md);
+            color: var(--ink);
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+        }
+
+        .content-section h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: var(--space-md);
+            margin-bottom: var(--space-sm);
+            color: var(--ink);
+        }
+
+        .content-section p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-md);
+        }
+
+        .content-section ul, .content-section ol {
+            list-style-position: outside;
+            padding-left: var(--space-lg);
+            margin: var(--space-md) 0;
+        }
+
+        .content-section li {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: var(--space-sm);
+        }
+
+        .content-section ul {
+            list-style-type: none;
+        }
+
+        .content-section ul li {
+            padding-left: var(--space-md);
+            position: relative;
+        }
+
+        .content-section ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--space-md) 0;
+            background: #fff;
+            border: 2px solid var(--ink);
+        }
+
+        thead {
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        th, td {
+            padding: var(--space-sm) var(--space-md);
+            text-align: left;
+            border: 1px solid var(--ink);
+        }
+
+        th {
+            font-family: var(--font-secondary);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        td {
+            font-size: 1rem;
+        }
+
+        tbody tr:nth-child(even) {
+            background: var(--paper-shadow);
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, var(--electric), var(--coral));
+            padding: 3px;
+            border-radius: 8px;
+            margin: var(--space-md) 0;
+        }
+
+        .highlight-content {
+            background: var(--paper);
+            padding: var(--space-md);
+            border-radius: 5px;
+        }
+
+        .highlight-box p {
+            margin: 0;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .grid-item {
+            background: #fff;
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 200px;
+        }
+
+        .grid-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--electric), var(--coral));
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .grid-item:hover::after {
+            transform: translateY(0);
+        }
+
+        .grid-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .grid-item h4 {
+            margin: 0 0 var(--space-sm) 0;
+            font-size: 1.2rem;
+            color: var(--ink);
+        }
+
+        .grid-item p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .grid-item ul {
+            margin: var(--space-sm) 0 0 0;
+            padding-left: var(--space-md);
+        }
+
+        .grid-item li {
+            margin-bottom: var(--space-xs);
+            font-size: 0.95rem;
+        }
+
+        /* Step Box */
+        .step-box {
+            background: #fff;
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            border-left: 6px solid var(--electric);
+        }
+
+        .step-number {
+            font-family: var(--font-secondary);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--electric);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Note Box */
+        .note-box {
+            background: rgba(0, 240, 255, 0.1);
+            border: 2px solid var(--electric);
+            border-left: 6px solid var(--electric);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .note-box p {
+            margin: 0;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid var(--coral);
+            border-left: 6px solid var(--coral);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .warning-box h4 {
+            color: var(--coral);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Checklist */
+        .checklist {
+            background: #fff;
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .checklist h3 {
+            border: none;
+            padding: 0;
+            margin-bottom: var(--space-md);
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: var(--space-sm);
+            margin-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--paper-shadow);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: var(--space-sm);
+            cursor: pointer;
+        }
+
+        .checklist-item label {
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: var(--space-lg) 0;
+            border-top: 3px solid var(--ink);
+            margin-top: var(--space-xl);
+            font-family: var(--font-secondary);
+            letter-spacing: 0.05em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .content-section h2 {
+                font-size: 1.6rem;
+            }
+
+            .content-section h3 {
+                font-size: 1.3rem;
+            }
+
+            .content-section p, .content-section li {
+                font-size: 1rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>見積・請求アプリの全体像と<br>AppSheetの基本</h1>
+        </header>
+
+        <!-- Navigation -->
+        <nav>
+            <a href="#goal" class="nav-pill">講座ゴール</a>
+            <a href="#about-appsheet" class="nav-pill">AppSheetとは</a>
+            <a href="#basic-ui" class="nav-pill">基本画面構成</a>
+            <a href="#basic-terms" class="nav-pill">基本用語集</a>
+            <a href="#first-app" class="nav-pill">初回アプリ作成</a>
+            <a href="#checklist" class="nav-pill">今日のチェックリスト</a>
+        </nav>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Section 1: 講座ゴール -->
+            <section id="goal" class="content-section">
+                <span class="section-number">01</span>
+                <h2>講座ゴール</h2>
+
+                <p>この動画を通じて、以下のことを学びます：</p>
+
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>AppSheetの基本構造の理解</h4>
+                        <p>AppSheetとは何か、どのような特徴があるのかを理解します。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>基本画面の把握</h4>
+                        <p>AppSheet Editorの6つの主要タブ（Data、UX、Behavior、Automation、Security、Intelligence）の役割を学びます。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>データソースからアプリ自動生成</h4>
+                        <p>Googleスプレッドシートからアプリを自動生成する方法を体験します。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>基本用語の習得</h4>
+                        <p>テーブル、ビュー、アクション、オートメーション、スライスの5つの基本用語を習得します。</p>
+                    </div>
+                </div>
+
+                <div class="note-box">
+                    <p><strong>重要:</strong> この動画は、AppSheetを初めて使う方を対象にしています。プログラミング経験がなくても、Excelの基本的な関数が理解できれば十分に実践できる内容です。</p>
+                </div>
+            </section>
+
+            <!-- Section 2: AppSheetとは -->
+            <section id="about-appsheet" class="content-section">
+                <span class="section-number">02</span>
+                <h2>AppSheetとは</h2>
+
+                <div class="highlight-box">
+                    <div class="highlight-content">
+                        <p><strong>AppSheet</strong>は、Googleが提供するノーコード開発プラットフォームです。プログラミングコードを書かずに、Googleスプレッドシートなどのデータソースを接続するだけで、業務アプリを作成できます。</p>
+                    </div>
+                </div>
+
+                <h3>主な特徴</h3>
+
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>1. データソース連携が簡単</h4>
+                        <p>Googleスプレッドシート、Excel、SQLデータベースなど、様々なデータソースと連携可能です。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>2. 自動的にUIが生成される</h4>
+                        <p>データソースを接続すると、フォームや一覧画面が自動作成されます。後から自由にカスタマイズも可能です。</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>3. モバイル対応</h4>
+                        <p>Webブラウザだけでなく、iOS・Androidのモバイルアプリとしても動作します。外出先でも使えます。</p>
+                    </div>
+                </div>
+
+                <h3>他のツールとの違い</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ツール</th>
+                            <th>特徴</th>
+                            <th>課題・コスト</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Excel / Googleスプレッドシート</td>
+                            <td>データは扱える</td>
+                            <td>複数人での同時編集やモバイル対応に課題</td>
+                        </tr>
+                        <tr>
+                            <td>kintone</td>
+                            <td>柔軟性が高い</td>
+                            <td>有料プランが必須、コストが気になる</td>
+                        </tr>
+                        <tr>
+                            <td>Power Apps</td>
+                            <td>Microsoft製品との連携が強力</td>
+                            <td>学習コストがやや高め</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AppSheet</strong></td>
+                            <td>無料プラン（10ユーザーまで）で十分に業務アプリが作れる</td>
+                            <td>スモールスタートに最適</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>主な活用シーン</h3>
+
+                <ul>
+                    <li>在庫管理アプリ</li>
+                    <li>営業支援アプリ（顧客管理、商談管理）</li>
+                    <li>見積・請求管理アプリ（今回のテーマ）</li>
+                    <li>勤怠管理アプリ</li>
+                    <li>設備点検アプリ</li>
+                    <li>工事管理アプリ</li>
+                </ul>
+            </section>
+
+            <!-- Section 3: 基本画面構成 -->
+            <section id="basic-ui" class="content-section">
+                <span class="section-number">03</span>
+                <h2>基本画面構成</h2>
+
+                <p>AppSheet Editorは、左側に6つの主要タブがあります。この6つのタブを使って、アプリをカスタマイズしていきます。</p>
+
+                <h3>AppSheet Editorの6つの主要タブ</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>タブ名</th>
+                            <th>役割</th>
+                            <th>主な機能</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Data</strong></td>
+                            <td>データ管理</td>
+                            <td>テーブルの追加・編集、カラムの型設定（Text、Number、Date、Refなど）、仮想カラムの設定、リレーションシップの管理</td>
+                        </tr>
+                        <tr>
+                            <td><strong>UX</strong></td>
+                            <td>ユーザーエクスペリエンス</td>
+                            <td>ビュー（View）の設定（Form、Table、Card、Detailなど）、ナビゲーションの構成、表示順序やフィルタの設定</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Behavior</strong></td>
+                            <td>振る舞い</td>
+                            <td>アクション（Action）の設定、ボタンをクリックした時の動作定義、データの更新・削除・複製、グループアクション</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Automation</strong></td>
+                            <td>自動処理</td>
+                            <td>データ変更をトリガーに自動処理を実行、スケジュール実行（毎日、毎週など）、外部サービスとの連携（メール送信、PDF生成など）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Security</strong></td>
+                            <td>セキュリティ</td>
+                            <td>アプリへのアクセス権限設定、テーブルごとの読み書き権限設定</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Intelligence</strong></td>
+                            <td>インテリジェンス</td>
+                            <td>機械学習モデルを使った予測機能、データの分析機能</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="note-box">
+                    <p><strong>今回の研修では、主に「Data」「UX」「Behavior」「Automation」の4つのタブを使います。</strong></p>
+                </div>
+
+                <h3>プレビュー画面の使い方</h3>
+
+                <p>AppSheet Editorの右側には、プレビュー画面が表示されます。ここで、実際のアプリの動作を確認できます。</p>
+
+                <ul>
+                    <li><strong>デバイス切り替え:</strong> スマートフォン、タブレット、PCの表示を切り替えられます。</li>
+                    <li><strong>ユーザー切り替え:</strong> 複数のユーザーでテストする場合、ユーザーを切り替えられます。</li>
+                    <li><strong>Save & Verify:</strong> 変更を保存し、エラーがないか確認します。</li>
+                </ul>
+            </section>
+
+            <!-- Section 4: 基本用語集 -->
+            <section id="basic-terms" class="content-section">
+                <span class="section-number">04</span>
+                <h2>基本用語集</h2>
+
+                <p>AppSheetで頻繁に使う5つの基本用語を解説します。</p>
+
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>1. テーブル（Table）</h4>
+                        <p><strong>データの土台</strong>です。Googleスプレッドシートの各シートに相当します。</p>
+                        <p><strong>例:</strong> 顧客テーブル、社員テーブル、サービステーブル、注文テーブル、注文詳細テーブル</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h4>2. ビュー（View）</h4>
+                        <p><strong>画面表示形式</strong>です。同じテーブルでも、一覧表示、フォーム表示、詳細表示など、様々な表示形式があります。</p>
+                        <p><strong>例:</strong> 顧客一覧ビュー、顧客フォームビュー、顧客詳細ビュー</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h4>3. アクション（Action）</h4>
+                        <p><strong>ボタン処理</strong>です。ボタンをクリックした時に実行される動作を定義します。</p>
+                        <p><strong>例:</strong> 見積書発行ボタン、請求書発行ボタン、一覧出力ボタン</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h4>4. オートメーション（Automation）</h4>
+                        <p><strong>自動実行の仕組み</strong>です。データ変更をトリガーに自動処理を実行したり、スケジュール実行を設定したりします。</p>
+                        <p><strong>例:</strong> ステータスが「見積発行済」に変わったら、自動的にメールを送信</p>
+                    </div>
+
+                    <div class="grid-item">
+                        <h4>5. スライス（Slice）</h4>
+                        <p><strong>データフィルタリングの仕組み</strong>です。テーブルの一部のデータだけを抽出して、別のビューに表示することができます。</p>
+                        <p><strong>例:</strong> 注文テーブルから「ステータスが見積中のもの」だけを抽出して、「見積中一覧」ビューに表示</p>
+                    </div>
+                </div>
+
+                <div class="note-box">
+                    <p><strong>これらの用語は、今後の動画で実際に使いながら、より深く理解していきます。</strong></p>
+                </div>
+            </section>
+
+            <!-- Section 5: 初回アプリ作成の流れ -->
+            <section id="first-app" class="content-section">
+                <span class="section-number">05</span>
+                <h2>初回アプリ作成の流れ</h2>
+
+                <p>Googleスプレッドシートからアプリを自動生成する手順を説明します。</p>
+
+                <h3>準備するもの</h3>
+
+                <ul>
+                    <li>Googleアカウント（Gmail）</li>
+                    <li>Google Driveのフォルダ</li>
+                    <li>demo_dataフォルダ内のCSVファイル（例: 顧客.csv）</li>
+                </ul>
+
+                <h3>ステップバイステップガイド</h3>
+
+                <div class="step-box">
+                    <div class="step-number">ステップ1</div>
+                    <h4>AppSheet公式サイトへアクセス</h4>
+                    <ol>
+                        <li>ブラウザを開いて、URLバーに「<strong>appsheet.com</strong>」と入力</li>
+                        <li>AppSheetの公式サイトが表示される</li>
+                        <li>右上の「<strong>Sign In</strong>」ボタンをクリック</li>
+                    </ol>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">ステップ2</div>
+                    <h4>Googleアカウントでログイン</h4>
+                    <ol>
+                        <li>ログイン画面で「<strong>Continue with Google</strong>」をクリック</li>
+                        <li>Googleアカウントの選択画面が表示される</li>
+                        <li>使用したいアカウントを選択</li>
+                        <li>AppSheetへのアクセス許可を「<strong>許可</strong>」</li>
+                    </ol>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">ステップ3</div>
+                    <h4>サンプルデータの準備</h4>
+                    <ol>
+                        <li>demo_dataフォルダ内の「<strong>顧客.csv</strong>」を用意</li>
+                        <li>Google Driveを開く</li>
+                        <li>「新規」→「ファイルのアップロード」で「顧客.csv」をアップロード</li>
+                        <li>アップロード後、ファイルを右クリック→「アプリで開く」→「<strong>Googleスプレッドシート</strong>」を選択</li>
+                        <li>CSVファイルがGoogleスプレッドシートに変換される</li>
+                    </ol>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">ステップ4</div>
+                    <h4>新規アプリ作成</h4>
+                    <ol>
+                        <li>AppSheetのホーム画面で「<strong>Create</strong>」ボタンをクリック</li>
+                        <li>「<strong>App</strong>」を選択</li>
+                        <li>「<strong>Start with your own data</strong>」を選択</li>
+                        <li>データソースとして「<strong>Google Sheets</strong>」を選択</li>
+                        <li>Google Driveのファイル一覧から「顧客」スプレッドシートを選択</li>
+                        <li>「<strong>Select</strong>」ボタンをクリック</li>
+                    </ol>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">ステップ5</div>
+                    <h4>アプリの自動生成</h4>
+                    <ol>
+                        <li>AppSheetが自動的にスプレッドシートのデータを解析</li>
+                        <li>数秒待つと、アプリが自動生成される</li>
+                        <li>左側にAppSheet Editorの画面、右側にプレビュー画面が表示される</li>
+                        <li>プレビュー画面で顧客一覧が表示されていることを確認</li>
+                        <li>「+」ボタンをクリックして、新規顧客追加フォームが表示されることを確認</li>
+                    </ol>
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-content">
+                        <p><strong>完了！</strong> これで、Googleスプレッドシートからアプリが自動生成されました。次回の動画では、残りの4つのテーブル（社員、サービス、注文、注文詳細）を追加して、見積・請求アプリの土台を作ります。</p>
+                    </div>
+                </div>
+
+                <h3>次回予告: 5テーブル構成の見積・請求アプリ</h3>
+
+                <p>次回の動画2では、以下の5つのテーブルを設計します：</p>
+
+                <ol>
+                    <li><strong>顧客テーブル:</strong> 顧客の基本情報（顧客名、カテゴリ、住所、電話、メール）</li>
+                    <li><strong>社員テーブル:</strong> 社員の基本情報（社員名、役職、電話、メール）</li>
+                    <li><strong>サービステーブル:</strong> 提供するサービスの情報（サービス名、価格、詳細）</li>
+                    <li><strong>注文テーブル:</strong> 注文のヘッダー情報（担当社員、顧客、ステータス、発行日、見積番号、請求番号など）</li>
+                    <li><strong>注文詳細テーブル:</strong> 注文の明細情報（サービス、数量、単価、金額）</li>
+                </ol>
+
+                <p>特に、<strong>参照型（Ref）</strong>を使ったテーブル間の接続方法と、<strong>親子関係（注文と注文詳細）</strong>の設定方法を実践的に学びます。</p>
+            </section>
+
+            <!-- Section 6: 今日のチェックリスト -->
+            <section id="checklist" class="content-section">
+                <span class="section-number">06</span>
+                <h2>今日のチェックリスト</h2>
+
+                <div class="checklist">
+                    <h3>学習内容を確認しましょう</h3>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1">
+                        <label for="check1">AppSheetにログインできた</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2">
+                        <label for="check2">Googleスプレッドシートからアプリを自動生成できた</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3">
+                        <label for="check3">AppSheet Editorの6つの主要タブを確認できた</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4">
+                        <label for="check4">5つの基本用語（テーブル、ビュー、アクション、オートメーション、スライス）を理解できた</label>
+                    </div>
+
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check5">
+                        <label for="check5">次回のテーマ（5テーブル設計）を確認できた</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ Section -->
+            <section class="content-section">
+                <h2>よくある質問（FAQ）</h2>
+
+                <div class="step-box">
+                    <h4>Q: AppSheetは無料で使えますか？</h4>
+                    <p>A: 個人利用や小規模チーム（10ユーザーまで）であれば無料プランで十分利用できます。本研修の内容も無料プランで実装可能です。</p>
+                </div>
+
+                <div class="step-box">
+                    <h4>Q: プログラミング知識は必要ですか？</h4>
+                    <p>A: 基本的なExcel関数（SUMやCONCATENATEなど）が理解できれば問題ありません。プログラミング経験は不要です。</p>
+                </div>
+
+                <div class="step-box">
+                    <h4>Q: オフラインでも使えますか？</h4>
+                    <p>A: AppSheetのモバイルアプリは「Sync」機能により、オフライン時でもデータ入力が可能です。オンラインに復帰したタイミングで自動的に同期されます。</p>
+                </div>
+
+                <div class="step-box">
+                    <h4>Q: 既存のExcelデータを移行できますか？</h4>
+                    <p>A: はい、ExcelファイルをGoogleスプレッドシートにインポートすることで、既存データをそのまま活用できます。</p>
+                </div>
+            </section>
+
+            <!-- Reference Links -->
+            <section class="content-section">
+                <h2>参考リンク</h2>
+                <ul>
+                    <li><a href="https://help.appsheet.com/" target="_blank">AppSheet公式ドキュメント</a></li>
+                    <li><a href="https://community.appsheet.com/" target="_blank">AppSheet Community Forum</a></li>
+                    <li><a href="https://www.youtube.com/c/AppSheet" target="_blank">AppSheet YouTube Channel</a></li>
+                    <li><a href="https://support.google.com/docs/table/25273" target="_blank">Googleスプレッドシート関数リファレンス</a></li>
+                </ul>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <p>AppSheetで営業事務の"紙地獄"を脱出！ゼロから作る見積・請求アプリ</p>
+            <p>動画1/5: 見積・請求アプリの全体像とAppSheetの基本</p>
+        </footer>
+    </div>
+</body>
+</html>

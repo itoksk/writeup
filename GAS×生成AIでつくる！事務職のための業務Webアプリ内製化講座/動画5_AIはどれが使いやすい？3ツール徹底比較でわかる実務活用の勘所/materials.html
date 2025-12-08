@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：AIはどれが使いやすい？3ツール徹底比較でわかる実務活用の勘所 | 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .phase-card {
+            border-bottom: 2px dashed rgba(10, 14, 39, 0.2);
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--violet);
+            opacity: 0.2;
+        }
+
+        .phase-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--paper);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border: 2px solid var(--ink);
+        }
+
+        .comparison-table th {
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+        }
+
+        .comparison-table td {
+            font-size: 0.95rem;
+        }
+
+        .rating-excellent {
+            color: var(--electric);
+            font-weight: 700;
+        }
+
+        .rating-good {
+            color: var(--violet);
+        }
+
+        .stats-card {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .summary-box {
+            background: rgba(0, 240, 255, 0.05);
+            border: 2px solid var(--electric);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .phase-number {
+                font-size: 3rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .comparison-table {
+                font-size: 0.85rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">GAS×AI 業務アプリ講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第5回 / 全5回（最終回）</div>
+            <h1 class="hero-title">
+                AIはどれが使いやすい？<br>
+                3ツール徹底比較でわかる<br>
+                実務活用の勘所
+            </h1>
+            <p class="hero-description">
+                Claude、Gemini、ChatGPTの特徴を理解し、目的別に使い分けられるようになりましょう。
+                それぞれの得意分野と、実務での活用ポイントを解説します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">この回で学ぶこと</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">3AIの特徴比較</h3>
+                <p class="card-description">
+                    ChatGPT、Gemini、Claudeの特徴を、実際のプロンプトを使って
+                    比較します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">目的別の使い分け</h3>
+                <p class="card-description">
+                    コード生成、仕様書作成、トラブルシューティングなど、
+                    目的別にどのAIが適しているかを学びます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">実務活用のコツ</h3>
+                <p class="card-description">
+                    AIを業務で活用する時の注意点と、
+                    効果的な使い方のポイントを整理します。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">何が変わるのか</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">Before</div>
+                <div class="phase-title">受講前の状態</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✗ ChatGPTしか使ったことがない</li>
+                <li>✗ 他のAIがあることは知っているけど、違いが分からない</li>
+                <li>✗ 何となく同じものだと思っている</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">After</div>
+                <div class="phase-title">受講後の状態</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ Claude、Gemini、ChatGPTの違いが分かる</li>
+                <li>✓ 目的別で使い分けられる</li>
+                <li>✓ 自分に合うAIが見えてくる</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">COMPARISON</div>
+        <h2 class="section-title">3AI 徹底比較</h2>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>観点</th>
+                    <th>ChatGPT</th>
+                    <th>Gemini</th>
+                    <th>Claude</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>コード生成</strong></td>
+                    <td><span class="rating-excellent">◎</span> 簡潔で実用的</td>
+                    <td><span class="rating-good">○</span> コメント詳しい</td>
+                    <td><span class="rating-good">○</span> セキュリティ配慮</td>
+                </tr>
+                <tr>
+                    <td><strong>仕様書作成</strong></td>
+                    <td><span class="rating-good">○</span> 箇条書き</td>
+                    <td><span class="rating-excellent">◎</span> 表形式</td>
+                    <td><span class="rating-excellent">◎</span> 詳細で網羅的</td>
+                </tr>
+                <tr>
+                    <td><strong>日本語対応</strong></td>
+                    <td><span class="rating-good">○</span> 普通</td>
+                    <td><span class="rating-excellent">◎</span> 自然で得意</td>
+                    <td><span class="rating-good">○</span> 丁寧</td>
+                </tr>
+                <tr>
+                    <td><strong>説明の詳しさ</strong></td>
+                    <td><span class="rating-good">○</span> 適度</td>
+                    <td><span class="rating-good">○</span> 親切</td>
+                    <td><span class="rating-excellent">◎</span> 非常に詳しい</td>
+                </tr>
+                <tr>
+                    <td><strong>速度</strong></td>
+                    <td><span class="rating-excellent">◎</span> 速い</td>
+                    <td><span class="rating-good">○</span> 普通</td>
+                    <td><span class="rating-good">○</span> やや遅い</td>
+                </tr>
+                <tr>
+                    <td><strong>無料版の制限</strong></td>
+                    <td>多い</td>
+                    <td>少ない</td>
+                    <td>やや多い</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">USE CASES</div>
+        <h2 class="section-title">目的別の使い分け</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">ChatGPT</div>
+                <h3 class="card-title">速く、シンプルに答えが欲しい時</h3>
+                <p class="card-description">
+                    コード生成が得意。無駄がなく、実務ですぐに動かせるコードを出してくれます。
+                    時間がない時の第一選択。
+                </p>
+                <ul style="margin-top: 1rem; padding-left: 1.5rem; line-height: 1.8;">
+                    <li>GASコードの雛形生成</li>
+                    <li>エラーの簡潔な解決方法</li>
+                    <li>クイックな質問・回答</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-number">Gemini</div>
+                <h3 class="card-title">日本語で丁寧に説明してほしい時</h3>
+                <p class="card-description">
+                    日本語対応が得意。表形式での整理や、ビジネス文書作成に最適です。
+                    Google Workspace連携も強み。
+                </p>
+                <ul style="margin-top: 1rem; padding-left: 1.5rem; line-height: 1.8;">
+                    <li>仕様書・ドキュメント作成</li>
+                    <li>日本語での詳細な説明</li>
+                    <li>Google連携が必要な場合</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-number">Claude</div>
+                <h3 class="card-title">詳しく学びたい時</h3>
+                <p class="card-description">
+                    説明が丁寧で、セキュリティ面にも配慮。「なぜそうなるのか」まで
+                    教えてくれるので、学習目的に最適です。
+                </p>
+                <ul style="margin-top: 1rem; padding-left: 1.5rem; line-height: 1.8;">
+                    <li>コードの背景理解</li>
+                    <li>セキュリティ考慮が必要な場面</li>
+                    <li>プロジェクト全体の設計</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">PRACTICAL TIPS</div>
+        <h2 class="section-title">実務活用のポイント</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">出力の正確性を過信しない</div>
+            </div>
+            <p>AIの出力は、必ず自分で確認してください。特にコードは、そのまま使わず、動作確認を行いましょう。</p>
+            <p style="margin-top: 1rem;">AIは「たたき台」を作ってくれるツールです。最終チェックは人間の仕事です。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">あくまで"相談相手"として活用</div>
+            </div>
+            <p>AIに「全部やって」とお願いするのではなく、「こういう方向性で合ってる？」と相談する姿勢が大切です。</p>
+            <p style="margin-top: 1rem;">対話を重ねることで、より良いアイデアが生まれます。</p>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">複数AIを使い分ける</div>
+            </div>
+            <p>AIによって出力が違います。同じプロンプトを複数AIに投げて、一番良い回答を選ぶのも有効です。</p>
+            <p style="margin-top: 1rem;">時間がある時は、ChatGPT → Gemini → Claude の順で試してみましょう。</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">SUMMARY</div>
+        <h2 class="section-title">全5回の振り返り</h2>
+
+        <div class="summary-box">
+            <h3 style="font-size: 1.8rem; margin-bottom: 2rem; font-weight: 700;">全5回で学んだこと</h3>
+
+            <div style="margin-bottom: 2rem;">
+                <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">第1回：GAS×AIの全体像</h4>
+                <p>準備と開発の流れ、AIで仕様案を作る方法</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">第2回：日報アプリの下書き生成</h4>
+                <p>Googleフォーム作成、AIでGASコード生成</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">第3回：日報アプリ完成</h4>
+                <p>トリガー設定、自動化完成、Googleサイト公開</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">第4回：見積書自動生成システム</h4>
+                <p>Docsテンプレート×GASで、PDF自動生成</p>
+            </div>
+
+            <div>
+                <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">第5回：3AI徹底比較</h4>
+                <p>Claude・Gemini・ChatGPT の使い分けのコツ</p>
+            </div>
+        </div>
+
+        <div class="stats-card">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700;">達成した成果</h3>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ 日報作成時間 33%削減</li>
+                <li>✓ 見積書作成時間 75%削減</li>
+                <li>✓ 転記ミス・記載漏れ ほぼゼロ</li>
+                <li>✓ 自分でアプリを内製できる力が身についた</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">NEXT STEPS</div>
+        <h2 class="section-title">これからの実践</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">小さな自動化から始める</h3>
+                <p class="card-description">
+                    いきなり大きなシステムを作るのではなく、
+                    まずは日報や簡単なフォームから始めましょう。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">他の業務にも応用</h3>
+                <p class="card-description">
+                    出張報告書、経費申請、備品管理など、
+                    様々な業務に応用できます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">継続的に改善</h3>
+                <p class="card-description">
+                    一度作って終わりではなく、使いながら改善を重ねましょう。
+                    AIに相談しながら、少しずつ進化させていきます。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="margin-bottom: 5rem;">
+        <div class="section-label">THANK YOU</div>
+        <h2 class="section-title">おわりに</h2>
+
+        <div class="summary-box">
+            <p style="font-size: 1.2rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                全5回の講座、お疲れ様でした！
+            </p>
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                この講座で一番お伝えしたかったのは、「プログラミングができなくても、AIの力を借りれば、自分で業務を改善できる」ということです。
+            </p>
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                もちろん、すべてが完璧にできるわけではありません。でも、小さな一歩を踏み出すことで、明日からの業務が少しラクになります。
+            </p>
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                ぜひ、今日学んだことを、実際の業務で試してみてください。そして、「こんなこともできた！」という発見を、楽しんでください。
+            </p>
+            <p style="font-size: 1.2rem; line-height: 1.8; font-weight: 700;">
+                皆さんの挑戦を、心から応援しています！
+            </p>
+        </div>
+    </section>
+
+</body>
+</html>

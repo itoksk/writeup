@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>創造性をコントロール - Google AI StudioでTemperatureとTop-Pを操作</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--electric);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateX(10px);
+            border-color: var(--electric);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .parameter-control {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 3rem;
+            border-radius: 12px;
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .parameter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .parameter-name {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            color: var(--electric);
+        }
+
+        .parameter-value {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 900;
+            color: var(--paper);
+            font-family: 'Courier New', monospace;
+        }
+
+        .slider-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 6px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slider-fill {
+            height: 100%;
+            background: var(--electric);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        .output-example {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .output-example p {
+            margin: 0;
+            font-style: italic;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: 'PARAMETERS';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .list {
+            text-align: left;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        .demo-example {
+            background: rgba(245, 245, 240, 0.9);
+            border: 2px solid var(--ink);
+            padding: 3rem;
+            border-radius: 12px;
+            margin: 3rem 0;
+        }
+
+        .demo-prompt {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 2rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .demo-outputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .demo-output {
+            background: var(--paper);
+            border: 2px solid;
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        .demo-output.temp-low {
+            border-color: #0066cc;
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.1), var(--paper));
+        }
+
+        .demo-output.temp-medium {
+            border-color: #00cc66;
+            background: linear-gradient(135deg, rgba(0, 204, 102, 0.1), var(--paper));
+        }
+
+        .demo-output.temp-high {
+            border-color: var(--coral);
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), var(--paper));
+        }
+
+        .temp-label {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .temp-low .temp-label { color: #0066cc; }
+        .temp-medium .temp-label { color: #00cc66; }
+        .temp-high .temp-label { color: var(--coral); }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 3rem 0;
+            box-shadow: 0 4px 16px rgba(10, 14, 39, 0.15);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 2rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .comparison-table td {
+            padding: 1.5rem 2rem;
+            border: 1px solid var(--ink);
+            background: var(--paper);
+            font-size: 1.1rem;
+        }
+
+        .comparison-table tr:nth-child(even) td {
+            background: rgba(245, 245, 240, 0.5);
+        }
+
+        .comparison-table tr:hover td {
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        .process-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+
+        .process-step {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .process-step::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: var(--electric);
+        }
+
+        .process-step:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            background: var(--electric);
+            color: var(--ink);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .matrix-item {
+            background: var(--paper);
+            border: 3px solid var(--ink);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .matrix-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(10, 14, 39, 0.2);
+        }
+
+        .matrix-item.conservative {
+            background: linear-gradient(135deg, rgba(46, 125, 50, 0.1), var(--paper));
+            border-color: #2e7d32;
+        }
+
+        .matrix-item.balanced {
+            background: linear-gradient(135deg, rgba(21, 101, 192, 0.1), var(--paper));
+            border-color: #1565c0;
+        }
+
+        .matrix-item.creative {
+            background: linear-gradient(135deg, rgba(194, 24, 91, 0.1), var(--paper));
+            border-color: #c2185b;
+        }
+
+        .matrix-item.experimental {
+            background: linear-gradient(135deg, rgba(0, 105, 92, 0.1), var(--paper));
+            border-color: #00695c;
+        }
+
+        .matrix-item.low-t-high-p {
+            background: linear-gradient(135deg, rgba(230, 81, 0, 0.1), var(--paper));
+            border-color: #e65100;
+        }
+
+        .matrix-item.high-t-low-p {
+            background: linear-gradient(135deg, rgba(114, 46, 154, 0.1), var(--paper));
+            border-color: #6a1b9a;
+        }
+
+        @media (max-width: 768px) {
+            .navigation {
+                display: none;
+            }
+
+            .content-section {
+                padding: 3rem 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .demo-outputs {
+                grid-template-columns: 1fr;
+            }
+
+            .matrix-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .process-flow {
+                flex-direction: column;
+            }
+
+            .process-step::after {
+                content: '↓';
+                right: 50%;
+                top: 100%;
+                transform: translateX(50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+        <div class="nav-pill" data-section="7"></div>
+        <div class="nav-pill" data-section="8"></div>
+    </div>
+
+    <div class="container">
+        <section class="content-section visible">
+            <h1 class="section-title">🌡️ Temperature & Top-P<br>創造性をコントロール</h1>
+            <div class="section-content">
+                <p>Google AI StudioでTemperatureとTop-Pを使い創造性を自在にコントロール</p>
+            </div>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-number">0.1</div>
+                    <p>正確性重視</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0.5</div>
+                    <p>バランス</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0.9</div>
+                    <p>創造性重視</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">なぜパラメータ調整が必要か</h2>
+            <div class="section-content">
+                <p class="highlight" style="font-size: 1.5rem; margin: 2rem 0;">
+                    同じプロンプトでも、パラメータ次第で全く異なる結果に
+                </p>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <h4 style="color: var(--electric); margin-bottom: 1rem;">📝 契約書・法的文書</h4>
+                    <p>Temperature: 0.1</p>
+                    <p style="font-size: 0.9rem; color: #666;">正確性・一貫性が最重要<br>創造性は不要</p>
+                </div>
+                <div class="card">
+                    <h4 style="color: var(--electric); margin-bottom: 1rem;">📊 ビジネス文書</h4>
+                    <p>Temperature: 0.5</p>
+                    <p style="font-size: 0.9rem; color: #666;">バランスが重要<br>適度な表現の幅</p>
+                </div>
+                <div class="card">
+                    <h4 style="color: var(--electric); margin-bottom: 1rem;">💡 アイデア出し</h4>
+                    <p>Temperature: 0.8</p>
+                    <p style="font-size: 0.9rem; color: #666;">創造性・独創性重視<br>型破りな発想歓迎</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🌡️ Temperature とは？</h2>
+            <div class="section-content">
+                <p>AIの「創造性の温度」を調整するパラメータ</p>
+                <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">Google AI Studio: Run settings → Temperature（範囲: 0.0～2.0）</p>
+            </div>
+            <div class="parameter-control">
+                <div class="parameter-header">
+                    <span class="parameter-name">Temperature</span>
+                    <span class="parameter-value">1.0</span>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-fill" style="width: 50%;"></div>
+                </div>
+                <div class="output-example">
+                    <p><strong>中程度（1.0）の出力例：</strong></p>
+                    <p>「日常に、特別な一息を」</p>
+                    <p style="font-size: 0.9rem;">Geminiのデフォルト設定、バランスの取れた表現</p>
+                </div>
+            </div>
+            <div class="card">
+                <h4>Temperature の効果（Google AI Studio）</h4>
+                <ul class="list">
+                    <li><strong>低い（0.1-0.5）</strong>：予測可能、安定、フォーマル</li>
+                    <li><strong>中程度（0.6-1.2）</strong>：バランス、自然な変化</li>
+                    <li><strong>高い（1.3-2.0）</strong>：創造的、予測不可能、独創的</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🎯 Top-P & Top-K とは？</h2>
+            <div class="section-content">
+                <p>単語選択の範囲を制御するパラメータ</p>
+                <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">Google AI Studio: Top-P（0.0～1.0）& Top-K（1～40）</p>
+            </div>
+            <div class="parameter-control">
+                <div class="parameter-header">
+                    <span class="parameter-name">Top-P</span>
+                    <span class="parameter-value">0.5</span>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-fill" style="width: 50%;"></div>
+                </div>
+                <div class="output-example">
+                    <p><strong>中程度（0.5）の選択範囲：</strong></p>
+                    <p>上位50%の確率を持つ単語から選択</p>
+                    <p style="font-size: 0.9rem;">適度な多様性と一貫性のバランス</p>
+                </div>
+            </div>
+            <div class="card">
+                <h4>Top-P & Top-K の効果</h4>
+                <ul class="list">
+                    <li><strong>Top-P 低い（0.1-0.3）</strong>：最も確率の高い選択肢のみ</li>
+                    <li><strong>Top-P 中程度（0.4-0.6）</strong>：適度な選択範囲</li>
+                    <li><strong>Top-P 高い（0.7-0.95）</strong>：幅広い選択肢から選択</li>
+                    <li><strong>Top-K（1-40）</strong>：選択可能な単語数を直接制限</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🍦 実演：新フレーバー提案（Gemini使用）</h2>
+            <div class="section-content">
+                <p>Google AI StudioでTemperature値による出力の変化を体験</p>
+            </div>
+            <div class="demo-example">
+                <div class="demo-prompt">プロンプト：新しいアイスクリームのフレーバーを5つ提案してください。</div>
+                <div class="demo-outputs">
+                    <div class="demo-output temp-low">
+                        <div class="temp-label">Temperature=0.2（Gemini）</div>
+                        <ul class="list">
+                            <li>抹茶</li>
+                            <li>チョコレート</li>
+                            <li>バニラ＆ストロベリー</li>
+                            <li>キャラメル</li>
+                            <li>ミルクティー</li>
+                        </ul>
+                    </div>
+                    <div class="demo-output temp-medium">
+                        <div class="temp-label">Temperature=0.7（Gemini）</div>
+                        <ul class="list">
+                            <li>ほうじ茶ラテ</li>
+                            <li>黒ごまきなこ</li>
+                            <li>桜餅風味</li>
+                            <li>抹茶あずき</li>
+                            <li>柚子シャーベット</li>
+                        </ul>
+                    </div>
+                    <div class="demo-output temp-high">
+                        <div class="temp-label">Temperature=1.5（Gemini）</div>
+                        <ul class="list">
+                            <li>わさびチョコ</li>
+                            <li>海苔キャラメル</li>
+                            <li>味噌カラメル</li>
+                            <li>梅酒ジンジャー</li>
+                            <li>ほうじ茶＆黒蜜</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">💼 ビジネス文書の最適設定</h2>
+            <div class="section-content">
+                <p class="highlight" style="margin: 2rem 0;">
+                    実務では、まず標準設定（0.5）から始めて微調整するのがおすすめ
+                </p>
+            </div>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>文書タイプ</th>
+                        <th>Temperature</th>
+                        <th>Top-P</th>
+                        <th>理由</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>契約書</td>
+                        <td>0.1</td>
+                        <td>0.2</td>
+                        <td>正確性最優先</td>
+                    </tr>
+                    <tr>
+                        <td>報告書</td>
+                        <td>0.3</td>
+                        <td>0.4</td>
+                        <td>フォーマル＆明確</td>
+                    </tr>
+                    <tr>
+                        <td>プレゼン資料</td>
+                        <td>0.5</td>
+                        <td>0.5</td>
+                        <td>バランス重視</td>
+                    </tr>
+                    <tr>
+                        <td>ブログ記事</td>
+                        <td>0.6</td>
+                        <td>0.6</td>
+                        <td>読みやすさ＆親しみやすさ</td>
+                    </tr>
+                    <tr>
+                        <td>広告コピー</td>
+                        <td>0.7</td>
+                        <td>0.7</td>
+                        <td>インパクト重視</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">📈 段階的調整テクニック</h2>
+            <div class="section-content">
+                <p>Google AI Studioでの効果的な調整プロセス</p>
+            </div>
+            <div class="process-flow">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h4>Geminiデフォルト（1.0）で生成</h4>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h4>結果を評価</h4>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h4>±0.1〜0.2で調整</h4>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h4>最適値を記録</h4>
+                </div>
+            </div>
+            <div class="code-block"># 調整の判断基準
+if "単調すぎる":
+    Temperature += 0.1〜0.2
+elif "奇抜すぎる":
+    Temperature -= 0.1〜0.2
+elif "選択肢が少ない":
+    Top_P += 0.2〜0.3
+elif "一貫性がない":
+    Top_P -= 0.2〜0.3</div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🎯 Temperature × Top-P マトリックス</h2>
+            <div class="section-content">
+                <p>パラメータ組み合わせによる最適活用パターン</p>
+            </div>
+            <div class="matrix-grid">
+                <div class="matrix-item conservative">
+                    <h4 style="color: #2e7d32;">保守的（T:0.2, P:0.3）</h4>
+                    <ul class="list">
+                        <li>✅ 法的文書</li>
+                        <li>✅ 技術仕様書</li>
+                        <li>✅ 公式発表</li>
+                    </ul>
+                </div>
+                <div class="matrix-item balanced">
+                    <h4 style="color: #1565c0;">バランス（T:1.0, P:0.6, K:25）</h4>
+                    <ul class="list">
+                        <li>✅ ビジネスメール</li>
+                        <li>✅ プレゼン資料</li>
+                        <li>✅ 報告書</li>
+                    </ul>
+                </div>
+                <div class="matrix-item creative">
+                    <h4 style="color: #c2185b;">創造的（T:1.5, P:0.9, K:40）</h4>
+                    <ul class="list">
+                        <li>✅ ブレスト</li>
+                        <li>✅ マーケティングコピー</li>
+                        <li>✅ 新商品アイデア</li>
+                    </ul>
+                </div>
+                <div class="matrix-item low-t-high-p">
+                    <h4 style="color: #e65100;">低T高P（T:0.5, P:0.9, K:35）</h4>
+                    <p>安定しつつ選択肢豊富<br>説明文・ガイド文書向け</p>
+                </div>
+                <div class="matrix-item high-t-low-p">
+                    <h4 style="color: #6a1b9a;">高T低P（T:1.3, P:0.4, K:15）</h4>
+                    <p>創造的だが収束的<br>キャッチコピー・スローガン向け</p>
+                </div>
+                <div class="matrix-item experimental">
+                    <h4 style="color: #00695c;">実験的（T:2.0, P:0.95, K:40）</h4>
+                    <p>最大創造性<br>アート・詩・実験的コンテンツ</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🎯 まとめ：創造性コントロールの極意</h2>
+            <div class="section-content">
+                <p class="highlight" style="font-size: 1.5rem; margin: 2rem 0;">
+                    今日から実践できる3つのポイント
+                </p>
+                <ol style="font-size: 1.3rem; line-height: 2; max-width: 800px; margin: 2rem auto; text-align: left;">
+                    <li><strong>タスク特性の理解</strong>：創造的/分析的、多様性/一貫性で判断</li>
+                    <li><strong>段階的調整</strong>：Geminiデフォルト1.0から±0.2ずつ調整</li>
+                    <li><strong>設定の記録</strong>：タスク別の最適値をメモして再利用</li>
+                </ol>
+            </div>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--electric);">0.1-0.5</div>
+                    <p>公式文書</p>
+                    <p style="font-size: 0.9rem; color: #666;">T: 0.1-0.5<br>P: 0.2-0.4<br>K: 5-15</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--electric);">0.6-1.2</div>
+                    <p>日常業務</p>
+                    <p style="font-size: 0.9rem; color: #666;">T: 0.6-1.2<br>P: 0.5-0.7<br>K: 20-30</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--electric);">1.3-2.0</div>
+                    <p>創造的タスク</p>
+                    <p style="font-size: 0.9rem; color: #666;">T: 1.3-2.0<br>P: 0.8-0.95<br>K: 35-40</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 3rem;">
+                <p style="font-size: 1.25rem;">
+                    次回：「プロンプト最適化術総まとめ」
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    const index = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, i) => {
+                        pill.classList.toggle('active', i === index);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

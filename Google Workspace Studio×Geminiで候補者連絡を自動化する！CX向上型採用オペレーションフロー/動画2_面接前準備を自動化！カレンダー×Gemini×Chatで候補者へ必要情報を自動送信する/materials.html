@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：面接前準備を自動化 | CX向上型採用オペレーションフロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --ink: #0A0E27; --paper: #FEFEF8; --electric: #EC4899; --violet: #7C3AED; --gray: #4A5568; }
+        body { font-family: 'Zen Kaku Gothic New', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.8; }
+        nav { position: fixed; top: 0; width: 100%; background: rgba(254, 254, 248, 0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 1.5rem 0; box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .nav-title { font-size: 1rem; font-weight: 700; }
+        .nav-lesson { font-size: 0.85rem; color: var(--gray); }
+        main { max-width: 900px; margin: 0 auto; padding: 8rem 2rem 4rem; }
+        .lesson-header { text-align: center; margin-bottom: 4rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(10, 14, 39, 0.1); }
+        .lesson-number { font-size: 6rem; font-weight: 900; background: linear-gradient(135deg, var(--violet), var(--electric)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+        .lesson-title { font-size: 2rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        .lesson-subtitle { font-size: 1.1rem; color: var(--gray); }
+        section { margin-bottom: 3rem; }
+        h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; padding-left: 1rem; border-left: 4px solid var(--electric); }
+        .goal-card { background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(236, 72, 153, 0.05)); border-radius: 12px; padding: 2rem; border-left: 4px solid var(--violet); }
+        .flow-steps { display: flex; flex-direction: column; gap: 1rem; }
+        .flow-step { display: flex; gap: 1rem; align-items: flex-start; background: white; border: 1px solid rgba(10, 14, 39, 0.1); border-radius: 12px; padding: 1.5rem; }
+        .step-number { width: 40px; height: 40px; background: linear-gradient(135deg, var(--violet), var(--electric)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; flex-shrink: 0; }
+        .step-content h3 { font-size: 1rem; margin-bottom: 0.25rem; }
+        .step-content p { font-size: 0.9rem; color: var(--gray); }
+        .code-block { background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.5rem; font-family: 'Fira Code', monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; margin: 1rem 0; }
+        .prompt-tips { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem; }
+        .tip-card { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px; padding: 1rem; }
+        .tip-card h4 { font-size: 0.9rem; color: #16A34A; margin-bottom: 0.25rem; }
+        .tip-card p { font-size: 0.85rem; color: var(--gray); }
+        .config-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .config-table th, .config-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(10, 14, 39, 0.1); }
+        .config-table th { background: rgba(124, 58, 237, 0.05); font-weight: 600; }
+        .folder-structure { background: #1e1e1e; color: #d4d4d4; border-radius: 8px; padding: 1.5rem; font-family: monospace; font-size: 0.9rem; }
+        .summary-box { background: var(--ink); color: var(--paper); border-radius: 12px; padding: 2rem; }
+        .summary-box h3 { font-size: 1.2rem; margin-bottom: 1rem; }
+        .summary-box ul { list-style: none; }
+        .summary-box li { margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative; }
+        .summary-box li::before { content: "→"; position: absolute; left: 0; color: var(--electric); }
+        .next-preview { margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1)); border-radius: 12px; text-align: center; }
+        .next-preview h3 { font-size: 1rem; color: var(--gray); margin-bottom: 0.5rem; }
+        .next-preview p { font-size: 1.2rem; font-weight: 700; }
+        @media (max-width: 768px) { .prompt-tips { grid-template-columns: 1fr; } .lesson-number { font-size: 4rem; } .lesson-title { font-size: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <nav><div class="nav-container"><div class="nav-title">CX向上型採用オペレーションフロー</div><div class="nav-lesson">第2回 / 全5回</div></div></nav>
+    <main>
+        <header class="lesson-header">
+            <div class="lesson-number">02</div>
+            <h1 class="lesson-title">面接前準備を自動化</h1>
+            <p class="lesson-subtitle">Calendar×Gemini×Chatで候補者へ必要情報を自動送信する</p>
+        </header>
+        <section>
+            <h2>学習目標</h2>
+            <div class="goal-card"><p>面接予定をCalendarから検知し、Geminiで候補者情報を要約、面接官へChat通知するエージェントを作成する</p></div>
+        </section>
+        <section>
+            <h2>エージェントのフロー</h2>
+            <div class="flow-steps">
+                <div class="flow-step"><div class="step-number">1</div><div class="step-content"><h3>Schedule Trigger</h3><p>毎朝9時に自動実行</p></div></div>
+                <div class="flow-step"><div class="step-number">2</div><div class="step-content"><h3>Calendar取得</h3><p>当日の面接予定を取得</p></div></div>
+                <div class="flow-step"><div class="step-number">3</div><div class="step-content"><h3>Drive検索</h3><p>候補者の履歴書を取得</p></div></div>
+                <div class="flow-step"><div class="step-number">4</div><div class="step-content"><h3>Gemini要約</h3><p>面接官向けサマリー生成</p></div></div>
+                <div class="flow-step"><div class="step-number">5</div><div class="step-content"><h3>Chat通知</h3><p>面接10分前に自動配信</p></div></div>
+            </div>
+        </section>
+        <section>
+            <h2>Geminiプロンプト</h2>
+            <div class="code-block">You are an HR assistant preparing interview briefings.
+
+Candidate: {candidate_name}
+Position: {position}
+Resume content: {resume_content}
+
+Create a brief summary for the interviewer including:
+1. Key qualifications (3 bullet points)
+2. Relevant experience highlights
+3. Suggested interview focus areas
+4. Any notable points or concerns
+
+Keep the summary concise (under 200 words).
+Output in Japanese.</div>
+            <div class="prompt-tips">
+                <div class="tip-card"><h4>役割を明確に</h4><p>HR assistant preparing interview briefings</p></div>
+                <div class="tip-card"><h4>出力形式を指定</h4><p>4つの項目を箇条書きで</p></div>
+                <div class="tip-card"><h4>文字数制限</h4><p>under 200 wordsで簡潔に</p></div>
+                <div class="tip-card"><h4>言語指定</h4><p>Output in Japanese</p></div>
+            </div>
+        </section>
+        <section>
+            <h2>Chatメッセージテンプレート</h2>
+            <div class="code-block">【面接準備情報】
+
+本日 {interview_time} からの面接情報です。
+
+■ 候補者: {candidate_name}
+■ 応募ポジション: {position}
+
+■ 候補者サマリー
+{resume_summary}
+
+■ 履歴書リンク
+{resume_link}
+
+面接頑張ってください！</div>
+        </section>
+        <section>
+            <h2>推奨フォルダ構造</h2>
+            <div class="folder-structure">採用書類/
+├── [候補者名A]_[日付]/
+│   └── 履歴書_[候補者名].pdf
+└── [候補者名B]_[日付]/
+    └── ...</div>
+        </section>
+        <section>
+            <h2>エージェント設定</h2>
+            <table class="config-table">
+                <tr><th>項目</th><th>設定値</th></tr>
+                <tr><td>エージェント名</td><td>Interview Prep Notification</td></tr>
+                <tr><td>スターター</td><td>Schedule (Daily, 9:00 AM, Weekdays)</td></tr>
+                <tr><td>Calendar検索</td><td>Today's events with '面接'</td></tr>
+                <tr><td>Drive検索</td><td>候補者名 + 履歴書</td></tr>
+                <tr><td>Chat送信タイミング</td><td>面接10分前</td></tr>
+            </table>
+        </section>
+        <section>
+            <h2>今日のポイント</h2>
+            <div class="summary-box">
+                <h3>まとめ</h3>
+                <ul>
+                    <li>Schedule Triggerで毎朝自動実行</li>
+                    <li>Calendar連携で当日の面接予定を取得</li>
+                    <li>Drive連携で候補者の履歴書を取得</li>
+                    <li>Geminiで面接官向けサマリーを自動生成</li>
+                    <li>Chat通知で面接10分前に自動配信</li>
+                </ul>
+            </div>
+        </section>
+        <div class="next-preview"><h3>次回予告</h3><p>面接後作業をゼロにする！要約＆評価ポイントをGmail・Chatへ自動送信するフローを作る</p></div>
+    </main>
+</body>
+</html>

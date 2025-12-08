@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：「感情を伝える」Freeformプロンプト - ニュアンスで伝える文面設計術</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap');
+        
+        :root {
+            /* Literary Editorial Design System Colors */
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --paper-shadow: #F5F5F0;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+            
+            /* Typography */
+            --font-primary: 'Zen Kaku Gothic New', sans-serif;
+            --font-secondary: 'Space Grotesk', monospace;
+            --font-serif: 'Noto Serif JP', serif;
+            
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(10, 14, 39, 0.1);
+            --shadow-md: 0 4px 16px rgba(10, 14, 39, 0.15);
+            --shadow-lg: 0 8px 32px rgba(10, 14, 39, 0.2);
+            --shadow-xl: 0 16px 48px rgba(10, 14, 39, 0.25);
+            
+            /* Slide Dimensions */
+            --slide-width: 1280px;
+            --slide-height: 800px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+            padding: var(--space-lg) 0;
+            overflow-x: hidden;
+        }
+        
+        /* Paper Texture Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.03) 2px,
+                    rgba(10, 14, 39, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.02) 2px,
+                    rgba(10, 14, 39, 0.02) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 3px solid var(--ink);
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-sm);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+        
+        .subtitle {
+            font-family: var(--font-secondary);
+            font-size: 1.25rem;
+            color: var(--ink);
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Controls Bar */
+        .controls-bar {
+            background: var(--ink);
+            color: var(--paper);
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+        
+        .control-group {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: transparent;
+            color: var(--paper);
+            border: 2px solid var(--paper);
+            padding: var(--space-xs) var(--space-md);
+            font-family: var(--font-secondary);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--electric);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover::before {
+            width: 200px;
+            height: 200px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--electric);
+            z-index: 1;
+        }
+        
+        .btn span {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn.active {
+            background: var(--electric);
+            border-color: var(--electric);
+            color: var(--ink);
+        }
+        
+        /* Slide Container */
+        .slide-container {
+            width: 100%;
+            max-width: var(--slide-width);
+            margin: 0 auto var(--space-lg);
+            background: var(--paper);
+            border: 3px solid var(--ink);
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+        
+        /* Slide */
+        .slide {
+            width: 100%;
+            height: 100%;
+            padding: var(--space-xl);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: var(--paper);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .slide.active {
+            display: flex;
+        }
+        
+        .slide-number {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--electric);
+            background: var(--ink);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            z-index: 10;
+        }
+        
+        /* Slide Typography */
+        .slide h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 900;
+            margin-bottom: var(--space-lg);
+            color: var(--ink);
+            position: relative;
+            line-height: 1.2;
+            word-wrap: break-word;
+        }
+        
+        .slide h3 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            color: var(--ink);
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+        }
+        
+        .slide h4 {
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            color: var(--ink);
+        }
+        
+        .slide p {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            line-height: 1.8;
+            margin-bottom: var(--space-md);
+            word-wrap: break-word;
+        }
+        
+        .slide ul {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-md) 0;
+        }
+        
+        .slide li {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            line-height: 1.8;
+            margin-bottom: var(--space-sm);
+            padding-left: var(--space-lg);
+            position: relative;
+            word-wrap: break-word;
+        }
+        
+        .slide li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        /* Card in Slide */
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 0;
+        }
+        
+        .card:hover::before {
+            transform: translateX(0);
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .card:hover * {
+            color: var(--paper);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card-number {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-family: var(--font-secondary);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--electric);
+            opacity: 0.3;
+            z-index: 10;
+        }
+        
+        /* Code Block */
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: var(--space-md);
+            border-radius: 8px;
+            font-family: var(--font-secondary);
+            font-size: clamp(0.8rem, 1.5vw, 1rem);
+            line-height: 1.6;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 300px;
+            margin: var(--space-md) 0;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .code-block::before {
+            content: 'PROMPT';
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--electric);
+            opacity: 0.5;
+        }
+        
+        /* Email Block */
+        .email-block {
+            background: linear-gradient(135deg, var(--paper-shadow), var(--paper));
+            border: 2px solid var(--ink);
+            border-radius: 8px;
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+            font-family: var(--font-serif);
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            line-height: 1.8;
+            position: relative;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .email-block::before {
+            content: 'EMAIL';
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            font-family: var(--font-secondary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--coral);
+            opacity: 0.5;
+        }
+        
+        /* Highlight Box */
+        .highlight {
+            background: linear-gradient(135deg, var(--electric), var(--coral));
+            padding: 3px;
+            border-radius: 8px;
+            margin: var(--space-md) 0;
+        }
+        
+        .highlight-content {
+            background: var(--paper);
+            padding: var(--space-md);
+            border-radius: 5px;
+        }
+        
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+        
+        .grid-item {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            position: relative;
+            overflow: visible;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .grid-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--electric), var(--coral));
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .grid-item:hover::after {
+            transform: translateY(0);
+        }
+        
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--space-md) 0;
+            overflow-x: auto;
+            display: block;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: var(--space-sm);
+            text-align: left;
+            border: 2px solid var(--ink);
+        }
+        
+        .comparison-table th {
+            background: var(--ink);
+            color: var(--paper);
+            font-family: var(--font-secondary);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(0, 240, 255, 0.05);
+        }
+        
+        /* Tone Scale */
+        .tone-scale {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md);
+            background: linear-gradient(90deg, var(--sage), var(--coral));
+            border-radius: 50px;
+            margin: var(--space-md) 0;
+            position: relative;
+        }
+        
+        .tone-scale span {
+            background: var(--paper);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* Edit Mode */
+        .edit-mode .slide {
+            cursor: text;
+        }
+        
+        .editable {
+            outline: none;
+            position: relative;
+        }
+        
+        .editable:focus {
+            background: rgba(0, 240, 255, 0.05);
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+        
+        /* Slide Counter */
+        .slide-counter {
+            font-family: var(--font-secondary);
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--paper);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: var(--space-lg) 0;
+            border-top: 3px solid var(--ink);
+            margin-top: var(--space-xl);
+            font-family: var(--font-secondary);
+            letter-spacing: 0.05em;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1320px) {
+            .slide-container {
+                max-width: 95%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .controls-bar {
+                flex-direction: column;
+                gap: var(--space-md);
+                position: static;
+            }
+            
+            .control-group {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .slide {
+                padding: var(--space-md);
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            body::before {
+                display: none;
+            }
+            
+            .controls-bar {
+                display: none;
+            }
+            
+            .slide-container {
+                border: 1px solid black;
+                box-shadow: none;
+                page-break-after: always;
+                aspect-ratio: auto;
+                height: auto;
+            }
+            
+            .slide {
+                display: block !important;
+                page-break-after: always;
+                height: auto;
+                overflow: visible;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>プロンプト設計研修</h1>
+            <p class="subtitle">第2回：「感情を伝える」Freeformプロンプト - ニュアンスで伝える文面設計術</p>
+        </header>
+        
+        <div class="controls-bar">
+            <div class="control-group">
+                <button class="btn" onclick="previousSlide()"><span>← 前へ</span></button>
+                <span class="slide-counter">1 / 12</span>
+                <button class="btn" onclick="nextSlide()"><span>次へ →</span></button>
+            </div>
+            <div class="control-group">
+                <button class="btn" onclick="toggleEditMode()"><span>編集モード</span></button>
+                <button class="btn" onclick="togglePresentation()"><span>プレゼンテーション</span></button>
+                <button class="btn" onclick="exportSlides()"><span>エクスポート</span></button>
+            </div>
+        </div>
+        
+        <div class="slide-container">
+            <!-- Slide 1: Title -->
+            <div class="slide active">
+                <span class="slide-number">1 / 12</span>
+                <h2 class="editable">感情を伝えるFreeformプロンプト</h2>
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <p class="editable">自然な言葉でAIに感情やニュアンスを伝え、<br>心に響くビジネス文書を作成する技術</p>
+                    </div>
+                </div>
+                <div class="tone-scale">
+                    <span>申し訳ございません</span>
+                    <span>↔</span>
+                    <span>心よりお詫び申し上げます</span>
+                </div>
+                <p class="editable" style="text-align: center; margin-top: var(--space-md);">
+                    言葉のニュアンスが印象を大きく左右する
+                </p>
+            </div>
+            
+            <!-- Slide 2: What is Freeform -->
+            <div class="slide">
+                <span class="slide-number">2 / 12</span>
+                <h3 class="editable">Freeformプロンプトとは</h3>
+                <p class="editable">日常会話のような自然な文章でAIに指示する方法</p>
+                
+                <div class="code-block editable">
+Freeform例：
+「お客様への感謝の気持ちを、丁寧だけど堅苦しくない、
+親しみやすい言葉で表現したメールを書いてください」
+                </div>
+                
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h4>特徴</h4>
+                        <ul>
+                            <li class="editable">「温かみのある」「親しみやすい」といった感覚的な表現が使える</li>
+                            <li class="editable">構造よりも感情や印象を重視</li>
+                            <li class="editable">柔軟で自然な出力が可能</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3: Comparison -->
+            <div class="slide">
+                <span class="slide-number">3 / 12</span>
+                <h3 class="editable">従来型との違い</h3>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>従来型</th>
+                            <th>Freeform</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="editable">構造重視</td>
+                            <td class="editable">感情重視</td>
+                        </tr>
+                        <tr>
+                            <td class="editable">形式的</td>
+                            <td class="editable">自然体</td>
+                        </tr>
+                        <tr>
+                            <td class="editable">再現性高</td>
+                            <td class="editable">柔軟性高</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>従来型の指示</h4>
+                        <p>「件名、本文、署名を含むメール」</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>Freeformの指示</h4>
+                        <p>「心からの感謝が伝わるメール」</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 4: Scenario Setup -->
+            <div class="slide">
+                <span class="slide-number">4 / 12</span>
+                <h3 class="editable">実演：感謝メール作成</h3>
+                
+                <div class="card">
+                    <span class="card-number">01</span>
+                    <h4>シナリオ設定</h4>
+                    <ul>
+                        <li class="editable">顧客：ABC商事様</li>
+                        <li class="editable">関係：5年間の継続取引</li>
+                        <li class="editable">目的：年度末の感謝表明</li>
+                        <li class="editable">要望：形式的でない心のこもった内容</li>
+                    </ul>
+                </div>
+                
+                <p class="editable">実際に、長期契約をいただいたお客様への感謝メールを作成します</p>
+            </div>
+            
+            <!-- Slide 5: First Prompt -->
+            <div class="slide">
+                <span class="slide-number">5 / 12</span>
+                <h3 class="editable">初回プロンプト入力</h3>
+                
+                <div class="code-block editable">
+5年間お取引いただいているお客様に感謝メールを書いてください。
+・温かみがあり、心からの感謝が伝わる文面
+・ビジネスマナーは守りつつ、機械的でない表現
+・今後も末永いお付き合いをお願いする気持ちを込めて
+                </div>
+                
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <p class="editable">ポイント：感情的な要素を具体的に指示</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 6: Improvement -->
+            <div class="slide">
+                <span class="slide-number">6 / 12</span>
+                <h3 class="editable">出力の改善</h3>
+                
+                <p class="editable">1回目の出力が少し硬い場合は、パーソナルな要素を追加</p>
+                
+                <div class="code-block editable">
+前の文章をベースに、以下を追加してください：
+・この5年間で特に印象的だったエピソード
+・担当者として個人的に感じている感謝
+・来年度への具体的な期待
+                </div>
+                
+                <div class="card">
+                    <h4>改善のコツ</h4>
+                    <ul>
+                        <li class="editable">具体的なエピソードを入れる</li>
+                        <li class="editable">個人的な感情を表現する</li>
+                        <li class="editable">未来への期待を含める</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Slide 7: Final Output -->
+            <div class="slide">
+                <span class="slide-number">7 / 12</span>
+                <h3 class="editable">最終出力例</h3>
+                
+                <div class="email-block editable">
+件名：5年間のご愛顧に心から感謝申し上げます
+
+ABC商事 山田様
+
+いつも大変お世話になっております。
+株式会社〇〇の田中です。
+
+早いもので、貴社とお取引を始めさせていただいてから
+5年という月日が経ちました。
+
+初めてお会いした際、山田様が「一緒に成長できる
+パートナーを探している」とおっしゃった言葉が
+今でも心に残っています。
+
+この5年間、様々なプロジェクトでご一緒させていただき、
+時には厳しいご指摘もいただきながら、
+私たちも大きく成長することができました。
+
+特に昨年の新システム導入の際は、
+深夜まで一緒に対応していただいたこと、
+本当に感謝しております。
+
+来年度も、さらなる価値をご提供できるよう
+チーム一同、全力で取り組んでまいります。
+
+今後とも変わらぬご指導ご鞭撻のほど、
+よろしくお願い申し上げます。
+
+心からの感謝を込めて
+
+株式会社〇〇
+営業部 田中
+                </div>
+            </div>
+            
+            <!-- Slide 8: Three Key Points -->
+            <div class="slide">
+                <span class="slide-number">8 / 12</span>
+                <h3 class="editable">トーン調整の3つのコツ</h3>
+                
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>1. 具体的な形容詞</h4>
+                        <p>NG：「丁寧な」</p>
+                        <p>OK：「丁寧かつ親しみやすい」</p>
+                        <p>Best：「プロフェッショナルでありながら温かみのある」</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>2. 状況説明の追加</h4>
+                        <ul style="padding-left: 0;">
+                            <li>相手との関係性</li>
+                            <li>これまでの経緯</li>
+                            <li>特別な事情や背景</li>
+                        </ul>
+                    </div>
+                    <div class="grid-item">
+                        <h4>3. 簡潔な指示</h4>
+                        <ul style="padding-left: 0;">
+                            <li>3行以内にまとめる</li>
+                            <li>焦点を明確にする</li>
+                            <li>矛盾する要求を避ける</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 9: Good vs Bad Examples -->
+            <div class="slide">
+                <span class="slide-number">9 / 12</span>
+                <h3 class="editable">実践的な組み合わせ例</h3>
+                
+                <div class="card">
+                    <h4>良い例 ✓</h4>
+                    <div class="code-block editable">
+初めてお会いするお客様への挨拶メール：
+・緊張感を与えない親しみやすさ
+・プロとしての信頼感は保つ
+・次回お会いするのが楽しみになる締めくくり
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4>悪い例 ✗</h4>
+                    <div class="code-block editable">
+メールを書いてください。丁寧に。
+相手は重要顧客です。失礼のないように。
+でも堅くならないように。形式的でもダメ。
+親しみやすく、でもなれなれしくない...（続く）
+                    </div>
+                </div>
+                
+                <p class="editable">指示は明確で矛盾のないものにすることが重要</p>
+            </div>
+            
+            <!-- Slide 10: Application Scenes -->
+            <div class="slide">
+                <span class="slide-number">10 / 12</span>
+                <h3 class="editable">Freeformが威力を発揮する場面</h3>
+                
+                <div class="grid">
+                    <div class="grid-item">
+                        <h4>お礼状・感謝メール</h4>
+                        <p>心からの感謝を伝える</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>お詫び・謝罪文</h4>
+                        <p>誠意を込めた謝罪</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>初回挨拶・自己紹介</h4>
+                        <p>親しみやすい第一印象</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>祝賀・お祝いメッセージ</h4>
+                        <p>温かい祝福の気持ち</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>依頼・お願い文</h4>
+                        <p>丁寧で押し付けがましくない</p>
+                    </div>
+                    <div class="grid-item">
+                        <h4>フォローアップ</h4>
+                        <p>継続的な関係構築</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 11: Workshop -->
+            <div class="slide">
+                <span class="slide-number">11 / 12</span>
+                <h3 class="editable">実践課題</h3>
+                
+                <div class="card">
+                    <span class="card-number">02</span>
+                    <h4>今日の課題</h4>
+                    <ol style="list-style: decimal; padding-left: var(--space-lg);">
+                        <li class="editable">自分の業務で感情表現が重要なメールを1つ選ぶ</li>
+                        <li class="editable">Freeformプロンプトで作成</li>
+                        <li class="editable">従来の方法と比較</li>
+                    </ol>
+                </div>
+                
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h4>トーン調整用語集</h4>
+                        <div class="tone-scale" style="background: linear-gradient(90deg, #E8E8E8, #4A4A4A);">
+                            <span>クール</span>
+                            <span>↔</span>
+                            <span>ウォーム</span>
+                        </div>
+                        <div class="tone-scale" style="background: linear-gradient(90deg, #FFE5E5, #FF6B6B);">
+                            <span>遠い</span>
+                            <span>↔</span>
+                            <span>近い</span>
+                        </div>
+                        <div class="tone-scale" style="background: linear-gradient(90deg, #E5F3FF, #0080FF);">
+                            <span>カジュアル</span>
+                            <span>↔</span>
+                            <span>フォーマル</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 12: Summary -->
+            <div class="slide">
+                <span class="slide-number">12 / 12</span>
+                <h3 class="editable">まとめ：次のステップへ</h3>
+                
+                <div class="highlight">
+                    <div class="highlight-content">
+                        <h4>本日学んだこと</h4>
+                        <ul>
+                            <li class="editable">Freeformの特徴と強み</li>
+                            <li class="editable">感情表現の指示方法</li>
+                            <li class="editable">トーン調整の3つのコツ</li>
+                            <li class="editable">適用場面と実践方法</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4>次回予告</h4>
+                    <p class="editable">「品質を安定させるStructuredプロンプト」<br>
+                    チーム全員が同じ品質でメールを書けるようになる、<br>
+                    テンプレート活用術をお伝えします。</p>
+                </div>
+                
+                <p style="text-align: center; margin-top: var(--space-lg);">
+                    <strong>感情を込めたコミュニケーションで、ビジネスに温度を</strong>
+                </p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2024 プロンプト設計研修 - Literary Editorial Design System</p>
+        </footer>
+    </div>
+    
+    <script>
+        let currentSlide = 0;
+        let editMode = false;
+        let presentationMode = false;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            updateSlideCounter();
+            updateSlideNumbers();
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+        
+        function previousSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        }
+        
+        function updateSlideCounter() {
+            document.querySelector('.slide-counter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+        
+        function updateSlideNumbers() {
+            slides.forEach((slide, index) => {
+                const numberEl = slide.querySelector('.slide-number');
+                if (numberEl) {
+                    numberEl.textContent = `${index + 1} / ${totalSlides}`;
+                }
+            });
+        }
+        
+        function toggleEditMode() {
+            editMode = !editMode;
+            document.body.classList.toggle('edit-mode');
+            const editables = document.querySelectorAll('.editable');
+            editables.forEach(el => {
+                el.contentEditable = editMode;
+            });
+            
+            const btn = event.target.closest('.btn');
+            if (editMode) {
+                btn.classList.add('active');
+                showNotification('編集モードが有効になりました');
+            } else {
+                btn.classList.remove('active');
+                showNotification('編集モードが無効になりました');
+                saveContent();
+            }
+        }
+        
+        function togglePresentation() {
+            presentationMode = !presentationMode;
+            if (presentationMode) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                }
+                document.body.style.overflow = 'hidden';
+                showNotification('プレゼンテーションモード開始');
+            } else {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+                document.body.style.overflow = '';
+                showNotification('プレゼンテーションモード終了');
+            }
+        }
+        
+        function exportSlides() {
+            const content = document.documentElement.outerHTML;
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'freeform-prompt-presentation.html';
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('プレゼンテーションをエクスポートしました');
+        }
+        
+        function saveContent() {
+            const content = [];
+            slides.forEach((slide, index) => {
+                const slideContent = {
+                    index: index,
+                    html: slide.innerHTML
+                };
+                content.push(slideContent);
+            });
+            localStorage.setItem('freeform-presentation-content', JSON.stringify(content));
+        }
+        
+        function loadContent() {
+            const saved = localStorage.getItem('freeform-presentation-content');
+            if (saved) {
+                try {
+                    const content = JSON.parse(saved);
+                    content.forEach(item => {
+                        if (slides[item.index]) {
+                            slides[item.index].innerHTML = item.html;
+                        }
+                    });
+                } catch (e) {
+                    console.error('Failed to load saved content', e);
+                }
+            }
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--ink);
+                color: var(--paper);
+                padding: var(--space-sm) var(--space-md);
+                border-radius: 25px;
+                font-family: var(--font-secondary);
+                font-weight: 600;
+                z-index: 1000;
+                animation: fadeIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!editMode) {
+                switch(e.key) {
+                    case 'ArrowRight':
+                    case ' ':
+                        nextSlide();
+                        break;
+                    case 'ArrowLeft':
+                        previousSlide();
+                        break;
+                    case 'Escape':
+                        if (presentationMode) {
+                            togglePresentation();
+                        }
+                        break;
+                    case 'e':
+                        toggleEditMode();
+                        break;
+                    case 'p':
+                        togglePresentation();
+                        break;
+                }
+            }
+        });
+        
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                nextSlide();
+            }
+            if (touchEndX > touchStartX + 50) {
+                previousSlide();
+            }
+        }
+        
+        // Auto-save when editing
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('editable')) {
+                saveContent();
+            }
+        });
+        
+        // Initialize
+        loadContent();
+        updateSlideNumbers();
+        
+        // Add fade animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(-10px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

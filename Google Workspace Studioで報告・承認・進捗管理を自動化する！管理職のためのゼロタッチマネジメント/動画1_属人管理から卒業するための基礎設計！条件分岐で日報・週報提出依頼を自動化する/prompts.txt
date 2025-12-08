@@ -1,0 +1,127 @@
+# ゼロタッチマネジメント - 第1回 プロンプト集
+
+## 曜日判定＆メッセージ生成プロンプト
+
+```
+Today is {current_date}.
+
+Determine the day of the week and generate the appropriate message:
+
+If Monday to Thursday:
+- Generate a daily report request in Japanese
+- Include deadline (today 23:59)
+- Keep it brief and professional
+
+If Friday:
+- Generate a weekly report request in Japanese
+- Include deadline (today 23:59)
+- Ask for weekly summary and next week's plan
+
+If Saturday or Sunday:
+- Output: "NO_SEND"
+
+Output the message only, no explanations.
+```
+
+---
+
+## 日報提出依頼テンプレート（月〜木）
+
+```
+件名：【提出依頼】本日の日報
+
+チームの皆さん
+
+お疲れ様です。
+本日の日報提出をお願いいたします。
+
+■ 提出期限
+本日 23:59まで
+
+■ 記載項目
+・本日の業務内容
+・進捗状況
+・課題・相談事項
+・明日の予定
+
+よろしくお願いいたします。
+```
+
+---
+
+## 週報提出依頼テンプレート（金）
+
+```
+件名：【提出依頼】今週の週報
+
+チームの皆さん
+
+お疲れ様です。
+今週の週報提出をお願いいたします。
+
+■ 提出期限
+本日 23:59まで
+
+■ 記載項目
+・今週の業務サマリー
+・達成した成果
+・課題・懸念事項
+・来週の計画
+・共有事項
+
+よろしくお願いいたします。
+```
+
+---
+
+## エージェント設定サマリー
+
+### Daily Report Request Agent
+
+| 項目 | 設定値 |
+|------|--------|
+| Name | Daily Report Request |
+| Description | Sends daily/weekly report request based on day of week |
+| Trigger | Schedule (Daily, 17:00 JST) |
+| Condition | Day of week check via Gemini |
+| Output | Gmail + Chat (conditional) |
+
+### 条件分岐ロジック
+
+| 曜日 | アクション |
+|------|-----------|
+| 月〜木 | 日報提出依頼を送信 |
+| 金 | 週報提出依頼を送信 |
+| 土日 | 送信しない |
+
+---
+
+## Google Chat通知テンプレート
+
+```
+📋 【提出依頼】{report_type}
+
+提出期限: 本日 23:59
+
+{report_instructions}
+
+よろしくお願いします！
+```
+
+---
+
+## 祝日考慮版プロンプト（拡張用）
+
+```
+Today is {current_date}.
+Japanese holidays this month: {holidays_list}
+
+Determine if today is:
+1. A Japanese national holiday → Output: "NO_SEND"
+2. Saturday or Sunday → Output: "NO_SEND"
+3. Friday → Generate weekly report request in Japanese
+4. Monday to Thursday → Generate daily report request in Japanese
+
+Include appropriate deadline and keep the message professional.
+Output the message only, no explanations.
+```

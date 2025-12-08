@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excelに頼らず！ChatGPTで売上CSVを"読ませる"初めの一歩</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--electric);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateX(10px);
+            border-color: var(--electric);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: 'CSV DATA';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .list {
+            text-align: left;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▶';
+            color: var(--electric);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .prompt-example {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(0, 240, 255, 0.05));
+            border-left: 4px solid var(--electric);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--electric);
+            color: var(--ink);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 1rem;
+            font-family: 'Arial', sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .navigation {
+                right: 1rem;
+            }
+
+            .content-section {
+                padding: 4rem 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+        <div class="nav-pill" data-section="7"></div>
+    </div>
+
+    <div class="container">
+        <!-- Section 1: タイトル -->
+        <section class="content-section visible" id="section-0">
+            <h1 class="section-title">Excelに頼らず！</h1>
+            <div class="section-content">
+                <p style="font-size: 1.8rem; margin-bottom: 2rem; color: var(--electric);">
+                    ChatGPTで売上CSVを"読ませる"初めの一歩
+                </p>
+                <div class="card">
+                    <h3>学習目標</h3>
+                    <p>ChatGPTを使って売上CSVデータを効率的に分析し、複雑なExcel操作から解放されるための基礎技術を習得します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: なぜChatGPTでCSV分析なのか -->
+        <section class="content-section" id="section-1">
+            <h2 class="section-title">なぜChatGPTでCSV分析なのか</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">直感的な操作</span></h3>
+                        <p>複雑なExcel関数を覚える必要がなく、日本語で質問するだけで高度な分析が可能です。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">瞬時の処理</span></h3>
+                        <p>大量のデータでも数秒で分析結果を表示し、グラフも自動生成します。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">無限の可能性</span></h3>
+                        <p>AIの力により、従来では困難だった高度な統計分析も簡単に実行できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: CSVデータの準備 -->
+        <section class="content-section" id="section-2">
+            <h2 class="section-title">CSVデータの準備</h2>
+            <div class="section-content">
+                <div class="prompt-example">
+                    <h3>データ準備のポイント</h3>
+                    <p><span class="step-number">1</span><strong>文字エンコード</strong>：UTF-8で保存することで文字化けを防ぐ</p>
+                    <p><span class="step-number">2</span><strong>ヘッダー行</strong>：カラム名を日本語で明記し、データの意味を明確化</p>
+                    <p><span class="step-number">3</span><strong>データサイズ</strong>：10MB以下に分割して処理速度を最適化</p>
+                    <p><span class="step-number">4</span><strong>データ品質</strong>：欠損値や異常値を事前に確認</p>
+                </div>
+                <div class="code-block">
+                    <pre>日付,商品名,カテゴリ,単価,数量,売上金額,顧客ID,地域
+2024-01-01,商品A,電子機器,15000,2,30000,C001,東京
+2024-01-01,商品B,衣類,3000,5,15000,C002,大阪
+2024-01-02,商品C,食品,800,10,8000,C003,名古屋
+2024-01-02,商品A,電子機器,15000,1,15000,C004,福岡
+2024-01-03,商品D,書籍,1200,3,3600,C005,東京</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: ChatGPTへの投入方法 -->
+        <section class="content-section" id="section-3">
+            <h2 class="section-title">ChatGPTへの投入方法</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">ファイルアップロード</span></h3>
+                        <p>CSVファイルを直接ドラッグ&ドロップで投入する方法です。10MB以下のファイルに適用できます。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">テキスト貼り付け</span></h3>
+                        <p>小規模データの場合、CSVの内容をコピーして直接貼り付ける方法も効果的です。</p>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>プロ級のプロンプトテンプレート</h3>
+                    <pre style="background: rgba(0, 240, 255, 0.05); padding: 1rem; border-radius: 8px; white-space: pre-wrap; line-height: 1.8;">
+このExcelファイルをpandasのデータフレームとして読み込み、
+以下の分析を実行してください：
+
+1. データ構造の確認（shape, dtypes, head()）
+2. 記述統計量（describe()）で基本統計を出力
+3. 商品別売上をgroupbyで集計し、TOP5を特定
+4. 時系列分析で売上トレンドを可視化
+5. 外れ値をIQR法で検出
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: 基本的な分析プロンプト -->
+        <section class="content-section" id="section-4">
+            <h2 class="section-title">基本的な分析プロンプト</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">売上推移分析</span></h3>
+                        <p>「日別の売上推移をグラフで表示し、傾向を分析してください」</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">商品ランキング</span></h3>
+                        <p>「売上TOP10商品をランキング表で表示し、構成比も計算してください」</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">地域別分析</span></h3>
+                        <p>「地域別の売上比較を棒グラフで可視化してください」</p>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>分析精度を上げる専門用語の使い方</h3>
+                    <div style="background: rgba(0, 240, 255, 0.05); padding: 1rem; border-radius: 8px;">
+                        <p><strong>魔法の言葉集：</strong></p>
+                        <ul style="list-style: none; padding-left: 0; line-height: 2;">
+                            <li>• 「データフレームとして扱ってください」<br>
+                                → 構造化データとして認識</li>
+                            <li>• 「記述統計量を示してください」<br>
+                                → mean, median, std等を自動計算</li>
+                            <li>• 「相関行列を作成してください」<br>
+                                → 変数間の関係性を数値化</li>
+                            <li>• 「回帰分析で予測してください」<br>
+                                → 統計的な予測モデルを構築</li>
+                            <li>• 「時系列分解してください」<br>
+                                → トレンド・季節性・残差を分離</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: エラー対処法 -->
+        <section class="content-section" id="section-5">
+            <h2 class="section-title">エラー対処法</h2>
+            <div class="section-content">
+                <div class="list">
+                    <h3>よくある問題と解決策</h3>
+                    <li><strong>文字化け</strong>：CSVをUTF-8エンコードで保存し直す</li>
+                    <li><strong>データ型エラー</strong>：日付や数値形式を統一する</li>
+                    <li><strong>ファイルサイズエラー</strong>：データを期間や商品で分割する</li>
+                    <li><strong>計算精度の問題</strong>：重要な数値は別途検算する</li>
+                    <li><strong>欠損データ</strong>：空白行や不完全なデータを除去する</li>
+                </div>
+                <div class="prompt-example">
+                    <h3>エラー確認プロンプト</h3>
+                    <pre style="background: rgba(0, 240, 255, 0.05); padding: 1rem; border-radius: 8px; white-space: pre-wrap; line-height: 1.8;">
+データに問題がないか確認してください。
+
+以下の点をチェックしてください：
+- 欠損値の有無と件数
+- 重複データの有無
+- 異常値の検出
+
+問題があれば、対処法も教えてください。
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: 実践ワークショップ -->
+        <section class="content-section" id="section-6">
+            <h2 class="section-title">実践ワークショップ</h2>
+            <div class="section-content">
+                <div class="card">
+                    <h3><span class="highlight">練習用サンプルデータ</span></h3>
+                    <p>以下のサンプルデータを使って、今すぐChatGPTでの分析を体験してみましょう。</p>
+                </div>
+                <div class="code-block" style="overflow-x: auto;">
+                    <pre style="margin: 0; white-space: pre; font-family: 'Courier New', monospace; line-height: 1.6;">
+日付,商品,カテゴリ,単価,数量,売上,地域
+2024-01-15,ノートPC,IT機器,120000,5,600000,関東
+2024-01-16,スマートフォン,IT機器,80000,8,640000,関西
+2024-01-17,タブレット,IT機器,45000,12,540000,中部
+2024-01-18,イヤホン,IT機器,15000,25,375000,九州
+2024-01-19,モニター,IT機器,35000,10,350000,関東
+2024-01-20,マウス,IT機器,3000,50,150000,関西
+2024-01-21,キーボード,IT機器,8000,30,240000,中部
+2024-01-22,Webカメラ,IT機器,5000,40,200000,九州
+                    </pre>
+                </div>
+                <div class="list">
+                    <h3>実践課題</h3>
+                    <li>総売上と平均単価を計算</li>
+                    <li>地域別の売上比較グラフを作成</li>
+                    <li>最も売れた商品TOP3を特定</li>
+                    <li>単価と数量の相関関係を分析</li>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: まとめと次のステップ -->
+        <section class="content-section" id="section-7">
+            <h2 class="section-title">まとめと次のステップ</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">習得した技術</span></h3>
+                        <ul class="list">
+                            <li>CSVデータの準備方法</li>
+                            <li>ChatGPTへの効果的な投入技術</li>
+                            <li>基本的な分析プロンプト</li>
+                            <li>エラー対処とトラブルシューティング</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">次のステップ</span></h3>
+                        <ul class="list">
+                            <li>Pythonコードによる高度な可視化</li>
+                            <li>機械学習を活用した予測分析</li>
+                            <li>Looker Studioでの自動ダッシュボード</li>
+                            <li>AIを活用した業務の完全自動化</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>継続学習のすすめ</h3>
+                    <p>今回学んだ基礎技術を土台に、次のステップではより高度な分析技術を身につけていきましょう。ChatGPTとの対話を通じて、データサイエンスの世界を楽しく探求してください。</p>
+                </div>
+                <div class="card" style="background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(0, 240, 255, 0.05)); border: 2px dashed var(--electric);">
+                    <h3><span class="highlight">🚀 上級テクニック：ChatGPT GPTsの活用</span></h3>
+                    <p>ChatGPT Plus/Teamユーザーは、GPTs（カスタムGPT）機能で専用の分析アシスタントを作成できます：</p>
+                    <ul style="list-style: none; margin-top: 1rem;">
+                        <li>▶ CSV分析専用のGPTを作成</li>
+                        <li>▶ 分析用プログラムファイルを事前アップロード</li>
+                        <li>▶ いつも同じフォーマットで分析実行</li>
+                        <li>▶ チーム内で共有して分析を標準化</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>設定方法：</strong>ChatGPTの「GPTを探索する」→「GPTを作成」から、売上分析専用のアシスタントを構築</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Intersection Observer for fade-in animation
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '-10% 0px -10% 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Update navigation
+                    const sectionIndex = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, index) => {
+                        pill.classList.toggle('active', index === sectionIndex);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Navigation click handlers
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

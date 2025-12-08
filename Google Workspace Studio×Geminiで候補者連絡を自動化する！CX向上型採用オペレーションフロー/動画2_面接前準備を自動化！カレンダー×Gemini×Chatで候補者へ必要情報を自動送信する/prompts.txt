@@ -1,0 +1,90 @@
+# CX向上型採用オペレーションフロー - 第2回 プロンプト集
+
+## 面接準備サマリー生成プロンプト
+
+```
+You are an HR assistant preparing interview briefings.
+
+Candidate: {candidate_name}
+Position: {position}
+Resume content: {resume_content}
+
+Create a brief summary for the interviewer including:
+1. Key qualifications (3 bullet points)
+2. Relevant experience highlights
+3. Suggested interview focus areas
+4. Any notable points or concerns
+
+Keep the summary concise (under 200 words).
+Output in Japanese.
+```
+
+---
+
+## Chatメッセージテンプレート
+
+```
+【面接準備情報】
+
+本日 {interview_time} からの面接情報です。
+
+■ 候補者: {candidate_name}
+■ 応募ポジション: {position}
+
+■ 候補者サマリー
+{resume_summary}
+
+■ 履歴書リンク
+{resume_link}
+
+面接頑張ってください！
+```
+
+---
+
+## 履歴書が見つからない場合のフォールバックメッセージ
+
+```
+【面接準備情報 - 要確認】
+
+本日 {interview_time} からの面接があります。
+
+■ 候補者: {candidate_name}
+■ 応募ポジション: {position}
+
+⚠️ 候補者の履歴書が自動取得できませんでした。
+以下のフォルダを手動でご確認ください：
+{folder_link}
+```
+
+---
+
+## Calendar イベント検索フィルター
+
+イベントタイトルに含まれるキーワード（いずれか）：
+- 面接
+- Interview
+- 採用面談
+- 選考
+
+---
+
+## Driveファイル検索クエリ
+
+```
+title contains '{candidate_name}' and
+(title contains '履歴書' or title contains '職務経歴書' or title contains 'Resume' or title contains 'CV')
+```
+
+---
+
+## エージェント設定サマリー
+
+| 項目 | 設定値 |
+|------|--------|
+| エージェント名 | Interview Prep Notification |
+| スターター | Schedule (Daily, 9:00 AM, Weekdays) |
+| Calendar検索 | Today's events with '面接' |
+| Drive検索 | 候補者名 + 履歴書 |
+| Chat送信タイミング | 面接10分前 |
+| 出力言語 | Japanese |

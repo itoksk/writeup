@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ハンズオン練習問題 - つまずかないGoogle Workspace Flows</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --sage: #10B981;
+            --amber: #F59E0B;
+            --gem-blue: #4285f4;
+            --gem-green: #34a853;
+            --gem-yellow: #fbbc04;
+            --gem-red: #ea4335;
+            --text-primary: #0A0E27;
+            --text-secondary: #4A5568;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background-color: var(--paper);
+            color: var(--text-primary);
+            line-height: 1.8;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(66, 133, 244, 0.01) 2px,
+                rgba(66, 133, 244, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--ink);
+            z-index: 10;
+            padding: 1rem 0;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .nav-title {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: 0.02em;
+        }
+
+        .nav-badge {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+            background: var(--sage);
+            color: var(--paper);
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--ink);
+        }
+
+        .hero {
+            margin-top: 100px;
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(135deg, var(--gem-blue) 0%, var(--violet) 100%);
+            color: var(--paper);
+            border-bottom: 4px solid var(--ink);
+        }
+
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.5rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            font-weight: 400;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        section {
+            margin-bottom: 4rem;
+            margin-top: 3rem;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--ink);
+        }
+
+        .challenge-card {
+            border: 3px solid var(--ink);
+            padding: 2.5rem;
+            background: var(--paper);
+            margin-bottom: 2rem;
+            box-shadow: 6px 6px 0 var(--ink);
+            position: relative;
+        }
+
+        .challenge-number {
+            position: absolute;
+            top: -1.5rem;
+            left: 2rem;
+            background: var(--electric);
+            color: var(--ink);
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
+            border: 3px solid var(--ink);
+        }
+
+        .challenge-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .challenge-level {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border: 2px solid var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .challenge-level.basic {
+            background: var(--sage);
+            color: var(--paper);
+        }
+
+        .challenge-level.intermediate {
+            background: var(--amber);
+            color: var(--ink);
+        }
+
+        .challenge-level.advanced {
+            background: var(--coral);
+            color: var(--paper);
+        }
+
+        .challenge-description {
+            background: rgba(10, 14, 39, 0.02);
+            padding: 1.5rem;
+            border-left: 4px solid var(--violet);
+            margin: 1.5rem 0;
+        }
+
+        .checklist {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .checklist li {
+            padding: 0.75rem 0 0.75rem 2.5rem;
+            position: relative;
+            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
+        }
+
+        .checklist li::before {
+            content: '□';
+            position: absolute;
+            left: 0;
+            top: 0.75rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border: 2px solid var(--ink);
+            background: var(--paper);
+        }
+
+        .hint-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid var(--amber);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .hint-title {
+            font-weight: 700;
+            color: var(--amber);
+            margin-bottom: 0.75rem;
+            font-size: 1.05rem;
+        }
+
+        .highlight-box {
+            background: var(--electric);
+            border: 3px solid var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 6px 6px 0 var(--ink);
+        }
+
+        .success-criteria {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--sage);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .success-title {
+            font-weight: 700;
+            color: var(--sage);
+            margin-bottom: 0.75rem;
+        }
+
+        footer {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 3rem 0;
+            margin-top: 5rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="nav-title">ハンズオン練習問題</div>
+            <div class="nav-badge">実践練習</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="container">
+            <h1 class="hero-title">ハンズオン練習問題</h1>
+            <p class="hero-subtitle">学んだ知識を実践で定着させよう</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 練習問題の進め方 -->
+        <section>
+            <h2 class="section-title">練習問題の進め方</h2>
+
+            <div class="highlight-box">
+                <h3 style="font-weight: 700; font-size: 1.3rem; margin-bottom: 1rem;">この練習問題の目的</h3>
+                <p style="margin-bottom: 1rem;">今日学んだ<strong>つまずきやすいポイント</strong>を意識しながら、実際にエージェントを作成・動作させることで、知識を定着させます。</p>
+                <ul style="padding-left: 1.5rem;">
+                    <li>レベル1（基礎）: 講座で一緒に作ったものを復習</li>
+                    <li>レベル2（応用）: 少し異なるシナリオに挑戦</li>
+                    <li>レベル3（発展）: 複数のステップを組み合わせた自動化</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- レベル1: 基礎練習 -->
+        <section>
+            <h2 class="section-title">レベル1：基礎練習</h2>
+
+            <div class="challenge-card">
+                <div class="challenge-number">1</div>
+                <span class="challenge-level basic">基礎</span>
+                <h3 class="challenge-title">練習1-1：お問い合わせフォーム通知エージェント</h3>
+
+                <div class="challenge-description">
+                    <p style="font-weight: 700; margin-bottom: 0.5rem;">シナリオ</p>
+                    <p>お客様からのお問い合わせフォームに回答が来たら、即座にサポートチームのChatスペースに通知するエージェントを作成してください。</p>
+                </div>
+
+                <h4 style="font-weight: 700; margin: 1.5rem 0 1rem;">実装要件</h4>
+                <ul class="checklist">
+                    <li>テスト用のGoogle Formを作成（質問は3つ以上）</li>
+                    <li>通知先のChatスペースを準備（または新規作成）</li>
+                    <li>「New form response」をトリガーに設定</li>
+                    <li>Chatスペースへの通知を設定（候補から選択）</li>
+                    <li>通知に以下の変数を含める：
+                        <ul style="padding-left: 2rem; margin-top: 0.5rem;">
+                            <li>回答者のメールアドレス</li>
+                            <li>タイムスタンプ</li>
+                            <li>各質問への回答内容</li>
+                        </ul>
+                    </li>
+                    <li>Test runで動作確認</li>
+                    <li>エージェントを有効化（Turn on）</li>
+                    <li>実際にフォームから回答を送信して、本番動作を確認</li>
+                </ul>
+
+                <div class="success-criteria">
+                    <div class="success-title">成功基準</div>
+                    <ul style="padding-left: 1.5rem;">
+                        <li>フォーム回答後、1〜5分以内にChatに通知が届く</li>
+                        <li>通知に回答者情報と回答内容が含まれている</li>
+                        <li>エージェントの状態が「On」になっている</li>
+                    </ul>
+                </div>
+
+                <div class="hint-box">
+                    <div class="hint-title">つまずきポイントの復習</div>
+                    <ul style="padding-left: 1.5rem;">
+                        <li><strong>ポイント①:</strong> Chatスペースは候補から選択（Webhook URL不要）</li>
+                        <li><strong>ポイント②:</strong> フォームも候補から選択（手動入力NG）</li>
+                        <li><strong>ポイント③:</strong> 変数は「Insert variable」から挿入</li>
+                        <li><strong>ポイント④:</strong> Test run後、必ず「Turn on」する</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-number">2</div>
+                <span class="challenge-level basic">基礎</span>
+                <h3 class="challenge-title">練習1-2：Activityログで動作を確認</h3>
+
+                <div class="challenge-description">
+                    <p style="font-weight: 700; margin-bottom: 0.5rem;">シナリオ</p>
+                    <p>練習1-1で作成したエージェントのActivityログを確認し、正常に動作していることを確かめる練習をします。</p>
+                </div>
+
+                <h4 style="font-weight: 700; margin: 1.5rem 0 1rem;">実装手順</h4>
+                <ul class="checklist">
+                    <li>練習1-1のエージェントで、フォーム回答を1回送信</li>
+                    <li>「My agents」画面で作成したエージェントを選択</li>
+                    <li>「Activity」タブを開く</li>
+                    <li>最新の実行ログを確認</li>
+                    <li>ログの各ステップ（トリガー、通知送信など）が成功しているか確認</li>
+                    <li>通知に含まれた変数の値を確認</li>
+                </ul>
+
+                <div class="success-criteria">
+                    <div class="success-title">成功基準</div>
+                    <ul style="padding-left: 1.5rem;">
+                        <li>Activityログにアクセスできた</li>
+                        <li>各ステップの実行結果を確認できた</li>
+                        <li>変数に正しい値が入っていることを確認できた</li>
+                    </ul>
+                </div>
+
+                <div class="hint-box">
+                    <div class="hint-title">ヒント</div>
+                    <p>Activityログは、エージェントが実際に動いた履歴を確認できる重要な機能です。エラーが出た時だけでなく、正常に動いている時も確認する習慣をつけましょう。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- レベル2: 応用練習 -->
+        <section>
+            <h2 class="section-title">レベル2：応用練習</h2>
+
+            <div class="challenge-card">
+                <div class="challenge-number">3</div>
+                <span class="challenge-level intermediate">応用</span>
+                <h3 class="challenge-title">練習2-1：Driveファイルアップロード通知</h3>
+
+                <div class="challenge-description">
+                    <p style="font-weight: 700; margin-bottom: 0.5rem;">シナリオ</p>
+                    <p>共有Driveフォルダにファイルがアップロードされたら、チームのChatスペースに通知するエージェントを作成してください。</p>
+                </div>
+
+                <h4 style="font-weight: 700; margin: 1.5rem 0 1rem;">実装要件</h4>
+                <ul class="checklist">
+                    <li>監視用のDriveフォルダを作成または選択</li>
+                    <li>「New file in folder」をトリガーに設定</li>
+                    <li>Driveフォルダを候補から選択（URL貼り付けNG）</li>
+                    <li>Chatスペースへの通知を設定</li>
+                    <li>通知に以下の変数を含める：
+                        <ul style="padding-left: 2rem; margin-top: 0.5rem;">
+                            <li>ファイル名</li>
+                            <li>アップロード者</li>
+                            <li>ファイルへの直接リンク（URL）</li>
+                        </ul>
+                    </li>
+                    <li>Test runで動作確認</li>
+                    <li>有効化後、実際にファイルをアップロードして動作確認</li>
+                </ul>
+
+                <div class="success-criteria">
+                    <div class="success-title">成功基準</div>
+                    <ul style="padding-left: 1.5rem;">
+                        <li>ファイルアップロード後、通知が届く</li>
+                        <li>通知からファイルに直接アクセスできる</li>
+                        <li>ファイル名とアップロード者が表示される</li>
+                    </ul>
+                </div>
+
+                <div class="hint-box">
+                    <div class="hint-title">ヒント</div>
+                    <p>Driveフォルダの選択も、Chatスペースと同じく<strong>候補から選択</strong>します。フォルダ名の一部を入力して、候補を表示させましょう。</p>
+                </div>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-number">4</div>
+                <span class="challenge-level intermediate">応用</span>
+                <h3 class="challenge-title">練習2-2：複数の質問への条件分岐（オプション）</h3>
+
+                <div class="challenge-description">
+                    <p style="font-weight: 700; margin-bottom: 0.5rem;">シナリオ</p>
+                    <p>フォーム回答の内容に応じて、異なるChatスペースに通知を送るエージェントを作成してください。（この練習問題は、条件分岐機能がある場合のみ）</p>
+                </div>
+
+                <h4 style="font-weight: 700; margin: 1.5rem 0 1rem;">実装要件</h4>
+                <ul class="checklist">
+                    <li>「緊急度」を選択する質問をフォームに追加（例：「緊急」「通常」「低」）</li>
+                    <li>「緊急」が選択された場合は、特定のChatスペースに通知</li>
+                    <li>それ以外の場合は、別のChatスペースに通知</li>
+                </ul>
+
+                <div class="hint-box">
+                    <div class="hint-title">ヒント</div>
+                    <p>Workspace Flowsの条件分岐機能（If/Else）を使います。「Add step」から「Condition」を選択してみましょう。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- レベル3: 発展練習 -->
+        <section>
+            <h2 class="section-title">レベル3：発展練習</h2>
+
+            <div class="challenge-card">
+                <div class="challenge-number">5</div>
+                <span class="challenge-level advanced">発展</span>
+                <h3 class="challenge-title">練習3-1：Gemini要約付きファイル通知</h3>
+
+                <div class="challenge-description">
+                    <p style="font-weight: 700; margin-bottom: 0.5rem;">シナリオ</p>
+                    <p>Driveにアップロードされたドキュメントファイルを、GeminiでAI要約し、その要約をChatに通知するエージェントを作成してください。</p>
+                </div>
+
+                <h4 style="font-weight: 700; margin: 1.5rem 0 1rem;">実装要件</h4>
+                <ul class="checklist">
+                    <li>「New file in folder」をトリガーに設定</li>
+                    <li>「Summarize with Gemini」ステップを追加</li>
+                    <li>Geminiに要約させるプロンプトを設定（例：「このドキュメントを3行で要約してください」）</li>
+                    <li>Chatスペースへの通知を設定</li>
+                    <li>通知に以下を含める：
+                        <ul style="padding-left: 2rem; margin-top: 0.5rem;">
+                            <li>ファイル名</li>
+                            <li>Geminiによる要約結果（変数を使用）</li>
+                            <li>ファイルへの直接リンク</li>
+                        </ul>
+                    </li>
+                    <li>有効化後、テストファイルをアップロードして動作確認</li>
+                </ul>
+
+                <div class="success-criteria">
+                    <div class="success-title">成功基準</div>
+                    <ul style="padding-left: 1.5rem;">
+                        <li>ファイルアップロード後、AI要約付きの通知が届く</li>
+                        <li>要約が適切に生成されている</li>
+                        <li>通知からファイルに直接アクセスできる</li>
+                    </ul>
+                </div>
+
+                <div class="hint-box">
+                    <div class="hint-title">ヒント</div>
+                    <ul style="padding-left: 1.5rem;">
+                        <li>「Add step」から「Summarize with Gemini」を選択</li>
+                        <li>要約結果も変数として、Chat通知に埋め込めます</li>
+                        <li>Gemini for Workspaceが有効化されている必要があります</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="challenge-card">
+                <div class="challenge-number">6</div>
+                <span class="challenge-level advanced">発展</span>
+                <h3 class="challenge-title">練習3-2：実務で使える自動化を設計</h3>
+
+                <div class="challenge-description">
+                    <p style="font-weight: 700; margin-bottom: 0.5rem;">シナリオ</p>
+                    <p>あなたの実務で実際に使える自動化エージェントを1つ設計し、実装してください。</p>
+                </div>
+
+                <h4 style="font-weight: 700; margin: 1.5rem 0 1rem;">実装要件</h4>
+                <ul class="checklist">
+                    <li>現在の業務で手作業している作業を1つ選ぶ</li>
+                    <li>その作業を自動化するエージェントを設計</li>
+                    <li>トリガー、通知内容、変数の使い方を計画</li>
+                    <li>実装し、動作確認</li>
+                    <li>チームメンバーに共有（可能であれば）</li>
+                </ul>
+
+                <div class="success-criteria">
+                    <div class="success-title">成功基準</div>
+                    <ul style="padding-left: 1.5rem;">
+                        <li>実務で使える自動化が実装できた</li>
+                        <li>手作業の時間を削減できた</li>
+                        <li>チームで共有できた（オプション）</li>
+                    </ul>
+                </div>
+
+                <div class="hint-box">
+                    <div class="hint-title">アイデアの例</div>
+                    <ul style="padding-left: 1.5rem;">
+                        <li>会議議事録がDriveにアップロードされたら、要約して関係者に通知</li>
+                        <li>週次レポートフォームの回答を自動集計・通知</li>
+                        <li>プロジェクトファイルのアップロードをチーム全体に共有</li>
+                        <li>定期的なタスクリマインダーを自動送信</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 完了確認 -->
+        <section>
+            <h2 class="section-title">完了確認</h2>
+
+            <div class="highlight-box">
+                <h3 style="font-weight: 700; font-size: 1.3rem; margin-bottom: 1rem;">完了チェックリスト</h3>
+                <p style="margin-bottom: 1rem;">すべての練習問題が完了したら、以下を確認してください：</p>
+                <ul style="padding-left: 1.5rem;">
+                    <li>各エージェントが「On」の状態になっている</li>
+                    <li>Test runだけでなく、実際の動作確認も完了している</li>
+                    <li>Activityログでエラーがないことを確認</li>
+                    <li>通知内容が適切に整形されている</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- まとめ -->
+        <section>
+            <div style="background: linear-gradient(135deg, var(--gem-blue) 0%, var(--violet) 100%); color: var(--paper); padding: 3rem 2rem; border: 3px solid var(--ink); box-shadow: 8px 8px 0 var(--ink); margin: 3rem 0;">
+                <h2 style="font-family: 'Space Grotesk', monospace; font-size: 2rem; margin-bottom: 1.5rem;">お疲れ様でした</h2>
+                <p style="font-size: 1.1rem; margin-bottom: 1rem;">この練習問題を通して、Google Workspace Flowsでの自動化の基本をマスターできたはずです。</p>
+                <p style="font-size: 1.1rem; margin-bottom: 1rem;">今日学んだ<strong>つまずきやすいポイント</strong>を意識すれば、これからの自動化もスムーズに進められます。</p>
+                <p style="font-size: 1.2rem; font-weight: 700;">次は、あなた自身の業務を自動化して、時間を生み出していきましょう</p>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem;">ハンズオン練習問題</p>
+            <p style="font-size: 0.9rem; color: rgba(254, 254, 248, 0.7);">つまずかないGoogle Workspace Flows</p>
+            <p style="font-size: 0.85rem; margin-top: 1rem; color: rgba(254, 254, 248, 0.6);">© 2025 AIバード研修. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPTがうまく働かない：指示ミスを防ぐ5つの型</title>
+    <style>
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --border-width: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Mincho ProN', 'YuMincho', 'YuMincho Demibold', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.03) 1px,
+                    rgba(10, 14, 39, 0.03) 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(10, 14, 39, 0.02) 1px,
+                    rgba(10, 14, 39, 0.02) 2px
+                );
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-pill {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(10, 14, 39, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-pill.active {
+            background: var(--electric);
+            box-shadow: 0 0 10px var(--electric);
+            transform: scale(1.2);
+        }
+
+        .nav-pill:hover {
+            background: var(--electric);
+            transform: scale(1.1);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--electric);
+            border-radius: 2px;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(254, 254, 248, 0.9);
+            border: var(--border-width) solid var(--ink);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateX(10px);
+            border-color: var(--electric);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .code-block {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+            background: none;
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-size: inherit;
+            line-height: inherit;
+            color: inherit;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: 'PROMPT TEMPLATE';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .highlight {
+            color: var(--electric);
+            font-weight: bold;
+        }
+
+        .list {
+            text-align: left;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .list li {
+            margin: 1rem 0;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .list li::before {
+            content: '▶';
+            color: var(--electric);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .prompt-example {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 4px solid var(--electric);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        .prompt-example pre {
+            background: rgba(0, 240, 255, 0.05);
+            border: none;
+            padding: 0;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: inherit;
+            font-style: inherit;
+            color: inherit;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--electric);
+            color: var(--ink);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 1rem;
+            font-family: 'Arial', sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .navigation {
+                right: 1rem;
+            }
+
+            .content-section {
+                padding: 4rem 0;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-pill active" data-section="0"></div>
+        <div class="nav-pill" data-section="1"></div>
+        <div class="nav-pill" data-section="2"></div>
+        <div class="nav-pill" data-section="3"></div>
+        <div class="nav-pill" data-section="4"></div>
+        <div class="nav-pill" data-section="5"></div>
+        <div class="nav-pill" data-section="6"></div>
+        <div class="nav-pill" data-section="7"></div>
+    </div>
+
+    <div class="container">
+        <!-- Section 1: タイトル -->
+        <section class="content-section visible" id="section-0">
+            <h1 class="section-title">ChatGPTがうまく働かない</h1>
+            <div class="section-content">
+                <p style="font-size: 1.8rem; margin-bottom: 2rem; color: var(--electric);">
+                    指示ミスを防ぐ5つの型
+                </p>
+                <div class="card">
+                    <h3>学習目標</h3>
+                    <p>ChatGPTを使った売上データ分析でよくある指示ミスのパターンを理解し、確実に期待した結果を得るための効果的なプロンプト設計技術を習得します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: よくある失敗パターン -->
+        <section class="content-section" id="section-1">
+            <h2 class="section-title">よくある失敗パターン</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">曖昧な指示</span></h3>
+                        <p>「売上を分析して」など、具体性に欠ける指示で期待と異なる結果になるパターンです。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">前提条件不足</span></h3>
+                        <p>データ形式や制約条件を明示せず、実行できないコードが生成されるパターンです。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">出力形式未指定</span></h3>
+                        <p>どのような形で結果が欲しいか伝えず、使いにくい出力になるパターンです。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: 型1：明確な指示 -->
+        <section class="content-section" id="section-2">
+            <h2 class="section-title">型1：明確な指示</h2>
+            <div class="section-content">
+                <div class="prompt-example">
+                    <h3>明確な指示の要素</h3>
+                    <p><span class="step-number">1</span><strong>分析対象</strong>：何のデータを分析するか</p>
+                    <p><span class="step-number">2</span><strong>分析期間</strong>：どの期間のデータか</p>
+                    <p><span class="step-number">3</span><strong>分析目的</strong>：何を明らかにしたいか</p>
+                    <p><span class="step-number">4</span><strong>期待する洞察</strong>：どのような発見を求めるか</p>
+                </div>
+                <div class="card">
+                    <h3><span class="highlight">悪い例</span></h3>
+                    <p>「売上データを分析してください。」</p>
+                    <p style="margin-top: 1rem;"><strong>改善点：</strong>何をどう分析するか不明確</p>
+                </div>
+                <div class="card">
+                    <h3><span class="highlight">良い例</span></h3>
+                    <p>「過去12ヶ月の売上データから、月次売上トレンドを分析し、季節性の有無を判定してください。目的は来月の売上予測の精度向上です。」</p>
+                    <p style="margin-top: 1rem;"><strong>改善点：</strong>期間、分析内容、目的が明確</p>
+                </div>
+                <div class="code-block">
+                    <pre># 明確な指示のテンプレート
+【分析対象】: ○○のデータ
+【期間】: ○年○月～○年○月
+【分析目的】: ○○を判断するため
+【期待する洞察】: ○○の傾向があるかどうか
+【活用方法】: ○○の意思決定に使用
+
+例：
+【分析対象】: 商品別売上データ
+【期間】: 2023年1月～2023年12月
+【分析目的】: 収益性の高い商品を特定するため
+【期待する洞察】: 利益率と売上量の関係性
+【活用方法】: 来年度の商品戦略策定に使用</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: 型2：具体例の提示 -->
+        <section class="content-section" id="section-3">
+            <h2 class="section-title">型2：具体例の提示</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">データ形式の例示</span></h3>
+                        <p>CSV構造、列名、データ型を具体的に示すことで、正確な処理が可能になります。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">期待する出力例</span></h3>
+                        <p>どのような結果が欲しいか、具体的な例を示すことで期待値を明確化します。</p>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>具体例を含むプロンプト</h3>
+                    <pre>以下の形式のCSVデータ（日付,商品名,売上金額,数量）を分析し、『商品A: 総売上○○円, 平均単価○○円』の形式で上位5商品を表示してください。</pre>
+                </div>
+                <div class="code-block">
+                    <pre># データ構造の例示テンプレート
+【データ形式】
+- ファイル: CSV（UTF-8, カンマ区切り）
+- 列構成: 
+  * 日付 (YYYY-MM-DD)
+  * 商品名 (文字列)
+  * 売上金額 (数値)
+  * 数量 (整数)
+
+【出力例】
+商品ランキング:
+1. 商品A: 総売上1,250,000円, 平均単価2,500円
+2. 商品B: 総売上980,000円, 平均単価1,960円
+...
+
+【処理要件】
+- 欠損値は0で補完
+- 異常値（単価10万円以上）は除外
+- 売上金額の降順でソート</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: 型3：制約条件の明示 -->
+        <section class="content-section" id="section-4">
+            <h2 class="section-title">型3：制約条件の明示</h2>
+            <div class="section-content">
+                <div class="list">
+                    <h3>明示すべき制約条件</h3>
+                    <li><strong>データ制約</strong>：サイズ、品質、エンコード形式</li>
+                    <li><strong>処理制約</strong>：使用可能ライブラリ、実行時間制限</li>
+                    <li><strong>環境制約</strong>：メモリ制限、ファイルパス</li>
+                    <li><strong>出力制約</strong>：ファイル形式、保存先、権限</li>
+                </div>
+                <div class="prompt-example">
+                    <h3>制約条件を含むプロンプト例</h3>
+                    <pre>売上CSVファイル（最大10MB、pandas使用）を読み込み、メモリ使用量8GB以下で処理し、結果をPNG形式（DPI300）で保存してください。処理時間は5分以内に完了させてください。</pre>
+                </div>
+                <div class="code-block">
+                    <pre># 制約条件の明示テンプレート
+【データ制約】
+- ファイルサイズ: 最大○○MB
+- データ品質: 欠損値○○%以下
+- 文字コード: UTF-8必須
+
+【技術制約】
+- 使用言語: Python 3.8+
+- 必須ライブラリ: pandas, matplotlib
+- 禁止ライブラリ: seaborn（利用不可）
+
+【環境制約】
+- メモリ制限: ○○GB以下
+- 実行時間: ○○分以内
+- 保存先: ./output/フォルダ
+
+【品質制約】
+- グラフ解像度: DPI300以上
+- 統計精度: 小数点第2位まで
+- エラー許容率: 1%以下</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: 型4：段階的な指示 -->
+        <section class="content-section" id="section-5">
+            <h2 class="section-title">型4：段階的な指示</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">ステップ分割のメリット</span></h3>
+                        <p>複雑な処理を段階的に分割することで、各ステップでの検証が可能になります。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">エラー対処の効率化</span></h3>
+                        <p>問題が発生した箇所を特定しやすく、修正が容易になります。</p>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>段階的指示の流れ</h3>
+                    <p><span class="step-number">1</span><strong>データ読み込み</strong>：ファイル存在確認と基本情報表示</p>
+                    <p><span class="step-number">2</span><strong>データ検証</strong>：品質チェックと前処理</p>
+                    <p><span class="step-number">3</span><strong>基本分析</strong>：統計量計算と可視化</p>
+                    <p><span class="step-number">4</span><strong>詳細分析</strong>：高度な分析と解釈</p>
+                    <p><span class="step-number">5</span><strong>結果出力</strong>：レポート作成と保存</p>
+                </div>
+                <div class="code-block">
+                    <pre># 段階的指示のテンプレート
+
+# ステップ1：データ読み込み確認
+"""
+売上CSVファイルを読み込み、以下を表示してください：
+1. データの行数・列数
+2. 各列のデータ型
+3. 最初の5行のサンプル
+4. 基本統計量（平均、中央値、標準偏差）
+5. 欠損値の個数と比率
+
+この結果を確認してから次のステップに進みます。
+"""
+
+# ステップ2：データ前処理
+"""
+前のステップで確認したデータに対して：
+1. 欠損値を線形補間で補完
+2. 異常値を3σ法で検出・除外
+3. 処理前後の件数比較表を作成
+4. データ品質スコアを算出
+
+処理結果が妥当か確認してから分析に進みます。
+"""
+
+# このように段階的に進行</pre>
+            </div>
+        </section>
+
+        <!-- Section 7: 型5：出力形式の指定 -->
+        <section class="content-section" id="section-6">
+            <h2 class="section-title">型5：出力形式の指定</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">グラフ仕様</span></h3>
+                        <p>グラフの種類、サイズ、色、フォント、保存形式を詳細に指定します。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">データ出力</span></h3>
+                        <p>ファイル形式、統計量、解釈コメントの有無を明確に指定します。</p>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">レポート構成</span></h3>
+                        <p>章立て、文章スタイル、図表の配置を具体的に指示します。</p>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <h3>詳細な出力指定例</h3>
+                    <pre>12×8インチの折れ線グラフ、タイトル『月別売上推移』、X軸『月』、Y軸『売上金額（万円）』、グリッド表示あり、青色の線、フォントサイズ12pt、PNG形式でsales_trend.pngに保存してください。</pre>
+                </div>
+                <div class="code-block">
+                    <pre># 出力形式の詳細指定テンプレート
+
+【グラフ出力】
+- 種類: ○○グラフ（折れ線、棒、円など）
+- サイズ: 幅○○ × 高さ○○ インチ
+- 色設定: メインカラー○○、アクセント○○
+- フォント: ○○、サイズ○○pt
+- タイトル: 「○○」（位置：中央上部）
+- 軸設定: X軸「○○」、Y軸「○○」
+- 保存: PNG、DPI300、ファイル名「○○.png」
+
+【データ出力】
+- 形式: CSV、UTF-8エンコード
+- 統計量: 平均、中央値、標準偏差を含む
+- 解釈: 各結果の意味を日本語で説明
+- 推奨アクション: 具体的な次のステップ3つ
+
+【レポート構成】
+1. エグゼクティブサマリー（200文字以内）
+2. 分析結果（図表付き）
+3. 考察・解釈（ビジネス観点）
+4. 推奨アクション（優先順位付き）</pre>
+            </div>
+        </section>
+
+        <!-- Section 8: まとめと実践 -->
+        <section class="content-section" id="section-7">
+            <h2 class="section-title">まとめと実践</h2>
+            <div class="section-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><span class="highlight">5つの型チェックリスト</span></h3>
+                        <ul class="list">
+                            <li>目的と期待する結果が明確か？</li>
+                            <li>具体的な例を提示したか？</li>
+                            <li>制約条件を詳述したか？</li>
+                            <li>段階的に進行する設計にしたか？</li>
+                            <li>出力形式を具体的に指定したか？</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3><span class="highlight">プロンプト品質指標</span></h3>
+                        <ul class="list">
+                            <li><strong>明確性</strong>：曖昧な表現がない</li>
+                            <li><strong>完全性</strong>：必要な情報が全て含まれる</li>
+                            <li><strong>実行可能性</strong>：技術的に実現可能</li>
+                            <li><strong>検証可能性</strong>：結果の妥当性を判断できる</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="code-block">
+                    <pre># 完璧なプロンプトのテンプレート
+"""
+【目的】○○を分析して○○を判断したい
+
+【データ詳細】
+- 形式：○○（エンコード、区切り文字等）
+- 構造：列名とデータ型を明記
+- サイズ：約○○行、○○MB
+- 品質：欠損値○○%、想定される異常値
+
+【制約条件】
+- 技術：使用可能ライブラリ、実行環境
+- 品質：精度要件、処理時間制限
+- 出力：ファイル形式、保存先、権限
+
+【段階的処理】
+1. ステップ○：○○を実行（確認ポイント：○○）
+2. ステップ○：○○を実行（確認ポイント：○○）
+3. ステップ○：○○を実行（確認ポイント：○○）
+
+【出力指定】
+- グラフ：種類、サイズ、色、ファイル名
+- データ：形式、統計量、解釈コメント
+- レポート：構成、文章スタイル、図表配置
+
+【確認ポイント】
+各ステップで○○を確認してから次に進む
+"""</pre>
+                </div>
+                <div class="prompt-example">
+                    <h3>実践課題</h3>
+                    <pre>今回学んだ5つの型を使って、自社の売上データ分析プロンプトを作成してみましょう。
+最初は簡単な分析から始めて、徐々に複雑な分析に挑戦することで、
+確実にプロンプト設計スキルが向上します。
+
+失敗を恐れず、チェックリストを活用して改善を重ねていきましょう。</pre>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Intersection Observer for fade-in animation
+        const sections = document.querySelectorAll('.content-section');
+        const navPills = document.querySelectorAll('.nav-pill');
+
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '-10% 0px -10% 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Update navigation
+                    const sectionIndex = Array.from(sections).indexOf(entry.target);
+                    navPills.forEach((pill, index) => {
+                        pill.classList.toggle('active', index === sectionIndex);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Navigation click handlers
+        navPills.forEach((pill, index) => {
+            pill.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

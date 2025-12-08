@@ -1,0 +1,172 @@
+# 採用パイプライン自動化フロー 第5回：選考ステータス自動更新 & KPIレポートエージェント
+# プロンプト集
+
+---
+
+## 1. ステータス抽出プロンプト
+
+```
+Extract status update from this email:
+
+Email content: {email_body}
+
+Extract:
+1. Candidate name
+2. New status (one of: 書類選考中/一次面接済/二次面接済/最終面接済/内定/不採用/辞退)
+3. Date of status change
+4. Notes (if any)
+
+Output as JSON format:
+{
+  "candidate_name": "",
+  "new_status": "",
+  "date": "",
+  "notes": ""
+}
+```
+
+---
+
+## 2. KPIレポート生成プロンプト
+
+```
+Analyze recruitment data and create a KPI report in Japanese:
+
+Data: {sheet_data}
+Report period: Past week
+
+Calculate and report:
+1. New applications this week
+2. Pipeline by status (count per stage)
+3. Conversion rates (application→interview, interview→offer)
+4. Average time per stage
+5. Top concerns or bottlenecks
+
+Format as a professional weekly report.
+Include specific numbers and percentages.
+Use visual indicators like ├ └ for hierarchy.
+```
+
+---
+
+## 3. 月次サマリープロンプト
+
+```
+Create a monthly recruitment summary in Japanese:
+
+Data: {monthly_data}
+Month: {target_month}
+
+Include:
+1. Total applications vs previous month
+2. Hires completed
+3. Offer acceptance rate
+4. Time-to-hire average
+5. Source effectiveness (applications by channel)
+6. Department breakdown
+7. Key achievements
+8. Areas for improvement
+
+Format for executive presentation.
+```
+
+---
+
+## 4. ボトルネック分析プロンプト
+
+```
+Identify bottlenecks in the recruitment pipeline:
+
+Pipeline data: {pipeline_data}
+
+Analyze:
+1. Which stage has the longest average duration?
+2. Which stage has the highest drop-off rate?
+3. Are there candidates stuck for more than 7 days?
+4. What patterns suggest process issues?
+
+Provide specific recommendations for each bottleneck.
+Output in Japanese.
+```
+
+---
+
+## 5. ステータス定義
+
+```
+選考ステータス一覧：
+- 新規応募：応募を受け付けた直後
+- 書類選考中：履歴書・職務経歴書を確認中
+- 書類通過：書類選考を通過、面接調整へ
+- 一次面接済：一次面接完了、結果待ち
+- 二次面接済：二次面接完了、結果待ち
+- 最終面接済：最終面接完了、内定検討中
+- 内定：オファー提示済み
+- 内定承諾：入社確定
+- 不採用：選考終了（不合格）
+- 辞退：候補者からの辞退
+```
+
+---
+
+## 6. エージェント構成
+
+### エージェント1：ステータス自動更新
+
+```
+エージェント名: 選考ステータス自動更新エージェント
+
+Starter: Gmail - When email arrives matching search
+  - Query: subject:(面接結果) OR subject:(選考結果)
+
+Step 1: Gemini - Generate content
+  - Prompt: [ステータス抽出プロンプト]
+  - Output: status_json
+
+Step 2: Google Sheets - Update row
+  - Spreadsheet: 採用管理シート
+  - Match: candidate_name
+  - Update: status, updated_date
+```
+
+### エージェント2：週次KPIレポート
+
+```
+エージェント名: 採用KPIレポート自動送信エージェント
+
+Starter: Schedule - Every Monday 9:00
+
+Step 1: Google Sheets - Get data
+  - Spreadsheet: 採用管理シート
+  - Output: sheet_data
+
+Step 2: Gemini - Generate content
+  - Prompt: [KPIレポート生成プロンプト]
+  - Output: kpi_report
+
+Step 3: Google Chat - Send message
+  - Space: 採用チーム
+  - Message: {kpi_report}
+```
+
+---
+
+## 7. Sheetsの列構成（完全版）
+
+```
+A: 応募日
+B: 候補者名
+C: メールアドレス
+D: 応募職種
+E: 応募経路（Indeed/LinkedIn/直接/その他）
+F: 書類リンク
+G: サマリ
+H: 適合度（High/Medium/Low）
+I: ステータス
+J: ステータス更新日
+K: 一次面接日
+L: 二次面接日
+M: 最終面接日
+N: 担当面接官
+O: 備考
+```

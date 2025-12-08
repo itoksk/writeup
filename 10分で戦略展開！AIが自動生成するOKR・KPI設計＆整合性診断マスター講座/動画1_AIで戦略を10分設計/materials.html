@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回:AIで戦略を10分設計：ChatGPTでOKR→行動計画を自動展開 | 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .card-description {
+            opacity: 0.8;
+        }
+
+        .phase-card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-number {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--electric) 0%, var(--violet) 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 0;
+            margin-top: 3rem;
+            border: 2px solid var(--ink);
+            position: relative;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .prompt-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            position: relative;
+            border: 2px solid var(--ink);
+            overflow-x: auto;
+        }
+
+        .prompt-box::before {
+            content: 'プロンプト（コピーして使用）';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.25rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--paper);
+            transform: scale(1.05);
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            padding: 1rem 0 1rem 3rem;
+            position: relative;
+            border-left: 2px solid var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        .step-list li::before {
+            content: attr(data-step);
+            position: absolute;
+            left: -20px;
+            top: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--ink);
+            color: var(--paper);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .highlight-box {
+            background: var(--electric);
+            color: var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--paper);
+            border: 2px solid var(--ink);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid var(--gray);
+        }
+
+        th {
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .prompt-box {
+                font-size: 0.8rem;
+                padding: 1.5rem;
+            }
+
+            .copy-button {
+                position: static;
+                display: block;
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">AIで戦略展開！OKR・KPI設計マスター講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第1回 / 全3回</div>
+            <h1 class="hero-title">
+                AIで戦略を10分設計：<br>
+                ChatGPTでOKR→<br>
+                行動計画を自動展開
+            </h1>
+            <p class="hero-description">
+                ChatGPTを"戦略翻訳装置"として使い、経営方針から部門OKRを10分で自動生成します。<br>
+                プロンプト設計の基本を学び、戦略策定の属人化を解消しましょう。
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">この回で学ぶこと</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">経営方針をChatGPTに入力</h3>
+                <p class="card-description">
+                    経営方針を明確な形でChatGPTに入力し、AIが理解しやすい形に整理します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">プロンプトで出力形式を指定</h3>
+                <p class="card-description">
+                    出力形式と注意事項をプロンプトで明確に指定し、期待する結果を得る方法を学びます。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">スプレッドシートで可視化</h3>
+                <p class="card-description">
+                    生成されたOKRをGoogleスプレッドシートに貼り付けて可視化し、全社で共有します。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">何が変わるのか</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">Before</div>
+                <div class="phase-title">手作業でOKR策定</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✗ 部門OKR策定に2〜3日かかる</li>
+                <li>✗ 会議で方針を口頭共有し、各部門が手作業でOKR化</li>
+                <li>✗ 担当者ごとに品質差が出る</li>
+                <li>✗ 経営方針とのズレが後から発覚し、手戻りが発生</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">After</div>
+                <div class="phase-title">AIで10分自動生成</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ ChatGPTが「経営目標→部門OKR」を10分で自動出力</li>
+                <li>✓ Objective（目的）とKey Results（定量指標）が統一フォーマットで生成</li>
+                <li>✓ スプレッドシートで可視化され、誰でも理解できる</li>
+                <li>✓ 作業時間90%削減、戦略整合性が最初から担保される</li>
+            </ul>
+        </div>
+
+        <div class="stats-card">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">期待される効果</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+                <div>
+                    <div style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">90%</div>
+                    <div style="opacity: 0.9;">作業時間削減</div>
+                </div>
+                <div>
+                    <div style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">10分</div>
+                    <div style="opacity: 0.9;">OKR生成時間</div>
+                </div>
+                <div>
+                    <div style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem;">100%</div>
+                    <div style="opacity: 0.9;">フォーマット統一</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP BY STEP</div>
+        <h2 class="section-title">実践ステップ</h2>
+
+        <ul class="step-list">
+            <li data-step="1">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">ChatGPTを開き、経営方針を入力</h3>
+                <p>まず、ChatGPTを開きます（GPT-4推奨、GPT-3.5でも可）。経営方針を明確な形で準備します。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>経営方針の例：</strong><br><br>
+                    【2025年度 経営方針】<br>
+                    1. 売上高を前年比15%増加させる<br>
+                    2. 顧客満足度を向上させ、リピート率を20%向上<br>
+                    3. 新規事業を1件立ち上げ、初年度売上3000万円を達成<br>
+                    4. 社員のスキルアップ研修を強化し、受講率80%以上を実現
+                </div>
+            </li>
+
+            <li data-step="2">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">プロンプトで出力形式を指定</h3>
+                <p>経営方針をそのまま貼り付けるだけでは不十分です。出力形式と注意事項を明確に指定するプロンプトを追加します。</p>
+
+                <div class="prompt-box">
+                    <button class="copy-button" onclick="copyPrompt(this)">コピー</button>次の経営方針をもとに、部門別OKRを出力してください。
+
+【経営方針】
+1. 売上高を前年比15%増加させる
+2. 顧客満足度を向上させ、リピート率を20%向上
+3. 新規事業を1件立ち上げ、初年度売上3000万円を達成
+4. 社員のスキルアップ研修を強化し、受講率80%以上を実現
+
+【出力形式】
+- 対象部門：営業部、マーケティング部、開発部、人事部
+- 各部門について、以下を出力：
+  - Objective（目的）：1つ
+  - Key Results（定量指標）：3つ
+- 表形式で出力してください
+
+【注意事項】
+- Key Resultsは必ず定量的な指標を含めること
+- 抽象的な表現（「価値を高める」など）は避けること
+- 各部門のOKRは経営方針と直接関連すること</div>
+            </li>
+
+            <li data-step="3">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">ChatGPTの出力を確認</h3>
+                <p>プロンプトを送信すると、各部門のOKRが表形式で出力されます。Objectiveが明確で、Key Resultsも定量的な指標になっているか確認します。</p>
+
+                <table style="margin-top: 1rem;">
+                    <thead>
+                        <tr>
+                            <th>部門</th>
+                            <th>Objective</th>
+                            <th>Key Results</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>営業部</td>
+                            <td>売上高を大幅に増加させる</td>
+                            <td>1. 新規顧客獲得数を前年比30%増加<br>2. 既存顧客との契約更新率を95%以上に維持<br>3. 四半期ごとの売上目標を100%達成</td>
+                        </tr>
+                        <tr>
+                            <td>マーケティング部</td>
+                            <td>顧客満足度とリピート率を向上させる</td>
+                            <td>1. 顧客満足度調査のスコアを4.5/5以上に向上<br>2. リピート購入率を20%向上<br>3. 月間問い合わせ件数を前年比25%増加</td>
+                        </tr>
+                        <tr>
+                            <td>開発部</td>
+                            <td>新規事業を成功させる</td>
+                            <td>1. 新規事業のプロトタイプを6月末までに完成<br>2. ユーザーテストで満足度80%以上を達成<br>3. 初年度売上3000万円を達成</td>
+                        </tr>
+                        <tr>
+                            <td>人事部</td>
+                            <td>社員のスキルアップを推進する</td>
+                            <td>1. 研修受講率を80%以上に向上<br>2. 社員満足度調査のスコアを4.0/5以上に維持<br>3. 年間離職率を5%以下に抑制</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </li>
+
+            <li data-step="4">
+                <h3 style="font-weight: 700; margin-bottom: 0.5rem;">スプレッドシートに貼り付けて可視化</h3>
+                <p>ChatGPTの出力をコピーして、Googleスプレッドシートに貼り付けます。表形式で出力されているので、そのまま貼り付けるだけでOKです。</p>
+                <div class="highlight-box" style="margin-top: 1rem;">
+                    <strong>操作手順：</strong><br><br>
+                    1. Googleスプレッドシートを開く<br>
+                    2. ChatGPTの表をコピー（ヘッダー行を含む）<br>
+                    3. スプレッドシートのA1セルから貼り付け<br>
+                    4. 必要に応じて列幅を調整<br>
+                    5. 色分けや条件付き書式を適用して見やすく
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">注意点・活用ポイント</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">抽象的な表現を避ける</h3>
+                <p class="card-description">
+                    ChatGPTは指示が曖昧だと抽象的な出力をすることがあります。プロンプトに「必ず定量的な指標を含めること」と明記しましょう。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">!</div>
+                <h3 class="card-title">出力量が多すぎる場合</h3>
+                <p class="card-description">
+                    部門数が多いと出力が長くなりすぎることがあります。「各部門3行以内」とか、「営業部とマーケティング部だけ出力」といった制限を加えてください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">四半期ごとに更新</h3>
+                <p class="card-description">
+                    このプロンプトをテンプレート化しておけば、四半期ごとの見直しも10分で完了します。経営方針を更新して、同じプロンプトを使うだけです。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">部門ごとに詳細化</h3>
+                <p class="card-description">
+                    今回は全部門のOKRを一括で作りましたが、特定の部門だけを深掘りしたい場合は、「営業部のKey Resultsをさらに5つに分解」といった追加プロンプトも有効です。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">AIの出力を鵜呑みにしない</h3>
+                <p class="card-description">
+                    ChatGPTの出力は必ず人間がレビューしましょう。自社の業界特性や文化に合わせて調整し、定量指標は現実的な数値に修正してください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">✓</div>
+                <h3 class="card-title">チームでレビュー</h3>
+                <p class="card-description">
+                    生成したOKRはスプレッドシートで共有し、各部門からのフィードバックをコメント機能で収集しましょう。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">NEXT STEP</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">第2回</div>
+                <div class="phase-title">KPIツリーをAIで即構築</div>
+            </div>
+            <p style="font-size: 1.1rem; line-height: 1.8;">
+                次回は、今回作ったOKRをさらに「行動」と「数字」につなげるステップを実演します。<br><br>
+                OKRを作っても、「で、具体的に何をすればいいの？」となってしまう──そんな悩みを解決します。<br><br>
+                <strong>OKRを「数値と行動」に落とすプロンプト設計術</strong>をお見せします。お楽しみに！
+            </p>
+        </div>
+    </section>
+
+    <script>
+        function copyPrompt(button) {
+            const promptBox = button.parentElement;
+            const text = promptBox.innerText.replace('コピー', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerText;
+                button.innerText = 'コピーしました！';
+                setTimeout(() => {
+                    button.innerText = originalText;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

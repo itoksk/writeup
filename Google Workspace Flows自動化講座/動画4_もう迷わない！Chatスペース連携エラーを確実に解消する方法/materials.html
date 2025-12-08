@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回:もう迷わない！Chatスペース連携エラーを確実に解消する方法 | Google Workspace Flows自動化講座</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.9rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--electric);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 900;
+            line-height: 0.9;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            display: block;
+            color: var(--electric);
+            font-size: 0.7em;
+            margin-top: 0.2em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        .error-card {
+            background: var(--paper);
+            border: 2px solid var(--coral);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .error-card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--coral);
+            margin-bottom: 1rem;
+        }
+
+        .error-section {
+            margin: 1.5rem 0;
+        }
+
+        .error-section-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--ink);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--paper);
+            border: 2px solid var(--ink);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid var(--ink);
+        }
+
+        .comparison-table th {
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        ul {
+            list-style-position: inside;
+            margin-left: 1rem;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .note {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--violet);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning {
+            background: rgba(255, 107, 107, 0.05);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .warning-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--coral);
+        }
+
+        .ok-mark {
+            color: var(--electric);
+            font-weight: 700;
+        }
+
+        .ng-mark {
+            color: var(--coral);
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .comparison-table {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">Google Workspace Flows 自動化講座</div>
+            <div class="nav-menu">
+                <a href="#errors">よくあるエラー</a>
+                <a href="#correct-setup">正しい設定方法</a>
+                <a href="#comparison">内部統合 vs Webhook</a>
+                <a href="#troubleshooting">トラブルシューティング</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第4回 / 全5回</div>
+            <h1 class="hero-title">
+                もう迷わない！
+                <span>Chatスペース連携エラーを確実に解消する方法</span>
+            </h1>
+            <p class="hero-description">
+                Chatスペース連携で発生する典型的なエラーを理解し、確実に解決できるようになります。
+                よくあるエラーパターン、内部統合とWebhookの違い、トラブルシューティングの方法を習得します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section" id="errors">
+        <div class="section-label">Common Errors</div>
+        <h2 class="section-title">よくあるエラー3選と解決方法</h2>
+
+        <div class="error-card">
+            <div class="error-card-title">❌ エラー1：スペース名を手動入力してしまう</div>
+
+            <div class="error-section">
+                <div class="error-section-title">失敗例</div>
+                <p>スペース欄に「Marketing Team」と全部手動で入力</p>
+            </div>
+
+            <div class="error-section">
+                <div class="error-section-title">なぜダメなのか？</div>
+                <p>
+                    Workspace Flowsは、スペース名ではなく、<strong>スペースの内部ID</strong>で識別します。
+                    手動入力では、IDが取得できないため、エラーになります。
+                </p>
+            </div>
+
+            <div class="error-section">
+                <div class="error-section-title">⭕ 正解</div>
+                <ul>
+                    <li>スペース欄をクリック</li>
+                    <li>スペース名の一部（例:「Market」）を入力</li>
+                    <li>表示された候補から選択</li>
+                </ul>
+                <p style="margin-top: 1rem;">
+                    <strong>候補から選択することで、スペースIDが自動的に設定されます。</strong>
+                </p>
+            </div>
+        </div>
+
+        <div class="error-card">
+            <div class="error-card-title">❌ エラー2：Webhook URLを貼り付けてしまう</div>
+
+            <div class="error-section">
+                <div class="error-section-title">失敗例</div>
+                <p>「Webhook URLが必要だと思って、Chatスペースの設定からWebhook URLをコピーして、スペース欄に貼り付け」</p>
+            </div>
+
+            <div class="error-section">
+                <div class="error-section-title">なぜダメなのか？</div>
+                <p>
+                    Workspace Flowsの<strong>内部統合</strong>では、Webhook URLは不要です。
+                    Webhook URLが必要なのは、Slack や Microsoft Teams など、<strong>外部サービスとの連携</strong>の場合のみです。
+                </p>
+            </div>
+
+            <div class="error-section">
+                <div class="error-section-title">⭕ 正解</div>
+                <p>
+                    Google Workspace内のChatスペースへの通知には、Webhook URLは不要。
+                    <strong>候補から選択するだけでOKです。</strong>
+                </p>
+            </div>
+        </div>
+
+        <div class="error-card">
+            <div class="error-card-title">❌ エラー3：参加していないスペースを選択してしまう</div>
+
+            <div class="error-section">
+                <div class="error-section-title">失敗例</div>
+                <p>自分が参加していないChatスペースを選択</p>
+            </div>
+
+            <div class="error-section">
+                <div class="error-section-title">なぜダメなのか？</div>
+                <p>
+                    エージェントは、<strong>あなたのアカウント権限</strong>で動作します。
+                    あなたが参加していないスペースには、エージェントも通知を送れません。
+                </p>
+            </div>
+
+            <div class="error-section">
+                <div class="error-section-title">⭕ 正解</div>
+                <ul>
+                    <li>事前に、通知を送りたいChatスペースに参加</li>
+                    <li>参加後、候補から選択</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="correct-setup">
+        <div class="section-label">Correct Setup</div>
+        <h2 class="section-title">正しい設定方法（5ステップ）</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">Chatスペースに参加する</h3>
+                <p class="card-description">
+                    まず、通知を送りたいChatスペースに参加します。
+                    すでに参加している場合は、このステップはスキップしてください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">スペース欄をクリック</h3>
+                <p class="card-description">
+                    エージェント編集画面で、「Send a message in Chat」ステップを開き、
+                    「Space」欄をクリックします。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">スペース名の一部を入力</h3>
+                <p class="card-description">
+                    スペース名の一部を入力します。
+                    例えば、「Marketing Team」というスペースなら、「Market」と入力します。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">候補から選択</h3>
+                <p class="card-description">
+                    入力すると、候補が表示されます。
+                    この候補から、目的のスペースをクリックして選択します。
+                    <strong>これで、スペースIDが正しく設定されました。</strong>
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">05</div>
+                <h3 class="card-title">テスト実行で確認</h3>
+                <p class="card-description">
+                    「Test run」をクリックして、テスト実行します。
+                    Chatに通知が届けば、成功です！
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="comparison">
+        <div class="section-label">Integration Types</div>
+        <h2 class="section-title">内部統合とWebhookの違い</h2>
+
+        <div class="grid grid-2">
+            <div class="card">
+                <h3 class="card-title">内部統合（Internal Integration）</h3>
+                <p class="card-description">
+                    <strong>使用場面</strong>：Google Workspace内のサービス（Chat、Drive、Gmail、Calendar）と連携する場合
+                    <br><br>
+                    <strong>設定方法</strong>：スペースやフォルダを候補から選択するだけ
+                    <br><br>
+                    <strong>Webhook URL</strong>：不要
+                    <br><br>
+                    <strong>セキュリティ</strong>：Workspace内で完結するため、安心
+                </p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Webhook（外部統合）</h3>
+                <p class="card-description">
+                    <strong>使用場面</strong>：Slack、Microsoft Teams、Asanaなど、外部サービスと連携する場合
+                    <br><br>
+                    <strong>設定方法</strong>：外部サービスのWebhook URLを設定
+                    <br><br>
+                    <strong>Webhook URL</strong>：必要
+                    <br><br>
+                    <strong>セキュリティ</strong>：外部サービスにデータが送信されるため、信頼できるサービスのみと連携
+                </p>
+            </div>
+        </div>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>内部統合</th>
+                    <th>Webhook</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>対象</strong></td>
+                    <td>Google Workspace内</td>
+                    <td>外部サービス</td>
+                </tr>
+                <tr>
+                    <td><strong>設定</strong></td>
+                    <td>候補から選択</td>
+                    <td>Webhook URL設定</td>
+                </tr>
+                <tr>
+                    <td><strong>URL</strong></td>
+                    <td>不要</td>
+                    <td>必要</td>
+                </tr>
+                <tr>
+                    <td><strong>セキュリティ</strong></td>
+                    <td>Workspace内で完結</td>
+                    <td>外部にデータ送信</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="warning">
+            <div class="warning-title">⚠️ 重要</div>
+            <p>
+                Google ChatへGeminiからの要約を通知する場合でも、<strong>内部統合</strong>を使用します。
+                Webhook URLは不要です。
+            </p>
+        </div>
+    </section>
+
+    <section class="section" id="troubleshooting">
+        <div class="section-label">Troubleshooting</div>
+        <h2 class="section-title">トラブルシューティング</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">テストは成功するのに、本番で通知が届かない</h3>
+                <p class="card-description">
+                    <strong>原因</strong>：エージェントを「Turn on」していない可能性があります。
+                    <br><br>
+                    <strong>解決方法</strong>：エージェント編集画面で、「Turn on」ボタンをクリックして、エージェントを有効化してください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">通知が遅れて届く</h3>
+                <p class="card-description">
+                    <strong>原因</strong>：Workspace Flowsは、リアルタイムではなく、数分の遅延が発生する場合があります。
+                    <br><br>
+                    <strong>解決方法</strong>：通常、1〜5分程度の遅延は正常です。10分以上遅延する場合は、エージェントのアクティビティを確認してください。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">エージェントが突然動かなくなった</h3>
+                <p class="card-description">
+                    <strong>原因</strong>：スペースが削除された、スペースから除外された、フォームやDriveフォルダの権限が変更された
+                    <br><br>
+                    <strong>解決方法</strong>：エージェントのアクティビティでエラーを確認し、権限を再設定してください。
+                </p>
+            </div>
+        </div>
+
+        <div class="note">
+            <div class="note-title">💡 アクティビティの確認方法</div>
+            <ul>
+                <li>Flowsホーム画面で「My agents」をクリック</li>
+                <li>エージェントの横にある「More」→「Activity」をクリック</li>
+                <li>エラーログを確認</li>
+            </ul>
+            <p style="margin-top: 1rem;">
+                エラーメッセージから、原因を特定できます。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Summary</div>
+        <h2 class="section-title">今日のポイント</h2>
+
+        <div class="note">
+            <div class="note-title">✅ 今日学んだこと</div>
+            <ul>
+                <li><strong>スペースは候補から選択</strong>（手動入力NG）</li>
+                <li><strong>Webhook URLは不要</strong>（内部統合の場合）</li>
+                <li><strong>事前にスペースに参加</strong>（権限確認）</li>
+                <li><strong>内部統合とWebhookの違い</strong>を理解</li>
+                <li><strong>アクティビティでエラー確認</strong></li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Next</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div class="card">
+            <div class="card-number">05</div>
+            <h3 class="card-title">チーム全員で使える仕組みに変える！自動化フローのテンプレート化と共有術</h3>
+            <p class="card-description">
+                作成したエージェントをチームメンバーと共有する方法を学びます。
+                エージェントの共有方法、権限設定、チーム展開のポイント、組織のAI活用文化の醸成について習得します。
+            </p>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：Google Workspace Flowsで採用業務を変える | 採用パイプライン自動化フロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">第1回 / 全5回</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">01</div>
+            <h1 class="lesson-title">Google Workspace Flowsで採用業務を変える</h1>
+            <p class="lesson-subtitle">採用プロセスの課題とAI自動化の可能性</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>採用業務における課題を理解し、Google Workspace FlowsとGeminiを活用した自動化の全体像を把握する</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">採用業務の課題</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">課題 1</div>
+                    <h3>応募者対応の遅延</h3>
+                    <p>メール確認漏れで候補者を逃す。優秀な人材ほど他社へ流出</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題 2</div>
+                    <h3>履歴書・書類の散在</h3>
+                    <p>メール、Drive、各所に分散。必要な時に見つからない</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題 3</div>
+                    <h3>選考進捗の把握困難</h3>
+                    <p>誰がどのステージか把握できず、フォロー漏れが発生</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">コースで構築するフロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>応募メール自動振り分け</h3>
+                        <p>Geminiが応募メールを判定し、自動ラベル付与・通知</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>履歴書自動整理</h3>
+                        <p>添付ファイルを候補者フォルダに自動保存</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>朝の採用ブリーフィング</h3>
+                        <p>毎朝、応募状況サマリーをChat配信</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>選考ステータス管理</h3>
+                        <p>候補者の進捗を自動追跡・アラート</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before</div>
+                    <ul>
+                        <li>応募メールを見落とし候補者を逃す</li>
+                        <li>履歴書がどこにあるかわからない</li>
+                        <li>選考状況の共有に時間がかかる</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After</div>
+                    <ul>
+                        <li>応募を即座に検知・通知</li>
+                        <li>候補者別フォルダで一元管理</li>
+                        <li>朝のブリーフィングで全員が把握</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="index.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <a href="lesson2.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

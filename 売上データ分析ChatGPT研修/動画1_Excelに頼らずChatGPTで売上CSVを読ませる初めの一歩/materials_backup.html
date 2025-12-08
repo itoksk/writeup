@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>第1回：Excelに頼らず！ChatGPTで売上CSVを"読ませる"初めの一歩</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap" rel="stylesheet" />
+    
+    <style>
+:root {
+            /* Literary Editorial Design System Colors */
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --paper-shadow: #F5F5F0;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --gold: #FFD700;
+            --sage: #87CEEB;
+            
+            /* Typography */
+            --font-primary: 'Zen Kaku Gothic New', sans-serif;
+            --font-secondary: 'Space Grotesk', monospace;
+            --font-serif: 'Noto Serif JP', serif;
+            
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 2rem;
+            --space-lg: 3rem;
+            --space-xl: 4rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(10, 14, 39, 0.1);
+            --shadow-md: 0 4px 16px rgba(10, 14, 39, 0.15);
+            --shadow-lg: 0 8px 32px rgba(10, 14, 39, 0.2);
+            --shadow-xl: 0 16px 48px rgba(10, 14, 39, 0.25);
+            
+            /* Slide Dimensions */
+            --slide-width: 1280px;
+            --slide-height: 720px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+            padding: var(--space-lg) 0;
+            overflow-x: hidden;
+        }
+
+        /* Paper Texture Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.03) 2px,
+                    rgba(10, 14, 39, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(10, 14, 39, 0.02) 2px,
+                    rgba(10, 14, 39, 0.02) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 3px solid var(--ink);
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-sm);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--electric);
+            opacity: 0.3;
+            transform: skewX(-12deg);
+        }
+        
+        .subtitle {
+            font-family: var(--font-secondary);
+            font-size: 1.25rem;
+            color: var(--ink);
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+
+        /* Slide Container */
+        .slide-wrapper {
+            width: 100%;
+            max-width: var(--slide-width);
+            margin: 0 auto var(--space-lg);
+            background: var(--paper);
+            border: 3px solid var(--ink);
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+        
+        /* Slide */
+        .slide {
+            width: 100%;
+            height: 100%;
+            padding: var(--space-xl);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: var(--paper);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .slide.active {
+            display: flex;
+        }
+
+        /* Slide Typography */
+        .slide h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 900;
+            margin-bottom: var(--space-lg);
+            color: var(--ink);
+            position: relative;
+            line-height: 1.2;
+            word-wrap: break-word;
+        }
+        
+        .slide h3 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            color: var(--ink);
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+        }
+        
+        .slide h4 {
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            color: var(--ink);
+        }
+        
+        .slide p {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            line-height: 1.8;
+            margin-bottom: var(--space-md);
+            word-wrap: break-word;
+        }
+        
+        .slide ul {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-md) 0;
+        }
+        
+        .slide li {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            line-height: 1.8;
+            margin-bottom: var(--space-sm);
+            padding-left: var(--space-lg);
+            position: relative;
+            word-wrap: break-word;
+        }
+        
+        .slide li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--electric);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Grid Layout */
+        .editorial-grid {
+            display: grid;
+            gap: var(--space-md);
+            margin: var(--space-md) 0;
+            height: auto;
+            align-content: start;
+        }
+        
+        .editorial-grid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .editorial-grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .editorial-card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: var(--space-md);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .editorial-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 0;
+        }
+        
+        .editorial-card:hover::before {
+            transform: translateX(0);
+        }
+        
+        .editorial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .editorial-card:hover * {
+            color: var(--paper);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Typography Labels - Editorial Style */
+        .editorial-label {
+            font-family: var(--font-secondary);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.6;
+            text-transform: uppercase;
+            margin-bottom: var(--space-sm);
+            position: relative;
+        }
+        
+        .editorial-label::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--electric);
+        }
+
+        /* Numbered Elements */
+        .editorial-number {
+            display: inline-flex;
+            width: 50px;
+            height: 50px;
+            background: var(--electric);
+            color: var(--ink);
+            font-family: var(--font-secondary);
+            font-weight: 700;
+            font-size: 1.5rem;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-md);
+            position: relative;
+        }
+        
+        .editorial-number::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        /* Pull Quotes - Literary Style */
+        .editorial-pullquote {
+            font-size: 1.8rem;
+            font-weight: 300;
+            line-height: 1.4;
+            font-style: italic;
+            border-left: 4px solid var(--electric);
+            padding-left: var(--space-md);
+            margin: var(--space-md) 0;
+            color: var(--ink);
+            opacity: 0.8;
+        }
+
+/* Literary Image Frames */
+.editorial-image-frame {
+  border: 8px solid var(--paper-primary);
+  box-shadow: 
+    0 0 0 2px var(--ink-primary),
+    4px 4px 0 0 var(--ink-primary);
+  transition: all 0.3s ease;
+}
+
+.editorial-image-frame:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 
+    0 0 0 2px var(--ink-primary),
+    6px 6px 0 0 var(--ink-primary);
+}
+
+        /* Placeholder Box */
+        .ph-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, transparent 49%, var(--electric) 49%, var(--electric) 51%, transparent 51%),
+                var(--paper-shadow);
+            background-size: 20px 20px;
+            border: 2px dashed var(--ink);
+            border-radius: 12px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--ink);
+            text-align: center;
+            padding: var(--space-md);
+            box-sizing: border-box;
+            position: relative;
+            opacity: 0.7;
+        }
+
+        /* Resizable Container */
+        .resizable-container { 
+            position: relative; 
+        }
+        
+        /* Strong Elements */
+        .slide strong {
+            color: var(--electric);
+            font-weight: 700;
+        }
+
+        /* Rhythmic Spacing System */
+        .editorial-rhythm-1 { margin-bottom: var(--space-sm); }
+        .editorial-rhythm-2 { margin-bottom: var(--space-md); }
+        .editorial-rhythm-3 { margin-bottom: var(--space-lg); }
+        
+        .editorial-indent {
+            padding-left: var(--space-lg);
+            border-left: 2px solid var(--electric);
+        }
+
+/* === 編集モード === */
+.slide-wrapper.is-slide-editing {
+  overflow: visible;
+  margin-bottom: 250px;
+  box-shadow: 0 0 0 5px var(--electric-accent), 0 20px 60px rgba(0,240,255,.3);
+  z-index: 100;
+}
+
+.is-slide-editing .editable {
+  transition: all .2s ease-in-out;
+}
+
+.is-slide-editing .editable:hover {
+  outline: 2px dashed rgba(0,240,255,.5);
+  background-color: rgba(0,240,255,.03);
+}
+
+.is-editing {
+  outline: 2px solid var(--electric-accent) !important;
+  background-color: rgba(0,240,255,.05);
+  cursor: text;
+  box-shadow: 0 0 15px rgba(0,240,255,.2);
+}
+
+[contenteditable]:focus { outline: none; }
+
+/* リサイズ */
+.resizable-container { position: relative; }
+.is-slide-editing .resizable-container {
+  outline: 2px dashed var(--electric-accent);
+  outline-offset: 4px;
+}
+
+.resize-handle {
+  background-color: var(--electric-accent);
+  border: 3px solid var(--paper-primary);
+  border-radius: 50%;
+  position: absolute;
+  display: none;
+  z-index: 110;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  width: 28px;
+  height: 28px;
+  bottom: -14px;
+  right: -14px;
+  cursor: nwse-resize;
+}
+
+.is-slide-editing .resizable-container .resize-handle { display: block; }
+
+/* 個別要素削除 */
+.deletable { position: relative; }
+.delete-element-button {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 28px;
+  height: 28px;
+  background-color: var(--coral-accent);
+  color: var(--paper-primary);
+  border-radius: 50%;
+  border: 2px solid var(--paper-primary);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 120;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  transition: all .2s ease;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.is-slide-editing .deletable:hover .delete-element-button { display: flex; }
+.delete-element-button:hover {
+  transform: scale(1.15);
+  background-color: #ff5252;
+}
+
+/* スライド操作UI（編集ボタン等） */
+.slide-controls {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity .3s ease, transform .3s ease;
+  display: flex;
+  gap: .75rem;
+}
+
+.slide-wrapper:hover .slide-controls,
+.slide-wrapper.is-slide-editing .slide-controls {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 編集画面用グリッド表示 */
+#editor-overview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 14, 39, 0.9);
+  z-index: 9998;
+  overflow: auto;
+  padding: 2rem;
+  display: none;
+}
+
+#editor-overview-overlay.active { display: block; }
+
+#editor-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+  align-content: start;
+}
+
+.editor-thumb {
+  aspect-ratio: 1280 / 720;
+  background: var(--paper-primary);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,.25);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid var(--ink-primary);
+}
+
+.editor-thumb.draggable { cursor: grab; }
+.editor-thumb.draggable:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+  box-shadow: 0 15px 35px rgba(0,0,0,.35);
+}
+
+.editor-thumb .inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1280px;
+  height: 720px;
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.editor-thumb.dragging { opacity: 0.5; transition: opacity 0.2s; }
+.editor-thumb.drag-over { border: 3px solid var(--electric-accent); }
+
+#close-editor-overview {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: var(--paper-primary);
+  color: var(--ink-primary);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  border: 2px solid var(--ink-primary);
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* 印刷 */
+@media print {
+  .no-print { display: none !important; }
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+  html, body {
+    background-color: var(--paper-primary);
+    padding: 0;
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .slide-wrapper {
+    width: 29.7cm;
+    height: 21cm;
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: hidden;
+    page-break-after: always;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .slide-wrapper:last-child { page-break-after: auto; }
+  .slide {
+    width: var(--slide-width) !important;
+    height: var(--slide-height) !important;
+    transform: scale(0.82);
+    transform-origin: center center;
+  }
+}
+
+/* ダークモード（周辺UIのみ） */
+@media (prefers-color-scheme: dark) {
+  body.literary-theme { background-color: #1b1b1b; }
+  body.logical-theme { background-color: #1b1b1b; }
+}
+
+        body { transition: background-color .3s; }
+        body.slideshow-mode { background-color:#000; overflow:hidden; }
+        .slideshow-mode #presentation-container { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; padding:0; margin:0; }
+        .slideshow-mode .slide-wrapper {
+        width:min(100vw, calc(100vh * (16 / 9)));
+        height:min(100vh, calc(100vw * (9 / 16)));
+        max-width:100vw; max-height:100vh; margin:0; box-shadow:none; border-radius:0;
+        display:none;
+        }
+        .slideshow-mode .slide-wrapper.active-slide { display:block; }
+        .slideshow-mode .slide { width:100% !important; height:100% !important; padding:clamp(32px, 4.5vh, 64px) clamp(32px, 4.5vw, 64px); }
+        #speaker-notes { position:fixed; right:16px; bottom:64px; max-width:40vw; max-height:30vh; overflow:auto; background:rgba(0,0,0,.6); color:#fff; padding:.8rem .9rem; border-radius:.5rem; z-index:10001; display:none; }
+        .slideshow-mode #speaker-notes:not([hidden]) { display:block; }
+        #overview-overlay { position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:10002; overflow:auto; padding:2rem; display:none; }
+        .slideshow-mode #overview-overlay:not([hidden]) { display:block; }
+        #overview-overlay .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:18px; align-content:start; }
+        #overview-overlay .thumb { aspect-ratio: 16 / 9; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,.25); position:relative; cursor:pointer; }
+        #overview-overlay .thumb .inner { position:absolute; top:0; left:0; width:1280px; height:720px; transform-origin:top left; }
+        #laser-dot { position:fixed; width:16px; height:16px; border-radius:50%; background-color: rgba(255, 10, 10, 0.8); box-shadow: 0 0 10px 4px rgba(255, 10, 10, 0.5); z-index:99999; pointer-events:none; display:none; }
+        body.slideshow-mode.laser-on { cursor:none; }
+        .slideshow-mode.laser-on #laser-dot { display:block; }
+        #slideshow-toolbar { position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:10002; display:flex; background:rgba(0,0,0,.38); padding:6px 8px; border-radius:20px; backdrop-filter:saturate(1.2) blur(2px); opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s, transform .3s; }
+        .slideshow-mode #slideshow-toolbar.visible { opacity: 1; visibility: visible; transform:translateX(-50%) translateY(0); }
+        #slideshow-toolbar button{ width:34px; height:34px; border-radius:50%; display:grid; place-items:center; color:#fff; border:1px solid rgba(255,255,255,.22); background:transparent; opacity:.9; transition:opacity .15s, background .15s; margin:0 2px; }
+        #slideshow-toolbar button:hover{ opacity:1; background:rgba(255,255,255,.08); }
+        #tb-indicator { padding: 0 12px; color: #fff; font-weight: 700; font-size: 1rem; display:grid; place-items:center; }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>売上データ分析×ChatGPT研修</h1>
+            <p class="subtitle">Excelに頼らずChatGPTで売上CSVを"読ませる"初めの一歩</p>
+        </header>
+        
+        <main id="presentation-container">
+        
+        <!-- スライド1: タイトル -->
+        <div class="slide-wrapper">
+            <section class="slide">
+                <div class="editorial-number">1</div>
+                <h2 class="editable">Excelに頼らず！<br>ChatGPTで売上CSVを"読ませる"初めの一歩</h2>
+                <div class="editorial-label">第1回：売上データ分析×ChatGPT研修</div>
+                <div style="text-align: center; margin-top: var(--space-lg);">
+                    <p class="editable" style="font-size: 1.5rem;">
+                        <strong>所要時間：</strong>9分<br>
+                        <strong>目標：</strong>3分で売上傾向を把握する
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <!-- スライド2: 現在の課題 -->
+        <div class="slide-wrapper">
+            <section class="slide">
+                <h3 class="editable">現在の課題と理想の姿</h3>
+                <div class="editorial-grid editorial-grid-2">
+                    <div class="editorial-card">
+                        <div class="editorial-label">Before</div>
+                        <ul class="editable">
+                            <li>Excel作業に<strong>20分以上</strong></li>
+                            <li>主観的な傾向把握</li>
+                            <li>複雑な分析は困難</li>
+                            <li>属人化・作業ミス</li>
+                        </ul>
+                    </div>
+                    <div class="editorial-card">
+                        <div class="editorial-label">After</div>
+                        <ul class="editable">
+                            <li>ChatGPTで<strong>3分</strong>完結</li>
+                            <li>客観的な数値分析</li>
+                            <li>高度な統計も簡単</li>
+                            <li>誰でも同じ結果</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- スライド3: 準備するもの -->
+        <div class="slide-wrapper">
+            <section class="slide">
+                <h3 class="editable">必要な準備</h3>
+                <div class="editorial-rhythm-2"></div>
+                <div class="editorial-card" style="margin-top: var(--space-lg);">
+                    <p class="editable" style="margin-bottom: var(--space-md);"><strong>CSVファイルの形式：</strong></p>
+                    <div style="background: var(--paper-shadow); padding: var(--space-md); border-radius: 8px; font-family: var(--font-secondary); margin: var(--space-md) 0;">
+                        <pre style="margin: 0; white-space: pre-wrap;">Month,Sales,Product
+2023-01,4500000,ProductA
+2023-02,4200000,ProductA
+2023-03,4800000,ProductB
+...</pre>
+                    </div>
+                    <p class="editable" style="font-size: 0.9rem;">💡 <strong>ポイント：</strong>列名は英語表記にすると精度UP！</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- スライド4: ChatGPTへのアップロード -->
+        <div class="slide-wrapper">
+            <section class="slide">
+                <h3 class="editable">ChatGPTへのアップロード手順</h3>
+                <div class="editorial-grid editorial-grid-2">
+                    <div>
+                        <div class="editorial-number">1</div>
+                        <p class="editable">ChatGPT画面を開く</p>
+                        
+                        <div class="editorial-number">2</div>
+                        <p class="editable">📎クリップアイコンをクリック</p>
+                        
+                        <div class="editorial-number">3</div>
+                        <p class="editable">CSVファイルを選択</p>
+                    </div>
+                    <div class="resizable-container" style="width:500px; height:400px;">
+                        <div class="ph-box editable">
+                            ChatGPT画面のスクリーンショット例
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- スライド5: 効果的なプロンプト -->
+        <div class="slide-wrapper">
+            <section class="slide">
+                <h3 class="editable">効果的なプロンプトの書き方</h3>
+                <div class="editorial-grid editorial-grid-2">
+                    <div class="editorial-card" style="border-color: var(--coral);">
+                        <div class="editorial-label" style="color: var(--coral);">❌ 悪い例</div>
+                        <p class="editable">
+                            「このデータを分析して」<br>
+                            「何か言えることは？」
+                        </p>
+                    </div>
+                    <div class="editorial-card" style="border-color: var(--electric);">
+                        <div class="editorial-label" style="color: var(--electric);">✅ 良い例</div>
+                        <p class="editable">
+                            「月別売上の傾向を分析し、最も売上が高い月と低い月を特定してください」
+                        </p>
+                    </div>
+                </div>
+                <div class="editorial-pullquote">
+                    具体的に何を知りたいかを明示することが大切
+                </div>
+            </section>
+        </div>
+
+        <!-- スライド6: 分析結果の例 -->
+        <div class="slide-wrapper">
+            <section class="slide">
+                <h3 class="editable">ChatGPTの分析結果例</h3>
+                <div class="editorial-card" style="margin-top: var(--space-lg);">
+                    <p class="editable" style="margin-bottom: var(--space-md);"><strong>ChatGPTの回答：</strong></p>
+                    <ul class="editable">
+                        <li>📊 7月と12月に売上のピークがある</li>
+                        <li>📉 春先（3-4月）は売上が低調</li>
+                        <li>📈 年間を通じて約20%の変動幅</li>
+                        <li>💡 季節性パターンが明確に存在</li>
+                    </ul>
+                    <p class="editable" style="text-align: center; margin-top: var(--space-lg); font-size: 1.5rem;"><strong>わずか30秒で得られる洞察！</strong></p>
+                </div>
+            </section>
+        </div>
+
+        <!-- スライド7: 注意点とトラブルシューティング -->
+        <div class="slide-wrapper">
+            <section class="slide">
+                <h3 class="editable">注意点とトラブルシューティング</h3>
+                <div class="editorial-grid editorial-grid-3">
+                    <div class="editorial-card">
+                        <div class="editorial-label">データサイズ</div>
+                        <p class="editable" style="font-size: 0.9rem;">
+                            推奨：10MB以下<br>
+                            行数：約10万行まで
+                        </p>
+                    </div>
+                    <div class="editorial-card">
+                        <div class="editorial-label">文字化け対策</div>
+                        <p class="editable" style="font-size: 0.9rem;">
+                            UTF-8エンコーディング<br>
+                            特殊文字を除去
+                        </p>
+                    </div>
+                    <div class="editorial-card">
+                        <div class="editorial-label">精度向上</div>
+                        <p class="editable" style="font-size: 0.9rem;">
+                            数値はカンマなし<br>
+                            日付形式を統一
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- スライド8: 実践演習 -->
+        <div class="slide-wrapper">
+            <section class="slide">
+                <h3 class="editable">🎯 今すぐ試せる分析タスク</h3>
+                <div class="editorial-indent">
+                    <ol style="list-style: none; counter-reset: task-counter; padding: 0;">
+                        <li class="editable" style="counter-increment: task-counter; margin-bottom: var(--space-md);">
+                            <strong style="color: var(--electric);">基礎分析：</strong><br>
+                            「月別売上の平均、最大、最小を教えてください」
+                        </li>
+                        <li class="editable" style="counter-increment: task-counter; margin-bottom: var(--space-md);">
+                            <strong style="color: var(--electric);">トレンド分析：</strong><br>
+                            「売上は上昇傾向か下降傾向か判定してください」
+                        </li>
+                        <li class="editable" style="counter-increment: task-counter; margin-bottom: var(--space-md);">
+                            <strong style="color: var(--electric);">異常値検出：</strong><br>
+                            「通常と大きく異なる売上の月を特定してください」
+                        </li>
+                        <li class="editable" style="counter-increment: task-counter; margin-bottom: var(--space-md);">
+                            <strong style="color: var(--electric);">予測準備：</strong><br>
+                            「来月の売上を予測するために必要な情報を整理してください」
+                        </li>
+                    </ol>
+                </div>
+            </section>
+        </div>
+
+        <!-- スライド9: まとめ -->
+        <div class="slide-wrapper">
+            <section class="slide">
+                <h3 class="editable">まとめ</h3>
+                <div class="editorial-card">
+                    <h4 class="editable" style="margin-bottom: var(--space-md);">🎉 今日マスターしたスキル</h4>
+                    <ul class="editable">
+                        <li>✅ CSVファイルをChatGPTにアップロード</li>
+                        <li>✅ 具体的で明確なプロンプトの作成</li>
+                        <li>✅ 分析結果を業務に活かす方法</li>
+                        <li>✅ エラー対処法</li>
+                    </ul>
+                    <div style="margin-top: var(--space-lg); padding: var(--space-md); background: rgba(0, 240, 255, 0.1); border-radius: 8px;">
+                        <p class="editable" style="text-align: center; font-size: 1.25rem;">
+                            <strong>成果：</strong>データ分析時間を<strong>20分→3分</strong>に短縮！
+                        </p>
+                    </div>
+                </div>
+                <div class="editorial-label" style="margin-top: var(--space-lg);">次回予告</div>
+                <p class="editable">
+                    第2回：ChatGPTにPythonコードを書かせて、美しいグラフを自動生成する方法
+                </p>
+            </section>
+        </div>
+
+        </main>
+        
+        <footer style="text-align: center; padding: var(--space-lg) 0; border-top: 3px solid var(--ink); margin-top: var(--space-xl); font-family: var(--font-secondary); letter-spacing: 0.05em;">
+            <p>© 2024 売上データ分析×ChatGPT研修 - Literary Editorial Design System</p>
+        </footer>
+    </div>
+
+  
+  
+</body>
+</html>

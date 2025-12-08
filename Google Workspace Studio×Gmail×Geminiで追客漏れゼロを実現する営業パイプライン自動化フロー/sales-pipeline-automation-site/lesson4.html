@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：提案資料と見積書を完全自動整理！ | 営業パイプライン自動化フロー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --sales-orange: #FF8C00;
+            --google-green: #34A853;
+            --drive-yellow: #FBBC04;
+            --google-blue: #4285F4;
+        }
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-title { font-size: 1.2rem; font-weight: 700; }
+        .nav-menu { display: flex; gap: 2rem; }
+        .nav-menu a {
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.9rem;
+            position: relative;
+        }
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--drive-yellow);
+            transition: width 0.3s ease;
+        }
+        .nav-menu a:hover::after { width: 100%; }
+        .hero {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            margin-bottom: 2rem;
+        }
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 2rem;
+        }
+        .hero-title span {
+            display: block;
+            color: var(--drive-yellow);
+            font-size: 0.5em;
+            margin-top: 0.5em;
+        }
+        .hero-description {
+            font-size: 1.2rem;
+            max-width: 800px;
+            line-height: 1.8;
+        }
+        .section {
+            max-width: 1400px;
+            margin: 60px auto;
+            padding: 0 2rem;
+        }
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--drive-yellow);
+            display: inline-block;
+        }
+        .intro-text {
+            font-size: 1.1rem;
+            line-height: 1.9;
+            margin-bottom: 2rem;
+        }
+        .intro-text strong {
+            color: var(--drive-yellow);
+        }
+        .goal-box {
+            background: linear-gradient(135deg, var(--drive-yellow), var(--sales-orange));
+            color: var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+        }
+        .goal-box h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        .goal-list {
+            list-style: none;
+            margin: 0;
+        }
+        .goal-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .goal-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        .dual-flow {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .flow-card {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 2rem;
+        }
+        .flow-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--sales-orange);
+        }
+        .flow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .flow-step-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--drive-yellow);
+            color: var(--ink);
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .folder-structure {
+            background: var(--ink);
+            color: var(--electric);
+            padding: 2rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+        .folder-structure .folder { color: var(--drive-yellow); }
+        .folder-structure .file { color: #ccc; }
+        .code-block {
+            background: var(--ink);
+            color: var(--electric);
+            padding: 1.5rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .highlight-box {
+            background: rgba(251, 188, 4, 0.1);
+            border-left: 4px solid var(--drive-yellow);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .highlight-box h4 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .highlight-box ul {
+            margin-left: 1rem;
+        }
+        .highlight-box li {
+            margin-bottom: 0.5rem;
+        }
+        .warning-box {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .warning-box h4 {
+            color: var(--coral);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .step-card {
+            background: white;
+            border: 2px solid var(--ink);
+            padding: 1.5rem;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--drive-yellow);
+            color: var(--ink);
+            font-family: 'Space Grotesk', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .step-desc {
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        .comparison-table th {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 1rem;
+            text-align: left;
+        }
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .comparison-table tr:nth-child(even) {
+            background: rgba(0,0,0,0.02);
+        }
+        .badge-before {
+            background: var(--coral);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            border-radius: 4px;
+        }
+        .badge-after {
+            background: var(--google-green);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            border-radius: 4px;
+        }
+        .output-example {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+        .output-example h4 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--google-green);
+        }
+        .output-content {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        .next-preview {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 3rem;
+            margin-top: 4rem;
+        }
+        .next-preview h2 {
+            color: var(--drive-yellow);
+            margin-bottom: 1rem;
+        }
+        .stat-highlight {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .stat-highlight-number {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--drive-yellow);
+            line-height: 1;
+        }
+        .stat-highlight-text {
+            font-size: 1.2rem;
+        }
+        @media (max-width: 768px) {
+            .dual-flow { grid-template-columns: 1fr; }
+            .nav-menu { display: none; }
+            .stat-highlight {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">営業パイプライン自動化フロー</div>
+            <div class="nav-menu">
+                <a href="#overview">概要</a>
+                <a href="#flows">2つのフロー</a>
+                <a href="#flow1">添付保存</a>
+                <a href="#flow2">週次レポート</a>
+                <a href="#result">効果</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第4回 / 全5回</div>
+            <h1 class="hero-title">
+                提案資料と見積書を完全自動整理！
+                <span>Drive保存 × 定期送信フローで営業資料を整流化</span>
+            </h1>
+            <p class="hero-description">
+                添付ファイルを案件フォルダに自動保存。Geminiがファイルを分類し、
+                週次で資料一覧レポートを自動送信します。
+            </p>
+        </div>
+    </div>
+
+    <section class="section" id="overview">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">この回の目標</h2>
+
+        <p class="intro-text">
+            「あの見積書どこにあったっけ？」「提案資料がDriveに散らばっている」という問題を解決します。<strong>2つのエージェント</strong>を作成し、添付ファイルの自動保存と週次レポートを実現します。
+        </p>
+
+        <div class="goal-box">
+            <h3>作成するエージェント（2つ）</h3>
+            <ul class="goal-list">
+                <li><strong>フロー1</strong>：添付ファイル自動保存エージェント（メール受信時）</li>
+                <li><strong>フロー2</strong>：週次資料レポートエージェント（毎週月曜9時）</li>
+                <li><strong>効果</strong>：資料探索時間 30分/回 → 即座に検索</li>
+            </ul>
+        </div>
+
+        <div class="stat-highlight">
+            <div class="stat-highlight-number">95%</div>
+            <div class="stat-highlight-text">
+                資料探索時間を削減<br>
+                <span style="font-size: 0.9rem; opacity: 0.8;">30分/回 → 即座に検索</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="flows">
+        <div class="section-label">DUAL FLOW</div>
+        <h2 class="section-title">2つのフローを作成</h2>
+
+        <p class="intro-text">
+            資料管理は「保存」と「把握」の2つの課題があります。それぞれを解決するエージェントを作成します。
+        </p>
+
+        <div class="dual-flow">
+            <div class="flow-card">
+                <h3>フロー1：添付ファイル自動保存</h3>
+                <p style="margin-bottom: 1rem; color: var(--gray);">メール受信時にリアルタイムで起動</p>
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <div class="flow-step-icon">1</div>
+                        <span>メール受信（添付あり）</span>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-step-icon">2</div>
+                        <span>Geminiで資料タイプ・顧客名を分類</span>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-step-icon">3</div>
+                        <span>Driveの案件フォルダに自動保存</span>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-step-icon">4</div>
+                        <span>Chatで保存完了を通知</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flow-card">
+                <h3>フロー2：週次資料レポート</h3>
+                <p style="margin-bottom: 1rem; color: var(--gray);">毎週月曜9時にスケジュール実行</p>
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <div class="flow-step-icon">1</div>
+                        <span>毎週月曜9時に自動起動</span>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-step-icon">2</div>
+                        <span>過去7日間のファイル一覧を取得</span>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-step-icon">3</div>
+                        <span>Geminiでレポート形式に整形</span>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-step-icon">4</div>
+                        <span>Chatに週次レポートを送信</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">FOLDER STRUCTURE</div>
+        <h2 class="section-title">推奨フォルダ構造</h2>
+
+        <p class="intro-text">
+            効率的な資料管理のために、以下のフォルダ構造を事前にDriveで作成しておきます。
+        </p>
+
+        <div class="folder-structure"><span class="folder">営業資料/</span>
+├── <span class="folder">株式会社A/</span>
+│   ├── <span class="folder">Aプロジェクト/</span>
+│   │   ├── <span class="folder">提案書/</span>
+│   │   │   └── <span class="file">2025-01-15_A社_提案書.pdf</span>
+│   │   └── <span class="folder">見積書/</span>
+│   │       └── <span class="file">2025-01-20_A社_見積書.pdf</span>
+│   └── <span class="folder">Bプロジェクト/</span>
+├── <span class="folder">株式会社B/</span>
+│   └── ...
+└── <span class="folder">株式会社C/</span>
+    └── ...</div>
+
+        <div class="highlight-box">
+            <h4>命名規則</h4>
+            <ul>
+                <li><strong>ファイル名</strong>：日付_顧客名_資料タイプ.拡張子</li>
+                <li><strong>例</strong>：2025-01-15_A社_提案書.pdf</li>
+                <li><strong>メリット</strong>：ソートすると時系列順に並ぶ、検索しやすい</li>
+            </ul>
+        </div>
+
+        <div class="warning-box">
+            <h4>事前準備</h4>
+            <p>親フォルダ「営業資料」は事前にDriveで作成してください。顧客フォルダはGeminiの判定に基づいて自動作成することも可能ですが、最初は手動で主要顧客のフォルダを作成しておくことをお勧めします。</p>
+        </div>
+    </section>
+
+    <section class="section" id="flow1">
+        <div class="section-label">FLOW 1</div>
+        <h2 class="section-title">添付ファイル自動保存</h2>
+
+        <div class="step-grid">
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <h3 class="step-title">Starter設定</h3>
+                <p class="step-desc">Gmail - Email received<br>Filter: has:attachment<br>添付ファイル付きメールのみ起動</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <h3 class="step-title">Gemini分類</h3>
+                <p class="step-desc">資料タイプ（提案書/見積書/契約書など）、顧客名、案件名をAIが推定</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <h3 class="step-title">Drive保存</h3>
+                <p class="step-desc">Drive - Upload file<br>Geminiが推定したフォルダパスに保存</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">04</div>
+                <h3 class="step-title">Chat通知</h3>
+                <p class="step-desc">保存先とファイル名をChatに通知<br>Driveへのリンクを含める</p>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 2rem;">分類プロンプト</h3>
+        <div class="code-block">Analyze this email with attachments and classify:
+
+Subject: {email_subject}
+From: {sender}
+Body: {email_body}
+Attachment names: {attachment_names}
+
+Provide in Japanese:
+【資料タイプ】提案書/見積書/契約書/議事録/その他
+【顧客名】推定される顧客名（メールドメインや本文から推測）
+【案件名】推定される案件名（不明な場合は「一般」）
+【保存フォルダ】推奨フォルダパス（例：営業資料/株式会社A/Aプロジェクト/提案書）
+【ファイル名】推奨ファイル名（日付_顧客名_資料タイプ形式）
+
+顧客名が不明な場合は、送信者のドメイン名を使用してください。</div>
+
+        <div class="output-example">
+            <h4>分類結果の出力例</h4>
+            <div class="output-content">【資料タイプ】見積書
+【顧客名】株式会社ABC
+【案件名】新システム導入プロジェクト
+【保存フォルダ】営業資料/株式会社ABC/新システム導入プロジェクト/見積書
+【ファイル名】2025-01-15_ABC社_見積書.pdf</div>
+        </div>
+    </section>
+
+    <section class="section" id="flow2">
+        <div class="section-label">FLOW 2</div>
+        <h2 class="section-title">週次資料レポート</h2>
+
+        <div class="step-grid">
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <h3 class="step-title">Starter設定</h3>
+                <p class="step-desc">Scheduled<br>毎週月曜 9:00 AM<br>Asia/Tokyo</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <h3 class="step-title">Drive一覧取得</h3>
+                <p class="step-desc">Drive - List files<br>過去7日間に更新されたファイルを取得</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <h3 class="step-title">Geminiレポート</h3>
+                <p class="step-desc">ファイル一覧を週次レポート形式に整形</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">04</div>
+                <h3 class="step-title">Chat送信</h3>
+                <p class="step-desc">週次レポートをChatに送信<br>チーム全体で共有</p>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 2rem;">レポートプロンプト</h3>
+        <div class="code-block">Create a weekly report of sales documents in Japanese:
+
+Files added/updated this week:
+{drive_files}
+
+Format as:
+📊 今週の営業資料レポート（{start_date} 〜 {end_date}）
+
+【新規追加】
+- ファイル名（顧客名）：Driveリンク
+
+【更新】
+- ファイル名（顧客名）：Driveリンク
+
+【統計】
+- 提案書: X件
+- 見積書: X件
+- 契約書: X件
+- その他: X件
+
+【注目案件】
+今週最も動きがあった顧客TOP3
+
+ファイルがない場合は「今週は新規・更新ファイルはありません」と出力してください。</div>
+
+        <div class="output-example">
+            <h4>週次レポートの出力例</h4>
+            <div class="output-content">📊 今週の営業資料レポート（1/8 〜 1/14）
+
+【新規追加】
+- 2025-01-10_ABC社_提案書.pdf（株式会社ABC）
+- 2025-01-12_XYZ社_見積書.pdf（XYZ株式会社）
+
+【更新】
+- 2025-01-14_DEF社_契約書_v2.pdf（DEF株式会社）
+
+【統計】
+- 提案書: 1件
+- 見積書: 1件
+- 契約書: 1件
+- その他: 0件
+
+【注目案件】
+1. 株式会社ABC - 提案書提出、商談フェーズ
+2. DEF株式会社 - 契約書更新、最終調整中
+3. XYZ株式会社 - 見積書提出、回答待ち</div>
+        </div>
+    </section>
+
+    <section class="section" id="result">
+        <div class="section-label">RESULT</div>
+        <h2 class="section-title">Before / After</h2>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th><span class="badge-before">Before</span></th>
+                    <th><span class="badge-after">After</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>添付ファイル保存</td>
+                    <td>手動ダウンロード → 手動アップロード</td>
+                    <td>自動でDriveに保存</td>
+                </tr>
+                <tr>
+                    <td>フォルダ整理</td>
+                    <td>バラバラに保存、後で整理</td>
+                    <td>AIが案件別に自動整理</td>
+                </tr>
+                <tr>
+                    <td>資料探索時間</td>
+                    <td>30分/回</td>
+                    <td>即座に検索可能</td>
+                </tr>
+                <tr>
+                    <td>資料状況の把握</td>
+                    <td>何があるか分からない</td>
+                    <td>週次レポートで一覧化</td>
+                </tr>
+                <tr>
+                    <td>ファイル命名</td>
+                    <td>バラバラの命名規則</td>
+                    <td>統一された命名規則</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">運用のコツ</h2>
+
+        <div class="highlight-box">
+            <h4>フォルダが存在しない場合の対処</h4>
+            <p>Geminiが推定したフォルダが存在しない場合、エラーになることがあります。「営業資料/未分類」フォルダを作成し、不明な場合はそこに保存するようプロンプトに追記すると安定します。</p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>大量の添付ファイル</h4>
+            <p>メールに複数の添付ファイルがある場合、それぞれを個別に処理するループ処理が必要な場合があります。最初はシンプルに「1つ目の添付ファイルのみ」から始めることをお勧めします。</p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>既存資料の整理</h4>
+            <p>このエージェントは「新規メール」にのみ対応します。既存のDrive資料を整理したい場合は、別途手動で整理するか、バッチ処理用のスクリプトを作成してください。</p>
+        </div>
+    </section>
+
+    <section class="next-preview">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+            <div class="section-label" style="color: rgba(255,255,255,0.5);">NEXT</div>
+            <h2>次回予告（最終回）</h2>
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">第5回：キーワード監視で確度高い案件を逃さない！</h3>
+            <p style="font-size: 1.1rem; opacity: 0.9;">"使える営業フロー"に仕上げる最終調整</p>
+            <p style="margin-top: 1rem; opacity: 0.7;">
+                最終回は、営業キーワード（契約/発注/検討など）を監視して確度高い案件を優先アラートします。
+                また、これまで作成した4つのエージェントを統合し、実際に"使える営業フロー"として運用開始する方法を学びます。
+            </p>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：完成！GASで動く日報アプリとGoogleサイト公開 | 教材</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #0A0E27;
+            --paper: #FEFEF8;
+            --electric: #00F0FF;
+            --coral: #FF6B6B;
+            --violet: #7C3AED;
+            --gray: #4A5568;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                rgba(10, 14, 39, 0.01) 2px,
+                rgba(10, 14, 39, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 254, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .section {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 2rem;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--electric);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translate(-4px, -4px);
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .card:hover::before {
+            top: 8px;
+            left: 8px;
+        }
+
+        .card:hover .card-number {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .card-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            background: var(--ink);
+            color: var(--paper);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .card-description {
+            opacity: 0.8;
+        }
+
+        .phase-card {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase-number {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.5rem 1.5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+        }
+
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--electric) 0%, var(--violet) 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 0;
+            margin-top: 3rem;
+            border: 2px solid var(--ink);
+            position: relative;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        .prompt-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            position: relative;
+            border: 2px solid var(--ink);
+            overflow-x: auto;
+        }
+
+        .prompt-box::before {
+            content: 'プロンプト（コピーして使用）';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            padding: 0.25rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--electric);
+            color: var(--ink);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--paper);
+            transform: scale(1.05);
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            padding: 1rem 0 1rem 3rem;
+            position: relative;
+            border-left: 2px solid var(--electric);
+            margin-bottom: 1rem;
+        }
+
+        .step-list li::before {
+            content: attr(data-step);
+            position: absolute;
+            left: -20px;
+            top: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--ink);
+            color: var(--paper);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .highlight-box {
+            background: var(--electric);
+            color: var(--ink);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 3px solid var(--ink);
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            z-index: -1;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .prompt-box {
+                font-size: 0.8rem;
+                padding: 1.5rem;
+            }
+
+            .copy-button {
+                position: static;
+                display: block;
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-title">GAS×AI 業務アプリ講座</div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-label">第3回 / 全5回</div>
+            <h1 class="hero-title">
+                完成！<br>
+                GASで動く日報アプリと<br>
+                Googleサイト公開
+            </h1>
+            <p class="hero-description">
+                HTMLアプリを作成し、Webアプリとして公開、Googleサイトに埋め込んでチーム全員で閲覧できるようにします。
+                これが本当の「Webアプリ内製化」です！
+            </p>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">OVERVIEW</div>
+        <h2 class="section-title">この回で学ぶこと</h2>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">前回のコードにトリガーを設定</h3>
+                <p class="card-description">
+                    前回作成したonFormSubmit関数にトリガーを設定し、
+                    フォーム送信時に自動でスプレッドシートに転記されるようにします。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">AIにHTMLアプリを作ってもらう</h3>
+                <p class="card-description">
+                    スプレッドシートのデータを見やすく表示する
+                    HTMLアプリをAIに作ってもらいます。検索・フィルター機能付き。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">Webアプリ公開→Googleサイト埋め込み</h3>
+                <p class="card-description">
+                    作成したアプリをWebアプリとして公開し、
+                    GoogleサイトにWeb埋め込んでチーム全員がアクセスできるようにします。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">BEFORE / AFTER</div>
+        <h2 class="section-title">何が変わるのか</h2>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">Before</div>
+                <div class="phase-title">スプレッドシートを直接共有</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✗ スプレッドシートをそのまま共有すると見づらい</li>
+                <li>✗ 間違って編集されてしまう可能性</li>
+                <li>✗ フィルター・検索が使いづらい</li>
+                <li>✗ デザインがシンプルすぎる</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">After</div>
+                <div class="phase-title">HTMLアプリで見やすく表示</div>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li>✓ 見やすいカードレイアウトで表示</li>
+                <li>✓ 閲覧専用なので間違って編集される心配なし</li>
+                <li>✓ 氏名フィルター・検索機能がスムーズ</li>
+                <li>✓ Googleサイトに埋め込んで、チーム専用ポータルに</li>
+            </ul>
+        </div>
+
+        <div class="stats-card">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700;">業務改善の成果</h3>
+            <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                <li><strong>日報確認時間</strong>: 30分 → 5分 （83%削減）</li>
+                <li><strong>データ検索</strong>: 手動でフィルター → ワンクリック</li>
+                <li><strong>アクセス性</strong>: スプレッドシートURL → Googleサイト（ポータル化）</li>
+                <li><strong>誤編集リスク</strong>: あり → なし（閲覧専用）</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP 1</div>
+        <h2 class="section-title">トリガー設定（前回の復習）</h2>
+
+        <p style="font-size: 1.1rem; margin-bottom: 2rem;">
+            前回作成した<code>onFormSubmit</code>関数にトリガーを設定して、フォーム送信時に自動実行されるようにします。
+        </p>
+
+        <ul class="step-list">
+            <li data-step="1">スプレッドシートを開く → 「拡張機能」→「Apps Script」</li>
+            <li data-step="2">左メニューの「トリガー」（時計マーク）をクリック</li>
+            <li data-step="3">「トリガーを追加」をクリック</li>
+            <li data-step="4">設定：
+                <ul style="margin-top: 0.5rem; padding-left: 2rem;">
+                    <li>実行する関数: <code>onFormSubmit</code></li>
+                    <li>イベントのソース: <strong>フォームから</strong></li>
+                    <li>イベントの種類: <strong>フォーム送信時</strong></li>
+                </ul>
+            </li>
+            <li data-step="5">「保存」→ 権限の承認</li>
+            <li data-step="6">Googleフォームから送信テスト → スプレッドシートに自動転記されることを確認</li>
+        </ul>
+
+        <div class="highlight-box">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">✅ ここまでできたら成功！</h3>
+            <p style="font-size: 1.1rem;">
+                Googleフォームに入力して送信すると、自動的にスプレッドシートの最終行にデータが追加されるようになりました。
+                これで基本的な自動化は完成です！
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP 2</div>
+        <h2 class="section-title">🤖 AIにHTMLアプリを作ってもらう</h2>
+
+        <p style="font-size: 1.1rem; margin-bottom: 2rem;">
+            次に、スプレッドシートのデータを見やすく表示するHTMLアプリをAIに作ってもらいます。<br>
+            以下のプロンプトを<strong>全文コピー</strong>して、ChatGPT、Gemini、またはClaudeに貼り付けてください。
+        </p>
+
+        <div class="prompt-box" id="htmlAppPrompt">Google Apps Scriptで、スプレッドシートの日報データを閲覧できるWebアプリを作成してください。
+
+【技術仕様】
+- プラットフォーム: Google Apps Script（GAS）
+- 構成: バックエンド（Code.gs）+ フロントエンド（Index.html）
+- デプロイ方法: Webアプリとして公開
+- 埋め込み: Googleサイトに埋め込み可能にする
+
+【データソース】
+- スプレッドシート名: アクティブなスプレッドシート
+- シート名: 「シート1」
+- 列構成:
+  - A列: タイムスタンプ（送信日時）
+  - B列: 日付
+  - C列: 氏名
+  - D列: 業務内容
+  - E列: 所感・気づき
+
+【必要な機能】
+1. **データ表示**
+   - スプレッドシートから日報データを読み込む
+   - カード形式で見やすく表示
+   - 日付の新しい順にソート
+
+2. **フィルター機能**
+   - 氏名でフィルター（プルダウン選択）
+   - 検索ボックスで業務内容や所感を検索
+
+3. **デザイン**
+   - シンプルで見やすいUI
+   - レスポンシブデザイン（スマホ対応）
+   - カード型のレイアウト
+
+【ファイル構成】
+1. **Code.gs（バックエンド）**
+   - doGet(): HTMLページを返す関数
+   - getDailyReports(): スプレッドシートからデータを取得する関数
+   - getNameList(): 氏名のリストを取得する関数（フィルター用）
+
+2. **Index.html（フロントエンド）**
+   - HTML構造
+   - CSSスタイル（見やすいカードデザイン）
+   - JavaScriptでデータ取得・フィルター処理
+
+【重要な設定】
+- setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL) を使用
+  （Googleサイトへの埋め込みを可能にするため）
+
+【出力要件】
+1. Code.gsの完全なコード
+2. Index.htmlの完全なコード
+3. 各ファイルに詳細なコメントを付ける
+4. エラーハンドリングを実装
+5. データがない場合の表示も考慮
+
+上記の仕様に従って、Google Apps ScriptのWebアプリのコードを生成してください。</div>
+        <button class="copy-button" onclick="copyPrompt('htmlAppPrompt')">コピー</button>
+
+        <div class="highlight-box" style="margin-top: 3rem;">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">📝 AIが返してくれるコード</h3>
+            <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                AIは以下の2つのファイルのコードを返してくれます：
+            </p>
+            <ul style="font-size: 1.1rem; line-height: 2; padding-left: 2rem;">
+                <li><strong>Code.gs</strong> - バックエンドコード（データ取得処理）</li>
+                <li><strong>Index.html</strong> - フロントエンドコード（画面表示）</li>
+            </ul>
+            <p style="font-size: 1.1rem; margin-top: 1rem;">
+                それぞれのコードをコピーして、次のステップでApps Scriptエディタに貼り付けます。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP 3</div>
+        <h2 class="section-title">Apps ScriptエディタにコードUを貼り付け</h2>
+
+        <ul class="step-list">
+            <li data-step="1">スプレッドシートで「拡張機能」→「Apps Script」を開く</li>
+            <li data-step="2"><strong>Code.gsファイル</strong><br>
+                既存の<code>onFormSubmit</code>関数はそのまま残して、<br>
+                AIが生成した<code>doGet()</code>、<code>getDailyReports()</code>、<code>getNameList()</code>を追加
+            </li>
+            <li data-step="3"><strong>Index.htmlファイルを作成</strong><br>
+                左メニューの「＋」→「HTML」を選択<br>
+                ファイル名: <code>Index</code><br>
+                AIが生成したHTMLコードを貼り付け
+            </li>
+            <li data-step="4">すべてのファイルを保存</li>
+        </ul>
+
+        <div class="highlight-box">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">⚠️ 注意点</h3>
+            <p style="font-size: 1.1rem;">
+                <code>onFormSubmit</code>関数は削除しないでください！<br>
+                既存のコードに新しいコードを<strong>追加</strong>する形です。
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP 4</div>
+        <h2 class="section-title">Webアプリとして公開</h2>
+
+        <ul class="step-list">
+            <li data-step="1">Apps Scriptエディタで、右上の「デプロイ」→「新しいデプロイ」</li>
+            <li data-step="2">「種類の選択」（歯車アイコン）→「ウェブアプリ」を選択</li>
+            <li data-step="3">設定：
+                <ul style="margin-top: 0.5rem; padding-left: 2rem;">
+                    <li>説明: <code>日報閲覧アプリ</code></li>
+                    <li>次のユーザーとして実行: <strong>自分</strong></li>
+                    <li>アクセスできるユーザー: <strong>組織内の全員</strong>（または 自分のみ）</li>
+                </ul>
+            </li>
+            <li data-step="4">「デプロイ」をクリック</li>
+            <li data-step="5">権限の承認（初回のみ）<br>
+                「アクセスを承認」→ 自分のアカウントを選択 → 「許可」
+            </li>
+            <li data-step="6"><strong>WebアプリURLをコピー</strong><br>
+                デプロイ完了画面に表示されるURLをコピーして保存
+            </li>
+        </ul>
+
+        <div class="highlight-box">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">✅ ここまでできたら成功！</h3>
+            <p style="font-size: 1.1rem;">
+                コピーしたURLをブラウザで開くと、日報データが見やすく表示されているはずです。<br>
+                氏名フィルターや検索機能も試してみましょう！
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">STEP 5</div>
+        <h2 class="section-title">🌐 Googleサイトに埋め込み</h2>
+
+        <p style="font-size: 1.1rem; margin-bottom: 2rem;">
+            最後に、作成したWebアプリをGoogleサイトに埋め込んで、チーム全員がアクセスできるポータルサイトにします。<br>
+            これが本当の「Webアプリ内製化」です！
+        </p>
+
+        <ul class="step-list">
+            <li data-step="1">Google Sites（sites.google.com）を開く</li>
+            <li data-step="2">「新しいサイトを作成」（または既存のサイトを開く）</li>
+            <li data-step="3">サイト名: <code>業務日報 - チーム共有</code></li>
+            <li data-step="4">右側の「挿入」メニューから「埋め込み」を選択</li>
+            <li data-step="5">「URL」タブを選択し、先ほどコピーしたWebアプリURLを貼り付け</li>
+            <li data-step="6">「挿入」をクリック</li>
+            <li data-step="7">埋め込まれたアプリのサイズを調整（高さ: 600px以上推奨）</li>
+            <li data-step="8">右上の「公開」をクリック<br>
+                公開範囲: <strong>組織内の全員</strong>（または 特定のユーザー）
+            </li>
+            <li data-step="9">公開されたサイトのURLをチームに共有</li>
+        </ul>
+
+        <div class="stats-card" style="margin-top: 3rem;">
+            <h3 style="font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: 900;">🎉 完成！業務Webアプリの内製化達成！</h3>
+            <p style="font-size: 1.2rem; line-height: 2;">
+                これで、チーム全員が日報データを見やすく閲覧できるWebアプリが完成しました。<br>
+                GoogleフォームとApps ScriptとAIの力で、プログラミング未経験でもここまでできます！
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">TIPS</div>
+        <h2 class="section-title">よくある質問とトラブルシューティング</h2>
+
+        <div class="phase-card">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Q1: Webアプリにアクセスすると「権限が必要です」と表示される</h3>
+            <p style="font-size: 1.1rem;">
+                <strong>A:</strong> 以下を確認してください：
+            </p>
+            <ul style="font-size: 1.1rem; line-height: 2; padding-left: 2rem; margin-top: 1rem;">
+                <li>デプロイ時の「次のユーザーとして実行」が「自分」になっているか</li>
+                <li>「アクセスできるユーザー」が正しく設定されているか</li>
+                <li>権限の承認が完了しているか</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Q2: Googleサイトに埋め込んだが、アプリが表示されない</h3>
+            <p style="font-size: 1.1rem;">
+                <strong>A:</strong> 以下を確認してください：
+            </p>
+            <ul style="font-size: 1.1rem; line-height: 2; padding-left: 2rem; margin-top: 1rem;">
+                <li>Code.gs の doGet() 関数に <code>.setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)</code> が含まれているか</li>
+                <li>WebアプリURLが正しくコピーされているか</li>
+                <li>ブラウザのキャッシュをクリアしてみる</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Q3: データが表示されない</h3>
+            <p style="font-size: 1.1rem;">
+                <strong>A:</strong> 以下を確認してください：
+            </p>
+            <ul style="font-size: 1.1rem; line-height: 2; padding-left: 2rem; margin-top: 1rem;">
+                <li>スプレッドシートのシート名が「シート1」になっているか</li>
+                <li>スプレッドシートにデータが入っているか（ヘッダー行除く）</li>
+                <li>Apps Scriptの実行ログでエラーが出ていないか</li>
+            </ul>
+        </div>
+
+        <div class="phase-card">
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem;">Q4: フィルターが動かない</h3>
+            <p style="font-size: 1.1rem;">
+                <strong>A:</strong> 以下を確認してください：
+            </p>
+            <ul style="font-size: 1.1rem; line-height: 2; padding-left: 2rem; margin-top: 1rem;">
+                <li>Index.html のJavaScriptコードが正しく貼り付けられているか</li>
+                <li>ブラウザの開発者ツール（F12）でJavaScriptエラーが出ていないか</li>
+                <li>氏名のデータが正しくスプレッドシートに入っているか</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" style="margin-bottom: 5rem;">
+        <div class="section-label">NEXT</div>
+        <h2 class="section-title">次回予告</h2>
+
+        <div class="highlight-box">
+            <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">第4回：見積書をAIに作らせる！Docsテンプレート×GAS自動化</h3>
+            <p style="font-size: 1.1rem; line-height: 2;">
+                次回は、Google Docsのテンプレートを使って、ワンクリックで見積書PDFを自動生成するシステムを作ります。<br>
+                データの差し込み、PDF変換、ファイル名の動的変更など、実務で即活用できる機能を学びます。
+            </p>
+        </div>
+    </section>
+
+    <script>
+        function copyPrompt(id) {
+            const promptText = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'コピーしました！';
+                button.style.background = '#4ade80';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            }).catch(err => {
+                alert('コピーに失敗しました。手動でコピーしてください。');
+            });
+        }
+    </script>
+</body>
+</html>
