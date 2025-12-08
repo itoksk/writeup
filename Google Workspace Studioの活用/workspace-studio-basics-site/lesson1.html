@@ -725,6 +725,136 @@
         </div>
     </section>
 
+    <section class="section" id="changes">
+        <div class="section-header">
+            <div class="section-label">Release Notes</div>
+            <h2 class="section-title">正式リリースでの変更点</h2>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">アルファ版から削除された機能</div>
+            <p>正式リリース（2025年12月3日）に伴い、以下の機能がアルファ版から削除されました。</p>
+            <ul style="margin-top: 1rem;">
+                <li><strong>Chatスペースへの投稿</strong>：チームスペースへのメッセージ送信機能 → <span style="color: var(--coral);">削除</span>（DM通知のみ利用可能）</li>
+                <li><strong>Send a webhook</strong>：外部サービス（Slack/Teams等）へのWebhook送信 → <span style="color: var(--coral);">削除</span></li>
+                <li><strong>カレンダーイベント作成</strong>：Googleカレンダーへの予定作成機能 → <span style="color: var(--coral);">削除</span></li>
+                <li><strong>AI-powered steps（18歳未満）</strong>：共有されたエージェント内のAIステップは18歳未満ユーザーには自動削除</li>
+            </ul>
+        </div>
+
+        <div class="note">
+            <div class="note-title">今後の復活可能性</div>
+            <p>スターター（トリガー）には以下のスペース関連機能が残っているため、今後のアップデートでステップ側も追加される可能性があります。</p>
+            <ul style="margin-top: 0.5rem;">
+                <li>誰かがスペースに参加すると</li>
+                <li>チャットメッセージを受け取ったとき</li>
+                <li>私の名前が挙がった時（メンション）</li>
+                <li>絵文字反応が追加されたとき</li>
+            </ul>
+        </div>
+
+        <div class="section-header" style="margin-top: 3rem;">
+            <div class="section-label">Available Features</div>
+            <h2 class="section-title">利用可能なスターター・ステップ一覧</h2>
+        </div>
+
+        <h3 style="margin-top: 2rem; margin-bottom: 1rem;">スターター（トリガー）</h3>
+        <div class="grid grid-3">
+            <div class="card">
+                <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">スケジュール</h4>
+                <p class="card-description">スケジュールに従って（毎日/毎週など）</p>
+            </div>
+            <div class="card">
+                <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Gmail</h4>
+                <p class="card-description">メールを受け取ったとき</p>
+            </div>
+            <div class="card">
+                <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Google Chat</h4>
+                <p class="card-description">スペース参加時、メッセージ受信時、メンション時、絵文字反応時</p>
+            </div>
+            <div class="card">
+                <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">スプレッドシート</h4>
+                <p class="card-description">シートが変更されたとき</p>
+            </div>
+            <div class="card">
+                <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">Google Drive</h4>
+                <p class="card-description">アイテム追加時、ファイル編集時、フォルダ内アイテム編集時</p>
+            </div>
+            <div class="card">
+                <h4 style="color: var(--accent-primary); margin-bottom: 0.5rem;">その他</h4>
+                <p class="card-description">会議に基づいて、フォームの回答が届いたら</p>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 2rem; margin-bottom: 1rem;">ステップ（アクション）</h3>
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>カテゴリ</th>
+                    <th>ステップ名</th>
+                    <th>説明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="schedule-session">AIエージェント</td>
+                    <td>Geminiに聞く</td>
+                    <td>自由形式でGeminiに質問・指示</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">AIスキル</td>
+                    <td>未読メールを要約する、抽出する、決める、要約</td>
+                    <td>特定タスクに最適化されたAI機能（第3回で詳しく解説）</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">ツール</td>
+                    <td>チェックする、フィルター</td>
+                    <td>条件分岐・データ絞り込み（第3回で詳しく解説）</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">Gmail</td>
+                    <td>メール送信、返信下書き、ラベル追加/削除、既読/未読、スター、転送、アーカイブ</td>
+                    <td>メール操作の自動化</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">Chat</td>
+                    <td>チャットで通知する</td>
+                    <td>自分へのDM通知のみ（スペース投稿は削除）</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">Sheets</td>
+                    <td>行を追加、行を更新、行をクリア、内容を取得</td>
+                    <td>スプレッドシート操作</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">Drive</td>
+                    <td>メール添付ファイルを追加、フォルダを作成</td>
+                    <td>ドライブ操作</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">Docs</td>
+                    <td>ドキュメントを作成、ドキュメントに追加</td>
+                    <td>ドキュメント操作</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">Tasks</td>
+                    <td>タスクを作成</td>
+                    <td>Google Tasks連携</td>
+                </tr>
+                <tr>
+                    <td class="schedule-session">外部連携</td>
+                    <td>Asana、Jira、Confluence、Mailchimp、QuickBooks、Salesforce[α]、HubSpot[α]</td>
+                    <td>サードパーティツール連携</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="feature-highlight" style="margin-top: 2rem;">
+            <h3>Studioの真の強み：AIスキルとツール</h3>
+            <p>Chatスペース投稿やWebhookが削除されましたが、Studioの本当の強みは<strong>AIスキル</strong>と<strong>ツール</strong>にあります。「未読メールを要約する」「抽出する」「決める」「要約」といったAIスキルと、「チェックする」「フィルター」といったツールを組み合わせることで、高度な自動化が可能です。詳細は第3回で解説します。</p>
+        </div>
+    </section>
+
     <section class="section">
         <div class="lesson-nav">
             <a href="index.html" class="nav-prev">
