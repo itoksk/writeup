@@ -6,77 +6,491 @@
     <title>第4回：現場で使うためのカスタマイズ術と知っておくべき注意点 | Google Workspace Studioの活用</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f0fdf4;
+            --bg-tertiary: #dcfce7;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-primary: #22c55e;
+            --accent-secondary: #10b981;
+            --accent-tertiary: #0891b2;
+            --accent-gradient: linear-gradient(135deg, #22c55e 0%, #10b981 50%, #0891b2 100%);
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --coral: #ef4444;
+            --violet: #8b5cf6;
+            --google-green: #34a853;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --ink: #0A0E27; --paper: #FEFEF8; --electric: #00F0FF; --coral: #FF6B6B; --violet: #7C3AED; --gray: #4A5568; --google-blue: #4285F4; --google-green: #34A853; }
-        body { font-family: 'Zen Kaku Gothic New', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.7; }
-        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(10, 14, 39, 0.01) 2px, rgba(10, 14, 39, 0.01) 4px); pointer-events: none; z-index: 1; }
-        nav { position: fixed; top: 0; width: 100%; background: rgba(254, 254, 248, 0.95); backdrop-filter: blur(10px); z-index: 1000; padding: 1.5rem 0; box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1); }
-        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
-        .nav-back { display: flex; align-items: center; gap: 0.5rem; color: var(--gray); text-decoration: none; font-size: 0.9rem; transition: color 0.3s ease; }
-        .nav-back:hover { color: var(--google-blue); }
-        .nav-menu { display: flex; gap: 2rem; }
-        .nav-menu a { color: var(--ink); text-decoration: none; font-size: 0.9rem; position: relative; transition: color 0.3s ease; }
-        .nav-menu a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--electric); transition: width 0.3s ease; }
-        .nav-menu a:hover::after { width: 100%; }
-        .hero { min-height: 100vh; display: flex; align-items: center; padding: 0 2rem; margin-top: 80px; }
-        .hero-content { max-width: 1400px; margin: 0 auto; width: 100%; }
-        .hero-label { display: inline-block; background: var(--ink); color: var(--paper); padding: 0.5rem 1.5rem; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; margin-bottom: 2rem; transform: rotate(-1deg); }
-        .hero-title { font-size: clamp(2rem, 6vw, 4rem); font-weight: 900; line-height: 0.95; margin-bottom: 2rem; letter-spacing: -0.03em; }
-        .hero-title span { display: block; color: var(--coral); font-size: 0.55em; margin-top: 0.3em; }
-        .hero-description { font-size: 1.25rem; max-width: 800px; margin-bottom: 3rem; line-height: 1.8; font-weight: 300; }
-        .section { max-width: 1400px; margin: 80px auto; padding: 0 2rem; }
-        .section-label { font-family: 'Space Grotesk', monospace; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.2em; opacity: 0.5; margin-bottom: 1rem; text-transform: uppercase; }
-        .section-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 3rem; position: relative; padding-bottom: 1rem; }
-        .section-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 60px; height: 3px; background: var(--electric); }
-        .grid { display: grid; gap: 2rem; }
-        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
-        .card { background: var(--paper); border: 2px solid var(--ink); padding: 2rem; position: relative; transition: all 0.3s ease; cursor: pointer; }
-        .card::before { content: ''; position: absolute; top: 4px; left: 4px; width: 100%; height: 100%; background: var(--ink); z-index: -1; transition: all 0.3s ease; }
-        .card:hover { transform: translate(-4px, -4px); background: var(--ink); color: var(--paper); }
-        .card:hover::before { top: 8px; left: 8px; }
-        .card:hover .card-number { background: var(--paper); color: var(--ink); }
-        .card-number { display: inline-block; width: 40px; height: 40px; background: var(--electric); color: var(--ink); font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; transition: all 0.3s ease; }
-        .card-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.2; }
-        .card-description { font-size: 0.95rem; opacity: 0.8; line-height: 1.7; }
-        .phase-card { background: linear-gradient(to right, var(--paper) 50%, transparent 50%); background-size: 20px 1px; background-repeat: repeat-x; background-position: 0 100%; padding-bottom: 2rem; margin-bottom: 3rem; }
-        .phase-header { display: flex; align-items: baseline; gap: 2rem; margin-bottom: 2rem; }
-        .phase-number { font-family: 'Space Grotesk', monospace; font-size: 5rem; font-weight: 700; line-height: 1; color: var(--violet); opacity: 0.2; }
-        .phase-title { font-size: 1.8rem; font-weight: 700; }
-        ul { list-style-position: inside; margin-left: 1rem; }
-        ul li { margin-bottom: 0.5rem; }
-        .note { background: rgba(124, 58, 237, 0.05); border-left: 4px solid var(--violet); padding: 1.5rem; margin: 2rem 0; }
-        .note-title { font-weight: 700; margin-bottom: 0.5rem; }
-        .warning { background: rgba(255, 107, 107, 0.05); border-left: 4px solid var(--coral); padding: 1.5rem; margin: 2rem 0; }
-        .warning-title { font-weight: 700; margin-bottom: 0.5rem; color: var(--coral); }
-        .success { background: rgba(52, 168, 83, 0.05); border-left: 4px solid var(--google-green); padding: 1.5rem; margin: 2rem 0; }
-        .success-title { font-weight: 700; margin-bottom: 0.5rem; color: var(--google-green); }
-        .code-block { background: #1a1a2e; color: #eee; padding: 1.5rem; border-radius: 4px; font-family: 'Space Grotesk', monospace; font-size: 0.85rem; margin: 1.5rem 0; overflow-x: auto; }
-        .code-block .comment { color: #6a9955; }
-        .code-block .keyword { color: #569cd6; }
-        .code-block .string { color: #ce9178; }
-        .troubleshoot-item { background: var(--paper); border: 1px solid rgba(0,0,0,0.1); padding: 1.5rem; margin-bottom: 1rem; }
-        .troubleshoot-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--coral); }
-        .troubleshoot-cause { font-size: 0.9rem; margin-bottom: 0.5rem; }
-        .troubleshoot-solution { font-size: 0.9rem; background: rgba(0, 240, 255, 0.05); padding: 0.75rem; border-radius: 4px; }
-        .summary-box { background: var(--ink); color: var(--paper); padding: 2rem; margin: 2rem 0; }
-        .summary-box h3 { color: var(--electric); margin-bottom: 1rem; }
-        .next-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0; }
-        .next-step-item { background: linear-gradient(135deg, rgba(66, 133, 244, 0.1), rgba(124, 58, 237, 0.1)); border: 2px solid var(--google-blue); border-radius: 8px; padding: 1.5rem; text-align: center; }
-        .next-step-number { font-family: 'Space Grotesk', monospace; font-size: 2rem; font-weight: 700; color: var(--google-blue); margin-bottom: 0.5rem; }
-        .lesson-nav { display: flex; justify-content: space-between; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.1); }
-        .lesson-nav a { display: flex; align-items: center; gap: 0.5rem; padding: 1rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s ease; }
-        .nav-prev { color: var(--gray); background: rgba(0,0,0,0.05); }
-        .nav-prev:hover { background: rgba(0,0,0,0.1); }
-        .nav-next { background: var(--ink); color: var(--paper); }
-        .nav-next:hover { transform: translateX(4px); }
-        @media (max-width: 768px) { .nav-menu { display: none; } .grid-3, .grid-4 { grid-template-columns: 1fr; } .hero-title { font-size: 2rem; } .phase-header { flex-direction: column; gap: 1rem; } .phase-number { font-size: 3rem; } .card { padding: 1.5rem; } }
+
+        body {
+            font-family: 'Noto Sans JP', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-back:hover { color: var(--accent-primary); }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover { color: var(--accent-primary); }
+
+        /* Hero Section */
+        .hero {
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+        }
+
+        .hero-title {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .hero-title-accent {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+        }
+
+        /* Section */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Cards */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent-secondary);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .card-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Note */
+        .note {
+            background: #f5f3ff;
+            border-left: 4px solid var(--violet);
+            border-radius: 0 12px 12px 0;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .note p, .note ul {
+            color: var(--text-secondary);
+        }
+
+        /* Warning */
+        .warning {
+            background: #fef2f2;
+            border-left: 4px solid var(--coral);
+            border-radius: 0 12px 12px 0;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .warning-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--coral);
+        }
+
+        .warning ul {
+            color: var(--text-secondary);
+        }
+
+        /* Success */
+        .success {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--google-green);
+            border-radius: 0 12px 12px 0;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .success-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--google-green);
+        }
+
+        .success p, .success ul {
+            color: var(--text-secondary);
+        }
+
+        ul {
+            list-style-position: inside;
+            margin-left: 0.5rem;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        ul li strong {
+            color: var(--text-primary);
+        }
+
+        /* Phase cards */
+        .phase-card {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-card:last-child {
+            border-bottom: none;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: baseline;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .phase-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0.3;
+            line-height: 1;
+        }
+
+        .phase-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .phase-card > p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Code block */
+        .code-block {
+            background: var(--text-primary);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block .comment { color: #6b7280; }
+        .code-block .keyword { color: #60a5fa; }
+        .code-block .string { color: #fbbf24; }
+
+        /* Troubleshoot */
+        .troubleshoot-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .troubleshoot-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--coral);
+        }
+
+        .troubleshoot-cause {
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .troubleshoot-solution {
+            font-size: 0.9rem;
+            background: var(--bg-secondary);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+        }
+
+        /* Summary box */
+        .summary-box {
+            background: var(--text-primary);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+
+        .summary-box h3 {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .summary-box p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        /* Next steps */
+        .next-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .next-step-item {
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-primary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .next-step-number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-step-item h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .next-step-item p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Navigation */
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .lesson-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-prev {
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+        }
+
+        .nav-prev:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .nav-next {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .nav-next:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .hero-title { font-size: 1.5rem; }
+            .phase-header { flex-direction: column; gap: 0.5rem; }
+            .phase-number { font-size: 2rem; }
+            .next-steps { grid-template-columns: 1fr 1fr; }
+        }
     </style>
 </head>
 <body>
-    <nav>
+    <nav class="nav">
         <div class="nav-container">
             <a href="index.html" class="nav-back">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -94,23 +508,27 @@
         </div>
     </nav>
 
-    <div class="hero">
+    <section class="hero">
         <div class="hero-content">
-            <div class="hero-label">第4回 / 全4回（最終回）</div>
+            <span class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                第4回 / 全4回（最終回）
+            </span>
             <h1 class="hero-title">
-                現場で使うためのカスタマイズ術と知っておくべき注意点
-                <span>安全かつ効果的にStudioを導入する</span>
+                現場で使うための<span class="hero-title-accent">カスタマイズ術</span>と知っておくべき注意点
             </h1>
             <p class="hero-description">
                 テンプレートのカスタマイズ、Apps Scriptによる拡張、セキュリティ考慮事項、
                 トラブルシューティング、導入のベストプラクティスを学びます。
             </p>
         </div>
-    </div>
+    </section>
 
     <section class="section" id="customize">
-        <div class="section-label">Customization</div>
-        <h2 class="section-title">テンプレートのカスタマイズ</h2>
+        <div class="section-header">
+            <div class="section-label">Customization</div>
+            <h2 class="section-title">テンプレートのカスタマイズ</h2>
+        </div>
 
         <div class="grid grid-4">
             <div class="card">
@@ -158,8 +576,10 @@
     </section>
 
     <section class="section" id="apps-script">
-        <div class="section-label">Apps Script</div>
-        <h2 class="section-title">Apps Scriptによる拡張</h2>
+        <div class="section-header">
+            <div class="section-label">Apps Script</div>
+            <h2 class="section-title">Apps Scriptによる拡張</h2>
+        </div>
 
         <div class="grid grid-3">
             <div class="card">
@@ -210,8 +630,10 @@
     </section>
 
     <section class="section" id="security">
-        <div class="section-label">Security</div>
-        <h2 class="section-title">セキュリティとアクセス制御</h2>
+        <div class="section-header">
+            <div class="section-label">Security</div>
+            <h2 class="section-title">セキュリティとアクセス制御</h2>
+        </div>
 
         <div class="phase-card">
             <div class="phase-header">
@@ -249,8 +671,10 @@
     </section>
 
     <section class="section" id="troubleshoot">
-        <div class="section-label">Troubleshooting</div>
-        <h2 class="section-title">よくあるトラブルと対処法</h2>
+        <div class="section-header">
+            <div class="section-label">Troubleshooting</div>
+            <h2 class="section-title">よくあるトラブルと対処法</h2>
+        </div>
 
         <div class="troubleshoot-item">
             <div class="troubleshoot-title">トラブル1：エージェントが動作しない</div>
@@ -278,8 +702,10 @@
     </section>
 
     <section class="section" id="best-practices">
-        <div class="section-label">Best Practices</div>
-        <h2 class="section-title">導入時のベストプラクティス</h2>
+        <div class="section-header">
+            <div class="section-label">Best Practices</div>
+            <h2 class="section-title">導入時のベストプラクティス</h2>
+        </div>
 
         <div class="next-steps">
             <div class="next-step-item">
@@ -317,8 +743,10 @@
     </section>
 
     <section class="section">
-        <div class="section-label">Summary</div>
-        <h2 class="section-title">講座全体の振り返り</h2>
+        <div class="section-header">
+            <div class="section-label">Summary</div>
+            <h2 class="section-title">講座全体の振り返り</h2>
+        </div>
 
         <div class="summary-box">
             <h3>第1回：Google Workspace Studioとは</h3>
@@ -342,8 +770,10 @@
     </section>
 
     <section class="section">
-        <div class="section-label">Next Steps</div>
-        <h2 class="section-title">次のアクション</h2>
+        <div class="section-header">
+            <div class="section-label">Next Steps</div>
+            <h2 class="section-title">次のアクション</h2>
+        </div>
 
         <div class="next-steps">
             <div class="next-step-item">
