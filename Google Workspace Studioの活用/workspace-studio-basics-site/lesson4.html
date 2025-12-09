@@ -500,10 +500,10 @@
             </a>
             <div class="nav-menu">
                 <a href="#customize">カスタマイズ</a>
+                <a href="#advantage">他ツールとの違い</a>
                 <a href="#apps-script">Apps Script</a>
                 <a href="#security">セキュリティ</a>
                 <a href="#troubleshoot">トラブル対処</a>
-                <a href="#best-practices">ベストプラクティス</a>
             </div>
         </div>
     </nav>
@@ -518,8 +518,8 @@
                 現場で使うための<span class="hero-title-accent">カスタマイズ術</span>と知っておくべき注意点
             </h1>
             <p class="hero-description">
-                テンプレートのカスタマイズ、Apps Scriptによる拡張、セキュリティ考慮事項、
-                トラブルシューティング、導入のベストプラクティスを学びます。
+                テンプレートのカスタマイズ、他ツールにはないWorkspace Studioの強み、
+                Apps Scriptとの組み合わせ、セキュリティ考慮事項、導入のベストプラクティスを学びます。
             </p>
         </div>
     </section>
@@ -575,56 +575,135 @@
         </div>
     </section>
 
-    <section class="section" id="apps-script">
+    <section class="section" id="advantage">
         <div class="section-header">
-            <div class="section-label">Apps Script</div>
-            <h2 class="section-title">Apps Scriptによる拡張</h2>
+            <div class="section-label">Advantage</div>
+            <h2 class="section-title">他のエージェントツールとの違い</h2>
+        </div>
+
+        <div class="success">
+            <div class="success-title">Workspace内で完結する安心感</div>
+            <p>Google Workspace Studioの最大の特徴は、<strong>すべてがGoogle Workspaceの中で完結する</strong>ことです。これは他のエージェントツールにはない大きなメリットです。</p>
         </div>
 
         <div class="grid grid-3">
             <div class="card">
                 <div class="card-number">01</div>
-                <h3 class="card-title">カスタムAPI連携</h3>
+                <h3 class="card-title">APIキー管理が不要</h3>
                 <p class="card-description">
-                    社内システムやサードパーティAPIと連携する独自ステップを作成。
+                    従来のAIエージェントツールでは、OpenAI APIキーやGoogle Cloud APIキーの取得・管理が必要でした。Workspace Studioでは一切不要です。
                 </p>
             </div>
 
             <div class="card">
                 <div class="card-number">02</div>
-                <h3 class="card-title">複雑なデータ処理</h3>
+                <h3 class="card-title">認証情報の漏洩リスクなし</h3>
                 <p class="card-description">
-                    標準ステップでは対応できない複雑な計算やデータ変換を実装。
+                    APIキーをコードに埋め込んだり、環境変数で管理する必要がないため、認証情報の漏洩リスクがありません。
                 </p>
             </div>
 
             <div class="card">
                 <div class="card-number">03</div>
-                <h3 class="card-title">Vertex AI連携</h3>
+                <h3 class="card-title">データがGoogle内に留まる</h3>
                 <p class="card-description">
-                    GeminiとVertex AIを連携させ、より高度なAI機能を組み込み。
+                    処理対象のデータはGoogleのインフラ内で処理されます。サードパーティサービスにデータを送信する必要がありません。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">04</div>
+                <h3 class="card-title">課金・コスト管理が簡単</h3>
+                <p class="card-description">
+                    API使用量の計算や従量課金の心配がありません。対応エディションであれば追加コストなしで利用可能です。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">05</div>
+                <h3 class="card-title">管理者による一元管理</h3>
+                <p class="card-description">
+                    組織のIT管理者がGoogle管理コンソールから一元的に制御できます。シャドーITのリスクを軽減。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">06</div>
+                <h3 class="card-title">エンタープライズグレードのセキュリティ</h3>
+                <p class="card-description">
+                    Google Workspaceのセキュリティ基盤（監査ログ、DLP、アクセス制御）がそのまま適用されます。
                 </p>
             </div>
         </div>
 
-        <div class="code-block"><span class="comment">// カスタムステップの例</span>
-<span class="keyword">function</span> processData(input) {
-  <span class="comment">// 入力データを処理</span>
-  <span class="keyword">const</span> result = {
-    processed: <span class="keyword">true</span>,
-    summary: <span class="string">'処理完了'</span>,
-    data: input
-  };
-  <span class="keyword">return</span> result;
-}</div>
+        <div class="note">
+            <div class="note-title">他のツールとの比較</div>
+            <p style="margin-bottom: 1rem;">ZapierやMake、n8nなどの自動化ツールでAIエージェントを構築する場合：</p>
+            <ul>
+                <li><strong>APIキーの取得</strong>が必要（OpenAI、Claude、Gemini APIなど）</li>
+                <li><strong>従量課金</strong>の管理が必要（予期せぬ高額請求のリスク）</li>
+                <li><strong>認証情報の管理</strong>が必要（安全な保管、定期的なローテーション）</li>
+                <li><strong>データの外部送信</strong>が発生（コンプライアンス上の懸念）</li>
+            </ul>
+            <p style="margin-top: 1rem;">Workspace Studioなら、これらの心配事をすべてスキップして、<strong>すぐにAIエージェントの構築に集中</strong>できます。</p>
+        </div>
+    </section>
+
+    <section class="section" id="apps-script">
+        <div class="section-header">
+            <div class="section-label">Apps Script</div>
+            <h2 class="section-title">Apps Scriptとの組み合わせ</h2>
+        </div>
 
         <div class="warning">
-            <div class="warning-title">Apps Script使用時の注意点</div>
+            <div class="warning-title">Workspace StudioとApps Scriptは別々のツール</div>
+            <p>Workspace Studio内にApps Scriptを直接組み込む機能はありません。ただし、それぞれを別々に作成し、組み合わせて活用することは可能です。</p>
+        </div>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">役割分担で活用</h3>
+                <p class="card-description">
+                    Workspace StudioでAI処理を行い、Apps Scriptで複雑なデータ加工やAPI連携を担当する、という役割分担が可能。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">Sheetsを中継点に</h3>
+                <p class="card-description">
+                    Workspace StudioがSheetsに書き込み → Apps ScriptがonEdit()トリガーで後続処理を実行、という連携パターン。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">それぞれの強みを活かす</h3>
+                <p class="card-description">
+                    AI判断・要約はWorkspace Studio、外部API連携・複雑なロジックはApps Script、という使い分け。
+                </p>
+            </div>
+        </div>
+
+        <div class="code-block"><span class="comment">// Apps Script側の例：Workspace StudioがSheetsに書き込んだ後に実行</span>
+<span class="keyword">function</span> onEdit(e) {
+  <span class="keyword">const</span> sheet = e.source.getActiveSheet();
+  <span class="keyword">if</span> (sheet.getName() === <span class="string">'AIOutput'</span>) {
+    <span class="comment">// Workspace Studioが書き込んだデータを取得</span>
+    <span class="keyword">const</span> aiResult = e.range.getValue();
+    <span class="comment">// 外部APIに送信するなどの後続処理</span>
+    sendToExternalSystem(aiResult);
+  }
+}</div>
+
+        <div class="note">
+            <div class="note-title">組み合わせ活用のポイント</div>
             <ul>
-                <li>Apps Scriptの知識が必要</li>
-                <li>実行時間の制限あり（6分）</li>
-                <li>エラーハンドリングを適切に実装</li>
-                <li>テスト環境で十分に検証してから本番導入</li>
+                <li><strong>シンプルに保つ</strong>：可能な限りWorkspace Studio単体で完結させる</li>
+                <li><strong>明確な責任分担</strong>：どの処理をどちらが担当するか明確に</li>
+                <li><strong>中間データの設計</strong>：SheetsやDriveを中継点として活用</li>
+                <li><strong>エラー時の考慮</strong>：片方が失敗した場合のリカバリー方法を検討</li>
             </ul>
         </div>
     </section>
@@ -716,6 +795,113 @@
             <h2 class="section-title">導入時のベストプラクティス</h2>
         </div>
 
+        <!-- スモールスタートの重要性 -->
+        <div class="phase-card">
+            <div class="phase-header">
+                <div class="phase-number">01</div>
+                <div class="phase-title">最初から作り込まない - スモールスタートが成功の鍵</div>
+            </div>
+            <p>新しいツールを使い始めると、つい「あれもこれも」と機能を盛り込みたくなります。しかし、最初から複雑なエージェントを作ろうとすると、うまく動かないときに原因特定が難しくなり、結局挫折してしまいがちです。</p>
+        </div>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">1エージェント1目的</h3>
+                <p class="card-description">
+                    「メール要約して、分類して、返信も作成」ではなく、まずは「メール要約」だけ。うまくいったら次の機能を追加。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">テンプレートをそのまま使う</h3>
+                <p class="card-description">
+                    最初はテンプレートをカスタマイズせずにそのまま使う。動作を理解してから少しずつ自分の業務に合わせて調整。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">完璧を求めない</h3>
+                <p class="card-description">
+                    80%の精度で十分。Geminiの出力が完璧でなくても、手作業より速ければ価値がある。運用しながら改善。
+                </p>
+            </div>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">よくある失敗パターン</div>
+            <ul>
+                <li><strong>最初から複雑な条件分岐</strong>：まずは単純なフローで動かしてから分岐を追加</li>
+                <li><strong>プロンプトの過度な最適化</strong>：シンプルな指示から始めて、必要に応じて詳細化</li>
+                <li><strong>複数サービスの同時連携</strong>：まずは1つのサービス（例：Gmailだけ）で試す</li>
+            </ul>
+        </div>
+
+        <!-- 共有文化の重要性 -->
+        <div class="phase-card" style="margin-top: 3rem;">
+            <div class="phase-header">
+                <div class="phase-number">02</div>
+                <div class="phase-title">作ったものはチームでシェアしよう</div>
+            </div>
+            <p>せっかくエージェントを作れるようになっても、一人で抱え込んでしまうと「自分だけ業務が増える」という本末転倒な状態になりかねません。作ったエージェントは積極的にチームで共有し、みんなで効率化の恩恵を受けましょう。</p>
+        </div>
+
+        <div class="success">
+            <div class="success-title">共有することのメリット</div>
+            <ul>
+                <li><strong>チーム全体の生産性向上</strong>：一人が作ったエージェントで、チーム全員が時間を節約できる</li>
+                <li><strong>知見の蓄積</strong>：「こういう使い方ができる」という発見がチーム内で共有される</li>
+                <li><strong>改善のスピードアップ</strong>：複数人の目で見ることで、より良いプロンプトや設定が見つかる</li>
+                <li><strong>属人化の防止</strong>：作った人が異動・退職しても、エージェントは残り続ける</li>
+            </ul>
+        </div>
+
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="card-number">01</div>
+                <h3 class="card-title">共有機能を活用</h3>
+                <p class="card-description">
+                    Workspace Studioの共有機能で、エージェントをチームメンバーに配布。Googleドライブと同じ感覚で共有可能。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">02</div>
+                <h3 class="card-title">使い方も一緒に共有</h3>
+                <p class="card-description">
+                    「このエージェント便利だよ」だけでなく、どんな場面で使うと効果的か、注意点は何かも伝える。
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-number">03</div>
+                <h3 class="card-title">フィードバックを歓迎</h3>
+                <p class="card-description">
+                    「ここがうまくいかない」「こう改善したらどう？」という声を集めて、エージェントを育てていく。
+                </p>
+            </div>
+        </div>
+
+        <div class="note">
+            <div class="note-title">シェア文化を育てるヒント</div>
+            <ul>
+                <li><strong>定期的な共有会</strong>：月1回「今月作ったエージェント発表会」のような場を設ける</li>
+                <li><strong>エージェントカタログ</strong>：チーム内で使えるエージェントの一覧をSheetsやドキュメントでまとめる</li>
+                <li><strong>成功事例の見える化</strong>：「このエージェントで月○時間削減できた」を数字で共有</li>
+                <li><strong>初心者へのサポート</strong>：詳しい人が初めての人をサポートする文化を作る</li>
+            </ul>
+        </div>
+
+        <!-- 導入ステップ -->
+        <div class="phase-card" style="margin-top: 3rem;">
+            <div class="phase-header">
+                <div class="phase-number">03</div>
+                <div class="phase-title">導入の推奨ステップ</div>
+            </div>
+        </div>
+
         <div class="next-steps">
             <div class="next-step-item">
                 <div class="next-step-number">1</div>
@@ -735,18 +921,18 @@
             <div class="next-step-item">
                 <div class="next-step-number">4</div>
                 <h4>継続的に改善</h4>
-                <p>定期的に見直し</p>
+                <p>フィードバックを反映</p>
             </div>
         </div>
 
         <div class="note">
-            <div class="note-title">導入の推奨ステップ</div>
+            <div class="note-title">具体的なステップ</div>
             <ul>
-                <li><strong>Step 1：</strong>まずは自分だけで使うエージェントから開始</li>
-                <li><strong>Step 2：</strong>テンプレートをそのまま使い、1つのエージェントで1つの目的</li>
-                <li><strong>Step 3：</strong>作業時間の削減、対応スピードの向上、エラーの減少を測定</li>
-                <li><strong>Step 4：</strong>効果が確認できたらエージェントを共有機能で配布</li>
-                <li><strong>Step 5：</strong>実行履歴を確認し、プロンプトや設定を継続的に調整</li>
+                <li><strong>Step 1：</strong>まずは自分だけで使うエージェントから開始（テンプレートそのまま）</li>
+                <li><strong>Step 2：</strong>1週間ほど運用して、作業時間の削減や対応スピードの向上を確認</li>
+                <li><strong>Step 3：</strong>効果が確認できたら、チームメンバーに共有して使ってもらう</li>
+                <li><strong>Step 4：</strong>使用者からのフィードバックを元に、プロンプトや設定を調整</li>
+                <li><strong>Step 5：</strong>うまくいったら、別の業務でも同じアプローチで展開</li>
             </ul>
         </div>
     </section>
@@ -774,7 +960,7 @@
 
         <div class="summary-box">
             <h3>第4回：カスタマイズと注意点</h3>
-            <p>テンプレートのカスタマイズ、Apps Script拡張、セキュリティ考慮事項、導入のベストプラクティス。</p>
+            <p>テンプレートのカスタマイズ、Workspace内完結のメリット、Apps Scriptとの組み合わせ、セキュリティ考慮事項。</p>
         </div>
     </section>
 
