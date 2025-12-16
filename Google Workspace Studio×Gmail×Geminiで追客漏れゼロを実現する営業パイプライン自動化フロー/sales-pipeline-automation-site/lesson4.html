@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第4回：提案資料と見積書を完全自動整理！ | 営業パイプライン自動化フロー</title>
-    <meta name="description" content="Drive保存 × 定期送信フローで営業資料を整流化">
+    <title>第4回：営業資料を自動で蓄積＆可視化！ | 営業パイプライン自動化フロー</title>
+    <meta name="description" content="添付ファイル自動保存と週次レポートで営業活動を可視化">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
@@ -355,26 +355,6 @@
             color: var(--text-secondary);
         }
 
-        .folder-structure {
-            background: var(--text-primary);
-            color: #a5d6ff;
-            padding: 2rem;
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-            font-size: 0.875rem;
-            line-height: 1.8;
-            border-radius: var(--radius-lg);
-            margin: 2rem 0;
-            white-space: pre-wrap;
-        }
-
-        .folder-structure .folder {
-            color: var(--yellow);
-        }
-
-        .folder-structure .file {
-            color: #8b949e;
-        }
-
         .code-block {
             background: var(--text-primary);
             color: #a5d6ff;
@@ -584,6 +564,42 @@
             line-height: 1.6;
         }
 
+        .insight-card {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(124, 58, 237, 0.05));
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .insight-card h3 {
+            color: var(--accent-primary);
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .insight-list {
+            list-style: none;
+        }
+
+        .insight-list li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .insight-list li:last-child {
+            border-bottom: none;
+        }
+
+        .insight-list li::before {
+            content: '📊';
+            position: absolute;
+            left: 0;
+        }
+
         .next-preview {
             background: var(--text-primary);
             color: white;
@@ -707,12 +723,12 @@
         <div class="hero-content">
             <div class="hero-badge">第4回 / 全5回</div>
             <h1 class="hero-title">
-                提案資料と見積書を完全自動整理！<br>
-                <span class="hero-title-accent">Drive保存 × 定期送信フローで営業資料を整流化</span>
+                営業資料を自動で蓄積＆可視化！<br>
+                <span class="hero-title-accent">添付ファイル自動保存 × 週次レポートで営業活動を見える化</span>
             </h1>
             <p class="hero-description">
-                添付ファイルを案件フォルダに自動保存。Geminiがファイルを分類し、
-                週次で資料一覧レポートを自動送信します。
+                メールの添付ファイルを自動でDriveに保存。
+                週次でGeminiが資料を分析し、営業活動のサマリーレポートを自動生成します。
             </p>
 
             <!-- Before/After: このレッスンで何が変わるか -->
@@ -720,19 +736,19 @@
                 <div class="comparison-card before">
                     <div class="comparison-header" style="color: var(--coral); margin-bottom: 1rem;">BEFORE：受講前</div>
                     <ul style="list-style: none; font-size: 0.9375rem; color: var(--text-secondary);">
-                        <li style="padding: 0.5rem 0;">資料探しに毎回30分かかる</li>
                         <li style="padding: 0.5rem 0;">添付ファイルがメールに埋もれる</li>
-                        <li style="padding: 0.5rem 0;">どこに何があるか分からない</li>
-                        <li style="padding: 0.5rem 0;">資料管理は手作業で負担大</li>
+                        <li style="padding: 0.5rem 0;">「あの見積書どこ？」と探す時間</li>
+                        <li style="padding: 0.5rem 0;">今週何をやったか振り返れない</li>
+                        <li style="padding: 0.5rem 0;">営業活動が見えない</li>
                     </ul>
                 </div>
                 <div class="comparison-card after">
                     <div class="comparison-header" style="color: var(--green); margin-bottom: 1rem;">AFTER：受講後</div>
                     <ul style="list-style: none; font-size: 0.9375rem; color: var(--text-secondary);">
-                        <li style="padding: 0.5rem 0;">資料が即座に見つかる（95%削減）</li>
-                        <li style="padding: 0.5rem 0;">添付ファイルを案件別に自動保存</li>
-                        <li style="padding: 0.5rem 0;">AIが自動分類・整理</li>
-                        <li style="padding: 0.5rem 0;">週次で資料一覧が自動送信</li>
+                        <li style="padding: 0.5rem 0;">添付ファイルが自動でDriveに蓄積</li>
+                        <li style="padding: 0.5rem 0;">Driveで即座に検索可能</li>
+                        <li style="padding: 0.5rem 0;">週次レポートで活動を振り返り</li>
+                        <li style="padding: 0.5rem 0;">どの顧客と活発にやり取りしているか一目瞭然</li>
                     </ul>
                 </div>
             </div>
@@ -747,24 +763,25 @@
             </div>
 
             <p class="section-description" style="margin-bottom: 2rem;">
-                「あの見積書どこにあったっけ？」「提案資料がDriveに散らばっている」という問題を解決します。<strong>2つのエージェント</strong>を作成し、添付ファイルの自動保存と週次レポートを実現します。
+                メールに添付された提案書・見積書・契約書などを自動でDriveに保存し、週次でGeminiが分析・レポート化します。<strong>2つのシンプルなエージェント</strong>で営業活動の可視化を実現します。
             </p>
 
             <div class="goal-card">
                 <h3>作成するエージェント（2つ）</h3>
                 <ul class="goal-list">
-                    <li><strong>フロー1</strong>：添付ファイル自動保存エージェント（Gmailスターター: 添付あり）</li>
-                    <li><strong>フロー2</strong>：週次資料レポートエージェント（スケジュールスターター: 毎週月曜9時）</li>
-                    <li><strong>効果</strong>：資料探索時間 30分/回 → 即座に検索</li>
+                    <li><strong>エージェント1</strong>：添付ファイル自動保存（Gmailスターター → Driveに保存 → 通知）</li>
+                    <li><strong>エージェント2</strong>：週次営業活動レポート（スケジュールスターター → Geminiで分析 → レポート送信）</li>
                 </ul>
             </div>
 
-            <div class="highlight-stat">
-                <div class="highlight-number">95%</div>
-                <div class="highlight-text">
-                    資料探索時間を削減<br>
-                    <span style="font-size: 0.9rem; opacity: 0.8;">30分/回 → 即座に検索</span>
-                </div>
+            <div class="insight-card">
+                <h3>週次レポートから分かること</h3>
+                <ul class="insight-list">
+                    <li><strong>活発な商談</strong>：今週どの顧客と多くやり取りしたか</li>
+                    <li><strong>営業活動量</strong>：提案書・見積書の送受信数</li>
+                    <li><strong>案件の進捗</strong>：提案→見積もり→契約の流れが見える</li>
+                    <li><strong>注目案件</strong>：動きが活発な顧客をGeminiが抽出</li>
+                </ul>
             </div>
         </div>
     </section>
@@ -773,14 +790,14 @@
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">Dual Flow</div>
-                <h2 class="section-title">2つのフローを作成</h2>
-                <p class="section-description">資料管理は「保存」と「把握」の2つの課題があります。それぞれを解決するエージェントを作成します。</p>
+                <h2 class="section-title">2つのエージェントを作成</h2>
+                <p class="section-description">「蓄積」と「可視化」の2つの役割を分けてシンプルに構築します。</p>
             </div>
 
             <div class="dual-flow">
                 <div class="flow-card">
-                    <h3>フロー1：添付ファイル自動保存</h3>
-                    <p class="flow-desc">Gmailスターター（添付あり）でリアルタイム起動</p>
+                    <h3>エージェント1：添付ファイル自動保存</h3>
+                    <p class="flow-desc">添付ファイル付きメールを受信したら自動でDriveに保存</p>
                     <div class="flow-steps">
                         <div class="flow-step">
                             <div class="flow-step-icon">1</div>
@@ -788,21 +805,17 @@
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">2</div>
-                            <span>Geminiステップで資料タイプ・顧客名を分類</span>
+                            <span>Driveステップで指定フォルダに保存</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">3</div>
-                            <span>Driveステップで案件フォルダに保存</span>
-                        </div>
-                        <div class="flow-step">
-                            <div class="flow-step-icon">4</div>
                             <span>Chat DMステップで保存完了を通知</span>
                         </div>
                     </div>
                 </div>
                 <div class="flow-card">
-                    <h3>フロー2：週次資料レポート</h3>
-                    <p class="flow-desc">スケジュールスターター（毎週月曜9時）</p>
+                    <h3>エージェント2：週次営業活動レポート</h3>
+                    <p class="flow-desc">毎週月曜に蓄積された資料をGeminiが分析・レポート化</p>
                     <div class="flow-steps">
                         <div class="flow-step">
                             <div class="flow-step-icon">1</div>
@@ -810,15 +823,15 @@
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">2</div>
-                            <span>Driveステップで過去7日間のファイル一覧取得</span>
+                            <span>Driveステップでファイル一覧取得</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">3</div>
-                            <span>Geminiステップでレポート形式に整形</span>
+                            <span>Geminiステップで営業活動を分析</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">4</div>
-                            <span>Chat DMステップで週次レポート送信</span>
+                            <span>Chat DMステップでレポート送信</span>
                         </div>
                     </div>
                 </div>
@@ -826,106 +839,61 @@
         </div>
     </section>
 
-    <section class="section" id="folder">
+    <section class="section" id="flow1">
         <div class="section-container">
             <div class="section-header">
-                <div class="section-label">Folder Structure</div>
-                <h2 class="section-title">推奨フォルダ構造</h2>
-                <p class="section-description">効率的な資料管理のために、以下のフォルダ構造を事前にDriveで作成しておきます。</p>
-            </div>
-
-            <div class="folder-structure"><span class="folder">営業資料/</span>
-├── <span class="folder">株式会社A/</span>
-│   ├── <span class="folder">Aプロジェクト/</span>
-│   │   ├── <span class="folder">提案書/</span>
-│   │   │   └── <span class="file">2025-01-15_A社_提案書.pdf</span>
-│   │   └── <span class="folder">見積書/</span>
-│   │       └── <span class="file">2025-01-20_A社_見積書.pdf</span>
-│   └── <span class="folder">Bプロジェクト/</span>
-├── <span class="folder">株式会社B/</span>
-│   └── ...
-└── <span class="folder">株式会社C/</span>
-    └── ...</div>
-
-            <div class="note">
-                <div class="note-title">命名規則</div>
-                <ul>
-                    <li><strong>ファイル名</strong>：日付_顧客名_資料タイプ.拡張子</li>
-                    <li><strong>例</strong>：2025-01-15_A社_提案書.pdf</li>
-                    <li><strong>メリット</strong>：ソートすると時系列順に並ぶ、検索しやすい</li>
-                </ul>
-            </div>
-
-            <div class="warning">
-                <div class="warning-title">事前準備</div>
-                <p>親フォルダ「営業資料」は事前にDriveで作成してください。顧客フォルダはGeminiの判定に基づいて自動作成することも可能ですが、最初は手動で主要顧客のフォルダを作成しておくことをお勧めします。</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="section" id="flow1" style="background: var(--bg-secondary);">
-        <div class="section-container">
-            <div class="section-header">
-                <div class="section-label">Flow 1</div>
-                <h2 class="section-title">添付ファイル自動保存</h2>
+                <div class="section-label">Agent 1</div>
+                <h2 class="section-title">添付ファイル自動保存エージェント</h2>
+                <p class="section-description">添付ファイル付きのメールを受信したら、自動でGoogle Driveの指定フォルダに保存します。</p>
             </div>
 
             <div class="step-grid">
                 <div class="step-card">
                     <div class="step-number">01</div>
                     <h3>Gmailスターター設定</h3>
-                    <p>Gmail - Email received<br>Filter: has:attachment<br>添付ファイル付きメールで起動</p>
+                    <p>Gmail - Email received<br>Filter: <code>has:attachment</code><br>添付ファイル付きメールで起動</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">02</div>
-                    <h3>Geminiステップ（分類）</h3>
-                    <p>資料タイプ（提案書/見積書/契約書など）、顧客名、案件名をAIが推定</p>
+                    <h3>Driveステップ（保存）</h3>
+                    <p>Drive - Upload file<br>事前に作成した「営業資料」フォルダに保存</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">03</div>
-                    <h3>Driveステップ（保存）</h3>
-                    <p>Drive - Upload file<br>Geminiが推定したフォルダパスに保存</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">04</div>
                     <h3>Chat DMステップ（通知）</h3>
-                    <p>保存先とファイル名をChat DMで通知<br>Driveへのリンクを含める<br><strong style="color: var(--coral); font-size: 0.8rem;">※スペース投稿は削除済</strong></p>
+                    <p>保存完了をChat DMで通知<br>ファイル名とDriveリンクを含める</p>
                 </div>
             </div>
 
-            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">分類プロンプト</h3>
-            <div class="code-block">以下の添付ファイル付きメールを分析し、分類してください。
+            <div class="warning">
+                <div class="warning-title">事前準備</div>
+                <p>Google Driveに「営業資料」フォルダを事前に作成してください。エージェントはこのフォルダに添付ファイルを保存します。</p>
+            </div>
 
-件名: {email_subject}
-送信者: {sender}
-本文: {email_body}
-添付ファイル名: {attachment_names}
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">通知テンプレート</h3>
+            <div class="code-block">📁 添付ファイルを保存しました
 
-以下の形式で出力してください：
-【資料タイプ】提案書/見積書/契約書/議事録/その他
-【顧客名】推定される顧客名（メールドメインや本文から推測）
-【案件名】推定される案件名（不明な場合は「一般」）
-【保存フォルダ】推奨フォルダパス（例：営業資料/株式会社A/Aプロジェクト/提案書）
-【ファイル名】推奨ファイル名（日付_顧客名_資料タイプ形式）
+【ファイル名】{attachment_name}
+【送信者】{sender_name} ({sender_email})
+【件名】{email_subject}
+【保存先】営業資料フォルダ
 
-顧客名が不明な場合は、送信者のドメイン名を使用してください。</div>
+📂 Driveで確認: {drive_link}</div>
 
-            <div class="output-example">
-                <h4>分類結果の出力例</h4>
-                <div class="output-content">【資料タイプ】見積書
-【顧客名】株式会社ABC
-【案件名】新システム導入プロジェクト
-【保存フォルダ】営業資料/株式会社ABC/新システム導入プロジェクト/見積書
-【ファイル名】2025-01-15_ABC社_見積書.pdf</div>
+            <div class="note">
+                <div class="note-title">フィルターの追加（オプション）</div>
+                <p>全ての添付ファイルを保存すると量が多くなる場合は、重要顧客からのメールに絞ることもできます。</p>
+                <div class="code-block" style="margin-top: 0.5rem;">has:attachment (from:yamada@a-corp.co.jp OR from:tanaka@b-inc.com)</div>
             </div>
         </div>
     </section>
 
-    <section class="section" id="flow2">
+    <section class="section" id="flow2" style="background: var(--bg-secondary);">
         <div class="section-container">
             <div class="section-header">
-                <div class="section-label">Flow 2</div>
-                <h2 class="section-title">週次資料レポート</h2>
+                <div class="section-label">Agent 2</div>
+                <h2 class="section-title">週次営業活動レポートエージェント</h2>
+                <p class="section-description">毎週月曜日に、蓄積された営業資料をGeminiが分析し、営業活動のサマリーレポートを自動生成します。</p>
             </div>
 
             <div class="step-grid">
@@ -937,72 +905,77 @@
                 <div class="step-card">
                     <div class="step-number">02</div>
                     <h3>Driveステップ（一覧取得）</h3>
-                    <p>Drive - List files<br>過去7日間に更新されたファイルを取得</p>
+                    <p>Drive - List files<br>「営業資料」フォルダのファイル一覧を取得</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">03</div>
-                    <h3>Geminiステップ（レポート）</h3>
-                    <p>ファイル一覧を週次レポート形式に整形</p>
+                    <h3>Geminiステップ（分析）</h3>
+                    <p>ファイル名から顧客・資料タイプを分析<br>営業活動のサマリーを生成</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">04</div>
                     <h3>Chat DMステップ（送信）</h3>
-                    <p>週次レポートをChat DMで送信<br><strong style="color: var(--coral); font-size: 0.8rem;">※スペース投稿は削除済</strong></p>
+                    <p>週次レポートをChat DMで送信</p>
                 </div>
             </div>
 
-            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">レポートプロンプト</h3>
-            <div class="code-block">今週の営業資料について、週次レポートを作成してください。
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Geminiプロンプト</h3>
+            <div class="code-block">以下は今週保存された営業資料のファイル一覧です。
+この情報を分析して、営業活動の週次レポートを作成してください。
 
-今週追加・更新されたファイル:
+ファイル一覧:
 {drive_files}
 
 以下の形式で出力してください：
-📊 今週の営業資料レポート（{start_date} 〜 {end_date}）
 
-【新規追加】
-- ファイル名（顧客名）：Driveリンク
+📊 今週の営業活動レポート
 
-【更新】
-- ファイル名（顧客名）：Driveリンク
+【今週の概要】
+- 保存されたファイル数と主な種類（提案書、見積書など）を要約
 
-【統計】
-- 提案書: X件
-- 見積書: X件
-- 契約書: X件
+【活発な商談】
+- ファイル名から推測される顧客名をリストアップ
+- 複数のファイルがある顧客は特に注目
+
+【資料の種類】
+- 提案書: X件（推定）
+- 見積書: X件（推定）
+- 契約書: X件（推定）
 - その他: X件
 
-【注目案件】
-今週最も動きがあった顧客TOP3
+【注目ポイント】
+- 見積書や契約書がある場合は、商談が進んでいる可能性を指摘
+- 今週フォローすべき顧客を提案
 
-ファイルがない場合は「今週は新規・更新ファイルはありません」と出力してください。</div>
+ファイルがない場合は「今週は新規ファイルはありません」と出力してください。</div>
 
             <div class="output-example">
                 <h4>週次レポートの出力例</h4>
-                <div class="output-content">📊 今週の営業資料レポート（1/8 〜 1/14）
+                <div class="output-content">📊 今週の営業活動レポート
 
-【新規追加】
-- 2025-01-10_ABC社_提案書.pdf（株式会社ABC）
-- 2025-01-12_XYZ社_見積書.pdf（XYZ株式会社）
+【今週の概要】
+今週は5件のファイルが保存されました。
+提案書2件、見積書2件、契約書1件と、複数の商談が活発に動いています。
 
-【更新】
-- 2025-01-14_DEF社_契約書_v2.pdf（DEF株式会社）
+【活発な商談】
+- 株式会社ABC：提案書、見積書の2件 → 商談が進行中
+- XYZ株式会社：見積書1件 → 検討段階
+- DEF株式会社：契約書1件 → 契約間近の可能性
 
-【統計】
-- 提案書: 1件
-- 見積書: 1件
+【資料の種類】
+- 提案書: 2件
+- 見積書: 2件
 - 契約書: 1件
 - その他: 0件
 
-【注目案件】
-1. 株式会社ABC - 提案書提出、商談フェーズ
-2. DEF株式会社 - 契約書更新、最終調整中
-3. XYZ株式会社 - 見積書提出、回答待ち</div>
+【注目ポイント】
+⭐ DEF株式会社は契約書が届いています。契約締結に向けた最終確認を優先してください。
+⭐ 株式会社ABCは見積もり段階です。今週中にフォローの連絡を入れることをお勧めします。</div>
             </div>
         </div>
     </section>
 
-    <section class="section" id="result" style="background: var(--bg-secondary);">
+    <section class="section" id="result">
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">Result</div>
@@ -1020,35 +993,35 @@
                 <tbody>
                     <tr>
                         <td>添付ファイル保存</td>
-                        <td>手動ダウンロード → 手動アップロード</td>
-                        <td>自動でDriveに保存</td>
+                        <td>手動でダウンロード・アップロード</td>
+                        <td>自動でDriveに蓄積</td>
                     </tr>
                     <tr>
-                        <td>フォルダ整理</td>
-                        <td>バラバラに保存、後で整理</td>
-                        <td>AIが案件別に自動整理</td>
+                        <td>資料の検索</td>
+                        <td>メールを探し回る</td>
+                        <td>Driveで即座に検索</td>
                     </tr>
                     <tr>
-                        <td>資料探索時間</td>
-                        <td>30分/回</td>
-                        <td>即座に検索可能</td>
+                        <td>営業活動の把握</td>
+                        <td>何をやったか分からない</td>
+                        <td>週次レポートで可視化</td>
                     </tr>
                     <tr>
-                        <td>資料状況の把握</td>
-                        <td>何があるか分からない</td>
-                        <td>週次レポートで一覧化</td>
+                        <td>商談の進捗確認</td>
+                        <td>記憶に頼る</td>
+                        <td>資料の種類から推測可能</td>
                     </tr>
                     <tr>
-                        <td>ファイル命名</td>
-                        <td>バラバラの命名規則</td>
-                        <td>統一された命名規則</td>
+                        <td>フォローすべき顧客</td>
+                        <td>自分で判断</td>
+                        <td>Geminiが提案</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </section>
 
-    <section class="section" id="tips">
+    <section class="section" id="tips" style="background: var(--bg-secondary);">
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">Tips</div>
@@ -1057,16 +1030,16 @@
 
             <div class="tips-grid">
                 <div class="tip-card">
-                    <h4>フォルダが存在しない場合の対処</h4>
-                    <p>Geminiが推定したフォルダが存在しない場合、エラーになることがあります。「営業資料/未分類」フォルダを作成し、不明な場合はそこに保存するようプロンプトに追記すると安定します。</p>
+                    <h4>フォルダの定期整理</h4>
+                    <p>ファイルが溜まってきたら、月1回程度で古いファイルを別フォルダに移動するか、削除しましょう。Geminiの分析精度も向上します。</p>
                 </div>
                 <div class="tip-card">
-                    <h4>大量の添付ファイル</h4>
-                    <p>メールに複数の添付ファイルがある場合、それぞれを個別に処理するループ処理が必要な場合があります。最初はシンプルに「1つ目の添付ファイルのみ」から始めることをお勧めします。</p>
+                    <h4>ファイル名での検索</h4>
+                    <p>Driveの検索機能を使えば、顧客名や「見積」などのキーワードで簡単に資料を見つけられます。週次レポートと組み合わせると効果的です。</p>
                 </div>
                 <div class="tip-card">
-                    <h4>既存資料の整理</h4>
-                    <p>このエージェントは「新規メール」にのみ対応します。既存のDrive資料を整理したい場合は、別途手動で整理するか、バッチ処理用のスクリプトを作成してください。</p>
+                    <h4>レポートの活用</h4>
+                    <p>週次レポートは週明けのタスク整理に最適です。「注目ポイント」を参考に、今週のフォロー優先順位を決めましょう。</p>
                 </div>
             </div>
         </div>
