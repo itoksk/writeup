@@ -951,10 +951,14 @@
                 <h3 class="step-title">Gmailスターター設定（Gmail - Email received）</h3>
             </div>
             <p>重要顧客からキーワードを含むメールを受信したときに起動します。</p>
-            <div class="code-block">from:(@重要顧客) (契約 OR 発注 OR 注文 OR 見積 OR 提案 OR 検討)</div>
+            <div class="code-block">(from:yamada@a-corp.co.jp OR from:tanaka@b-inc.com) (契約 OR 発注 OR 注文 OR 見積 OR 提案 OR 検討)</div>
             <div class="highlight-box">
                 <h4>設定のコツ</h4>
-                <p>@重要顧客の部分は、実際の顧客ドメイン（例：@example.co.jp）に置き換えてください。</p>
+                <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                    <li><code>from:</code>演算子では<strong>ドメイン指定は使用できません</strong></li>
+                    <li>重要顧客の<strong>メールアドレスを個別に指定</strong>してください</li>
+                    <li>キーワードと組み合わせる場合は、fromの条件を<code>()</code>で囲みます</li>
+                </ul>
             </div>
         </div>
 
@@ -964,11 +968,11 @@
                 <h3 class="step-title">Geminiステップ（確度判定）</h3>
             </div>
             <p>Geminiステップでメール内容を分析させ、案件の確度を判定します。</p>
-            <div class="code-block">Analyze this sales email for deal probability:
+            <div class="code-block">以下の営業メールを分析し、案件の確度を判定してください。
 
 {email_content}
 
-Provide analysis in Japanese:
+以下の形式で出力してください：
 
 【検出キーワード】見つかった営業キーワードをリスト
 【買いシグナル】ポジティブ/ネガティブ/ニュートラル
@@ -1106,7 +1110,7 @@ Provide analysis in Japanese:
                 <tr>
                     <td>追客漏れゼロ</td>
                     <td>Gmailスターター</td>
-                    <td>from:(@重要顧客)</td>
+                    <td>from:メールアドレス</td>
                     <td>重要顧客からの全メール</td>
                 </tr>
                 <tr>

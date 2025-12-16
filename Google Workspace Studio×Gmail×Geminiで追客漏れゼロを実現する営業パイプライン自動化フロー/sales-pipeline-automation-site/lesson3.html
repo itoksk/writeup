@@ -846,6 +846,8 @@
                     <div class="step-number">01</div>
                     <h3>Gmailスターター設定</h3>
                     <p>「Starter」で「Gmail - Email received」を選択。重要顧客からのメール受信時に起動するよう、fromフィルターを設定します。</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">例: <code>from:yamada@a-corp.co.jp OR from:tanaka@b-inc.com</code></p>
+                    <p style="font-size: 0.85rem; color: var(--coral);"><strong>注意:</strong> ドメイン指定（@xxx.co.jp）は使用できません。メールアドレスを個別に指定してください。</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">02</div>
@@ -884,14 +886,14 @@
                 <p class="section-description">要対応判定は「YES」または「NO」で明確に出力させます。条件分岐で使うため、判定結果が曖昧にならないようにプロンプトを設計します。</p>
             </div>
 
-            <div class="code-block">Analyze this sales email and determine if follow-up action is required:
+            <div class="code-block">以下の営業メールを分析し、対応が必要かどうか判定してください。
 
-From: {sender}
-Subject: {subject}
-Body:
+送信者: {sender}
+件名: {subject}
+本文:
 {email_body}
 
-Provide response in Japanese with the following format:
+以下の形式で出力してください：
 
 【要対応判定】YES または NO
 【理由】判定の理由（1文）

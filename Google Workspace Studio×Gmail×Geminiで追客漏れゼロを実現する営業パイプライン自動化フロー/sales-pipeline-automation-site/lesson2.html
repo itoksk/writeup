@@ -858,14 +858,19 @@
                             <ul>
                                 <li><strong>スターター種類:</strong> Gmail（メール受信時）</li>
                                 <li><strong>トリガー:</strong> 新規メール受信時</li>
-                                <li><strong>フィルター:</strong> 重要顧客ドメインからのメール</li>
+                                <li><strong>フィルター:</strong> 重要顧客からのメール</li>
                             </ul>
                         </div>
-                        <div class="code-block"><span class="comment"># フィルター例（重要顧客ドメイン）</span>
-from:(@a-corp.co.jp OR @b-inc.com OR @c-group.jp)</div>
+                        <div class="code-block"><span class="comment"># フィルター例（メールアドレス指定）</span>
+from:yamada@a-corp.co.jp OR from:tanaka@b-inc.com OR from:suzuki@c-group.jp</div>
                         <div class="note">
                             <div class="note-title">フィルターのポイント</div>
-                            <p>フィルターを設定することで、重要顧客からのメールのみがエージェントをトリガーします。全メールでトリガーすると処理量が多くなるため、対象を絞ることを推奨します。</p>
+                            <ul>
+                                <li>Gmailの<code>from:</code>演算子では<strong>ドメイン指定（@xxx.co.jp）は使用できません</strong></li>
+                                <li>重要顧客の<strong>メールアドレスを個別に指定</strong>してください</li>
+                                <li>複数のメールアドレスは<code>OR</code>で結合します</li>
+                                <li>全メールでトリガーすると処理量が多くなるため、対象を絞ることを推奨します</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -888,12 +893,13 @@ from:(@a-corp.co.jp OR @b-inc.com OR @c-group.jp)</div>
                             <div class="warning-title">Chat通知についての重要な変更</div>
                             <p>正式リリースでは<strong>Chatスペースへの投稿機能は削除</strong>されました。Chat通知は<strong>個人へのDM（ダイレクトメッセージ）のみ</strong>利用可能です。チーム共有が必要な場合は、Gmailでのメール送信を検討してください。</p>
                         </div>
-                        <div class="code-block">📬 本日の見込み顧客メール要約
+                        <div class="code-block">📬 見込み顧客メール要約
+
+⏰ 受信日時: {when_email_was_sent}
 
 {gemini_summary}
 
 ---
-⏰ 生成時刻: {current_time}
 対応漏れがないかご確認ください。</div>
                     </div>
                 </div>
@@ -911,26 +917,26 @@ from:(@a-corp.co.jp OR @b-inc.com OR @c-group.jp)</div>
 
             <div class="prompt-section">
                 <h4>推奨プロンプト</h4>
-                <div class="code-block">Analyze the following sales email and provide a summary in Japanese:
+                <div class="code-block">以下の営業メールを分析して、要約してください。
 
 {trigger_email}
 
-For this email, provide:
-1. 【送信者】Sender name and company
-2. 【件名】Subject
-3. 【要約】3-sentence summary in Japanese
+以下の形式で出力してください：
+1. 【送信者】送信者名と会社名
+2. 【件名】メールの件名
+3. 【要約】3文以内で要約
 4. 【緊急度】HIGH/MEDIUM/LOW
 5. 【案件ステージ】問い合わせ/提案中/見積もり/契約交渉
-6. 【推奨アクション】Recommended next action in Japanese
+6. 【推奨アクション】次に取るべきアクション
 
-Be concise and actionable.</div>
+簡潔かつ実用的に出力してください。</div>
             </div>
 
             <div class="note">
                 <div class="note-title">プロンプトのポイント</div>
                 <ul>
                     <li><strong>{trigger_email}</strong>：Gmailスターターで受信したメールの変数（変数メニューから選択）</li>
-                    <li><strong>出力は日本語を指定</strong>：「in Japanese」と明記</li>
+                    <li><strong>出力形式を明確に指定</strong>：項目ごとに【】で区切る</li>
                     <li><strong>緊急度判定</strong>：案件の優先度を即座に把握</li>
                     <li><strong>推奨アクション</strong>：次のステップを明確に</li>
                 </ul>
@@ -940,6 +946,8 @@ Be concise and actionable.</div>
                 <h4>出力例</h4>
                 <div class="output-content">📬 見込み顧客メール要約
 
+⏰ 受信日時: 2025/01/15 14:32
+
 【送信者】山田太郎様（株式会社ABC）
 【件名】提案書の件でご相談
 【要約】先日ご提案いただいた内容について、社内で検討しました。予算感が合えば進めたいとのことで、見積もりの再調整をお願いしたいとのご連絡です。
@@ -948,7 +956,6 @@ Be concise and actionable.</div>
 【推奨アクション】本日中に見積もり再調整の連絡を入れる
 
 ---
-⏰ 受信時刻: 2025-01-15 10:32
 即座にご確認ください。</div>
             </div>
         </div>

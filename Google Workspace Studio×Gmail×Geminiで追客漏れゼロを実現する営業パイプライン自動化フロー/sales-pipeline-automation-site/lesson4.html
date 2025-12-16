@@ -894,14 +894,14 @@
             </div>
 
             <h3 style="margin-top: 2rem; margin-bottom: 1rem;">分類プロンプト</h3>
-            <div class="code-block">Analyze this email with attachments and classify:
+            <div class="code-block">以下の添付ファイル付きメールを分析し、分類してください。
 
-Subject: {email_subject}
-From: {sender}
-Body: {email_body}
-Attachment names: {attachment_names}
+件名: {email_subject}
+送信者: {sender}
+本文: {email_body}
+添付ファイル名: {attachment_names}
 
-Provide in Japanese:
+以下の形式で出力してください：
 【資料タイプ】提案書/見積書/契約書/議事録/その他
 【顧客名】推定される顧客名（メールドメインや本文から推測）
 【案件名】推定される案件名（不明な場合は「一般」）
@@ -952,12 +952,12 @@ Provide in Japanese:
             </div>
 
             <h3 style="margin-top: 2rem; margin-bottom: 1rem;">レポートプロンプト</h3>
-            <div class="code-block">Create a weekly report of sales documents in Japanese:
+            <div class="code-block">今週の営業資料について、週次レポートを作成してください。
 
-Files added/updated this week:
+今週追加・更新されたファイル:
 {drive_files}
 
-Format as:
+以下の形式で出力してください：
 📊 今週の営業資料レポート（{start_date} 〜 {end_date}）
 
 【新規追加】
