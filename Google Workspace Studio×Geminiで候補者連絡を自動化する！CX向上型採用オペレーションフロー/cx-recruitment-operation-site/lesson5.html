@@ -114,6 +114,36 @@
             opacity: 0.9;
             max-width: 600px;
         }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .comparison-card {
+            padding: 2rem;
+            background: var(--paper);
+            border: 1px solid rgba(10, 14, 39, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        .comparison-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+        }
+        .comparison-card.before {
+            border-top: 4px solid var(--red);
+        }
+        .comparison-card.after {
+            border-top: 4px solid var(--green);
+        }
+        .comparison-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
         .section {
             max-width: 1200px;
             margin: 0 auto;
@@ -428,6 +458,28 @@
                 これまで作成した6つのエージェントを統合し、選考フロー全体を一本化する運用設計を完成させます。
                 日次ダッシュボードで全体を可視化し、持続可能な運用を実現しましょう。
             </p>
+
+            <!-- Before/After: このレッスンで何が変わるか -->
+            <div class="comparison-grid" style="margin-top: 2.5rem;">
+                <div class="comparison-card before">
+                    <div class="comparison-header" style="color: var(--red); margin-bottom: 1rem;">BEFORE：受講前</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
+                        <li style="padding: 0.5rem 0;">各エージェントがバラバラに動作</li>
+                        <li style="padding: 0.5rem 0;">選考状況の全体把握ができない</li>
+                        <li style="padding: 0.5rem 0;">運用が属人的で引き継ぎ困難</li>
+                        <li style="padding: 0.5rem 0;">採用業務に週10時間以上</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header" style="color: var(--green); margin-bottom: 1rem;">AFTER：受講後</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
+                        <li style="padding: 0.5rem 0;">6つのエージェントが統合運用</li>
+                        <li style="padding: 0.5rem 0;">日次ダッシュボードで全体可視化</li>
+                        <li style="padding: 0.5rem 0;">誰でも運用可能な仕組み化</li>
+                        <li style="padding: 0.5rem 0;">採用業務70%削減を実現</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 

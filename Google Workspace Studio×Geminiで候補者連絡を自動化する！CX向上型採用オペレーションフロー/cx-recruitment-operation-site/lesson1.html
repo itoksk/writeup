@@ -113,6 +113,36 @@
             opacity: 0.9;
             max-width: 600px;
         }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .comparison-card {
+            padding: 2rem;
+            background: var(--paper);
+            border: 1px solid rgba(10, 14, 39, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        .comparison-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+        }
+        .comparison-card.before {
+            border-top: 4px solid var(--red);
+        }
+        .comparison-card.after {
+            border-top: 4px solid var(--green);
+        }
+        .comparison-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
         .section {
             max-width: 1200px;
             margin: 0 auto;
@@ -510,6 +540,28 @@
                 採用オペレーションにおける候補者連絡の課題を整理し、
                 Google Workspace Studio × Geminiによる自動化の全体像を把握します。
             </p>
+
+            <!-- Before/After: この講座で何が変わるか -->
+            <div class="comparison-grid" style="margin-top: 2.5rem;">
+                <div class="comparison-card before">
+                    <div class="comparison-header" style="color: var(--red); margin-bottom: 1rem;">BEFORE：受講前</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
+                        <li style="padding: 0.5rem 0;">面接準備に毎回30分以上かかる</li>
+                        <li style="padding: 0.5rem 0;">候補者への連絡漏れが月2〜3件発生</li>
+                        <li style="padding: 0.5rem 0;">評価シート提出の催促に追われる</li>
+                        <li style="padding: 0.5rem 0;">採用フローが属人的で引き継げない</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header" style="color: var(--green); margin-bottom: 1rem;">AFTER：受講後</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
+                        <li style="padding: 0.5rem 0;">面接準備が自動化（70%削減）</li>
+                        <li style="padding: 0.5rem 0;">候補者連絡の漏れゼロを実現</li>
+                        <li style="padding: 0.5rem 0;">リマインドが自動で段階的に送信</li>
+                        <li style="padding: 0.5rem 0;">選考フロー全体が一本化・可視化</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 

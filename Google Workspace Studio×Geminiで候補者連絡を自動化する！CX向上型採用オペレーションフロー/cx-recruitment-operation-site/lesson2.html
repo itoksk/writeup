@@ -113,6 +113,36 @@
             opacity: 0.9;
             max-width: 600px;
         }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .comparison-card {
+            padding: 2rem;
+            background: var(--paper);
+            border: 1px solid rgba(10, 14, 39, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        .comparison-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+        }
+        .comparison-card.before {
+            border-top: 4px solid var(--red);
+        }
+        .comparison-card.after {
+            border-top: 4px solid var(--green);
+        }
+        .comparison-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
         .section {
             max-width: 1200px;
             margin: 0 auto;
@@ -370,6 +400,28 @@
             <p class="hero-desc">
                 面接予定をCalendarから自動検知し、Geminiで候補者情報を要約、面接官へChat通知するエージェントを作成します。
             </p>
+
+            <!-- Before/After: このレッスンで何が変わるか -->
+            <div class="comparison-grid" style="margin-top: 2.5rem;">
+                <div class="comparison-card before">
+                    <div class="comparison-header" style="color: var(--red); margin-bottom: 1rem;">BEFORE：受講前</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
+                        <li style="padding: 0.5rem 0;">面接前日に手動で候補者情報を確認</li>
+                        <li style="padding: 0.5rem 0;">面接官への情報共有を忘れがち</li>
+                        <li style="padding: 0.5rem 0;">準備不足で面接品質にムラ</li>
+                        <li style="padding: 0.5rem 0;">毎回30分の準備時間が必要</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header" style="color: var(--green); margin-bottom: 1rem;">AFTER：受講後</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
+                        <li style="padding: 0.5rem 0;">面接前日に候補者情報が自動送信</li>
+                        <li style="padding: 0.5rem 0;">面接官へChat通知で確実に共有</li>
+                        <li style="padding: 0.5rem 0;">Geminiが要約した情報で品質均一化</li>
+                        <li style="padding: 0.5rem 0;">準備時間ゼロで面接に集中</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 

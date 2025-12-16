@@ -740,7 +740,7 @@
                 <span class="hero-title-accent">要約・重要顧客優先・緊急案件アラートの自動化</span>
             </h1>
             <p class="hero-description">
-                毎朝9時に自動実行。Geminiがメールを要約・優先度判定し、
+                メール受信時にリアルタイムで起動。Geminiがメールを要約・優先度判定し、
                 Chatに通知。緊急案件はアラートで即座に把握できます。
             </p>
 
@@ -758,7 +758,7 @@
                 <div class="comparison-card after">
                     <div class="comparison-header" style="color: var(--green); margin-bottom: 1rem;">AFTER：受講後</div>
                     <ul style="list-style: none; font-size: 0.9375rem; color: var(--text-secondary);">
-                        <li style="padding: 0.5rem 0;">毎朝9時に自動でメール要約が届く</li>
+                        <li style="padding: 0.5rem 0;">メール受信時に即座に要約が届く</li>
                         <li style="padding: 0.5rem 0;">重要顧客が優先表示される</li>
                         <li style="padding: 0.5rem 0;">緊急案件はアラートで即通知</li>
                         <li style="padding: 0.5rem 0;">メール確認が10分で完了（80%削減）</li>
@@ -776,16 +776,16 @@
             </div>
 
             <p class="section-description" style="margin-bottom: 2rem;">
-                営業担当者が毎朝行う「メール確認」を自動化します。<strong>毎朝9時に自動で実行</strong>され、見込み顧客からのメールをGeminiが要約。重要顧客を優先表示し、緊急案件があればアラートで通知します。
+                営業担当者が行う「メール確認」を自動化します。<strong>メール受信時にリアルタイムで実行</strong>され、見込み顧客からのメールをGeminiが即座に要約。重要顧客を優先表示し、緊急案件があればアラートで通知します。
             </p>
 
             <div class="goal-card">
                 <h3>作成するエージェント</h3>
                 <ul class="goal-list">
                     <li><strong>名前</strong>：見込み顧客メール要約エージェント</li>
-                    <li><strong>スターター</strong>：スケジュールスターター（毎朝9時）</li>
-                    <li><strong>ステップ</strong>：Gmailステップでメール取得 → Geminiステップで要約・優先度判定 → Chat DMステップで通知</li>
-                    <li><strong>効果</strong>：メール確認時間 1時間 → 10分に短縮</li>
+                    <li><strong>スターター</strong>：Gmailスターター（メール受信時）</li>
+                    <li><strong>ステップ</strong>：Geminiステップで要約・優先度判定 → Chat DMステップで通知</li>
+                    <li><strong>効果</strong>：重要メール受信時に即座に把握可能</li>
                 </ul>
             </div>
 
@@ -804,13 +804,11 @@
             <div class="section-header">
                 <div class="section-label">Flow</div>
                 <h2 class="section-title">エージェントのフロー</h2>
-                <p class="section-description">このエージェントは4つのステップで動作します。スケジュールで自動起動し、Gmail検索→Gemini分析→Chat通知の順に処理します。</p>
+                <p class="section-description">このエージェントは3つのステップで動作します。メール受信で自動起動し、Gemini分析→Chat通知の順に処理します。</p>
             </div>
 
             <div class="flow-diagram">
-                <div class="flow-item">スケジュール<br>スターター</div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-item">Gmail<br>ステップ</div>
+                <div class="flow-item">Gmail<br>スターター</div>
                 <div class="flow-arrow">→</div>
                 <div class="flow-item highlight">Gemini<br>ステップ</div>
                 <div class="flow-arrow">→</div>
@@ -820,8 +818,8 @@
             <div class="note">
                 <div class="note-title">このフローのポイント</div>
                 <ul>
-                    <li><strong>スケジュールスターターで毎朝9時に自動実行</strong>：出社前にメール要約が届く</li>
-                    <li><strong>Gmailステップで重要顧客からのメールのみ取得</strong>：ノイズを排除して効率化</li>
+                    <li><strong>Gmailスターターでメール受信時にリアルタイム実行</strong>：重要メールを即座に把握</li>
+                    <li><strong>フィルター設定で重要顧客からのメールのみをトリガー</strong>：ノイズを排除して効率化</li>
                     <li><strong>Geminiステップで優先度判定</strong>：緊急案件を見落とさない</li>
                     <li><strong>Chat DMステップで通知</strong>：メールを開かずに内容を把握</li>
                 </ul>
@@ -853,20 +851,21 @@
                 <div class="step-item">
                     <div class="step-number">02</div>
                     <div class="step-content">
-                        <h3>スケジュールスターター設定</h3>
-                        <p>毎朝9時に自動実行するスケジュールを設定します。「Starter」セクションで「Scheduled」を選択します。</p>
+                        <h3>Gmailスターター設定</h3>
+                        <p>重要顧客からメールを受信した時に自動起動するよう設定します。「Starter」セクションで「Gmail」を選択します。</p>
                         <div class="note">
                             <div class="note-title">設定値</div>
                             <ul>
-                                <li><strong>スターター種類:</strong> Scheduled（スケジュールスターター）</li>
-                                <li><strong>頻度:</strong> Daily（毎日）</li>
-                                <li><strong>時刻:</strong> 9:00 AM</li>
-                                <li><strong>タイムゾーン:</strong> Asia/Tokyo</li>
+                                <li><strong>スターター種類:</strong> Gmail（メール受信時）</li>
+                                <li><strong>トリガー:</strong> 新規メール受信時</li>
+                                <li><strong>フィルター:</strong> 重要顧客ドメインからのメール</li>
                             </ul>
                         </div>
-                        <div class="warning">
-                            <div class="warning-title">注意</div>
-                            <p>タイムゾーンが「Asia/Tokyo」になっていることを必ず確認してください。デフォルトはUTCになっている場合があります。</p>
+                        <div class="code-block"><span class="comment"># フィルター例（重要顧客ドメイン）</span>
+from:(@a-corp.co.jp OR @b-inc.com OR @c-group.jp)</div>
+                        <div class="note">
+                            <div class="note-title">フィルターのポイント</div>
+                            <p>フィルターを設定することで、重要顧客からのメールのみがエージェントをトリガーします。全メールでトリガーすると処理量が多くなるため、対象を絞ることを推奨します。</p>
                         </div>
                     </div>
                 </div>
@@ -874,33 +873,14 @@
                 <div class="step-item">
                     <div class="step-number">03</div>
                     <div class="step-content">
-                        <h3>Gmailステップ（メール検索）</h3>
-                        <p>重要顧客からの未読メールを検索条件で取得します。「Add step」から「Gmail - Search emails」を選択します。</p>
-                        <div class="code-block"><span class="comment"># 検索クエリ例</span>
-newer_than:1d is:unread from:(@a-corp.co.jp OR @b-inc.com OR @c-group.jp)</div>
-                        <div class="note">
-                            <div class="note-title">検索クエリの解説</div>
-                            <ul>
-                                <li><strong>newer_than:1d</strong> - 過去24時間以内のメール</li>
-                                <li><strong>is:unread</strong> - 未読のメールのみ</li>
-                                <li><strong>from:(...)</strong> - 指定した重要顧客ドメインからのメール</li>
-                                <li><strong>OR</strong> - 複数ドメインを結合</li>
-                            </ul>
-                        </div>
+                        <h3>Geminiステップ（要約・分類）</h3>
+                        <p>受信したメールをGeminiステップで分析・要約します。「Add step」から「Gemini」を選択し、プロンプトを設定します。</p>
+                        <p>Gmailスターターで受信したメールの内容が自動的に変数として利用可能です。プロンプトの詳細は次のセクションで説明します。</p>
                     </div>
                 </div>
 
                 <div class="step-item">
                     <div class="step-number">04</div>
-                    <div class="step-content">
-                        <h3>Geminiステップ（要約・分類）</h3>
-                        <p>取得したメールをGeminiステップで分析・要約します。「Add step」から「Gemini」を選択し、プロンプトを設定します。</p>
-                        <p>プロンプトの詳細は次のセクションで説明します。</p>
-                    </div>
-                </div>
-
-                <div class="step-item">
-                    <div class="step-number">05</div>
                     <div class="step-content">
                         <h3>Chat DMステップ（通知）</h3>
                         <p>要約結果をGoogle Chatのダイレクトメッセージで送信します。「Add step」から「Google Chat - Send direct message」を選択します。</p>
@@ -931,11 +911,11 @@ newer_than:1d is:unread from:(@a-corp.co.jp OR @b-inc.com OR @c-group.jp)</div>
 
             <div class="prompt-section">
                 <h4>推奨プロンプト</h4>
-                <div class="code-block">Analyze the following sales emails and provide a summary in Japanese:
+                <div class="code-block">Analyze the following sales email and provide a summary in Japanese:
 
-{gmail_emails}
+{trigger_email}
 
-For each email, provide:
+For this email, provide:
 1. 【送信者】Sender name and company
 2. 【件名】Subject
 3. 【要約】3-sentence summary in Japanese
@@ -943,26 +923,22 @@ For each email, provide:
 5. 【案件ステージ】問い合わせ/提案中/見積もり/契約交渉
 6. 【推奨アクション】Recommended next action in Japanese
 
-Sort by priority (HIGH first).
-
-If there are no emails, respond with:
-「本日の重要メールはありません。」</div>
+Be concise and actionable.</div>
             </div>
 
             <div class="note">
                 <div class="note-title">プロンプトのポイント</div>
                 <ul>
-                    <li><strong>{gmail_emails}</strong>：前のステップで取得したメールの変数（変数メニューから選択）</li>
+                    <li><strong>{trigger_email}</strong>：Gmailスターターで受信したメールの変数（変数メニューから選択）</li>
                     <li><strong>出力は日本語を指定</strong>：「in Japanese」と明記</li>
-                    <li><strong>優先度でソート</strong>：重要案件を上位に表示</li>
+                    <li><strong>緊急度判定</strong>：案件の優先度を即座に把握</li>
                     <li><strong>推奨アクション</strong>：次のステップを明確に</li>
-                    <li><strong>メールがない場合の処理</strong>：空の場合の出力も指定</li>
                 </ul>
             </div>
 
             <div class="output-example">
                 <h4>出力例</h4>
-                <div class="output-content">📬 本日の見込み顧客メール要約
+                <div class="output-content">📬 見込み顧客メール要約
 
 【送信者】山田太郎様（株式会社ABC）
 【件名】提案書の件でご相談
@@ -972,17 +948,8 @@ If there are no emails, respond with:
 【推奨アクション】本日中に見積もり再調整の連絡を入れる
 
 ---
-
-【送信者】鈴木花子様（XYZ株式会社）
-【件名】来週の打ち合わせについて
-【要約】来週火曜日14時からの打ち合わせ場所を確認したいとのことです。オンライン希望とのご連絡がありました。
-【緊急度】MEDIUM
-【案件ステージ】提案中
-【推奨アクション】オンライン会議URLを送付する
-
----
-⏰ 生成時刻: 2025-01-15 09:00
-対応漏れがないかご確認ください。</div>
+⏰ 受信時刻: 2025-01-15 10:32
+即座にご確認ください。</div>
             </div>
         </div>
     </section>
@@ -998,13 +965,13 @@ If there are no emails, respond with:
             <div class="checklist">
                 <h3>テスト確認項目</h3>
                 <ul>
-                    <li>Gmailからメールが正しく取得されているか</li>
-                    <li>検索クエリが意図通りに動作しているか</li>
+                    <li>Gmailスターターのフィルターが正しく動作しているか</li>
+                    <li>指定した重要顧客からのメールのみがトリガーされているか</li>
                     <li>Geminiが日本語で要約を出力しているか</li>
                     <li>緊急度・案件ステージが正しく判定されているか</li>
                     <li>Chatに通知が届いているか</li>
-                    <li>変数（{gmail_emails}など）が正しく展開されているか</li>
-                    <li>メールが0件の場合も適切に処理されるか</li>
+                    <li>変数（{trigger_email}など）が正しく展開されているか</li>
+                    <li>メールの内容が正しく分析されているか</li>
                 </ul>
             </div>
 
@@ -1066,8 +1033,8 @@ If there are no emails, respond with:
                     <p>検索クエリに含める顧客ドメインは定期的に見直しましょう。新規取引先の追加、取引終了先の削除を忘れずに。</p>
                 </div>
                 <div class="tip-card">
-                    <h4>通知時間の調整</h4>
-                    <p>9時に設定していますが、出社時間に合わせて調整可能です。在宅勤務なら8時、営業外回りが多いなら8:30など、働き方に合わせてください。</p>
+                    <h4>フィルターの最適化</h4>
+                    <p>トリガーするメールの範囲を調整できます。最初は重要顧客のみに絞り、運用が安定してきたら対象を広げていくのがおすすめです。</p>
                 </div>
                 <div class="tip-card">
                     <h4>プロンプトの改善</h4>
@@ -1084,7 +1051,7 @@ If there are no emails, respond with:
             <h3>第3回：追客漏れゼロの受信トレイ！</h3>
             <p>要対応案件メールの自動ラベル化＆次アクション設計</p>
             <p style="margin-top: 1rem;">
-                今回はスケジュールスターター（バッチ処理）でしたが、次回はGmailスターターでメール受信時にリアルタイムで起動するエージェントを作成します。
+                次回も同様にGmailスターターを使用しますが、条件分岐を追加してより高度な処理を行います。
                 重要な案件メールを即座に検知し、「要対応」ラベルを自動付与。追客漏れをゼロにします。
             </p>
         </div>

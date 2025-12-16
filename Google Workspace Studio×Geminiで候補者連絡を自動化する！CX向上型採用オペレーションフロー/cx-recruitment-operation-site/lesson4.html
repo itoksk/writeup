@@ -114,6 +114,36 @@
             opacity: 0.9;
             max-width: 600px;
         }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .comparison-card {
+            padding: 2rem;
+            background: var(--paper);
+            border: 1px solid rgba(10, 14, 39, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        .comparison-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+        }
+        .comparison-card.before {
+            border-top: 4px solid var(--red);
+        }
+        .comparison-card.after {
+            border-top: 4px solid var(--green);
+        }
+        .comparison-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
         .section {
             max-width: 1200px;
             margin: 0 auto;
@@ -441,6 +471,28 @@
                 面接リマインド、評価シート提出リマインド、遅延アラートを自動化するエージェントを作成。
                 24h・48h・72hの段階的エスカレーションで漏れゼロを実現します。
             </p>
+
+            <!-- Before/After: このレッスンで何が変わるか -->
+            <div class="comparison-grid" style="margin-top: 2.5rem;">
+                <div class="comparison-card before">
+                    <div class="comparison-header" style="color: var(--red); margin-bottom: 1rem;">BEFORE：受講前</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
+                        <li style="padding: 0.5rem 0;">面接リマインドを手動で送信</li>
+                        <li style="padding: 0.5rem 0;">評価シート未提出の催促に追われる</li>
+                        <li style="padding: 0.5rem 0;">遅延に気づくのが遅れる</li>
+                        <li style="padding: 0.5rem 0;">リマインド漏れで選考が停滞</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header" style="color: var(--green); margin-bottom: 1rem;">AFTER：受講後</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
+                        <li style="padding: 0.5rem 0;">面接リマインドが自動送信</li>
+                        <li style="padding: 0.5rem 0;">24h・48h・72hで段階的催促</li>
+                        <li style="padding: 0.5rem 0;">遅延は即座にアラート通知</li>
+                        <li style="padding: 0.5rem 0;">リマインド漏れゼロを実現</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 

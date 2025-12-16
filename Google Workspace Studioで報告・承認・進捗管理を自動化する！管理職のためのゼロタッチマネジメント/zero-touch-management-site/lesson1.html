@@ -87,6 +87,38 @@
             font-size: 1.125rem;
             color: var(--gray);
         }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2.5rem auto 0;
+            max-width: 800px;
+            text-align: left;
+        }
+        .comparison-card {
+            padding: 2rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .comparison-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+        }
+        .comparison-card.before {
+            border-top: 4px solid #EF4444;
+        }
+        .comparison-card.after {
+            border-top: 4px solid #22C55E;
+        }
+        .comparison-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
         section {
             margin-bottom: 3rem;
         }
@@ -434,6 +466,28 @@
             <div class="lesson-number">01</div>
             <h1 class="lesson-title">属人管理から卒業するための基礎設計</h1>
             <p class="lesson-subtitle">条件分岐で日報・週報提出依頼を自動化する</p>
+
+            <!-- Before/After: このレッスンで何が変わるか -->
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header" style="color: #EF4444;">BEFORE：受講前</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
+                        <li style="padding: 0.5rem 0;">日報確認に毎日30分〜1時間</li>
+                        <li style="padding: 0.5rem 0;">提出依頼を毎日手動送信</li>
+                        <li style="padding: 0.5rem 0;">送り忘れが月に数回発生</li>
+                        <li style="padding: 0.5rem 0;">管理業務が属人化</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header" style="color: #22C55E;">AFTER：受講後</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
+                        <li style="padding: 0.5rem 0;">日報・週報依頼が自動送信</li>
+                        <li style="padding: 0.5rem 0;">曜日判定で条件分岐</li>
+                        <li style="padding: 0.5rem 0;">送り忘れゼロを実現</li>
+                        <li style="padding: 0.5rem 0;">管理業務70%削減の第一歩</li>
+                    </ul>
+                </div>
+            </div>
         </header>
 
         <section>
