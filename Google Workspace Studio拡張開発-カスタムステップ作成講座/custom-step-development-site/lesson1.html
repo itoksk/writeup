@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 1: カスタムステップ入門 | Google Workspace Studio 拡張開発講座</title>
+    <meta name="description" content="カスタムステップの仕組みを理解し、最初のステップを作成・テストする">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 1 / 5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">01</div>
+            <h1 class="lesson-title">カスタムステップ入門</h1>
+            <p class="lesson-subtitle">計算機ステップを作ってみよう - 概念理解とクイックスタート</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>このレッスンでは、カスタムステップの仕組みを理解し、最初のステップを作成・テストします。マニフェストファイル、構成カード、実行ロジックの基本を学びます。</p>
+            </div>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>カスタムステップのアーキテクチャを理解する</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>エージェント・ステップ・スターターの関係を把握する</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>マニフェストファイル（appsscript.json）の構造を理解する</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>最初のカスタムステップ（計算機）を作成してテストする</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Workspace Studio のコンセプト</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                カスタムステップを開発する前に、Workspace Studio の主要なコンポーネントを理解しましょう。
+            </p>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">CONCEPT 01</div>
+                    <h3>エージェント（Agent）</h3>
+                    <p>ユーザーが Workspace Studio で構築する自動化フロー。スターターとステップで構成され、Google Workspace 内外のタスクを自動化します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">CONCEPT 02</div>
+                    <h3>ステップ（Step）</h3>
+                    <p>エージェント内の単一のタスク。各ステップは同期的に実行され、次のステップが開始される前に完了します。入出力を持つことができます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">CONCEPT 03</div>
+                    <h3>スターター（Starter）</h3>
+                    <p>エージェントを起動するトリガー。メール受信、フォーム送信、スケジュール実行などがあります。ステップでエージェントを開始することはできません。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">CONCEPT 04</div>
+                    <h3>入力変数（Input Variable）</h3>
+                    <p>ステップが受信するデータ。ユーザーが構成カードで設定します。メールアドレス、日時、Geminiプロンプトなどを収集できます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">CONCEPT 05</div>
+                    <h3>出力変数（Output Variable）</h3>
+                    <p>ステップが返すデータ。後続のステップに渡すことができます。例：計算結果、メールアドレス、処理結果など。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">CONCEPT 06</div>
+                    <h3>構成カード（Configuration Card）</h3>
+                    <p>ステップの設定UIを構成するビルディングブロック。テキスト入力、ドロップダウン、日付ピッカーなどのウィジェットを配置できます。</p>
+                </div>
+            </div>
+
+            <div class="note-card">
+                <h4>カスタムステップとは</h4>
+                <p>カスタムステップは、Apps Script で開発したアドオンの一部として定義します。マニフェストファイルで入出力を宣言し、コードで構成カードと実行ロジックを実装します。これにより、標準ステップにはない独自の処理をエージェントに追加できます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">カスタムステップの構成要素</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">カスタムステップは、以下の3つの主要な関数で構成されます。</p>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>関数</th>
+                            <th>役割</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>onConfigFunction()</code></td>
+                            <td>構成カードUIを返す。ユーザーが入力値を設定するためのUIを定義</td>
+                        </tr>
+                        <tr>
+                            <td><code>onExecuteFunction()</code></td>
+                            <td>ステップ実行時の処理。入力を受け取り、処理を行い、出力を返す</td>
+                        </tr>
+                        <tr>
+                            <td><code>onSaveFunction()</code></td>
+                            <td>（オプション）サーバーサイド検証。構成保存時に入力値を検証</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">マニフェストファイル（appsscript.json）</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                マニフェストファイルは、Apps Script プロジェクトの設定を定義する特別な JSON ファイルです。
+                カスタムステップを作成するには、<code>flows</code> セクションでステップを定義します。
+            </p>
+
+            <div class="code-block">{
+  "timeZone": "Asia/Tokyo",
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "addOns": {
+    "common": {
+      "name": "Calculator",
+      "logoUrl": "https://example.com/logo.png",
+      "useLocaleFromApp": true
+    },
+    "flows": {
+      "workflowElements": [
+        {
+          "id": "calculateStep",
+          "state": "ACTIVE",
+          "name": "Calculate",
+          "description": "2つの数値で計算を実行",
+          "workflowAction": {
+            "inputs": [...],
+            "outputs": [...],
+            "onConfigFunction": "onConfigCalculate",
+            "onExecuteFunction": "onExecuteCalculate"
+          }
+        }
+      ]
+    }
+  }
+}</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>id</h3>
+                        <p>ステップの一意識別子</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>state</h3>
+                        <p>ステップの状態（ACTIVE / INACTIVE）</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>inputs[] / outputs[]</h3>
+                        <p>入力変数・出力変数の配列</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>onConfigFunction / onExecuteFunction</h3>
+                        <p>構成カードを返す関数名・実行ロジックの関数名</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">計算機ステップの実装</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                それでは、2つの数値と演算子を受け取り、計算結果を返す計算機ステップを実装しましょう。
+            </p>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">1. 入力変数の定義</h3>
+            <div class="code-block">"inputs": [
+  {
+    "id": "value1",
+    "description": "1つ目の数値",
+    "cardinality": "SINGLE",
+    "dataType": { "basicType": "INTEGER" }
+  },
+  {
+    "id": "value2",
+    "description": "2つ目の数値",
+    "cardinality": "SINGLE",
+    "dataType": { "basicType": "INTEGER" }
+  },
+  {
+    "id": "operation",
+    "description": "演算子",
+    "cardinality": "SINGLE",
+    "dataType": { "basicType": "STRING" }
+  }
+]</div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">2. 出力変数の定義</h3>
+            <div class="code-block">"outputs": [
+  {
+    "id": "result",
+    "description": "計算結果",
+    "cardinality": "SINGLE",
+    "dataType": { "basicType": "INTEGER" }
+  }
+]</div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">3. 構成カード（onConfigFunction）</h3>
+            <div class="code-block">function onConfigCalculate() {
+  // 1つ目の数値入力
+  const firstInput = CardService.newTextInput()
+    .setFieldName("value1")
+    .setTitle("1つ目の数値")
+    .setHostAppDataSource(
+      CardService.newHostAppDataSource()
+        .setWorkflowDataSource(
+          CardService.newWorkflowDataSource()
+            .setIncludeVariables(true)
+        )
+    );
+
+  // 演算子選択
+  const operationInput = CardService.newSelectionInput()
+    .setTitle("演算子")
+    .setFieldName("operation")
+    .setType(CardService.SelectionInputType.DROPDOWN)
+    .addItem("+", "+", false)
+    .addItem("-", "-", false)
+    .addItem("x", "x", false)
+    .addItem("/", "/", false);
+
+  // 2つ目の数値入力
+  const secondInput = CardService.newTextInput()
+    .setFieldName("value2")
+    .setTitle("2つ目の数値")
+    .setHostAppDataSource(
+      CardService.newHostAppDataSource()
+        .setWorkflowDataSource(
+          CardService.newWorkflowDataSource()
+            .setIncludeVariables(true)
+        )
+    );
+
+  // カードセクションを作成
+  const section = CardService.newCardSection()
+    .setHeader("計算ステップ")
+    .addWidget(firstInput)
+    .addWidget(operationInput)
+    .addWidget(secondInput);
+
+  // カードを構築して返す
+  return CardService.newCardBuilder()
+    .addSection(section)
+    .build();
+}</div>
+
+            <div class="note-card">
+                <h4>hostAppDataSource とは</h4>
+                <p><code>setHostAppDataSource</code> を設定すると、テキスト入力フィールドで前のステップの出力変数を参照できるようになります。これにより、ユーザーは直接値を入力するか、前のステップの出力を選択するかを選べます。</p>
+            </div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">4. 実行ロジック（onExecuteFunction）</h3>
+            <div class="code-block">function onExecuteCalculate(event) {
+  // 入力値を取得
+  const value1 = event.workflow.actionInvocation
+    .inputs["value1"].integerValues[0];
+  const value2 = event.workflow.actionInvocation
+    .inputs["value2"].integerValues[0];
+  const operation = event.workflow.actionInvocation
+    .inputs["operation"].stringValues[0];
+
+  // 計算を実行
+  let result = 0;
+  if (operation === "+") result = value1 + value2;
+  else if (operation === "-") result = value1 - value2;
+  else if (operation === "x") result = value1 * value2;
+  else if (operation === "/") result = value1 / value2;
+
+  // 出力変数を構築して返す
+  const variableDataMap = {
+    "result": AddOnsResponseService
+      .newVariableData()
+      .addIntegerValue(result)
+  };
+
+  return outputVariables(variableDataMap);
+}
+
+// 出力変数を返すためのヘルパー関数
+function outputVariables(variableDataMap) {
+  const workflowAction = AddOnsResponseService
+    .newReturnOutputVariablesAction()
+    .setVariableDataMap(variableDataMap);
+
+  const hostAppAction = AddOnsResponseService
+    .newHostAppAction()
+    .setWorkflowAction(workflowAction);
+
+  const renderAction = AddOnsResponseService
+    .newRenderActionBuilder()
+    .setHostAppAction(hostAppAction)
+    .build();
+
+  return renderAction;
+}</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">テストデプロイの手順</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">作成したカスタムステップをテストする手順です。</p>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Apps Script エディタでプロジェクトを開く</h3>
+                        <p>script.google.com でプロジェクトを開きます。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>テストデプロイを設定</h3>
+                        <p>[デプロイ] > [デプロイをテスト] をクリックし、[インストール] を選択します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Workspace Studio でエージェントを作成</h3>
+                        <p>studio.workspace.google.com を開き、新しいエージェントを作成します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>スターターを選択</h3>
+                        <p>テスト用に、自分でトリガーできるスターター（例：自分宛てにメール送信）を選択します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>カスタムステップを追加</h3>
+                        <p>[ステップを追加] をクリックし、作成した Calculate ステップを選択します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>ステップを構成してテスト</h3>
+                        <p>2つの値と演算子を設定し、エージェントを有効にしてテストします。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-card">
+                <h4>テスト時の注意</h4>
+                <p>テストデプロイは開発者本人のアカウントでのみ動作します。他のユーザーにテストしてもらう場合は、プロジェクトを共有（編集権限）してください。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>Workspace Studio の基本コンセプト（エージェント、ステップ、スターター、変数）</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>カスタムステップの構成要素（onConfigFunction、onExecuteFunction）</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>マニフェストファイルでの入出力変数の定義方法</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>CardService を使った構成カードUIの作成</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>AddOnsResponseService を使った出力変数の返却</span>
+                </div>
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 1.5rem;">
+                次のレッスンでは、入出力変数をより深く掘り下げ、さまざまなデータ型やウィジェットの使い方を学びます。
+            </p>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="index.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <a href="lesson2.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

@@ -642,36 +642,36 @@
                     <th>設定値</th>
                 </tr>
                 <tr>
-                    <td>Name</td>
-                    <td>Quality Check Agent</td>
+                    <td>エージェント名</td>
+                    <td>品質チェック</td>
                 </tr>
                 <tr>
-                    <td>Description</td>
-                    <td>Automatically checks submission quality and routes to appropriate action</td>
+                    <td>説明</td>
+                    <td>提出物の品質を自動チェックし、適切なアクションにルーティング</td>
                 </tr>
                 <tr>
-                    <td>Trigger</td>
-                    <td>Gmail (Subject contains 提出/報告) or Forms submission</td>
+                    <td>スターター</td>
+                    <td>Gmail - Email received または Forms - Form submitted</td>
                 </tr>
                 <tr>
-                    <td>Process</td>
-                    <td>Gemini checklist evaluation with structured output</td>
+                    <td>処理ステップ</td>
+                    <td>Geminiによるチェックリスト評価</td>
                 </tr>
                 <tr>
-                    <td>Conditions</td>
+                    <td>条件分岐</td>
                     <td>APPROVED / NEEDS_REVISION / RESUBMIT</td>
                 </tr>
                 <tr>
-                    <td>Output (Submitter)</td>
-                    <td>Gmail with feedback</td>
+                    <td>出力（提出者へ）</td>
+                    <td>Gmailでフィードバック送信</td>
                 </tr>
                 <tr>
-                    <td>Output (Sheets)</td>
-                    <td>Status update with judgment details</td>
+                    <td>出力（Sheets）</td>
+                    <td>ステータス更新と判定詳細の記録</td>
                 </tr>
                 <tr>
-                    <td>Output (Manager)</td>
-                    <td>Chat notification (RESUBMIT cases only)</td>
+                    <td>出力（管理職へ）</td>
+                    <td>Chat DM通知（RESSUBMITの場合のみ）</td>
                 </tr>
             </table>
         </section>
@@ -749,42 +749,42 @@
                     <div class="step-number">1</div>
                     <div class="step-content">
                         <h3>新規エージェント作成</h3>
-                        <p>Google Workspace Studio → Create Agent → Name: Quality Check Agent → Description: Automatically checks submission quality and routes to appropriate action</p>
+                        <p>studio.workspace.google.com → 「新規作成」→ エージェント名「品質チェック」を入力</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>トリガー設定</h3>
-                        <p>Trigger Type: Gmail → Filter: Subject contains "提出" OR "報告" → From: @yourcompany.com（または Forms送信時トリガー）</p>
+                        <h3>スターター設定</h3>
+                        <p>スターター: Gmail - Email received または Forms - Form submitted → フィルター: 件名に「提出」「報告」を含む</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Geminiチェックプロンプト設定</h3>
-                        <p>下記のチェックリスト評価プロンプトを設定。各項目をOK/NGで判定し、総合判定を出力</p>
+                        <h3>Geminiステップでチェック</h3>
+                        <p>ステップを追加 → 「Gemini」を選択 → 下記のチェックリスト評価プロンプトを設定。各項目をOK/NGで判定</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3>条件分岐設定</h3>
-                        <p>Gemini出力のJUDGMENTフィールドを条件として、APPROVED / NEEDS_REVISION / RESUBMIT で3分岐を設定</p>
+                        <h3>条件分岐ステップ設定</h3>
+                        <p>ステップを追加 → 「条件分岐」→ Gemini出力のJUDGMENTフィールドでAPPROVED / NEEDS_REVISION / RESUBMIT に分岐</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">5</div>
                     <div class="step-content">
-                        <h3>メールテンプレート設定</h3>
-                        <p>各判定結果に応じた通知メールテンプレートを設定。承認・修正依頼・再提出依頼の3パターンを用意</p>
+                        <h3>Gmailステップ設定</h3>
+                        <p>各分岐にGmail送信ステップを追加。承認・修正依頼・再提出依頼の3パターンのテンプレートを用意</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">6</div>
                     <div class="step-content">
-                        <h3>Sheets・Chat出力設定</h3>
-                        <p>Sheets: ステータス列を更新（承認済/要修正/再提出）。Chat: RESSUBMITの場合のみDM通知 ※スペースへの投稿機能は削除されました</p>
+                        <h3>Sheets・Chat DMステップ設定</h3>
+                        <p>Sheetsステップでステータス列を更新。RESSUBMITの場合のみChat DMで管理職に通知（※スペースへの投稿は削除済み）</p>
                     </div>
                 </div>
             </div>

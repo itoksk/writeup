@@ -709,6 +709,28 @@
                 メール受信時にリアルタイムで起動。Geminiが「要対応」を判定し、
                 自動でラベル付与。次アクションをChatで通知します。
             </p>
+
+            <!-- Before/After: このレッスンで何が変わるか -->
+            <div class="comparison-grid" style="margin-top: 2.5rem;">
+                <div class="comparison-card before">
+                    <div class="comparison-header" style="color: var(--coral); margin-bottom: 1rem;">BEFORE：このレッスン前</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--text-secondary);">
+                        <li style="padding: 0.5rem 0;">要対応メールが受信トレイに埋もれる</li>
+                        <li style="padding: 0.5rem 0;">追客タイミングを逃して失注</li>
+                        <li style="padding: 0.5rem 0;">月1〜2件の追客漏れが発生</li>
+                        <li style="padding: 0.5rem 0;">次アクションを手動で管理</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header" style="color: var(--green); margin-bottom: 1rem;">AFTER：このレッスン後</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--text-secondary);">
+                        <li style="padding: 0.5rem 0;">要対応メールに自動でラベル付与</li>
+                        <li style="padding: 0.5rem 0;">受信時にリアルタイムで通知</li>
+                        <li style="padding: 0.5rem 0;">追客漏れゼロを実現</li>
+                        <li style="padding: 0.5rem 0;">次アクションをAIが提案</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -727,8 +749,8 @@
                 <h3>作成するエージェント</h3>
                 <ul class="goal-list">
                     <li><strong>名前</strong>：追客漏れゼロエージェント</li>
-                    <li><strong>トリガー</strong>：メール受信時（イベント駆動）</li>
-                    <li><strong>機能</strong>：要対応判定 → 自動ラベル付与 → 次アクション提示 → Chat通知</li>
+                    <li><strong>スターター</strong>：Gmail - Email received（メール受信時）</li>
+                    <li><strong>ステップ</strong>：Geminiステップで判定 → 条件分岐 → Gmailステップでラベル付与 → Chat DMステップで通知</li>
                     <li><strong>効果</strong>：追客漏れ 月1-2件 → ゼロに</li>
                 </ul>
             </div>
@@ -742,10 +764,10 @@
             </div>
 
             <div class="note">
-                <div class="note-title">バッチ処理 vs リアルタイム処理</div>
+                <div class="note-title">スケジュールスターター vs Gmailスターター</div>
                 <ul>
-                    <li><strong>第2回（バッチ）</strong>：毎朝まとめて処理 → 全体把握に適している</li>
-                    <li><strong>第3回（リアルタイム）</strong>：メール受信時に即座に処理 → 緊急案件の見落とし防止に適している</li>
+                    <li><strong>第2回（スケジュールスターター）</strong>：毎朝まとめて処理 → 全体把握に適している</li>
+                    <li><strong>第3回（Gmailスターター）</strong>：メール受信時に即座に処理 → 緊急案件の見落とし防止に適している</li>
                 </ul>
             </div>
         </div>
@@ -760,17 +782,17 @@
             </div>
 
             <div class="flow-diagram">
-                <div class="flow-item">メール受信</div>
+                <div class="flow-item">Gmail<br>スターター</div>
                 <div class="flow-arrow">→</div>
-                <div class="flow-item">Gemini分析</div>
+                <div class="flow-item">Gemini<br>ステップ</div>
                 <div class="flow-arrow">→</div>
-                <div class="flow-item highlight">条件分岐</div>
+                <div class="flow-item highlight">条件分岐<br>ステップ</div>
                 <div class="flow-arrow">→</div>
                 <div class="flow-branch">
                     <div class="branch-yes">YES</div>
-                    <div class="flow-item">ラベル付与</div>
+                    <div class="flow-item">Gmail<br>ラベル付与</div>
                     <div class="flow-arrow">↓</div>
-                    <div class="flow-item">Chat通知</div>
+                    <div class="flow-item">Chat DM<br>ステップ</div>
                 </div>
             </div>
         </div>
@@ -786,28 +808,28 @@
             <div class="step-grid">
                 <div class="step-card">
                     <div class="step-number">01</div>
-                    <h3>Starter設定：Gmail受信</h3>
+                    <h3>Gmailスターター設定</h3>
                     <p>「Starter」で「Gmail - Email received」を選択。重要顧客からのメール受信時に起動するよう、fromフィルターを設定します。</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">02</div>
-                    <h3>Gemini分析ステップ</h3>
-                    <p>メール内容をGeminiで分析。要対応判定、緊急度、次アクションを出力させます。</p>
+                    <h3>Geminiステップ（分析）</h3>
+                    <p>メール内容をGeminiステップで分析。要対応判定、緊急度、次アクションを出力させます。</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">03</div>
-                    <h3>条件分岐の設定</h3>
+                    <h3>条件分岐ステップ</h3>
                     <p>Geminiの出力に「YES」が含まれる場合のみ次のステップへ進む条件を設定します。</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">04</div>
-                    <h3>Gmailラベル付与</h3>
+                    <h3>Gmailステップ（ラベル付与）</h3>
                     <p>「Gmail - Add label」で「要対応」ラベルを自動付与。事前にGmailでラベルを作成しておきます。</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">05</div>
-                    <h3>Chat通知</h3>
-                    <p>Geminiの分析結果と次アクションをChatに通知。元のメールへのリンクも含めます。</p>
+                    <h3>Chat DMステップ（通知）</h3>
+                    <p>Geminiの分析結果と次アクションをChat DMで通知。元のメールへのリンクも含めます。<br><strong style="color: var(--coral);">※スペースへの投稿は削除されました</strong></p>
                 </div>
             </div>
 
@@ -885,9 +907,9 @@ Provide response in Japanese with the following format:
                 <div class="branch-container">
                     <div class="branch-path">
                         <div class="branch-label" style="color: var(--green);">True（YES）</div>
-                        <div class="branch-action">ラベル「要対応」を付与</div>
+                        <div class="branch-action">Gmailステップ<br>ラベル「要対応」を付与</div>
                         <div class="flow-arrow">↓</div>
-                        <div class="branch-action">Chat通知を送信</div>
+                        <div class="branch-action">Chat DMステップ<br>通知を送信</div>
                     </div>
                     <div class="branch-path">
                         <div class="branch-label" style="color: var(--coral);">False（NO）</div>
@@ -897,7 +919,7 @@ Provide response in Japanese with the following format:
             </div>
 
             <div class="note">
-                <div class="note-title">条件式の設定方法</div>
+                <div class="note-title">条件分岐ステップの設定方法</div>
                 <ul>
                     <li><strong>条件タイプ</strong>：「Text contains」を選択</li>
                     <li><strong>変数</strong>：Geminiステップの出力を選択</li>
@@ -916,7 +938,7 @@ Provide response in Japanese with the following format:
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">Notification</div>
-                <h2 class="section-title">Chat通知テンプレート</h2>
+                <h2 class="section-title">Chat DM通知テンプレート</h2>
             </div>
 
             <div class="code-block">📌 要対応案件メール

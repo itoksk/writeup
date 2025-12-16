@@ -762,6 +762,28 @@
                 この講座では、Google Workspace StudioとGeminiを使って、
                 追客漏れゼロ・見落としゼロ・確認時間80%削減を実現します。
             </p>
+
+            <!-- Before/After: この講座で何が変わるか -->
+            <div class="comparison-grid" style="margin-top: 2.5rem;">
+                <div class="comparison-card before">
+                    <div class="comparison-header" style="color: var(--coral); margin-bottom: 1rem;">BEFORE：受講前</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--text-secondary);">
+                        <li style="padding: 0.5rem 0;">毎日1時間以上メール確認に消耗</li>
+                        <li style="padding: 0.5rem 0;">追客漏れが月1〜2件発生</li>
+                        <li style="padding: 0.5rem 0;">資料探しに毎回30分かかる</li>
+                        <li style="padding: 0.5rem 0;">確度の高い案件を見落とす</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header" style="color: var(--green); margin-bottom: 1rem;">AFTER：受講後</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--text-secondary);">
+                        <li style="padding: 0.5rem 0;">メール確認が10分で完了（80%削減）</li>
+                        <li style="padding: 0.5rem 0;">追客漏れゼロを実現</li>
+                        <li style="padding: 0.5rem 0;">資料が即座に見つかる（95%削減）</li>
+                        <li style="padding: 0.5rem 0;">確度高案件を自動監視・通知</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -942,33 +964,33 @@
                 <div class="automation-card">
                     <div class="automation-number">02</div>
                     <h3>重要顧客対応 → 即時アラート</h3>
-                    <p>キーアカウントからのメールを検知。即座にChatで通知。VIP顧客リストとの自動照合。</p>
+                    <p>Gmailスターターでキーアカウントからのメールを検知。Chat DMステップで即座に通知。VIP顧客リストとの自動照合。</p>
                 </div>
                 <div class="automation-card">
                     <div class="automation-number">03</div>
                     <h3>追客 → 自動ラベル + 次アクション提示</h3>
-                    <p>「要対応」メールを自動でラベル付け。Geminiが次のアクションを提案。追客期限を自動設定。</p>
+                    <p>Gmailスターターでメール受信時に起動。Geminiステップで要対応を判定し、Gmailステップで「要対応」ラベルを自動付与。次のアクションを提案。</p>
                 </div>
                 <div class="automation-card">
                     <div class="automation-number">04</div>
                     <h3>資料管理 → Drive自動整理</h3>
-                    <p>添付ファイルを案件フォルダに自動保存。提案資料・見積書を自動分類。ファイル名を自動でリネーム。</p>
+                    <p>Gmailスターターで添付ファイル受信時に起動。Geminiステップで分類、Driveステップで案件フォルダに自動保存。</p>
                 </div>
                 <div class="automation-card">
                     <div class="automation-number">05</div>
                     <h3>期限管理 → キーワード監視 + アラート</h3>
-                    <p>期限関連のキーワードを監視。締め切り前にリマインド。確度高い案件を優先アラート。</p>
+                    <p>Gmailスターターでキーワードフィルター設定。Geminiステップで確度判定、条件分岐で高確度案件をChat DMで優先アラート。</p>
                 </div>
             </div>
 
             <div class="flow-diagram">
-                <div class="flow-item">メール受信</div>
+                <div class="flow-item">スターター<br><small>Gmail/スケジュール</small></div>
                 <div class="flow-arrow">→</div>
-                <div class="flow-item highlight">Gemini分析</div>
+                <div class="flow-item highlight">Geminiステップ<br><small>AI分析・分類</small></div>
                 <div class="flow-arrow">→</div>
-                <div class="flow-item">自動分類</div>
+                <div class="flow-item">条件分岐<br><small>判定結果で分岐</small></div>
                 <div class="flow-arrow">→</div>
-                <div class="flow-item">通知・保存</div>
+                <div class="flow-item">出力ステップ<br><small>Gmail/Drive/Chat DM</small></div>
             </div>
         </div>
     </section>
@@ -986,29 +1008,29 @@
                     <tr>
                         <th>回</th>
                         <th>エージェント名</th>
-                        <th>機能</th>
+                        <th>構成（スターター → ステップ）</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td class="schedule-session">第2回</td>
                         <td>見込み顧客メール要約エージェント</td>
-                        <td>毎朝、見込み顧客メールをGeminiが要約。重要顧客を優先表示。緊急案件はアラート通知。</td>
+                        <td>スケジュールスターター（毎朝9時）→ Gmailステップ → Geminiステップで要約 → Chat DMステップで通知</td>
                     </tr>
                     <tr>
                         <td class="schedule-session">第3回</td>
                         <td>追客漏れゼロエージェント</td>
-                        <td>要対応案件メールを自動ラベル化。Geminiが次のアクションを提案。Chatに対応リストを通知。</td>
+                        <td>Gmailスターター（メール受信時）→ Geminiステップで判定 → 条件分岐 → Gmailステップでラベル付与 → Chat DMステップで通知</td>
                     </tr>
                     <tr>
                         <td class="schedule-session">第4回</td>
                         <td>営業資料自動整理エージェント</td>
-                        <td>提案資料・見積書をDriveに自動保存。案件フォルダに自動分類。定期レポートを自動送信。</td>
+                        <td>Gmailスターター（添付あり）→ Geminiステップで分類 → Driveステップで保存 → Chat DMステップで完了通知</td>
                     </tr>
                     <tr>
                         <td class="schedule-session">第5回</td>
                         <td>確度高案件監視エージェント</td>
-                        <td>営業キーワード（提案/見積もり/契約）を監視。確度高い案件を優先アラート。複数エージェントを統合して運用。</td>
+                        <td>Gmailスターター（キーワード）→ Geminiステップで確度判定 → 条件分岐 → Chat DMステップで優先アラート</td>
                     </tr>
                 </tbody>
             </table>

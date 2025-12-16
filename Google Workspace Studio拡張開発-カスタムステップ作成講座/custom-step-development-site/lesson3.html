@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 3: 入力検証でエラーを防ぐ | Google Workspace Studio 拡張開発講座</title>
+    <meta name="description" content="ユーザー入力を検証し、エラーを未然に防ぐバリデーションの実装">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 3 / 5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">03</div>
+            <h1 class="lesson-title">入力検証でエラーを防ぐ</h1>
+            <p class="lesson-subtitle">バリデーションの実装 - クライアントサイドとサーバーサイド</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>クライアントサイド検証（Validation クラス、CEL）とサーバーサイド検証（onSaveFunction）を実装し、ユーザー入力のエラーを未然に防ぎます。</p>
+            </div>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>クライアントサイド検証とサーバーサイド検証の違いを理解する</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>Validation クラスを使った基本的な検証を実装する</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>CEL（Common Expression Language）による高度な検証を学ぶ</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>onSaveFunction でサーバーサイド検証を実装する</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">2種類の検証方法</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                カスタムステップでは、2種類の検証方法を使い分けることができます。
+            </p>
+
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">クライアントサイド検証</div>
+                    <ul>
+                        <li>Validation クラス、CEL を使用</li>
+                        <li>ユーザーが入力中にリアルタイムで検証</li>
+                        <li>サーバー通信なしで即座にフィードバック</li>
+                        <li>基本的な形式チェックに最適</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">サーバーサイド検証</div>
+                    <ul>
+                        <li>onSaveFunction を使用</li>
+                        <li>構成保存時にサーバーで検証</li>
+                        <li>複雑なビジネスロジックチェックに最適</li>
+                        <li>外部APIやDBとの整合性確認が可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Validation クラスによる基本検証</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                <code>CardService.newValidation()</code> を使って、テキスト入力フィールドに基本的な検証を追加できます。
+            </p>
+
+            <div class="code-block">// 必須入力のバリデーション
+const emailInput = CardService.newTextInput()
+  .setFieldName("email")
+  .setTitle("メールアドレス")
+  .setValidation(
+    CardService.newValidation()
+      .setCharacterLimit(100)  // 最大100文字
+      .setInputType(CardService.InputType.EMAIL)  // メール形式
+  );</div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>メソッド</th>
+                            <th>説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>setCharacterLimit(n)</code></td>
+                            <td>入力可能な最大文字数を設定</td>
+                        </tr>
+                        <tr>
+                            <td><code>setInputType(type)</code></td>
+                            <td>入力形式を指定（EMAIL, TEXT, INTEGER）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">CEL（Common Expression Language）による高度な検証</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                CEL を使用すると、より複雑な条件での検証が可能です。マニフェストファイルで定義します。
+            </p>
+
+            <div class="code-block">"inputs": [
+  {
+    "id": "quantity",
+    "description": "数量",
+    "cardinality": "SINGLE",
+    "dataType": { "basicType": "INTEGER" },
+    "validation": {
+      "conditions": [
+        {
+          "condition": "quantity > 0",
+          "errorMessage": "数量は1以上を入力してください"
+        },
+        {
+          "condition": "quantity <= 1000",
+          "errorMessage": "数量は1000以下を入力してください"
+        }
+      ],
+      "triggers": ["ON_CHANGE", "ON_SUBMIT"]
+    }
+  }
+]</div>
+
+            <div class="note-card">
+                <h4>CEL の主な演算子</h4>
+                <p>
+                    <code>==</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code> - 比較演算子<br>
+                    <code>&&</code>, <code>||</code>, <code>!</code> - 論理演算子<br>
+                    <code>matches()</code> - 正規表現マッチング<br>
+                    <code>size()</code> - 文字列や配列の長さ
+                </p>
+            </div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">CEL の実践例</h3>
+            <div class="code-block">// メールアドレス形式チェック
+"condition": "email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')"
+
+// 文字数チェック
+"condition": "size(name) >= 2 && size(name) <= 50"
+
+// 範囲チェック
+"condition": "price >= 100 && price <= 10000"
+
+// 複合条件
+"condition": "isUrgent == true || priority == 'high'"</div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>トリガー</th>
+                            <th>説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ON_CHANGE</code></td>
+                            <td>入力値が変更されるたびに検証</td>
+                        </tr>
+                        <tr>
+                            <td><code>ON_SUBMIT</code></td>
+                            <td>フォーム送信時に検証</td>
+                        </tr>
+                        <tr>
+                            <td><code>ON_BLUR</code></td>
+                            <td>フィールドからフォーカスが外れた時に検証</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">onSaveFunction によるサーバーサイド検証</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                <code>onSaveFunction</code> は、ユーザーが構成を保存しようとした時にサーバーで実行される検証関数です。
+                複雑なビジネスロジックや外部システムとの整合性チェックに使用します。
+            </p>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">マニフェストでの定義</h3>
+            <div class="code-block">"workflowAction": {
+  "inputs": [...],
+  "outputs": [...],
+  "onConfigFunction": "onConfigMyStep",
+  "onExecuteFunction": "onExecuteMyStep",
+  "onSaveFunction": "onSaveMyStep"  // ここに追加
+}</div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">onSaveFunction の実装</h3>
+            <div class="code-block">function onSaveMyStep(event) {
+  // 構成カードから入力値を取得
+  const formInputs = event.commonEventObject.formInputs;
+
+  // メールアドレスの検証
+  const email = formInputs.email?.stringInputs?.value[0];
+  if (!email || !isValidEmail(email)) {
+    return createErrorResponse(
+      "email",
+      "有効なメールアドレスを入力してください"
+    );
+  }
+
+  // 数量の検証
+  const quantity = parseInt(formInputs.quantity?.stringInputs?.value[0]);
+  if (isNaN(quantity) || quantity < 1 || quantity > 1000) {
+    return createErrorResponse(
+      "quantity",
+      "数量は1〜1000の範囲で入力してください"
+    );
+  }
+
+  // 外部APIとの整合性チェック（例）
+  if (!checkInventory(quantity)) {
+    return createErrorResponse(
+      "quantity",
+      "在庫が不足しています"
+    );
+  }
+
+  // 検証成功（何も返さない、または空のオブジェクト）
+  return {};
+}
+
+// エラーレスポンスを作成するヘルパー関数
+function createErrorResponse(fieldName, errorMessage) {
+  const notification = CardService.newNotification()
+    .setText(errorMessage);
+
+  return CardService.newActionResponseBuilder()
+    .setNotification(notification)
+    .build();
+}
+
+// メールアドレス形式チェック
+function isValidEmail(email) {
+  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return regex.test(email);
+}</div>
+
+            <div class="warning-card">
+                <h4>onSaveFunction の注意点</h4>
+                <p>
+                    onSaveFunction でエラーを返すと、構成の保存がブロックされます。
+                    ユーザーが入力を修正するまで保存できないため、エラーメッセージは具体的で分かりやすいものにしましょう。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">検証のベストプラクティス</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>クライアントサイド優先</h3>
+                        <p>基本的な形式チェック（必須、文字数、形式）はクライアントサイドで行い、ユーザー体験を向上させる</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>サーバーサイドは補完的に</h3>
+                        <p>外部API連携や複雑なビジネスロジックなど、クライアントでできない検証のみサーバーサイドで実行</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>エラーメッセージは具体的に</h3>
+                        <p>「入力エラー」ではなく「メールアドレスの形式が正しくありません（例: user@example.com）」のように具体的に</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>二重チェックを忘れずに</h3>
+                        <p>クライアントサイドで検証してもサーバーサイドでも検証する（セキュリティ観点）</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>クライアントサイド検証（即時フィードバック）とサーバーサイド検証（複雑なロジック）の使い分け</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>Validation クラスによる基本的な入力検証</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>CEL（Common Expression Language）による高度な条件式</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>onSaveFunction でのサーバーサイド検証の実装</span>
+                </div>
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 1.5rem;">
+                次のレッスンでは、外部APIとの連携方法を学び、CRM連携カスタムステップを作成します。
+            </p>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson2.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson4.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

@@ -695,8 +695,8 @@
             <div class="goal-card">
                 <h3>作成するエージェント（2つ）</h3>
                 <ul class="goal-list">
-                    <li><strong>フロー1</strong>：添付ファイル自動保存エージェント（メール受信時）</li>
-                    <li><strong>フロー2</strong>：週次資料レポートエージェント（毎週月曜9時）</li>
+                    <li><strong>フロー1</strong>：添付ファイル自動保存エージェント（Gmailスターター: 添付あり）</li>
+                    <li><strong>フロー2</strong>：週次資料レポートエージェント（スケジュールスターター: 毎週月曜9時）</li>
                     <li><strong>効果</strong>：資料探索時間 30分/回 → 即座に検索</li>
                 </ul>
             </div>
@@ -722,45 +722,45 @@
             <div class="dual-flow">
                 <div class="flow-card">
                     <h3>フロー1：添付ファイル自動保存</h3>
-                    <p class="flow-desc">メール受信時にリアルタイムで起動</p>
+                    <p class="flow-desc">Gmailスターター（添付あり）でリアルタイム起動</p>
                     <div class="flow-steps">
                         <div class="flow-step">
                             <div class="flow-step-icon">1</div>
-                            <span>メール受信（添付あり）</span>
+                            <span>Gmailスターター（has:attachment）</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">2</div>
-                            <span>Geminiで資料タイプ・顧客名を分類</span>
+                            <span>Geminiステップで資料タイプ・顧客名を分類</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">3</div>
-                            <span>Driveの案件フォルダに自動保存</span>
+                            <span>Driveステップで案件フォルダに保存</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">4</div>
-                            <span>Chatで保存完了を通知</span>
+                            <span>Chat DMステップで保存完了を通知</span>
                         </div>
                     </div>
                 </div>
                 <div class="flow-card">
                     <h3>フロー2：週次資料レポート</h3>
-                    <p class="flow-desc">毎週月曜9時にスケジュール実行</p>
+                    <p class="flow-desc">スケジュールスターター（毎週月曜9時）</p>
                     <div class="flow-steps">
                         <div class="flow-step">
                             <div class="flow-step-icon">1</div>
-                            <span>毎週月曜9時に自動起動</span>
+                            <span>スケジュールスターター（毎週月曜9時）</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">2</div>
-                            <span>過去7日間のファイル一覧を取得</span>
+                            <span>Driveステップで過去7日間のファイル一覧取得</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">3</div>
-                            <span>Geminiでレポート形式に整形</span>
+                            <span>Geminiステップでレポート形式に整形</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">4</div>
-                            <span>Chatに週次レポートを送信</span>
+                            <span>Chat DMステップで週次レポート送信</span>
                         </div>
                     </div>
                 </div>
@@ -815,23 +815,23 @@
             <div class="step-grid">
                 <div class="step-card">
                     <div class="step-number">01</div>
-                    <h3>Starter設定</h3>
-                    <p>Gmail - Email received<br>Filter: has:attachment<br>添付ファイル付きメールのみ起動</p>
+                    <h3>Gmailスターター設定</h3>
+                    <p>Gmail - Email received<br>Filter: has:attachment<br>添付ファイル付きメールで起動</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">02</div>
-                    <h3>Gemini分類</h3>
+                    <h3>Geminiステップ（分類）</h3>
                     <p>資料タイプ（提案書/見積書/契約書など）、顧客名、案件名をAIが推定</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">03</div>
-                    <h3>Drive保存</h3>
+                    <h3>Driveステップ（保存）</h3>
                     <p>Drive - Upload file<br>Geminiが推定したフォルダパスに保存</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">04</div>
-                    <h3>Chat通知</h3>
-                    <p>保存先とファイル名をChatに通知<br>Driveへのリンクを含める</p>
+                    <h3>Chat DMステップ（通知）</h3>
+                    <p>保存先とファイル名をChat DMで通知<br>Driveへのリンクを含める<br><strong style="color: var(--coral); font-size: 0.8rem;">※スペース投稿は削除済</strong></p>
                 </div>
             </div>
 
@@ -873,23 +873,23 @@ Provide in Japanese:
             <div class="step-grid">
                 <div class="step-card">
                     <div class="step-number">01</div>
-                    <h3>Starter設定</h3>
+                    <h3>スケジュールスターター設定</h3>
                     <p>Scheduled<br>毎週月曜 9:00 AM<br>Asia/Tokyo</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">02</div>
-                    <h3>Drive一覧取得</h3>
+                    <h3>Driveステップ（一覧取得）</h3>
                     <p>Drive - List files<br>過去7日間に更新されたファイルを取得</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">03</div>
-                    <h3>Geminiレポート</h3>
+                    <h3>Geminiステップ（レポート）</h3>
                     <p>ファイル一覧を週次レポート形式に整形</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">04</div>
-                    <h3>Chat送信</h3>
-                    <p>週次レポートをChatに送信</p>
+                    <h3>Chat DMステップ（送信）</h3>
+                    <p>週次レポートをChat DMで送信<br><strong style="color: var(--coral); font-size: 0.8rem;">※スペース投稿は削除済</strong></p>
                 </div>
             </div>
 

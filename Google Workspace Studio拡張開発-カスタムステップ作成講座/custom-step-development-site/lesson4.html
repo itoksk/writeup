@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 4: CRM連携カスタムステップを作る | Google Workspace Studio 拡張開発講座</title>
+    <meta name="description" content="カスタムリソース、外部API連携、認証情報の安全な管理を学ぶ">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 4 / 5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">04</div>
+            <h1 class="lesson-title">CRM連携カスタムステップを作る</h1>
+            <p class="lesson-subtitle">実践 - 外部API連携とカスタムリソースの活用</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>カスタムリソースの概念と定義、外部REST APIへの接続、認証情報の安全な管理、エラーハンドリングを学び、実務で使えるCRM連携ステップを作成します。</p>
+            </div>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>カスタムリソース（workflowResourceDefinitions）の概念と定義方法</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>providerFunction の実装</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>UrlFetchApp を使った外部API呼び出し</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>PropertiesService による認証情報の安全な管理</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">カスタムリソースとは</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                カスタムリソースは、複数のフィールドを持つ複合データ構造を定義する仕組みです。
+                例えば「顧客」リソースには、名前、メールアドレス、会社名などの複数フィールドが含まれます。
+            </p>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">FEATURE 01</div>
+                    <h3>複合データ構造</h3>
+                    <p>単一の変数では表現できない複数フィールドを持つデータを定義できます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">FEATURE 02</div>
+                    <h3>動的なデータ取得</h3>
+                    <p>providerFunction を使って外部APIからリアルタイムにデータを取得できます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">FEATURE 03</div>
+                    <h3>再利用可能</h3>
+                    <p>一度定義したリソースは複数のステップで再利用できます。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">マニフェストでのカスタムリソース定義</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                <code>workflowResourceDefinitions</code> でカスタムリソースを定義します。
+            </p>
+
+            <div class="code-block">"flows": {
+  "workflowResourceDefinitions": [
+    {
+      "id": "customer",
+      "displayName": "顧客",
+      "description": "CRMシステムの顧客情報",
+      "fields": [
+        {
+          "id": "customerId",
+          "displayName": "顧客ID",
+          "dataType": { "basicType": "STRING" }
+        },
+        {
+          "id": "customerName",
+          "displayName": "顧客名",
+          "dataType": { "basicType": "STRING" }
+        },
+        {
+          "id": "email",
+          "displayName": "メールアドレス",
+          "dataType": { "basicType": "EMAIL_ADDRESS" }
+        },
+        {
+          "id": "companyName",
+          "displayName": "会社名",
+          "dataType": { "basicType": "STRING" }
+        }
+      ],
+      "providerFunction": "getCustomerList"
+    }
+  ],
+  "workflowElements": [...]
+}</div>
+
+            <div class="note-card">
+                <h4>リソースの使用方法</h4>
+                <p>定義したリソースは、入力変数や出力変数のdataTypeで <code>"resourceType": "customer"</code> のように参照できます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">providerFunction の実装</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                providerFunction は、カスタムリソースのデータを外部から取得する関数です。
+                ユーザーが構成カードでリソースを選択する際に呼び出されます。
+            </p>
+
+            <div class="code-block">/**
+ * 顧客リストを取得する providerFunction
+ */
+function getCustomerList(event) {
+  try {
+    // 外部CRM APIから顧客一覧を取得
+    const customers = fetchCustomersFromCRM();
+
+    // リソースアイテムを構築
+    const resourceItems = customers.map(customer => {
+      return AddOnsResponseService.newResourceItem()
+        .setId(customer.id)
+        .setDisplayName(customer.name)
+        .setFieldValue("customerId", customer.id)
+        .setFieldValue("customerName", customer.name)
+        .setFieldValue("email", customer.email)
+        .setFieldValue("companyName", customer.company);
+    });
+
+    // レスポンスを返す
+    return AddOnsResponseService.newResourceItemsResponseBuilder()
+      .setResourceItems(resourceItems)
+      .build();
+  } catch (error) {
+    console.error("顧客取得エラー:", error);
+    throw new Error("顧客情報の取得に失敗しました");
+  }
+}</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">UrlFetchApp による外部API連携</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                UrlFetchApp は、Apps Script で外部APIにHTTPリクエストを送信するためのサービスです。
+            </p>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">GET リクエスト</h3>
+            <div class="code-block">function fetchCustomersFromCRM() {
+  const apiKey = PropertiesService.getScriptProperties()
+    .getProperty('CRM_API_KEY');
+
+  const options = {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer ' + apiKey,
+      'Content-Type': 'application/json'
+    },
+    muteHttpExceptions: true
+  };
+
+  const response = UrlFetchApp.fetch(
+    'https://api.crm-system.com/v1/customers',
+    options
+  );
+
+  if (response.getResponseCode() !== 200) {
+    throw new Error('API Error: ' + response.getContentText());
+  }
+
+  return JSON.parse(response.getContentText()).customers;
+}</div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">POST リクエスト</h3>
+            <div class="code-block">function createCustomerInCRM(customerData) {
+  const apiKey = PropertiesService.getScriptProperties()
+    .getProperty('CRM_API_KEY');
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + apiKey,
+      'Content-Type': 'application/json'
+    },
+    payload: JSON.stringify(customerData),
+    muteHttpExceptions: true
+  };
+
+  const response = UrlFetchApp.fetch(
+    'https://api.crm-system.com/v1/customers',
+    options
+  );
+
+  if (response.getResponseCode() !== 201) {
+    throw new Error('顧客作成に失敗: ' + response.getContentText());
+  }
+
+  return JSON.parse(response.getContentText());
+}</div>
+
+            <div class="warning-card">
+                <h4>エラーハンドリングの重要性</h4>
+                <p>
+                    <code>muteHttpExceptions: true</code> を設定すると、HTTPエラー時も例外が発生せず、
+                    レスポンスコードを確認して適切にエラー処理できます。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">PropertiesService による認証情報管理</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                APIキーなどの認証情報は、コードに直接書かず PropertiesService で安全に管理します。
+            </p>
+
+            <div class="code-block">// 認証情報の保存（初期設定時に一度だけ実行）
+function setApiCredentials() {
+  const scriptProperties = PropertiesService.getScriptProperties();
+  scriptProperties.setProperties({
+    'CRM_API_KEY': 'your-api-key-here',
+    'CRM_API_SECRET': 'your-api-secret-here'
+  });
+}
+
+// 認証情報の取得
+function getApiKey() {
+  return PropertiesService.getScriptProperties()
+    .getProperty('CRM_API_KEY');
+}
+
+// 認証情報の削除
+function clearApiCredentials() {
+  const scriptProperties = PropertiesService.getScriptProperties();
+  scriptProperties.deleteAllProperties();
+}</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Script Properties</h3>
+                        <p>プロジェクト全体で共有。デプロイ時も保持される。APIキーの保存に最適。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>User Properties</h3>
+                        <p>ユーザーごとに分離。ユーザー固有の設定や認証トークンに使用。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Document Properties</h3>
+                        <p>ドキュメントごとに保存。スプレッドシート連携時などに使用。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">CRM連携ステップの完全実装</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                学んだ内容を組み合わせて、CRM連携カスタムステップを実装しましょう。
+            </p>
+
+            <div class="code-block">/**
+ * 構成カードを返す
+ */
+function onConfigCRMUpdate(event) {
+  // 顧客選択ドロップダウン（カスタムリソースを使用）
+  const customerSelect = CardService.newSelectionInput()
+    .setFieldName("customer")
+    .setTitle("顧客を選択")
+    .setType(CardService.SelectionInputType.DROPDOWN)
+    .setExternalDataSource(
+      CardService.newWorkflowDataSource()
+        .setResourceType("customer")
+    );
+
+  // ステータス選択
+  const statusSelect = CardService.newSelectionInput()
+    .setFieldName("status")
+    .setTitle("ステータス")
+    .setType(CardService.SelectionInputType.DROPDOWN)
+    .addItem("商談中", "negotiating", false)
+    .addItem("提案中", "proposed", false)
+    .addItem("成約", "closed_won", false)
+    .addItem("失注", "closed_lost", false);
+
+  // メモ入力
+  const noteInput = CardService.newTextInput()
+    .setFieldName("note")
+    .setTitle("メモ")
+    .setMultiline(true);
+
+  const section = CardService.newCardSection()
+    .setHeader("CRM更新")
+    .addWidget(customerSelect)
+    .addWidget(statusSelect)
+    .addWidget(noteInput);
+
+  return CardService.newCardBuilder()
+    .addSection(section)
+    .build();
+}
+
+/**
+ * ステップ実行
+ */
+function onExecuteCRMUpdate(event) {
+  const inputs = event.workflow.actionInvocation.inputs;
+
+  // 入力値を取得
+  const customerId = inputs["customer"].resourceValues[0]
+    .fieldValues["customerId"].stringValue;
+  const status = inputs["status"].stringValues[0];
+  const note = inputs["note"]?.stringValues[0] || "";
+
+  // CRM APIを呼び出して更新
+  const result = updateCustomerStatus(customerId, status, note);
+
+  // 出力変数を返す
+  const variableDataMap = {
+    "updateResult": AddOnsResponseService
+      .newVariableData()
+      .addBoolValue(result.success),
+    "updatedAt": AddOnsResponseService
+      .newVariableData()
+      .addTimestampValue(Date.now())
+  };
+
+  return outputVariables(variableDataMap);
+}</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>カスタムリソース（workflowResourceDefinitions）の定義方法</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>providerFunction で外部データをリソースとして提供</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>UrlFetchApp による外部REST API呼び出し</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>PropertiesService による認証情報の安全な管理</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>エラーハンドリングとリトライロジックの実装</span>
+                </div>
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 1.5rem;">
+                次のレッスンでは、デプロイと運用について学び、本番環境への公開方法を習得します。
+            </p>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson3.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson5.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

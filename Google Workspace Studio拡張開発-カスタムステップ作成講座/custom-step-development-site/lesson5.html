@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 5: デプロイと運用 | Google Workspace Studio 拡張開発講座</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース概要に戻る
+            </a>
+            <span class="nav-lesson">Lesson 5 / 5</span>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">5</div>
+            <h1 class="lesson-title">デプロイと運用</h1>
+            <p class="lesson-subtitle">本番公開への道 - バージョン管理・ログ・公開</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>
+                    本番環境へのデプロイと継続的な運用方法を理解します。
+                    バージョン管理、アクティビティログ、動的変数の活用、公開プロセスを学びます。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">デプロイのフロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>開発・テスト</h3>
+                        <p>ローカル環境でステップを開発し、コードの動作確認を行います。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>テストデプロイ</h3>
+                        <p>Apps Script エディタから「デプロイをテスト」で検証環境にデプロイします。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>検証・修正</h3>
+                        <p>Workspace Studio で実際にステップを使用し、問題があれば修正します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>本番デプロイ</h3>
+                        <p>「新しいデプロイ」からアドオンとして本番デプロイを作成します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>公開・運用</h3>
+                        <p>必要に応じて Marketplace に公開し、継続的な運用を行います。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">バージョン管理</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                ステップの新しいバージョンを公開しても、既存のエージェントは自動更新されません。
+                後方互換性を維持するために、バージョン管理を適切に行う必要があります。
+            </p>
+
+            <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem;">バージョン管理が必要な変更</h3>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    <span>新しい必須フィールドの追加</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    <span>入力フィールドまたは出力フィールドの非推奨化</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    <span>データ型の変更（string → int など）</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    <span>ステップの基本的な動作の変更</span>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1rem; font-weight: 600; margin: 2rem 0 1rem;">マニフェストでのバージョン設定</h3>
+            <div class="code-block"><span class="comment">// appsscript.json</span>
+{
+  "flows": {
+    "workflowElements": [
+      {
+        "id": "myStep",
+        "state": "ACTIVE",
+        "name": "My Custom Step",
+        <span class="keyword">"version"</span>: {
+          <span class="string">"current_version"</span>: 3,  <span class="comment">// 現在のバージョン</span>
+          <span class="string">"min_version"</span>: 1       <span class="comment">// サポートする最小バージョン</span>
+        },
+        "workflowAction": { ... }
+      }
+    ]
+  }
+}</div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>プロパティ</th>
+                            <th>説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>current_version</code></td>
+                            <td>現在アクティブなデプロイのバージョン番号</td>
+                        </tr>
+                        <tr>
+                            <td><code>min_version</code></td>
+                            <td>ステップでサポートされている最も古いバージョン</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 style="font-size: 1rem; font-weight: 600; margin: 2rem 0 1rem;">バージョンごとの動作分岐</h3>
+            <div class="code-block"><span class="comment">/**
+ * バージョンに応じた処理の分岐
+ */</span>
+<span class="keyword">function</span> <span class="function">onExecute</span>(event) {
+  <span class="comment">// 実行メタデータからバージョンIDを取得</span>
+  <span class="keyword">const</span> versionId = event.workflow.executionMetadata.versionId;
+
+  <span class="keyword">if</span> (versionId < 2) {
+    <span class="comment">// バージョン1の動作（レガシー）</span>
+    <span class="keyword">return</span> <span class="function">handleLegacyVersion</span>(event);
+  } <span class="keyword">else if</span> (versionId < 3) {
+    <span class="comment">// バージョン2の動作</span>
+    <span class="keyword">return</span> <span class="function">handleVersionTwo</span>(event);
+  } <span class="keyword">else</span> {
+    <span class="comment">// 最新バージョンの動作</span>
+    <span class="keyword">return</span> <span class="function">handleCurrentVersion</span>(event);
+  }
+}</div>
+
+            <div class="warning-card">
+                <h4>min_version を上げる際の注意</h4>
+                <p>
+                    min_version を上げると、それより古いバージョンを使用しているエージェントは動作しなくなります。
+                    十分な移行期間を設け、ユーザーに事前通知してから更新してください。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">アクティビティログ</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                アクティビティログは、エージェントの実行時に何が起こったかを説明します。
+                デフォルトではステップの名前が表示されますが、カスタマイズして詳細な情報を提供できます。
+            </p>
+
+            <div class="code-block"><span class="comment">/**
+ * カスタムアクティビティログを含む実行
+ */</span>
+<span class="keyword">function</span> <span class="function">onExecuteWithLog</span>(event) {
+  <span class="keyword">const</span> inputs = event.workflow.actionInvocation.inputs;
+  <span class="keyword">const</span> email = inputs[<span class="string">"email"</span>].stringValues[0];
+
+  <span class="comment">// 処理を実行</span>
+  <span class="keyword">const</span> result = <span class="function">processEmail</span>(email);
+
+  <span class="comment">// カスタムログメッセージを作成</span>
+  <span class="keyword">const</span> logMessage = result.success
+    ? <span class="string">`メール送信完了: ${email}`</span>
+    : <span class="string">`メール送信失敗: ${result.error}`</span>;
+
+  <span class="comment">// デバッグ用にコンソールにも出力</span>
+  console.<span class="function">log</span>(logMessage);
+
+  <span class="comment">// 出力変数を返却</span>
+  <span class="keyword">const</span> variableDataMap = {
+    <span class="string">"status"</span>: AddOnsResponseService.<span class="function">newVariableData</span>()
+      .<span class="function">addStringValue</span>(result.success ? <span class="string">"success"</span> : <span class="string">"failed"</span>)
+  };
+
+  <span class="keyword">return</span> <span class="function">outputVariables</span>(variableDataMap);
+}</div>
+
+            <div class="note-card">
+                <h4>ログの確認方法</h4>
+                <p>
+                    ログは、エージェントビルダーの「アクティビティ」タブで確認できます。
+                    console.log() の出力は Apps Script のログ（実行ログ）で確認できます。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">動的変数</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                動的変数は、ユーザーがエージェントを構成するときにのみ定義できる変数です。
+                例えば、Google フォームの質問と回答は、特定のフォームが選択されるまで特定できません。
+            </p>
+
+            <div class="code-block"><span class="comment">// appsscript.json（動的変数）</span>
+{
+  "flows": {
+    "workflowElements": [...],
+    "workflowResourceDefinitions": [
+      {
+        "id": "dynamicResource",
+        "name": "Dynamic Resource",
+        "providerFunction": "onDynamicProvider",
+        <span class="keyword">"resourceType"</span>: <span class="string">"DYNAMIC"</span>  <span class="comment">// 動的リソースを示す</span>
+      }
+    ],
+    <span class="comment">// 動的定義を提供する関数</span>
+    <span class="keyword">"dynamicResourceDefinitionProvider"</span>: <span class="string">"onDynamicDefinition"</span>
+  }
+}</div>
+
+            <div class="note-card">
+                <h4>詳細情報</h4>
+                <p>
+                    動的変数は高度な機能です。詳細は
+                    <a href="https://developers.google.com/workspace/add-ons/studio/dynamic-variables?hl=ja" target="_blank" style="color: var(--accent-primary);">公式ドキュメント</a>
+                    を参照してください。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">テストデプロイから本番デプロイへ</h2>
+
+            <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem;">テストデプロイ</h3>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>プロジェクトを開く</h3>
+                        <p>Apps Script エディタでプロジェクトを開きます。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>デプロイをテスト</h3>
+                        <p>[デプロイ] > [デプロイをテスト] をクリックします。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>インストール</h3>
+                        <p>[インストール] をクリックし、テスト環境にデプロイします。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>検証</h3>
+                        <p>Workspace Studio でステップをテストします。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="note-card">
+                <h4>テストデプロイの制限</h4>
+                <p>
+                    テストデプロイは、プロジェクトに編集権限を持つユーザーのみが使用できます。
+                    他のユーザーにテストしてもらう場合は、プロジェクトを共有（編集権限）してください。
+                </p>
+            </div>
+
+            <h3 style="font-size: 1rem; font-weight: 600; margin: 2rem 0 1rem;">本番デプロイ</h3>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>新しいデプロイ</h3>
+                        <p>Apps Script エディタで [デプロイ] > [新しいデプロイ] をクリックします。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>種類を選択</h3>
+                        <p>デプロイの種類として「アドオン」を選択します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>説明を入力</h3>
+                        <p>説明を入力します（バージョンメモとして役立ちます）。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>デプロイ実行</h3>
+                        <p>[デプロイ] をクリックして完了です。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-card">
+                <h4>公開前のチェックリスト</h4>
+                <p>
+                    公開前に、セキュリティ、プライバシー、パフォーマンスの観点から十分なテストを行ってください。
+                    特に認証情報の取り扱いには注意が必要です。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">運用のベストプラクティス</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">01</div>
+                    <h3>エラーハンドリング</h3>
+                    <p>すべての外部API呼び出しでtry-catchを使用し、適切なエラーメッセージを返しましょう。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">02</div>
+                    <h3>ログ出力</h3>
+                    <p>デバッグに役立つログを出力。ただし機密情報（APIキー等）は出力しないでください。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">03</div>
+                    <h3>タイムアウト対策</h3>
+                    <p>Apps Scriptには実行時間制限があります。長時間処理は分割を検討してください。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">04</div>
+                    <h3>レート制限</h3>
+                    <p>外部APIのレート制限を考慮し、必要に応じてリトライやバックオフを実装しましょう。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">05</div>
+                    <h3>バージョン管理</h3>
+                    <p>破壊的変更を行う前に、十分な移行期間を設けてください。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">06</div>
+                    <h3>ドキュメント</h3>
+                    <p>ステップの使い方、入出力の説明、制限事項をドキュメント化しておきましょう。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">デプロイ前チェックリスト</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span>すべての入力変数に適切な検証が実装されている</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span>エラーハンドリングが適切に行われている</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span>機密情報がコードにハードコーディングされていない</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span>PropertiesService で認証情報が管理されている</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span>テストデプロイで十分なテストが完了している</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span>バージョン番号が適切に設定されている</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span>ログ出力に機密情報が含まれていない</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    <span>外部APIのレート制限を考慮している</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">コース完了</h2>
+            <div class="success-card">
+                <h4>おめでとうございます！</h4>
+                <p>
+                    Google Workspace Studio カスタムステップ作成講座の全5レッスンを完了しました。
+                    基礎から実践的なCRM連携、本番デプロイまでの知識を習得しました。
+                    学んだ知識を活かして、実際のカスタムステップを開発してみましょう。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">参考リソース</h2>
+            <div class="agent-list">
+                <div class="agent-item">
+                    <span class="agent-badge">公式ドキュメント</span>
+                    <h3>Google Workspace Studio を拡張する</h3>
+                    <p><a href="https://developers.google.com/workspace/add-ons/studio?hl=ja" target="_blank" style="color: var(--accent-primary);">developers.google.com/workspace/add-ons/studio</a></p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">チュートリアル</span>
+                    <h3>ステップを作成する</h3>
+                    <p><a href="https://developers.google.com/workspace/add-ons/studio/build-a-step?hl=ja" target="_blank" style="color: var(--accent-primary);">developers.google.com/workspace/add-ons/studio/build-a-step</a></p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">リファレンス</span>
+                    <h3>入力変数を使用してデータを収集する</h3>
+                    <p><a href="https://developers.google.com/workspace/add-ons/studio/input-variables?hl=ja" target="_blank" style="color: var(--accent-primary);">developers.google.com/workspace/add-ons/studio/input-variables</a></p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">リファレンス</span>
+                    <h3>カスタムリソースを使用して複雑なデータを表す</h3>
+                    <p><a href="https://developers.google.com/workspace/add-ons/studio/custom-resources?hl=ja" target="_blank" style="color: var(--accent-primary);">developers.google.com/workspace/add-ons/studio/custom-resources</a></p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">クイックスタート</span>
+                    <h3>計算機ステップを作成する</h3>
+                    <p><a href="https://developers.google.com/workspace/add-ons/studio/quickstart-calculator?hl=ja" target="_blank" style="color: var(--accent-primary);">developers.google.com/workspace/add-ons/studio/quickstart-calculator</a></p>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson4.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="index.html" class="nav-next">
+                コース概要に戻る
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

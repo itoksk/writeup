@@ -707,6 +707,28 @@
                 毎朝9時に自動実行。Geminiがメールを要約・優先度判定し、
                 Chatに通知。緊急案件はアラートで即座に把握できます。
             </p>
+
+            <!-- Before/After: このレッスンで何が変わるか -->
+            <div class="comparison-grid" style="margin-top: 2.5rem;">
+                <div class="comparison-card before">
+                    <div class="comparison-header" style="color: var(--coral); margin-bottom: 1rem;">BEFORE：このレッスン前</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--text-secondary);">
+                        <li style="padding: 0.5rem 0;">毎朝メールを1通ずつ開いて確認</li>
+                        <li style="padding: 0.5rem 0;">重要顧客のメールを見落とす</li>
+                        <li style="padding: 0.5rem 0;">緊急案件に気づくのが遅れる</li>
+                        <li style="padding: 0.5rem 0;">メール確認に1時間以上かかる</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header" style="color: var(--green); margin-bottom: 1rem;">AFTER：このレッスン後</div>
+                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--text-secondary);">
+                        <li style="padding: 0.5rem 0;">毎朝9時に自動でメール要約が届く</li>
+                        <li style="padding: 0.5rem 0;">重要顧客が優先表示される</li>
+                        <li style="padding: 0.5rem 0;">緊急案件はアラートで即通知</li>
+                        <li style="padding: 0.5rem 0;">メール確認が10分で完了（80%削減）</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -725,8 +747,8 @@
                 <h3>作成するエージェント</h3>
                 <ul class="goal-list">
                     <li><strong>名前</strong>：見込み顧客メール要約エージェント</li>
-                    <li><strong>トリガー</strong>：毎朝9時（スケジュール実行）</li>
-                    <li><strong>機能</strong>：重要顧客からの未読メールを取得 → Geminiで要約・優先度判定 → Chatに通知</li>
+                    <li><strong>スターター</strong>：スケジュールスターター（毎朝9時）</li>
+                    <li><strong>ステップ</strong>：Gmailステップでメール取得 → Geminiステップで要約・優先度判定 → Chat DMステップで通知</li>
                     <li><strong>効果</strong>：メール確認時間 1時間 → 10分に短縮</li>
                 </ul>
             </div>
@@ -750,22 +772,22 @@
             </div>
 
             <div class="flow-diagram">
-                <div class="flow-item">スケジュール<br>毎朝9時</div>
+                <div class="flow-item">スケジュール<br>スターター</div>
                 <div class="flow-arrow">→</div>
-                <div class="flow-item">Gmail<br>メール取得</div>
+                <div class="flow-item">Gmail<br>ステップ</div>
                 <div class="flow-arrow">→</div>
-                <div class="flow-item highlight">Gemini<br>要約・分類</div>
+                <div class="flow-item highlight">Gemini<br>ステップ</div>
                 <div class="flow-arrow">→</div>
-                <div class="flow-item">Chat<br>通知</div>
+                <div class="flow-item">Chat DM<br>ステップ</div>
             </div>
 
             <div class="note">
                 <div class="note-title">このフローのポイント</div>
                 <ul>
-                    <li><strong>毎朝9時に自動実行</strong>：出社前にメール要約が届く</li>
-                    <li><strong>重要顧客からのメールのみ</strong>：ノイズを排除して効率化</li>
-                    <li><strong>Geminiが優先度判定</strong>：緊急案件を見落とさない</li>
-                    <li><strong>Chatで通知</strong>：メールを開かずに内容を把握</li>
+                    <li><strong>スケジュールスターターで毎朝9時に自動実行</strong>：出社前にメール要約が届く</li>
+                    <li><strong>Gmailステップで重要顧客からのメールのみ取得</strong>：ノイズを排除して効率化</li>
+                    <li><strong>Geminiステップで優先度判定</strong>：緊急案件を見落とさない</li>
+                    <li><strong>Chat DMステップで通知</strong>：メールを開かずに内容を把握</li>
                 </ul>
             </div>
         </div>
@@ -795,12 +817,12 @@
                 <div class="step-item">
                     <div class="step-number">02</div>
                     <div class="step-content">
-                        <h3>スターター設定（Scheduled）</h3>
+                        <h3>スケジュールスターター設定</h3>
                         <p>毎朝9時に自動実行するスケジュールを設定します。「Starter」セクションで「Scheduled」を選択します。</p>
                         <div class="note">
                             <div class="note-title">設定値</div>
                             <ul>
-                                <li><strong>スターター種類:</strong> Scheduled（スケジュール実行）</li>
+                                <li><strong>スターター種類:</strong> Scheduled（スケジュールスターター）</li>
                                 <li><strong>頻度:</strong> Daily（毎日）</li>
                                 <li><strong>時刻:</strong> 9:00 AM</li>
                                 <li><strong>タイムゾーン:</strong> Asia/Tokyo</li>
@@ -816,7 +838,7 @@
                 <div class="step-item">
                     <div class="step-number">03</div>
                     <div class="step-content">
-                        <h3>Gmail検索ステップ</h3>
+                        <h3>Gmailステップ（メール検索）</h3>
                         <p>重要顧客からの未読メールを検索条件で取得します。「Add step」から「Gmail - Search emails」を選択します。</p>
                         <div class="code-block"><span class="comment"># 検索クエリ例</span>
 newer_than:1d is:unread from:(@a-corp.co.jp OR @b-inc.com OR @c-group.jp)</div>
@@ -835,8 +857,8 @@ newer_than:1d is:unread from:(@a-corp.co.jp OR @b-inc.com OR @c-group.jp)</div>
                 <div class="step-item">
                     <div class="step-number">04</div>
                     <div class="step-content">
-                        <h3>Gemini要約ステップ</h3>
-                        <p>取得したメールをGeminiで分析・要約します。「Add step」から「Gemini」を選択し、プロンプトを設定します。</p>
+                        <h3>Geminiステップ（要約・分類）</h3>
+                        <p>取得したメールをGeminiステップで分析・要約します。「Add step」から「Gemini」を選択し、プロンプトを設定します。</p>
                         <p>プロンプトの詳細は次のセクションで説明します。</p>
                     </div>
                 </div>
@@ -844,14 +866,11 @@ newer_than:1d is:unread from:(@a-corp.co.jp OR @b-inc.com OR @c-group.jp)</div>
                 <div class="step-item">
                     <div class="step-number">05</div>
                     <div class="step-content">
-                        <h3>Chat通知ステップ</h3>
-                        <p>要約結果をGoogle Chatに送信します。「Add step」から「Google Chat - Send message」を選択します。</p>
-                        <div class="note">
-                            <div class="note-title">通知先について</div>
-                            <ul>
-                                <li><strong>個人DM</strong>：自分自身へのDM通知</li>
-                            </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">※ Chatスペースへの投稿機能は正式リリースで削除されました</p>
+                        <h3>Chat DMステップ（通知）</h3>
+                        <p>要約結果をGoogle Chatのダイレクトメッセージで送信します。「Add step」から「Google Chat - Send direct message」を選択します。</p>
+                        <div class="warning">
+                            <div class="warning-title">Chat通知についての重要な変更</div>
+                            <p>正式リリースでは<strong>Chatスペースへの投稿機能は削除</strong>されました。Chat通知は<strong>個人へのDM（ダイレクトメッセージ）のみ</strong>利用可能です。チーム共有が必要な場合は、Gmailでのメール送信を検討してください。</p>
                         </div>
                         <div class="code-block">📬 本日の見込み顧客メール要約
 
@@ -1029,7 +1048,7 @@ If there are no emails, respond with:
             <h3>第3回：追客漏れゼロの受信トレイ！</h3>
             <p>要対応案件メールの自動ラベル化＆次アクション設計</p>
             <p style="margin-top: 1rem;">
-                今回はスケジュール実行（バッチ処理）でしたが、次回はメール受信時にリアルタイムで起動するエージェントを作成します。
+                今回はスケジュールスターター（バッチ処理）でしたが、次回はGmailスターターでメール受信時にリアルタイムで起動するエージェントを作成します。
                 重要な案件メールを即座に検知し、「要対応」ラベルを自動付与。追客漏れをゼロにします。
             </p>
         </div>

@@ -530,24 +530,24 @@
                     <th>設定値</th>
                 </tr>
                 <tr>
-                    <td>Name</td>
-                    <td>Daily Report Request</td>
+                    <td>エージェント名</td>
+                    <td>日報週報提出依頼</td>
                 </tr>
                 <tr>
-                    <td>Description</td>
-                    <td>Sends daily/weekly report request based on day of week</td>
+                    <td>説明</td>
+                    <td>曜日に応じて日報/週報の提出依頼を自動送信</td>
                 </tr>
                 <tr>
-                    <td>Trigger</td>
-                    <td>Schedule (Daily, 17:00 JST)</td>
+                    <td>スターター</td>
+                    <td>Scheduled（スケジュール）- 毎日17:00</td>
                 </tr>
                 <tr>
-                    <td>Condition</td>
-                    <td>Day of week check via Gemini</td>
+                    <td>ステップ</td>
+                    <td>Gemini → 条件分岐 → Gmail / Chat DM</td>
                 </tr>
                 <tr>
-                    <td>Output</td>
-                    <td>Gmail + Chat (conditional)</td>
+                    <td>出力先</td>
+                    <td>Gmail + Chat DM（個人へのダイレクトメッセージ）</td>
                 </tr>
             </table>
         </section>
@@ -585,35 +585,42 @@
                     <div class="step-number">1</div>
                     <div class="step-content">
                         <h3>新規エージェント作成</h3>
-                        <p>Google Workspace Studioにアクセス → 「Create Agent」をクリック → エージェント名「Daily Report Request」を入力して基本設定を完了</p>
+                        <p>studio.workspace.google.com にアクセス → 「新規作成」をクリック → エージェント名「日報週報提出依頼」を入力</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>スケジュールトリガー設定</h3>
-                        <p>Trigger Type: Schedule → Frequency: Daily → Time: 17:00 → Timezone: Asia/Tokyo を設定して定時実行を有効化</p>
+                        <h3>スケジュールスターター設定</h3>
+                        <p>スターターで「Scheduled（スケジュール）」を選択 → 頻度: 毎日 → 時刻: 17:00 を設定して定時実行を有効化</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Geminiで曜日判定</h3>
-                        <p>下記の曜日判定プロンプトを設定し、現在の曜日に応じて適切なメッセージを自動生成する仕組みを構築</p>
+                        <h3>Geminiステップで曜日判定</h3>
+                        <p>ステップを追加 → 「Gemini」を選択 → 下記の曜日判定プロンプトを設定し、曜日に応じた出力を生成</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3>条件分岐アクション設定</h3>
-                        <p>Geminiの出力が「NO_SEND」以外の場合のみメール・Chat送信を実行。土日は自動でスキップされる</p>
+                        <h3>条件分岐ステップ設定</h3>
+                        <p>ステップを追加 → 「条件分岐」を選択 → Geminiの出力が「NO_SEND」以外の場合のみ次のステップを実行</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">5</div>
                     <div class="step-content">
+                        <h3>Gmail / Chat DMステップ設定</h3>
+                        <p>Gmail送信とChat DM送信のステップを追加。※Chat通知は個人へのDMのみ対応（スペースへの投稿機能は削除済み）</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
                         <h3>テスト実行と有効化</h3>
-                        <p>「Run Test」で動作確認を行い、曜日判定とメッセージ生成が正しく機能することを確認後、「Activate」で本番稼働を開始</p>
+                        <p>「テスト」で動作確認を行い、曜日判定とメッセージ生成が正しく機能することを確認後、「有効化」で本番稼働を開始</p>
                     </div>
                 </div>
             </div>
@@ -700,7 +707,7 @@ Output the message only, no explanations.</div>
         </section>
 
         <section>
-            <h2>Chat通知テンプレート</h2>
+            <h2>Chat DM通知テンプレート</h2>
             <div class="code-block">📋 【提出依頼】{report_type}
 
 提出期限: 本日 23:59
@@ -708,15 +715,18 @@ Output the message only, no explanations.</div>
 {report_instructions}
 
 よろしくお願いします！</div>
+            <p style="margin-top: 1rem; padding: 1rem; background: #FEF3C7; border-left: 4px solid #F59E0B; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #92400E;">
+                <strong>注意:</strong> Chat通知は個人へのDM（ダイレクトメッセージ）のみ送信可能です。スペースへの投稿機能は正式リリースで削除されました。チーム全体への通知が必要な場合はGmailを使用してください。
+            </p>
         </section>
 
         <section>
-            <h2>条件分岐アクション設定</h2>
-            <div class="code-block">IF Gemini output != "NO_SEND":
-    → Send Gmail to {team_distribution_list}
-    → Send Chat message to {team_space}
+            <h2>条件分岐ステップ設定</h2>
+            <div class="code-block">IF Gemini出力 != "NO_SEND":
+    → Gmail送信ステップ実行（チーム全体）
+    → Chat DM送信ステップ実行（個人へ）
 ELSE:
-    → Do nothing (土日・祝日は自動スキップ)</div>
+    → 何もしない (土日・祝日は自動スキップ)</div>
         </section>
 
         <section>
@@ -784,9 +794,9 @@ ELSE:
             <div class="summary-box">
                 <h3>まとめ</h3>
                 <ul>
-                    <li>Google Workspace Studioで「スケジュールトリガー」を設定して定時実行を実現</li>
-                    <li>Geminiで曜日を判定し、条件分岐ロジックを実装</li>
-                    <li>Gmail/Chatアクションで提出依頼を自動送信</li>
+                    <li>Google Workspace Studioで「スケジュールスターター」を設定して定時実行を実現</li>
+                    <li>Geminiステップで曜日を判定し、条件分岐ロジックを実装</li>
+                    <li>Gmail送信ステップとChat DM送信ステップで提出依頼を自動送信</li>
                     <li>金曜日のみ週報依頼を追加する条件分岐を実装</li>
                     <li>土日・祝日はNO_SENDで自動スキップし、休日の誤送信を防止</li>
                     <li>属人管理から脱却し、ゼロタッチマネジメントの基礎を構築</li>

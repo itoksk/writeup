@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 2: 入出力変数を極める | Google Workspace Studio 拡張開発講座</title>
+    <meta name="description" content="入力変数で柔軟にデータを収集し、出力変数で後続ステップにデータを渡す">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 2 / 5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">02</div>
+            <h1 class="lesson-title">入出力変数を極める</h1>
+            <p class="lesson-subtitle">データの受け渡しをマスター - 入力収集と出力返却の実装</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>入力変数で柔軟にデータを収集し、出力変数で後続ステップにデータを渡す方法を習得します。さまざまなデータ型やウィジェットの使い方を学びます。</p>
+            </div>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>マニフェストでの入力変数定義（inputs[]配列）を理解する</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>各種データ型（STRING, INTEGER, TIMESTAMP, BOOLEAN, EMAIL_ADDRESS）の使い方を習得する</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>構成カードで使用できるウィジェット（TextInput, SelectionInput, DateTimePicker）を実装する</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>hostAppDataSource で前のステップの出力を参照する方法を学ぶ</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">入力変数とは</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                入力変数は、ステップが実行に必要なデータを受け取るための仕組みです。
+                ユーザーが構成カードで設定した値が、<code>onExecuteFunction</code> に渡されます。
+            </p>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>マニフェストファイル</h3>
+                        <p>inputs[]配列で変数のID、データ型、説明を定義</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>構成カード</h3>
+                        <p>ユーザーが値を入力するためのUIウィジェットを作成</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="note-card">
+                <h4>重要な一致ルール</h4>
+                <p>構成カードで定義するウィジェットの <code>fieldName</code> は、マニフェストファイルの <code>inputs[].id</code> と完全に一致する必要があります。一致しないと、入力値が正しく渡されません。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">データ型（dataType.basicType）</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">入力変数と出力変数で使用できるデータ型は以下の5種類です。</p>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>データ型</th>
+                            <th>説明</th>
+                            <th>用途</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>STRING</code></td>
+                            <td>英数字の文字列</td>
+                            <td>テキスト入力、ドロップダウン</td>
+                        </tr>
+                        <tr>
+                            <td><code>INTEGER</code></td>
+                            <td>数値</td>
+                            <td>計算、件数カウント</td>
+                        </tr>
+                        <tr>
+                            <td><code>TIMESTAMP</code></td>
+                            <td>Unix エポックからのミリ秒</td>
+                            <td>日時の取り扱い</td>
+                        </tr>
+                        <tr>
+                            <td><code>BOOLEAN</code></td>
+                            <td>true または false</td>
+                            <td>フラグ、オン/オフ設定</td>
+                        </tr>
+                        <tr>
+                            <td><code>EMAIL_ADDRESS</code></td>
+                            <td>メールアドレス形式</td>
+                            <td>送信先指定</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">マニフェストでの入力変数定義</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                <code>inputs[]</code>配列で、各入力変数のプロパティを定義します。
+            </p>
+
+            <div class="code-block">"inputs": [
+  {
+    "id": "emailAddress",
+    "description": "送信先メールアドレス",
+    "cardinality": "SINGLE",
+    "dataType": {
+      "basicType": "EMAIL_ADDRESS"
+    }
+  },
+  {
+    "id": "sendDate",
+    "description": "送信日時",
+    "cardinality": "SINGLE",
+    "dataType": {
+      "basicType": "TIMESTAMP"
+    }
+  },
+  {
+    "id": "priority",
+    "description": "優先度",
+    "cardinality": "SINGLE",
+    "dataType": {
+      "basicType": "STRING"
+    }
+  }
+]</div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>プロパティ</th>
+                            <th>説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id</code></td>
+                            <td>変数の一意識別子。構成カードのfieldNameと一致させる</td>
+                        </tr>
+                        <tr>
+                            <td><code>description</code></td>
+                            <td>ユーザーに表示される説明文</td>
+                        </tr>
+                        <tr>
+                            <td><code>cardinality</code></td>
+                            <td>許可される値の数。現在は "SINGLE" のみ（単一値）</td>
+                        </tr>
+                        <tr>
+                            <td><code>dataType.basicType</code></td>
+                            <td>データ型（STRING, INTEGER, TIMESTAMP, BOOLEAN, EMAIL_ADDRESS）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">構成カードのウィジェット</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                CardService を使って、さまざまな入力ウィジェットを作成できます。
+            </p>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">WIDGET 01</div>
+                    <h3>TextInput（テキスト入力）</h3>
+                    <p>自由入力のテキストフィールド。文字列や数値の入力に使用します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">WIDGET 02</div>
+                    <h3>SelectionInput（選択入力）</h3>
+                    <p>ドロップダウン、ラジオボタン、チェックボックスなど。選択肢から選ぶ場合に使用。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">WIDGET 03</div>
+                    <h3>DateTimePicker（日時選択）</h3>
+                    <p>日付と時刻を選択するピッカー。TIMESTAMP型の入力に使用します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">WIDGET 04</div>
+                    <h3>Switch（スイッチ）</h3>
+                    <p>オン/オフの切り替え。BOOLEAN型の入力に最適です。</p>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">TextInput の実装例</h3>
+            <div class="code-block">const emailInput = CardService.newTextInput()
+  .setFieldName("emailAddress")  // マニフェストのidと一致させる
+  .setTitle("送信先メールアドレス")
+  .setHint("例: user@example.com")
+  .setHostAppDataSource(
+    CardService.newHostAppDataSource()
+      .setWorkflowDataSource(
+        CardService.newWorkflowDataSource()
+          .setIncludeVariables(true)
+      )
+  );</div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">SelectionInput の実装例</h3>
+            <div class="code-block">// ドロップダウン
+const priorityDropdown = CardService.newSelectionInput()
+  .setFieldName("priority")
+  .setTitle("優先度")
+  .setType(CardService.SelectionInputType.DROPDOWN)
+  .addItem("高", "high", false)
+  .addItem("中", "medium", true)  // デフォルト選択
+  .addItem("低", "low", false);
+
+// ラジオボタン
+const priorityRadio = CardService.newSelectionInput()
+  .setFieldName("priority")
+  .setTitle("優先度")
+  .setType(CardService.SelectionInputType.RADIO_BUTTON)
+  .addItem("高", "high", false)
+  .addItem("中", "medium", true)
+  .addItem("低", "low", false);</div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">DateTimePicker の実装例</h3>
+            <div class="code-block">const datePicker = CardService.newDateTimePicker()
+  .setFieldName("sendDate")
+  .setTitle("送信日時")
+  .setTimeZoneOffsetInMins(540)  // JST（UTC+9）
+  .setValueInMsSinceEpoch(Date.now());  // デフォルト値</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">hostAppDataSource - 前のステップの出力を参照</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                <code>setHostAppDataSource</code> を使用すると、テキスト入力フィールドで前のステップの出力変数を参照できます。
+            </p>
+
+            <div class="code-block">const input = CardService.newTextInput()
+  .setFieldName("recipient")
+  .setTitle("受信者")
+  .setHostAppDataSource(
+    CardService.newHostAppDataSource()
+      .setWorkflowDataSource(
+        CardService.newWorkflowDataSource()
+          .setIncludeVariables(true)  // 変数参照を有効化
+      )
+  );</div>
+
+            <div class="success-card">
+                <h4>使用場面</h4>
+                <p>例えば、前のステップで Gemini がメールを解析して送信者アドレスを出力した場合、次のステップでそのアドレスを入力として使用できます。ユーザーは手入力ではなく、変数をクリックして選択するだけです。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">出力変数の定義と返却</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                出力変数を使って、ステップの処理結果を後続のステップに渡すことができます。
+            </p>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">マニフェストでの出力変数定義</h3>
+            <div class="code-block">"outputs": [
+  {
+    "id": "senderEmail",
+    "description": "送信者メールアドレス",
+    "cardinality": "SINGLE",
+    "dataType": { "basicType": "EMAIL_ADDRESS" }
+  },
+  {
+    "id": "subject",
+    "description": "件名",
+    "cardinality": "SINGLE",
+    "dataType": { "basicType": "STRING" }
+  },
+  {
+    "id": "isImportant",
+    "description": "重要フラグ",
+    "cardinality": "SINGLE",
+    "dataType": { "basicType": "BOOLEAN" }
+  }
+]</div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">onExecuteFunction での出力返却</h3>
+            <div class="code-block">function onExecuteEmailAnalyzer(event) {
+  // 入力から処理...
+
+  // 出力変数を構築
+  const variableDataMap = {
+    // 文字列型
+    "senderEmail": AddOnsResponseService
+      .newVariableData()
+      .addStringValue("user@example.com"),
+
+    // ブーリアン型
+    "isImportant": AddOnsResponseService
+      .newVariableData()
+      .addBoolValue(true),
+
+    // タイムスタンプ型（ミリ秒）
+    "receivedAt": AddOnsResponseService
+      .newVariableData()
+      .addTimestampValue(Date.now())
+  };
+
+  return outputVariables(variableDataMap);
+}
+
+// ヘルパー関数
+function outputVariables(variableDataMap) {
+  const workflowAction = AddOnsResponseService
+    .newReturnOutputVariablesAction()
+    .setVariableDataMap(variableDataMap);
+
+  const hostAppAction = AddOnsResponseService
+    .newHostAppAction()
+    .setWorkflowAction(workflowAction);
+
+  return AddOnsResponseService
+    .newRenderActionBuilder()
+    .setHostAppAction(hostAppAction)
+    .build();
+}</div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin: 2rem 0 1rem;">AddOnsResponseService のメソッド一覧</h3>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>メソッド</th>
+                            <th>対応するデータ型</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>addStringValue(value)</code></td>
+                            <td>STRING, EMAIL_ADDRESS</td>
+                        </tr>
+                        <tr>
+                            <td><code>addIntegerValue(value)</code></td>
+                            <td>INTEGER</td>
+                        </tr>
+                        <tr>
+                            <td><code>addBoolValue(value)</code></td>
+                            <td>BOOLEAN</td>
+                        </tr>
+                        <tr>
+                            <td><code>addTimestampValue(value)</code></td>
+                            <td>TIMESTAMP（ミリ秒）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>入力変数の5つのデータ型（STRING, INTEGER, TIMESTAMP, BOOLEAN, EMAIL_ADDRESS）</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>マニフェストでの inputs[] 配列と outputs[] 配列の定義方法</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>構成カードのウィジェット（TextInput, SelectionInput, DateTimePicker）の実装</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>hostAppDataSource で前のステップの出力を参照する方法</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"/>
+                    </svg>
+                    <span>AddOnsResponseService を使った出力変数の返却方法</span>
+                </div>
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 1.5rem;">
+                次のレッスンでは、入力検証（バリデーション）の実装方法を学び、ユーザーの入力ミスを未然に防ぐ方法を習得します。
+            </p>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson1.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson3.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

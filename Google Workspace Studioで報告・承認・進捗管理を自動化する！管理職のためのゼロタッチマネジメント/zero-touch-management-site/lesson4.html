@@ -573,96 +573,96 @@
                     <th>設定値</th>
                 </tr>
                 <tr>
-                    <td>Name</td>
-                    <td>Submission Check Agent</td>
+                    <td>エージェント名</td>
+                    <td>未提出チェック</td>
                 </tr>
                 <tr>
-                    <td>Description</td>
-                    <td>Detects missing submissions and sends alerts to manager</td>
+                    <td>説明</td>
+                    <td>未提出者を検知し、管理職に通知</td>
                 </tr>
                 <tr>
-                    <td>Trigger</td>
-                    <td>Schedule (Daily, 20:00 JST)</td>
+                    <td>スターター</td>
+                    <td>Scheduled（毎日20:00）</td>
                 </tr>
                 <tr>
-                    <td>Data Source</td>
-                    <td>Sheets (提出ログシート, メンバーマスタシート)</td>
+                    <td>データソース</td>
+                    <td>Sheets（提出ログシート、メンバーマスタシート）</td>
                 </tr>
                 <tr>
-                    <td>Process</td>
-                    <td>Gemini comparison of member list vs today's submissions</td>
+                    <td>処理ステップ</td>
+                    <td>Geminiでメンバーリストと本日の提出を比較</td>
                 </tr>
                 <tr>
-                    <td>Output</td>
-                    <td>Chat notification to manager space (if missing exists)</td>
+                    <td>出力</td>
+                    <td>Chat DM通知（未提出者がいる場合）※スペースへの投稿は削除済み</td>
                 </tr>
             </table>
         </section>
 
         <section>
-            <h2>Dashboard Update Agent 設計</h2>
+            <h2>ダッシュボード更新エージェント設計</h2>
             <table class="status-table">
                 <tr>
                     <th>項目</th>
                     <th>設定値</th>
                 </tr>
                 <tr>
-                    <td>Name</td>
-                    <td>Dashboard Update Agent</td>
+                    <td>エージェント名</td>
+                    <td>ダッシュボード更新</td>
                 </tr>
                 <tr>
-                    <td>Description</td>
-                    <td>Updates dashboard with daily submission stats</td>
+                    <td>説明</td>
+                    <td>日次の提出統計でダッシュボードを更新</td>
                 </tr>
                 <tr>
-                    <td>Trigger</td>
-                    <td>Schedule (Daily, 21:00 JST)</td>
+                    <td>スターター</td>
+                    <td>Scheduled（毎日21:00）</td>
                 </tr>
                 <tr>
-                    <td>Data Source</td>
-                    <td>Sheets (提出ログシート)</td>
+                    <td>データソース</td>
+                    <td>Sheets（提出ログシート）</td>
                 </tr>
                 <tr>
-                    <td>Process</td>
-                    <td>Aggregate today's data, calculate stats</td>
+                    <td>処理ステップ</td>
+                    <td>本日のデータを集計、統計を算出</td>
                 </tr>
                 <tr>
-                    <td>Output</td>
-                    <td>Sheets update (ダッシュボードシート)</td>
+                    <td>出力</td>
+                    <td>Sheets更新（ダッシュボードシート）</td>
                 </tr>
             </table>
         </section>
 
         <section>
-            <h2>Weekly Summary Agent 設計</h2>
+            <h2>週次サマリーエージェント設計</h2>
             <table class="status-table">
                 <tr>
                     <th>項目</th>
                     <th>設定値</th>
                 </tr>
                 <tr>
-                    <td>Name</td>
-                    <td>Weekly Summary Agent</td>
+                    <td>エージェント名</td>
+                    <td>週次サマリー</td>
                 </tr>
                 <tr>
-                    <td>Description</td>
-                    <td>Generates weekly submission summary with rankings</td>
+                    <td>説明</td>
+                    <td>週次の提出サマリーとランキングを生成</td>
                 </tr>
                 <tr>
-                    <td>Trigger</td>
-                    <td>Schedule (Friday, 18:00 JST)</td>
+                    <td>スターター</td>
+                    <td>Scheduled（金曜18:00）</td>
                 </tr>
                 <tr>
-                    <td>Data Source</td>
-                    <td>Sheets (今週の提出ログ)</td>
+                    <td>データソース</td>
+                    <td>Sheets（今週の提出ログ）</td>
                 </tr>
                 <tr>
-                    <td>Process</td>
-                    <td>Gemini analysis of weekly data with trend detection</td>
+                    <td>処理ステップ</td>
+                    <td>Geminiで週次データを分析、傾向を検出</td>
                 </tr>
                 <tr>
-                    <td>Output</td>
-                    <td>Chat message to manager space</td>
+                    <td>出力</td>
+                    <td>Gmail送信（週次レポート）+ Chat DM通知</td>
                 </tr>
             </table>
         </section>

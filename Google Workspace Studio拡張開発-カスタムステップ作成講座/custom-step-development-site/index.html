@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Workspace Studio 拡張開発 - カスタムステップ作成講座</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #eef2ff;
+            --bg-tertiary: #e0e7ff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-tertiary: #06b6d4;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --coral: #ef4444;
+            --green: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-badge {
+            padding: 0.4rem 1rem;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--accent-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .hero-title-accent {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Section common */
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .section-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Problem Section */
+        .problem {
+            padding: 6rem 2rem;
+            background: var(--bg-primary);
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .problem-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .problem-card:hover {
+            border-color: var(--accent-secondary);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .problem-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .problem-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .problem-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Before/After Section */
+        .comparison {
+            padding: 6rem 2rem;
+            background: var(--bg-secondary);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .comparison-box {
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .comparison-box.before {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .comparison-box.after {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+
+        .comparison-header {
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+        }
+
+        .comparison-box.before .comparison-header {
+            color: var(--coral);
+        }
+
+        .comparison-box.after .comparison-header {
+            color: var(--green);
+        }
+
+        .comparison-box ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .comparison-box li {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            padding-left: 1.75rem;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .comparison-box.before li::before {
+            content: "×";
+            position: absolute;
+            left: 0;
+            color: var(--coral);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .comparison-box.after li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        /* Stats */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .stat-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Solution Section */
+        .solution {
+            padding: 6rem 2rem;
+            background: var(--bg-primary);
+        }
+
+        .solution-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .solution-text h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .solution-text p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .solution-features {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .solution-feature {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .feature-check {
+            width: 24px;
+            height: 24px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .solution-visual {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .flow-step:hover {
+            transform: translateX(8px);
+        }
+
+        .flow-number {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .flow-text {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Curriculum Section */
+        .curriculum {
+            padding: 6rem 2rem;
+            background: var(--bg-secondary);
+        }
+
+        .curriculum-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .curriculum-item {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .curriculum-item:hover {
+            border-color: var(--accent-secondary);
+            box-shadow: var(--shadow-lg);
+            transform: translateX(8px);
+        }
+
+        .curriculum-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .curriculum-content {
+            flex: 1;
+        }
+
+        .curriculum-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .curriculum-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .curriculum-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .curriculum-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        .curriculum-arrow {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .curriculum-item:hover .curriculum-arrow {
+            color: var(--accent-primary);
+            transform: translateX(4px);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: var(--bg-primary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--accent-secondary);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent-gradient);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 6rem 2rem;
+            background: var(--text-primary);
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2.5rem;
+            background: var(--accent-gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 3rem 2rem;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .solution-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .hero {
+                padding: 6rem 1.5rem 3rem;
+            }
+
+            .hero-stats {
+                gap: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .curriculum-item {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .curriculum-number {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta h2 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-logo">Custom Step Development</div>
+            <div class="nav-badge">5 Lessons</div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                Google Apps Script
+            </div>
+            <h1 class="hero-title">
+                <span class="hero-title-accent">カスタムステップ</span>で<br>
+                Studioの限界を超える
+            </h1>
+            <p class="hero-description">
+                標準ステップでは実現できない独自の自動化を、Google Apps Scriptで開発。
+                外部API連携からカスタムリソースまで、Studioの可能性を最大限に引き出す
+            </p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">レッスン</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">GAS</div>
+                    <div class="stat-label">Google Apps Script</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">API</div>
+                    <div class="stat-label">外部連携</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="problem">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">The Problem</div>
+                <h2 class="section-title">標準ステップだけでは...</h2>
+                <p class="section-description">Studioの標準機能には限界があります</p>
+            </div>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <div class="problem-icon">?</div>
+                    <h3>使いたいサービスがない</h3>
+                    <p>社内システムや特定のSaaSなど、標準で対応していないサービスと連携したい</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">X</div>
+                    <h3>複雑な処理ができない</h3>
+                    <p>標準ステップでは、条件分岐やデータ変換などの複雑なロジックを実装できない</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">!</div>
+                    <h3>カスタマイズの限界</h3>
+                    <p>標準ステップのパラメータでは、自社の要件に合わせた細かい調整ができない</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="comparison">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Before / After</div>
+                <h2 class="section-title">カスタムステップで何が変わるか</h2>
+            </div>
+            <div class="comparison-grid">
+                <div class="comparison-box before">
+                    <div class="comparison-header">Before：標準ステップのみ</div>
+                    <ul>
+                        <li>Google Workspace内のサービスのみ連携可能</li>
+                        <li>固定のパラメータ、固定の出力形式</li>
+                        <li>複雑な条件分岐はGeminiに依存</li>
+                        <li>外部APIとの連携は不可能</li>
+                        <li>カスタムリソース（ドロップダウン等）が使えない</li>
+                    </ul>
+                </div>
+                <div class="comparison-box after">
+                    <div class="comparison-header">After：カスタムステップ導入後</div>
+                    <ul>
+                        <li>あらゆる外部サービスとAPI連携が可能</li>
+                        <li>自由なパラメータ設計と出力形式</li>
+                        <li>GASで複雑なビジネスロジックを実装</li>
+                        <li>CRM、ERP、独自システムと統合</li>
+                        <li>動的なドロップダウンやリソース選択UI</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-desc">連携可能なサービス</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-desc">カスタマイズ自由度</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-desc">追加ライセンス費用</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="solution">
+        <div class="section-container">
+            <div class="solution-content">
+                <div class="solution-text">
+                    <h2>Google Apps Scriptで<br>独自のステップを作成</h2>
+                    <p>
+                        Apps Scriptのアドオン機能を使えば、Studioに独自のステップを追加できます。
+                        CardServiceでUI、UrlFetchAppで外部API、PropertiesServiceで認証情報管理。
+                        Google公式の開発フレームワークで安全に拡張。
+                    </p>
+                    <div class="solution-features">
+                        <div class="solution-feature">
+                            <div class="feature-check">✓</div>
+                            <span>マニフェストでステップを定義</span>
+                        </div>
+                        <div class="solution-feature">
+                            <div class="feature-check">✓</div>
+                            <span>入出力変数の自由な設計</span>
+                        </div>
+                        <div class="solution-feature">
+                            <div class="feature-check">✓</div>
+                            <span>CardServiceでリッチな設定UI</span>
+                        </div>
+                        <div class="solution-feature">
+                            <div class="feature-check">✓</div>
+                            <span>カスタムリソースで動的選択肢</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="solution-visual">
+                    <div class="flow-diagram">
+                        <div class="flow-step">
+                            <div class="flow-number">1</div>
+                            <div class="flow-text">マニフェストでステップ定義</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">2</div>
+                            <div class="flow-text">onConfigFunctionで設定UI</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">3</div>
+                            <div class="flow-text">onExecuteFunctionで処理実行</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-number">4</div>
+                            <div class="flow-text">デプロイしてStudioで利用</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="curriculum">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Curriculum</div>
+                <h2 class="section-title">全5回のカリキュラム</h2>
+                <p class="section-description">基礎から実践、デプロイまで体系的に学ぶ</p>
+            </div>
+            <div class="curriculum-list">
+                <a href="lesson1.html" class="curriculum-item">
+                    <div class="curriculum-number">01</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">カスタムステップ入門</h3>
+                        <p class="curriculum-description">マニフェスト構造、onConfigFunction、onExecuteFunctionの基本</p>
+                        <div class="curriculum-tags">
+                            <span class="curriculum-tag">マニフェスト</span>
+                            <span class="curriculum-tag">基本構造</span>
+                            <span class="curriculum-tag">関数定義</span>
+                        </div>
+                    </div>
+                    <div class="curriculum-arrow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+                <a href="lesson2.html" class="curriculum-item">
+                    <div class="curriculum-number">02</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">入出力変数とUI設計</h3>
+                        <p class="curriculum-description">データ型、CardServiceウィジェット、hostAppDataSource</p>
+                        <div class="curriculum-tags">
+                            <span class="curriculum-tag">変数</span>
+                            <span class="curriculum-tag">CardService</span>
+                            <span class="curriculum-tag">UI設計</span>
+                        </div>
+                    </div>
+                    <div class="curriculum-arrow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+                <a href="lesson3.html" class="curriculum-item">
+                    <div class="curriculum-number">03</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">バリデーションと保存処理</h3>
+                        <p class="curriculum-description">Validationクラス、CEL式、onSaveFunction</p>
+                        <div class="curriculum-tags">
+                            <span class="curriculum-tag">バリデーション</span>
+                            <span class="curriculum-tag">CEL</span>
+                            <span class="curriculum-tag">保存処理</span>
+                        </div>
+                    </div>
+                    <div class="curriculum-arrow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+                <a href="lesson4.html" class="curriculum-item">
+                    <div class="curriculum-number">04</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">カスタムリソースと外部API</h3>
+                        <p class="curriculum-description">providerFunction、UrlFetchApp、PropertiesService</p>
+                        <div class="curriculum-tags">
+                            <span class="curriculum-tag">カスタムリソース</span>
+                            <span class="curriculum-tag">外部API</span>
+                            <span class="curriculum-tag">認証管理</span>
+                        </div>
+                    </div>
+                    <div class="curriculum-arrow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+                <a href="lesson5.html" class="curriculum-item">
+                    <div class="curriculum-number">05</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">デプロイと運用</h3>
+                        <p class="curriculum-description">バージョン管理、動的変数、本番公開</p>
+                        <div class="curriculum-tags">
+                            <span class="curriculum-tag">デプロイ</span>
+                            <span class="curriculum-tag">バージョン</span>
+                            <span class="curriculum-tag">運用</span>
+                        </div>
+                    </div>
+                    <div class="curriculum-arrow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Features</div>
+                <h2 class="section-title">このコースの特徴</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">GAS</div>
+                    <h3>実践的なコード</h3>
+                    <p>コピペで使えるサンプルコード付き。すぐに自分のプロジェクトに適用可能</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">API</div>
+                    <h3>外部連携</h3>
+                    <p>CRM連携の実例で、外部APIとの統合パターンを習得</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">5</div>
+                    <h3>体系的カリキュラム</h3>
+                    <p>入門から本番デプロイまで、5回で完全習得</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <h2>Studioの可能性を最大限に引き出そう</h2>
+        <p>カスタムステップで、あなただけの自動化ソリューションを構築</p>
+        <a href="lesson1.html" class="cta-button">
+            コースを始める
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </section>
+
+    <footer class="footer">
+        <p>Google Workspace Studio 拡張開発 - カスタムステップ作成講座</p>
+    </footer>
+</body>
+</html>

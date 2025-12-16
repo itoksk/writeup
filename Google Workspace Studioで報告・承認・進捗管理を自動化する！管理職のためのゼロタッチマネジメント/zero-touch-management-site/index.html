@@ -83,6 +83,14 @@
         .problem-card.before .problem-card-list li::before { background: #ef4444; }
         .problem-card.after .problem-card-list li::before { background: #22c55e; }
 
+        .advantage { background: var(--bg-primary); }
+        .advantage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .advantage-card { padding: 2rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); transition: var(--transition-base); }
+        .advantage-card:hover { border-color: var(--accent-primary); box-shadow: var(--shadow-md); }
+        .advantage-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: var(--radius-md); margin-bottom: 1.25rem; font-size: 1.5rem; }
+        .advantage-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .advantage-description { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+
         .curriculum-list { display: flex; flex-direction: column; gap: 1rem; }
         .curriculum-item { display: flex; align-items: flex-start; gap: 1.5rem; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); text-decoration: none; color: inherit; transition: var(--transition-base); }
         .curriculum-item:hover { border-color: var(--accent-primary); box-shadow: var(--shadow-md); transform: translateX(8px); }
@@ -102,6 +110,12 @@
         .feature-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
         .feature-description { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
 
+        .note-box { background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(6, 182, 212, 0.05)); border: 1px solid rgba(14, 165, 233, 0.2); border-radius: var(--radius-lg); padding: 2rem; margin-top: 3rem; }
+        .note-box-title { font-size: 1rem; font-weight: 600; color: var(--accent-primary); margin-bottom: 1rem; }
+        .note-box-content { font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.7; }
+        .note-box-content a { color: var(--accent-primary); text-decoration: none; }
+        .note-box-content a:hover { text-decoration: underline; }
+
         .cta { background: var(--bg-primary); text-align: center; }
         .cta-content { max-width: 600px; margin: 0 auto; }
         .cta-title { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; margin-bottom: 1rem; }
@@ -113,12 +127,12 @@
         .footer-links a { font-size: 0.875rem; color: var(--text-secondary); text-decoration: none; transition: var(--transition-fast); }
         .footer-links a:hover { color: var(--accent-primary); }
 
-        @media (max-width: 1024px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 1024px) { .features-grid, .advantage-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 768px) {
             .nav-links { display: none; }
             .hero { padding: 6rem 1.5rem 4rem; }
             .hero-stats { flex-direction: column; gap: 1.5rem; }
-            .problem-grid, .features-grid { grid-template-columns: 1fr; }
+            .problem-grid, .features-grid, .advantage-grid { grid-template-columns: 1fr; }
             .curriculum-item { flex-direction: column; gap: 1rem; }
             .section { padding: 4rem 1.5rem; }
             .footer-container { flex-direction: column; gap: 1rem; text-align: center; }
@@ -132,8 +146,9 @@
             <div class="nav-logo">Zero Touch Management</div>
             <ul class="nav-links">
                 <li><a href="#problem">課題</a></li>
+                <li><a href="#advantage">Studioの強み</a></li>
                 <li><a href="#curriculum">カリキュラム</a></li>
-                <li><a href="#features">特徴</a></li>
+                <li><a href="#features">習得スキル</a></li>
             </ul>
         </div>
     </nav>
@@ -207,6 +222,50 @@
         </div>
     </section>
 
+    <section class="section advantage" id="advantage">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Why Workspace Studio</div>
+                <h2 class="section-title">他のツールにはない強み</h2>
+                <p class="section-description">
+                    すべてがGoogle Workspaceの中で完結する安心感
+                </p>
+            </div>
+            <div class="advantage-grid">
+                <div class="advantage-card">
+                    <div class="advantage-icon">🔐</div>
+                    <h3 class="advantage-title">APIキー管理が不要</h3>
+                    <p class="advantage-description">OpenAI APIキーやGoogle Cloud APIキーの取得・管理が不要。設定ミスによるセキュリティリスクがありません。</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">🛡️</div>
+                    <h3 class="advantage-title">認証情報の漏洩リスクなし</h3>
+                    <p class="advantage-description">APIキーをコードに埋め込んだり、環境変数で管理する必要がありません。</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">🏢</div>
+                    <h3 class="advantage-title">データがGoogle内に留まる</h3>
+                    <p class="advantage-description">サードパーティサービスにデータを送信する必要がなく、コンプライアンス上も安心です。</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">💰</div>
+                    <h3 class="advantage-title">課金管理が簡単</h3>
+                    <p class="advantage-description">API使用量の計算や従量課金の心配がありません。対応エディションなら追加コストなし。</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">👥</div>
+                    <h3 class="advantage-title">管理者による一元管理</h3>
+                    <p class="advantage-description">Google管理コンソールから一元的に制御可能。シャドーITのリスクを軽減できます。</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">✨</div>
+                    <h3 class="advantage-title">ノーコードで構築</h3>
+                    <p class="advantage-description">プログラミング不要。管理職自身がAIエージェントを作成・カスタマイズできます。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="section" id="curriculum">
         <div class="section-container">
             <div class="section-header">
@@ -222,7 +281,7 @@
                     <div class="curriculum-content">
                         <h3 class="curriculum-title">属人管理から卒業するための基礎設計</h3>
                         <p class="curriculum-description">
-                            条件分岐で日報・週報提出依頼を自動化する。曜日に応じた提出依頼の自動送信を実装します。
+                            条件分岐で日報・週報提出依頼を自動化する。スケジュールスターターで曜日・時間に応じた提出依頼の自動送信を実装します。
                         </p>
                     </div>
                     <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -234,7 +293,7 @@
                     <div class="curriculum-content">
                         <h3 class="curriculum-title">確認時間を5分の1にする！</h3>
                         <p class="curriculum-description">
-                            日報と週報を自動要約する確認時短フロー。Geminiが重要ポイントを抽出し、課題・相談を自動ハイライトします。
+                            日報と週報を自動要約する確認時短フロー。Geminiステップで重要ポイントを抽出し、課題・相談を自動ハイライトします。
                         </p>
                     </div>
                     <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -278,13 +337,22 @@
                     </svg>
                 </a>
             </div>
+
+            <div class="note-box">
+                <div class="note-box-title">カスタムステップについて</div>
+                <div class="note-box-content">
+                    Apps Scriptを使って独自のカスタムステップを作成することも可能です。ただし、ノーコードの良さを活かすため、標準ステップで対応できる場合はカスタムステップは不要です。まずは標準ステップで業務を自動化し、どうしても対応できない場合にのみ検討しましょう。
+                    <br><br>
+                    <a href="https://developers.google.com/workspace/add-ons/studio/quickstart-calculator?hl=ja" target="_blank">カスタムステップの作成方法（公式ドキュメント）</a>
+                </div>
+            </div>
         </div>
     </section>
 
     <section class="section features" id="features">
         <div class="section-container">
             <div class="section-header">
-                <div class="section-label">Features</div>
+                <div class="section-label">Skills</div>
                 <h2 class="section-title">このコースで身につくスキル</h2>
             </div>
             <div class="features-grid">
@@ -314,9 +382,9 @@
                     <p class="feature-description">承認依頼の自動化、監視、エスカレーションを実装します。</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">F</div>
-                    <h3 class="feature-title">フロー設計</h3>
-                    <p class="feature-description">複数エージェントを連携させた、実務で使えるワークフローを設計します。</p>
+                    <div class="feature-icon">T</div>
+                    <h3 class="feature-title">チーム展開</h3>
+                    <p class="feature-description">作ったエージェントをチームで共有し、組織全体で活用する方法を学びます。</p>
                 </div>
             </div>
         </div>

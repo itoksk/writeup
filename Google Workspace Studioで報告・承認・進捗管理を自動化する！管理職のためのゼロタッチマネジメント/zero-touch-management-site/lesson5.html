@@ -571,32 +571,32 @@
                     <th>設定値</th>
                 </tr>
                 <tr>
-                    <td>Name</td>
+                    <td>エージェント名</td>
                     <td>Approval Request Agent</td>
                 </tr>
                 <tr>
-                    <td>Description</td>
-                    <td>Processes approval requests and routes to appropriate approver</td>
+                    <td>説明</td>
+                    <td>申請を処理し、適切な承認者にルーティング</td>
                 </tr>
                 <tr>
-                    <td>Trigger</td>
-                    <td>Gmail (Subject contains 申請/稟議) or Forms submission</td>
+                    <td>スターター</td>
+                    <td>Gmail - Email received（件名に「申請」「稟議」を含む）またはForms - Form submitted</td>
                 </tr>
                 <tr>
-                    <td>Process</td>
-                    <td>Gemini classification + approver determination based on rules</td>
+                    <td>処理ステップ</td>
+                    <td>Geminiステップ（申請分類）→ 条件分岐ステップ（承認者決定）</td>
                 </tr>
                 <tr>
-                    <td>Output (Approver)</td>
-                    <td>Gmail with approval request details</td>
+                    <td>出力（承認者へ）</td>
+                    <td>Gmailステップ: 承認依頼メール送信</td>
                 </tr>
                 <tr>
-                    <td>Output (Sheets)</td>
-                    <td>Log to 承認管理シート</td>
+                    <td>出力（Sheets）</td>
+                    <td>Sheetsステップ: 承認管理シートに記録</td>
                 </tr>
                 <tr>
-                    <td>Output (Requester)</td>
-                    <td>Gmail confirmation of submission</td>
+                    <td>出力（申請者へ）</td>
+                    <td>Gmailステップ: 申請受付確認メール送信</td>
                 </tr>
             </table>
         </section>
@@ -609,34 +609,37 @@
                     <th>設定値</th>
                 </tr>
                 <tr>
-                    <td>Name</td>
+                    <td>エージェント名</td>
                     <td>Approval Monitor Agent</td>
                 </tr>
                 <tr>
-                    <td>Description</td>
-                    <td>Monitors pending approvals and sends reminders/escalations</td>
+                    <td>説明</td>
+                    <td>承認待ち案件を監視し、リマインド・エスカレーションを自動実行</td>
                 </tr>
                 <tr>
-                    <td>Trigger</td>
-                    <td>Schedule (Daily, 10:00 and 15:00 JST)</td>
+                    <td>スターター</td>
+                    <td>スケジュールスターター（毎日 10:00 および 15:00 JST）</td>
                 </tr>
                 <tr>
-                    <td>Data Source</td>
-                    <td>Sheets (承認待ちリスト)</td>
+                    <td>データソース</td>
+                    <td>Sheetsステップ: 承認待ちリスト読み込み</td>
                 </tr>
                 <tr>
-                    <td>Process</td>
-                    <td>Check pending duration and urgency level</td>
+                    <td>処理ステップ</td>
+                    <td>Geminiステップ（経過時間・緊急度判定）→ 条件分岐ステップ</td>
                 </tr>
                 <tr>
-                    <td>Output (Approver)</td>
-                    <td>Gmail/Chat reminder</td>
+                    <td>出力（承認者へ）</td>
+                    <td>Gmailステップ: リマインドメール送信</td>
                 </tr>
                 <tr>
-                    <td>Output (Manager)</td>
-                    <td>Gmail/Chat escalation (if over threshold)</td>
+                    <td>出力（上位者へ）</td>
+                    <td>Gmailステップ: エスカレーションメール（閾値超過時）</td>
                 </tr>
             </table>
+            <div class="config-note">
+                <strong>注意:</strong> Chat DMステップでの通知も可能ですが、現在のWorkspace Studioではスペースへの投稿機能は削除されています。個人へのDM送信のみ対応しています。
+            </div>
         </section>
 
         <section>
@@ -1023,14 +1026,14 @@ ELSE IF approval_status == "REJECTED":
                     <div class="step-number">3</div>
                     <div class="step-content">
                         <h3>Approval Request Agent 作成</h3>
-                        <p>Gmail/Forms受信 → Gemini分類 → 承認者決定 → 承認依頼送信 → Sheets記録</p>
+                        <p>Gmailスターター/Formsスターター → Geminiステップで分類 → 条件分岐で承認者決定 → Gmailステップで承認依頼送信 → Sheetsステップで記録</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">4</div>
                     <div class="step-content">
                         <h3>Approval Monitor Agent 作成</h3>
-                        <p>Schedule 10:00/15:00 → 承認待ちチェック → リマインド送信 → エスカレーション送信</p>
+                        <p>スケジュールスターター（10:00/15:00）→ Sheetsステップで承認待ちチェック → Geminiステップで判定 → Gmailステップでリマインド/エスカレーション送信</p>
                     </div>
                 </div>
                 <div class="step-item">
@@ -1079,56 +1082,56 @@ ELSE IF approval_status == "REJECTED":
                     <div class="agent-summary-num">1</div>
                     <div class="agent-summary-info">
                         <h4>Daily Report Request</h4>
-                        <p>Schedule 17:00 → 提出依頼送信</p>
+                        <p>スケジュールスターター 17:00 → 提出依頼送信</p>
                     </div>
                 </div>
                 <div class="agent-summary-card">
                     <div class="agent-summary-num">2</div>
                     <div class="agent-summary-info">
                         <h4>Report Summary</h4>
-                        <p>Gmail受信 → 日報要約・Chat通知</p>
+                        <p>Gmailスターター → Geminiステップで要約・Chat DM通知</p>
                     </div>
                 </div>
                 <div class="agent-summary-card">
                     <div class="agent-summary-num">3</div>
                     <div class="agent-summary-info">
                         <h4>Quality Check</h4>
-                        <p>Gmail受信 → 品質判定・フィードバック</p>
+                        <p>Gmailスターター → Geminiステップで品質判定・フィードバック</p>
                     </div>
                 </div>
                 <div class="agent-summary-card">
                     <div class="agent-summary-num">4</div>
                     <div class="agent-summary-info">
                         <h4>Submission Check</h4>
-                        <p>Schedule 20:00 → 未提出検知・アラート</p>
+                        <p>スケジュールスターター 20:00 → 未提出検知・アラート</p>
                     </div>
                 </div>
                 <div class="agent-summary-card">
                     <div class="agent-summary-num">5</div>
                     <div class="agent-summary-info">
                         <h4>Dashboard Update</h4>
-                        <p>Schedule 21:00 → ダッシュボード更新</p>
+                        <p>スケジュールスターター 21:00 → ダッシュボード更新</p>
                     </div>
                 </div>
                 <div class="agent-summary-card">
                     <div class="agent-summary-num">6</div>
                     <div class="agent-summary-info">
                         <h4>Weekly Summary</h4>
-                        <p>Schedule Fri 18:00 → 週次サマリー</p>
+                        <p>スケジュールスターター 金曜18:00 → 週次サマリー</p>
                     </div>
                 </div>
                 <div class="agent-summary-card">
                     <div class="agent-summary-num">7</div>
                     <div class="agent-summary-info">
                         <h4>Approval Request</h4>
-                        <p>Gmail/Forms → 承認依頼・ルーティング</p>
+                        <p>Gmail/Formsスターター → 承認依頼・ルーティング</p>
                     </div>
                 </div>
                 <div class="agent-summary-card">
                     <div class="agent-summary-num">8</div>
                     <div class="agent-summary-info">
                         <h4>Approval Monitor</h4>
-                        <p>Schedule 10:00/15:00 → 承認監視</p>
+                        <p>スケジュールスターター 10:00/15:00 → 承認監視</p>
                     </div>
                 </div>
             </div>
@@ -1233,9 +1236,9 @@ ELSE IF approval_status == "REJECTED":
             <div class="summary-box">
                 <h3>まとめ</h3>
                 <ul>
-                    <li>申請内容をGeminiが自動分類し、金額・種類に応じて承認者を自動決定</li>
-                    <li>承認依頼を適切な承認者に自動送信（単段階/多段階対応）</li>
-                    <li>承認待ちを10:00/15:00に監視し、リマインド・エスカレーションを自動実行</li>
+                    <li>Gmail/Formsスターターで申請を受け付け、Geminiステップで自動分類・承認者決定</li>
+                    <li>条件分岐ステップで承認依頼を適切な承認者に自動送信（単段階/多段階対応）</li>
+                    <li>スケジュールスターター（10:00/15:00）で承認待ちを監視、リマインド・エスカレーションを自動実行</li>
                     <li>承認・差し戻し・却下の結果に応じた自動処理で申請者に即時通知</li>
                     <li>8つのエージェントで「ゼロタッチマネジメント」を完全実現</li>
                     <li>管理業務70%削減、連絡漏れゼロ、即時進捗把握を達成</li>

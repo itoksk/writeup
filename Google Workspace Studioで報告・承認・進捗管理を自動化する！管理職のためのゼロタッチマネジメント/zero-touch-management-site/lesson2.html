@@ -647,32 +647,32 @@
                     <th>設定値</th>
                 </tr>
                 <tr>
-                    <td>Name</td>
-                    <td>Report Summary Agent</td>
+                    <td>エージェント名</td>
+                    <td>日報週報要約</td>
                 </tr>
                 <tr>
-                    <td>Description</td>
-                    <td>Summarizes daily/weekly reports and highlights key points</td>
+                    <td>説明</td>
+                    <td>日報・週報を自動要約し、重要ポイントをハイライト</td>
                 </tr>
                 <tr>
-                    <td>Trigger</td>
-                    <td>Gmail (When email received)</td>
+                    <td>スターター</td>
+                    <td>Gmail - Email received（メール受信時）</td>
                 </tr>
                 <tr>
-                    <td>Filter Condition</td>
-                    <td>Subject contains "日報" OR "週報"</td>
+                    <td>フィルター条件</td>
+                    <td>件名に「日報」または「週報」を含む</td>
                 </tr>
                 <tr>
-                    <td>Process</td>
-                    <td>Gemini summarization with structured extraction</td>
+                    <td>処理ステップ</td>
+                    <td>Geminiによる構造化要約</td>
                 </tr>
                 <tr>
-                    <td>Primary Output</td>
-                    <td>Chat notification to manager space</td>
+                    <td>主な出力先</td>
+                    <td>Chat DM（管理職個人へ通知）</td>
                 </tr>
                 <tr>
-                    <td>Secondary Output</td>
-                    <td>Sheets logging for trend analysis</td>
+                    <td>オプション出力</td>
+                    <td>Sheetsへのログ記録（傾向分析用）</td>
                 </tr>
             </table>
         </section>
@@ -718,42 +718,42 @@
                     <div class="step-number">1</div>
                     <div class="step-content">
                         <h3>新規エージェント作成</h3>
-                        <p>Google Workspace Studio → Create Agent → Name: Report Summary Agent → Description: Summarizes daily/weekly reports and highlights key points</p>
+                        <p>studio.workspace.google.com → 「新規作成」 → エージェント名「日報週報要約」を入力</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>Gmailトリガー設定</h3>
-                        <p>Trigger Type: Gmail → Condition: When email received → Filter: Subject contains "日報" OR "週報" → From: @yourcompany.com</p>
+                        <h3>Gmailスターター設定</h3>
+                        <p>スターター: Gmail - Email received（メール受信時）→ フィルター: 件名に「日報」または「週報」→ 送信元: @yourcompany.com</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Gemini要約プロンプト設定</h3>
-                        <p>下記の日報要約プロンプトを設定し、構造化された要約を自動生成。週報は拡張プロンプトを使用</p>
+                        <h3>Geminiステップで要約生成</h3>
+                        <p>ステップを追加 → 「Gemini」を選択 → 下記の日報要約プロンプトを設定し、構造化された要約を自動生成</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3>Chat送信アクション設定</h3>
-                        <p>Action: チャットで通知する → 自分へのDM通知 → Format: 下記のChat通知テンプレートを使用 ※スペースへの投稿機能は削除されました</p>
+                        <h3>Chat DMステップ設定</h3>
+                        <p>ステップを追加 → Chat DM送信を選択 → 下記のChat通知テンプレートを使用（※スペースへの投稿機能は削除済み、個人DMのみ）</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">5</div>
                     <div class="step-content">
-                        <h3>Sheets記録設定（オプション）</h3>
-                        <p>Action: Add row to Sheets → Spreadsheet: 日報管理シート → 日付・送信者・評価・要約を自動記録</p>
+                        <h3>Sheetsステップ設定（オプション）</h3>
+                        <p>ステップを追加 → Sheets「行を追加」→ スプレッドシート: 日報管理シート → 日付・送信者・評価・要約を自動記録</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">6</div>
                     <div class="step-content">
                         <h3>テスト実行と有効化</h3>
-                        <p>Run Test → テスト日報メールで要約生成を確認 → Chat通知とSheets記録の動作確認 → Activate</p>
+                        <p>「テスト」でテスト日報メールを送り要約生成を確認 → Chat DM通知とSheets記録の動作確認 → 「有効化」で本番稼働</p>
                     </div>
                 </div>
             </div>
@@ -1150,12 +1150,13 @@ Output in Japanese.</div>
             <div class="summary-box">
                 <h3>まとめ</h3>
                 <ul>
-                    <li>Gmail受信トリガーで日報・週報メールを自動検知</li>
-                    <li>Geminiで構造化された要約を生成（業務サマリー・課題・依頼事項）</li>
+                    <li>Gmailスターター（Email received）で日報・週報メールを自動検知</li>
+                    <li>Geminiステップで構造化された要約を生成（業務サマリー・課題・依頼事項）</li>
                     <li>🚨📢マークで重要項目を視覚的に識別可能に</li>
                     <li>評価ラベル（順調/注意/要フォロー）で優先順位付け</li>
-                    <li>Sheetsへのログ記録で傾向分析とデータドリブンな管理を実現</li>
-                    <li>確認時間を60分→12分に短縮（80%削減）し、ゼロタッチマネジメントの第一歩を構築</li>
+                    <li>Chat DMステップで管理職へ即時通知（※スペースへの投稿は削除済み）</li>
+                    <li>Sheetsステップでログ記録し、傾向分析とデータドリブンな管理を実現</li>
+                    <li>確認時間を60分→12分に短縮（80%削減）</li>
                 </ul>
             </div>
         </section>
