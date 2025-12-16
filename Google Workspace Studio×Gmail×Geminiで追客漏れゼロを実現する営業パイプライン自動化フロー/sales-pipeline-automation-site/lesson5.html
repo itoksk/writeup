@@ -4,40 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>第5回：キーワード監視で確度高い案件を逃さない | 営業パイプライン自動化フロー</title>
+    <meta name="description" content="営業キーワードを自動監視して高確度案件を即座に検知し、4つのエージェントを統合して運用可能な営業フローを完成させます">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-primary: #2563eb;
+            --accent-secondary: #7c3aed;
+            --accent-tertiary: #0891b2;
+            --accent-gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #0891b2 100%);
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition-fast: 0.15s ease;
+            --transition-base: 0.3s ease;
+            --coral: #ef4444;
+            --green: #22c55e;
+            --warning: #f59e0b;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
-            --bg-tertiary: #f1f5f9;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --text-tertiary: #64748b;
-            --accent-primary: #2563eb;
-            --accent-secondary: #3b82f6;
-            --accent-gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #0891b2 100%);
-            --border-light: #e2e8f0;
-            --border-medium: #cbd5e1;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --coral: #ef4444;
-            --green: #22c55e;
-            --bg-card: #ffffff;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --radius-sm: 6px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -45,25 +51,29 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.7;
-            font-feature-settings: 'palt' 1;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Navigation */
-        nav {
+        ::selection {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .nav {
             position: fixed;
             top: 0;
-            width: 100%;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -73,11 +83,11 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            text-decoration: none;
             color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
             font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.2s;
+            transition: var(--transition-fast);
         }
 
         .nav-back:hover {
@@ -85,36 +95,31 @@
         }
 
         .nav-lesson {
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
             color: var(--accent-primary);
-            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.1));
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
         }
 
-        /* Hero Section */
         .hero {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
             padding: 8rem 2rem 4rem;
-            background: var(--bg-secondary);
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
             position: relative;
-            overflow: hidden;
         }
 
-        .hero::before {
-            content: '';
+        .hero-pattern {
             position: absolute;
-            top: 0;
-            right: 0;
-            width: 60%;
-            height: 100%;
-            background: var(--accent-gradient);
-            opacity: 0.03;
-            clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
+            inset: 0;
+            background-image: radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0);
+            background-size: 40px 40px;
+            opacity: 0.5;
         }
 
         .hero-content {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
@@ -126,13 +131,13 @@
             gap: 0.5rem;
             padding: 0.5rem 1rem;
             background: var(--bg-card);
-            border: 1px solid var(--border-light);
+            border: 1px solid var(--border-color);
             border-radius: 100px;
             font-size: 0.75rem;
             font-weight: 600;
             color: var(--accent-primary);
             margin-bottom: 1.5rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-sm);
         }
 
         .hero-title {
@@ -157,6 +162,42 @@
             line-height: 1.8;
         }
 
+        .section {
+            padding: 5rem 2rem;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .section-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.8;
+        }
+
         .comparison-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -167,9 +208,9 @@
         .comparison-card {
             padding: 2rem;
             background: var(--bg-card);
-            border: 1px solid var(--border-light);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            transition: all 0.3s ease;
+            transition: var(--transition-base);
         }
 
         .comparison-card:hover {
@@ -193,52 +234,205 @@
             margin-bottom: 1.25rem;
         }
 
-        /* Sections */
-        .section {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-        }
-
-        .section-label {
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-        }
-
-        .section-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-        }
-
-        .section-description {
-            font-size: 1.05rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            max-width: 700px;
-        }
-
-        /* Goal Card */
         .goal-card {
             background: var(--accent-gradient);
             color: white;
             padding: 2rem;
             border-radius: var(--radius-lg);
-            font-size: 1.15rem;
-            font-weight: 500;
-            line-height: 1.7;
-            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
         }
 
-        /* Keyword Grid */
+        .goal-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .goal-list {
+            list-style: none;
+        }
+
+        .goal-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.75rem;
+            position: relative;
+            font-size: 0.9375rem;
+        }
+
+        .goal-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+
+        .highlight-stat {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            background: var(--text-primary);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
+        }
+
+        .highlight-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .highlight-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
+        }
+
+        .flow-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .flow-item.highlight {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+        }
+
+        .flow-arrow {
+            color: var(--accent-primary);
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .note {
+            background: rgba(37, 99, 235, 0.05);
+            border-left: 4px solid var(--accent-primary);
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 1.5rem 0;
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--accent-primary);
+        }
+
+        .note p, .note ul {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .note ul {
+            margin-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .warning {
+            background: rgba(239, 68, 68, 0.05);
+            border-left: 4px solid var(--coral);
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 1.5rem 0;
+        }
+
+        .warning-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--coral);
+        }
+
+        .warning p, .warning ul {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .warning ul {
+            margin-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .step-card {
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+
+        .step-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--accent-gradient);
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+        }
+
+        .step-card h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: var(--text-primary);
+            color: #a5d6ff;
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+        }
+
         .keyword-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -247,11 +441,11 @@
         }
 
         .keyword-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             padding: 1.5rem;
-            transition: all 0.3s ease;
+            transition: var(--transition-base);
         }
 
         .keyword-card:hover {
@@ -260,7 +454,7 @@
         }
 
         .keyword-card.high {
-            border-left: 4px solid var(--error);
+            border-left: 4px solid var(--coral);
         }
 
         .keyword-card.medium {
@@ -268,7 +462,7 @@
         }
 
         .keyword-card.low {
-            border-left: 4px solid #7c3aed;
+            border-left: 4px solid var(--accent-secondary);
         }
 
         .keyword-card h3 {
@@ -280,9 +474,9 @@
             gap: 0.5rem;
         }
 
-        .keyword-card.high h3 { color: var(--error); }
+        .keyword-card.high h3 { color: var(--coral); }
         .keyword-card.medium h3 { color: var(--warning); }
-        .keyword-card.low h3 { color: #7c3aed; }
+        .keyword-card.low h3 { color: var(--accent-secondary); }
 
         .keyword-list {
             display: flex;
@@ -298,195 +492,129 @@
             color: var(--text-secondary);
         }
 
-        /* Flow Diagram */
-        .flow-diagram {
-            background: var(--text-primary);
-            color: white;
-            padding: 3rem 2rem;
+        .output-example {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            margin: 2rem 0;
-            text-align: center;
-        }
-
-        .flow-diagram h3 {
-            color: #60a5fa;
-            margin-bottom: 2rem;
-            font-size: 1.2rem;
-        }
-
-        .flow-steps {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .flow-step {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem 1.5rem;
-            border-radius: var(--radius-sm);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 0.9rem;
-        }
-
-        .flow-arrow {
-            color: var(--warning);
-            font-size: 1.5rem;
-        }
-
-        /* Step Cards */
-        .step-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .step-card:hover {
-            box-shadow: var(--shadow-md);
-        }
-
-        .step-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            background: var(--accent-gradient);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-        }
-
-        .step-title {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .step-card p {
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-
-        /* Code Block */
-        .code-block {
-            background: #1e293b;
-            color: #93c5fd;
             padding: 1.5rem;
-            border-radius: var(--radius-sm);
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-            font-size: 0.85rem;
-            overflow-x: auto;
-            margin: 1rem 0;
-            white-space: pre-wrap;
+            margin: 2rem 0;
+        }
+
+        .output-example h4 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--green);
+        }
+
+        .output-content {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            font-size: 0.875rem;
             line-height: 1.6;
-        }
-
-        /* Highlight Box */
-        .highlight-box {
-            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(124, 58, 237, 0.05));
-            border-left: 4px solid var(--accent-primary);
-            padding: 1.25rem 1.5rem;
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            margin: 1.5rem 0;
-        }
-
-        .highlight-box h4 {
-            color: var(--accent-primary);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .highlight-box p, .highlight-box ul {
+            white-space: pre-wrap;
             color: var(--text-secondary);
-            font-size: 0.95rem;
         }
 
-        /* Warning Box */
-        .warning-box {
-            background: rgba(245, 158, 11, 0.08);
-            border-left: 4px solid var(--warning);
-            padding: 1.25rem 1.5rem;
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            margin: 1.5rem 0;
-        }
-
-        .warning-box h4 {
-            color: #d97706;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .warning-box p, .warning-box ul {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        .warning-box ul {
-            margin-top: 0.5rem;
-            padding-left: 1.5rem;
-        }
-
-        .warning-box li {
-            margin-bottom: 0.25rem;
-        }
-
-        /* Tables */
-        .filter-table {
+        .comparison-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1.5rem 0;
-            border-radius: var(--radius-md);
+            margin: 2rem 0;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
         }
 
-        .filter-table th {
+        .comparison-table th {
             background: var(--text-primary);
             color: white;
             padding: 1rem;
             text-align: left;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
         }
 
-        .filter-table td {
+        .comparison-table td {
             padding: 1rem;
-            border-bottom: 1px solid var(--border-light);
-            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9375rem;
             color: var(--text-secondary);
         }
 
-        .filter-table tr:hover {
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover td {
             background: var(--bg-secondary);
         }
 
-        /* Integration Section */
+        .badge-before {
+            background: var(--coral);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+
+        .badge-after {
+            background: var(--green);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: var(--text-primary);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            margin-top: 0.5rem;
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+
         .integration-section {
             background: var(--text-primary);
             color: white;
             padding: 4rem 2rem;
-            margin: 3rem 0;
+        }
+
+        .integration-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .integration-section .section-label {
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .integration-section h2 {
-            color: #60a5fa;
-            text-align: center;
-            margin-bottom: 3rem;
-            font-size: 1.75rem;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .agent-flow {
@@ -534,144 +662,39 @@
             font-size: 0.9rem;
         }
 
-        /* Stats Grid */
-        .stats-grid {
+        .tips-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
             margin: 2rem 0;
         }
 
-        .stat-card {
-            background: var(--text-primary);
-            color: white;
-            padding: 2rem;
-            border-radius: var(--radius-md);
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .stat-label {
-            margin-top: 0.5rem;
-            opacity: 0.8;
-            font-size: 0.95rem;
-        }
-
-        /* Comparison Table */
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 2rem 0;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .comparison-table th {
-            background: var(--text-primary);
-            color: white;
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .comparison-table td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .comparison-table .before {
-            color: var(--error);
-        }
-
-        .comparison-table .after {
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        /* Troubleshooting Grid */
-        .troubleshooting-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .trouble-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
+        .tip-card {
             padding: 1.5rem;
-            transition: all 0.3s ease;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
         }
 
-        .trouble-card:hover {
+        .tip-card:hover {
+            border-color: var(--accent-primary);
             box-shadow: var(--shadow-md);
         }
 
-        .trouble-card h4 {
-            color: var(--error);
-            margin-bottom: 0.75rem;
+        .tip-card h4 {
             font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .trouble-card p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
+            font-weight: 700;
             margin-bottom: 0.5rem;
+            color: var(--accent-primary);
         }
 
-        .trouble-solution {
-            color: var(--success) !important;
-            font-weight: 500;
-        }
-
-        /* Checklist */
-        .checklist {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(37, 99, 235, 0.05));
-            border: 1px solid rgba(124, 58, 237, 0.2);
-            border-radius: var(--radius-md);
-            padding: 2rem;
-            margin: 2rem 0;
-        }
-
-        .checklist h3 {
-            color: #7c3aed;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-
-        .checklist ul {
-            list-style: none;
-        }
-
-        .checklist li {
-            margin-bottom: 0.75rem;
-            padding-left: 1.5rem;
-            position: relative;
+        .tip-card p {
+            font-size: 0.875rem;
             color: var(--text-secondary);
+            line-height: 1.6;
         }
 
-        .checklist li::before {
-            content: '✓';
-            color: #7c3aed;
-            font-weight: bold;
-            position: absolute;
-            left: 0;
-        }
-
-        /* Agent Summary Grid */
         .agent-summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -680,11 +703,11 @@
         }
 
         .agent-summary-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             padding: 1.5rem;
-            transition: all 0.3s ease;
+            transition: var(--transition-base);
         }
 
         .agent-summary-card:hover {
@@ -703,7 +726,7 @@
 
         .agent-summary-card p {
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            font-size: 0.875rem;
         }
 
         .agent-badge {
@@ -715,12 +738,10 @@
             border-radius: 4px;
         }
 
-        /* Final Summary */
         .final-summary {
             background: var(--accent-gradient);
             color: white;
             padding: 4rem 2rem;
-            margin-top: 3rem;
             text-align: center;
         }
 
@@ -737,7 +758,6 @@
             line-height: 1.8;
         }
 
-        /* Lesson Navigation */
         .lesson-nav {
             display: flex;
             justify-content: space-between;
@@ -747,25 +767,26 @@
             gap: 1rem;
         }
 
-        .nav-prev, .nav-next {
+        .nav-btn {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             padding: 1rem 1.5rem;
             text-decoration: none;
-            border-radius: var(--radius-sm);
             font-weight: 500;
-            transition: all 0.2s;
+            font-size: 0.9375rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
         }
 
         .nav-prev {
             color: var(--text-secondary);
-            border: 1px solid var(--border-medium);
+            border: 1px solid var(--border-color);
         }
 
         .nav-prev:hover {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
         }
 
         .nav-next {
@@ -774,11 +795,10 @@
         }
 
         .nav-next:hover {
-            opacity: 0.9;
-            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .hero {
                 padding: 6rem 1.5rem 3rem;
@@ -788,11 +808,12 @@
                 padding: 3rem 1.5rem;
             }
 
-            .keyword-grid {
-                grid-template-columns: 1fr;
+            .highlight-stat {
+                flex-direction: column;
+                text-align: center;
             }
 
-            .flow-steps {
+            .flow-diagram {
                 flex-direction: column;
             }
 
@@ -812,15 +833,15 @@
             .lesson-nav {
                 flex-direction: column;
             }
+        }
 
-            .nav-prev, .nav-next {
-                justify-content: center;
-            }
+        [id] {
+            scroll-margin-top: 80px;
         }
     </style>
 </head>
 <body>
-    <nav>
+    <nav class="nav">
         <div class="nav-container">
             <a href="index.html" class="nav-back">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -832,7 +853,8 @@
         </div>
     </nav>
 
-    <div class="hero">
+    <section class="hero">
+        <div class="hero-pattern"></div>
         <div class="hero-content">
             <div class="hero-badge">第5回（最終回） / 全5回</div>
             <h1 class="hero-title">
@@ -844,7 +866,6 @@
                 4つのエージェントを統合し、追客漏れゼロの営業フローを完成させます。
             </p>
 
-            <!-- Before/After: このレッスンで何が変わるか -->
             <div class="comparison-grid" style="margin-top: 2.5rem;">
                 <div class="comparison-card before">
                     <div class="comparison-header" style="color: var(--coral); margin-bottom: 1rem;">BEFORE：受講前</div>
@@ -866,109 +887,157 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <section class="section">
-        <div class="section-label">GOAL</div>
-        <h2 class="section-title">学習目標</h2>
-        <div class="goal-card">
-            営業キーワードを監視して確度高い案件を優先アラートし、
-            複数エージェントを統合して運用可能な営業フローを完成させる
-        </div>
     </section>
 
-    <section class="section">
-        <div class="section-label">KEYWORDS</div>
-        <h2 class="section-title">監視するキーワード</h2>
-        <p class="section-description">
-            営業メールには、案件の確度を示すキーワードが含まれています。
-            これらを自動検出して、優先度の高い案件を見逃さないようにします。
-        </p>
+    <section class="section" id="overview">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Overview</div>
+                <h2 class="section-title">この回の目標</h2>
+            </div>
 
-        <div class="keyword-grid">
-            <div class="keyword-card high">
-                <h3>受注シグナル（HIGH）</h3>
-                <div class="keyword-list">
-                    <span class="keyword-tag">契約</span>
-                    <span class="keyword-tag">発注</span>
-                    <span class="keyword-tag">注文</span>
-                    <span class="keyword-tag">決定</span>
-                    <span class="keyword-tag">お願いします</span>
-                    <span class="keyword-tag">進めてください</span>
-                    <span class="keyword-tag">稟議通りました</span>
-                    <span class="keyword-tag">承認されました</span>
-                    <span class="keyword-tag">正式に</span>
-                    <span class="keyword-tag">最終確認</span>
-                </div>
-            </div>
-            <div class="keyword-card medium">
-                <h3>検討シグナル（MEDIUM）</h3>
-                <div class="keyword-list">
-                    <span class="keyword-tag">見積もり</span>
-                    <span class="keyword-tag">見積書</span>
-                    <span class="keyword-tag">提案</span>
-                    <span class="keyword-tag">検討</span>
-                    <span class="keyword-tag">予算</span>
-                    <span class="keyword-tag">スケジュール</span>
-                    <span class="keyword-tag">導入時期</span>
-                    <span class="keyword-tag">比較</span>
-                    <span class="keyword-tag">候補</span>
-                    <span class="keyword-tag">選定</span>
-                </div>
-            </div>
-            <div class="keyword-card low">
-                <h3>注意シグナル（LOW）</h3>
-                <div class="keyword-list">
-                    <span class="keyword-tag">参考まで</span>
-                    <span class="keyword-tag">今後の</span>
-                    <span class="keyword-tag">いつか</span>
-                    <span class="keyword-tag">将来的に</span>
-                    <span class="keyword-tag">情報収集</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="section-label">AGENT SETUP</div>
-        <h2 class="section-title">確度高案件監視エージェントの構築</h2>
-
-        <div class="flow-diagram">
-            <h3>エージェントフロー</h3>
-            <div class="flow-steps">
-                <div class="flow-step">Gmailスターター<br><small>キーワードフィルター</small></div>
-                <span class="flow-arrow">→</span>
-                <div class="flow-step">Geminiステップ<br><small>確度判定</small></div>
-                <span class="flow-arrow">→</span>
-                <div class="flow-step">条件分岐<br><small>HIGH判定</small></div>
-                <span class="flow-arrow">→</span>
-                <div class="flow-step">Chat DMステップ<br><small>優先アラート</small></div>
-            </div>
-        </div>
-
-        <div class="step-card">
-            <div class="step-header">
-                <div class="step-number">1</div>
-                <h3 class="step-title">Gmailスターター設定（Gmail - Email received）</h3>
-            </div>
-            <p>重要顧客からキーワードを含むメールを受信したときに起動します。</p>
-            <div class="code-block">(from:yamada@a-corp.co.jp OR from:tanaka@b-inc.com) (契約 OR 発注 OR 注文 OR 見積 OR 提案 OR 検討)</div>
-            <div class="highlight-box">
-                <h4>設定のコツ</h4>
-                <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                    <li><code>from:</code>演算子では<strong>ドメイン指定は使用できません</strong></li>
-                    <li>重要顧客の<strong>メールアドレスを個別に指定</strong>してください</li>
-                    <li>キーワードと組み合わせる場合は、fromの条件を<code>()</code>で囲みます</li>
+            <div class="goal-card">
+                <h3>学習目標</h3>
+                <ul class="goal-list">
+                    <li>営業キーワードを監視して確度高い案件を優先アラート</li>
+                    <li>複数エージェントを統合して運用可能な営業フローを完成</li>
+                    <li>これまで作成した4つのエージェントの連携運用を学ぶ</li>
                 </ul>
             </div>
-        </div>
 
-        <div class="step-card">
-            <div class="step-header">
-                <div class="step-number">2</div>
-                <h3 class="step-title">Geminiステップ（確度判定）</h3>
+            <div class="highlight-stat">
+                <div class="highlight-number">250h</div>
+                <div class="highlight-text">
+                    年間削減時間<br>
+                    <span style="font-size: 0.9rem; opacity: 0.8;">メール確認80%、資料探索95%削減</span>
+                </div>
             </div>
-            <p>Geminiステップでメール内容を分析させ、案件の確度を判定します。</p>
+        </div>
+    </section>
+
+    <section class="section" id="keywords" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Keywords</div>
+                <h2 class="section-title">監視するキーワード</h2>
+                <p class="section-description">
+                    営業メールには、案件の確度を示すキーワードが含まれています。
+                    これらを自動検出して、優先度の高い案件を見逃さないようにします。
+                </p>
+            </div>
+
+            <div class="keyword-grid">
+                <div class="keyword-card high">
+                    <h3>受注シグナル（HIGH）</h3>
+                    <div class="keyword-list">
+                        <span class="keyword-tag">契約</span>
+                        <span class="keyword-tag">発注</span>
+                        <span class="keyword-tag">注文</span>
+                        <span class="keyword-tag">決定</span>
+                        <span class="keyword-tag">お願いします</span>
+                        <span class="keyword-tag">進めてください</span>
+                        <span class="keyword-tag">稟議通りました</span>
+                        <span class="keyword-tag">承認されました</span>
+                        <span class="keyword-tag">正式に</span>
+                        <span class="keyword-tag">最終確認</span>
+                    </div>
+                </div>
+                <div class="keyword-card medium">
+                    <h3>検討シグナル（MEDIUM）</h3>
+                    <div class="keyword-list">
+                        <span class="keyword-tag">見積もり</span>
+                        <span class="keyword-tag">見積書</span>
+                        <span class="keyword-tag">提案</span>
+                        <span class="keyword-tag">検討</span>
+                        <span class="keyword-tag">予算</span>
+                        <span class="keyword-tag">スケジュール</span>
+                        <span class="keyword-tag">導入時期</span>
+                        <span class="keyword-tag">比較</span>
+                        <span class="keyword-tag">候補</span>
+                        <span class="keyword-tag">選定</span>
+                    </div>
+                </div>
+                <div class="keyword-card low">
+                    <h3>注意シグナル（LOW）</h3>
+                    <div class="keyword-list">
+                        <span class="keyword-tag">参考まで</span>
+                        <span class="keyword-tag">今後の</span>
+                        <span class="keyword-tag">いつか</span>
+                        <span class="keyword-tag">将来的に</span>
+                        <span class="keyword-tag">情報収集</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="flow">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Flow</div>
+                <h2 class="section-title">エージェントのフロー</h2>
+            </div>
+
+            <div class="flow-diagram">
+                <div class="flow-item">Gmail<br>スターター</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Gemini<br>ステップ</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item highlight">条件分岐<br>ステップ</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Gmail<br>ラベル付与</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Chat DM<br>ステップ</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="steps" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Steps</div>
+                <h2 class="section-title">作成手順</h2>
+            </div>
+
+            <div class="step-grid">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <h3>Gmailスターター設定</h3>
+                    <p>「Gmail - Email received」で重要顧客からキーワードを含むメールを受信したときに起動するよう設定します。</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">例: <code>(from:yamada@a-corp.co.jp) (契約 OR 発注 OR 見積)</code></p>
+                    <p style="font-size: 0.85rem; color: var(--coral);"><strong>注意:</strong> ドメイン指定（@xxx.co.jp）は使用できません。</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <h3>Geminiステップ（確度判定）</h3>
+                    <p>メール内容を分析し、案件の確度（HIGH/MEDIUM/LOW）を判定します。</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <h3>条件分岐ステップ</h3>
+                    <p>Geminiの出力に「HIGH」が含まれる場合のみ、優先アラートを送信します。</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">04</div>
+                    <h3>Gmailステップ（ラベル付与）</h3>
+                    <p>確度に応じたラベル（「確度HIGH」「検討中」）を自動付与します。</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">05</div>
+                    <h3>Chat DMステップ（優先アラート）</h3>
+                    <p>確度HIGHの案件のみ、Chat DMで優先アラートを送信します。<br><strong style="color: var(--coral);">※スペースへの投稿は削除されました</strong></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="prompt">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Prompt</div>
+                <h2 class="section-title">Geminiプロンプト</h2>
+            </div>
+
             <div class="code-block">以下の営業メールを分析し、案件の確度を判定してください。
 
 {email_content}
@@ -982,24 +1051,36 @@
 【根拠】判定の根拠（2-3文）
 【推奨アクション】今すぐ取るべきアクション
 【対応優先度】1-5（1が最優先）</div>
-            <p>出力は <code>probability_analysis</code> に保存します。</p>
-        </div>
 
-        <div class="step-card">
-            <div class="step-header">
-                <div class="step-number">3</div>
-                <h3 class="step-title">条件分岐ステップ（確度HIGH判定）</h3>
+            <div class="note">
+                <div class="note-title">プロンプトのポイント</div>
+                <ul>
+                    <li><strong>確度を最初に</strong>：条件分岐で使いやすいよう、HIGH/MEDIUM/LOWを明確に出力</li>
+                    <li><strong>確度スコア</strong>：数値化することで優先順位付けに活用</li>
+                    <li><strong>推奨アクション</strong>：すぐに行動できるよう具体的なアクションを出力</li>
+                </ul>
             </div>
-            <p>確度がHIGHの場合のみ、即座にアラートを送信します。</p>
-            <div class="code-block">{probability_analysis} contains "HIGH"</div>
-        </div>
 
-        <div class="step-card">
-            <div class="step-header">
-                <div class="step-number">4</div>
-                <h3 class="step-title">Chat DMステップ（優先アラート）</h3>
+            <div class="output-example">
+                <h4>出力例（確度HIGHの場合）</h4>
+                <div class="output-content">【検出キーワード】契約、稟議通りました、正式に、決定
+【買いシグナル】ポジティブ
+【確度】HIGH
+【確度スコア】9
+【根拠】社内稟議が通過し、正式に契約を進める意思表明がある。契約書ドラフトの準備依頼も具体的。
+【推奨アクション】契約書ドラフトを即日準備し、法務確認の上送付
+【対応優先度】1</div>
             </div>
-            <p>Trueブランチで優先アラートをChat DMで送信します。</p>
+        </div>
+    </section>
+
+    <section class="section" id="notification" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Notification</div>
+                <h2 class="section-title">優先アラート通知テンプレート</h2>
+            </div>
+
             <div class="code-block">🔥 高確度案件を検知しました！
 
 【送信者】{sender_name} ({sender_email})
@@ -1010,19 +1091,13 @@
 ---
 ⚡ 今すぐ対応してください！
 📧 メールを確認: {email_link}</div>
-            <div class="warning-box">
-                <h4>Chat通知についての重要な変更</h4>
+
+            <div class="warning">
+                <div class="warning-title">Chat通知についての重要な変更</div>
                 <p>正式リリースでは<strong>Chatスペースへの投稿機能は削除</strong>されました。Chat通知は<strong>個人へのDM（ダイレクトメッセージ）のみ</strong>利用可能です。チーム共有が必要な場合は、Gmailでのメール送信を検討してください。</p>
             </div>
-        </div>
 
-        <div class="step-card">
-            <div class="step-header">
-                <div class="step-number">5</div>
-                <h3 class="step-title">Gmailステップ（ラベル付与）</h3>
-            </div>
-            <p>確度に応じたラベルを自動付与します。</p>
-            <table class="filter-table">
+            <table class="comparison-table">
                 <thead>
                     <tr>
                         <th>確度</th>
@@ -1034,7 +1109,7 @@
                     <tr>
                         <td>HIGH</td>
                         <td>確度HIGH</td>
-                        <td>個人DM</td>
+                        <td>個人DM（優先アラート）</td>
                     </tr>
                     <tr>
                         <td>MEDIUM</td>
@@ -1052,266 +1127,231 @@
     </section>
 
     <section class="integration-section">
-        <h2>4つのエージェント連携</h2>
-        <div class="agent-flow">
-            <div class="agent-item">
-                <div class="agent-icon">📬</div>
-                <div class="agent-info">
-                    <div class="agent-name">見込み顧客メール要約</div>
-                    <div class="agent-output">→ 毎朝9時に要約通知</div>
+        <div class="integration-container">
+            <div class="section-label">Integration</div>
+            <h2>4つのエージェント連携</h2>
+            <div class="agent-flow">
+                <div class="agent-item">
+                    <div class="agent-icon">📬</div>
+                    <div class="agent-info">
+                        <div class="agent-name">見込み顧客メール要約</div>
+                        <div class="agent-output">→ 毎朝9時に要約通知</div>
+                    </div>
+                </div>
+                <div class="agent-item">
+                    <div class="agent-icon">📌</div>
+                    <div class="agent-info">
+                        <div class="agent-name">追客漏れゼロ</div>
+                        <div class="agent-output">→ ラベル付与 + 次アクション通知</div>
+                    </div>
+                </div>
+                <div class="agent-item">
+                    <div class="agent-icon">📁</div>
+                    <div class="agent-info">
+                        <div class="agent-name">営業資料自動整理</div>
+                        <div class="agent-output">→ Drive保存 + 週次レポート</div>
+                    </div>
+                </div>
+                <div class="agent-item">
+                    <div class="agent-icon">🔥</div>
+                    <div class="agent-info">
+                        <div class="agent-name">確度高案件監視</div>
+                        <div class="agent-output">→ 優先アラート</div>
+                    </div>
                 </div>
             </div>
-            <div class="agent-item">
-                <div class="agent-icon">📌</div>
-                <div class="agent-info">
-                    <div class="agent-name">追客漏れゼロ</div>
-                    <div class="agent-output">→ ラベル付与 + 次アクション通知</div>
+        </div>
+    </section>
+
+    <section class="section" id="filter">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Filter Design</div>
+                <h2 class="section-title">重複を避けるフィルター設計</h2>
+                <p class="section-description">
+                    複数のエージェントが同じメールに反応しないよう、フィルターを適切に設計します。
+                </p>
+            </div>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>エージェント</th>
+                        <th>スターター</th>
+                        <th>フィルター</th>
+                        <th>起動条件</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>メール要約</td>
+                        <td>スケジュール 9AM</td>
+                        <td>is:unread</td>
+                        <td>全ての未読メール</td>
+                    </tr>
+                    <tr>
+                        <td>追客漏れゼロ</td>
+                        <td>Gmailスターター</td>
+                        <td>from:メールアドレス</td>
+                        <td>重要顧客からの全メール</td>
+                    </tr>
+                    <tr>
+                        <td>資料自動整理</td>
+                        <td>Gmailスターター</td>
+                        <td>has:attachment</td>
+                        <td>添付ファイル付きのみ</td>
+                    </tr>
+                    <tr>
+                        <td>確度高案件監視</td>
+                        <td>Gmailスターター</td>
+                        <td>キーワード含む</td>
+                        <td>特定キーワードを含む</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="warning">
+                <div class="warning-title">通知先の整理</div>
+                <p>通知が多すぎると逆効果です。以下のように整理しましょう：</p>
+                <ul>
+                    <li><strong>個人DM</strong>：緊急アラート（確度HIGH、追客漏れ）</li>
+                    <li><strong>メール</strong>：日次要約、週次レポート</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="result" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Result</div>
+                <h2 class="section-title">導入効果</h2>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">80%</div>
+                    <div class="stat-label">メール確認時間削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0件</div>
+                    <div class="stat-label">追客漏れ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">資料探索時間削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">250h</div>
+                    <div class="stat-label">年間削減時間</div>
                 </div>
             </div>
-            <div class="agent-item">
-                <div class="agent-icon">📁</div>
-                <div class="agent-info">
-                    <div class="agent-name">営業資料自動整理</div>
-                    <div class="agent-output">→ Drive保存 + 週次レポート</div>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th><span class="badge-before">Before</span></th>
+                        <th><span class="badge-after">After</span></th>
+                        <th>効果</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>メール確認時間</td>
+                        <td>1時間/日</td>
+                        <td>12分/日</td>
+                        <td>80%削減</td>
+                    </tr>
+                    <tr>
+                        <td>追客漏れ</td>
+                        <td>月1-2件</td>
+                        <td>0件</td>
+                        <td>100%解消</td>
+                    </tr>
+                    <tr>
+                        <td>資料探索時間</td>
+                        <td>30分/回</td>
+                        <td>即座</td>
+                        <td>95%削減</td>
+                    </tr>
+                    <tr>
+                        <td>重要案件の見落とし</td>
+                        <td>時々発生</td>
+                        <td>0件</td>
+                        <td>100%解消</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section" id="tips">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Tips</div>
+                <h2 class="section-title">運用時の注意点</h2>
+            </div>
+
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <h4>エージェントが起動しない</h4>
+                    <p><strong>原因：</strong>フィルター条件が厳しすぎる<br><strong>対処：</strong>条件を緩めてテスト、対象メールが存在するか確認</p>
+                </div>
+                <div class="tip-card">
+                    <h4>通知が多すぎる</h4>
+                    <p><strong>原因：</strong>条件が緩すぎる<br><strong>対処：</strong>フィルターを追加、条件分岐でHIGHのみに絞る</p>
+                </div>
+                <div class="tip-card">
+                    <h4>Geminiの出力が不安定</h4>
+                    <p><strong>原因：</strong>プロンプトが曖昧<br><strong>対処：</strong>出力形式を厳密に指定、例を含める</p>
+                </div>
+                <div class="tip-card">
+                    <h4>変数が展開されない</h4>
+                    <p><strong>原因：</strong>変数名の入力ミス<br><strong>対処：</strong>変数メニューから選択して入力</p>
                 </div>
             </div>
-            <div class="agent-item">
-                <div class="agent-icon">🔥</div>
-                <div class="agent-info">
-                    <div class="agent-name">確度高案件監視</div>
-                    <div class="agent-output">→ 優先アラート</div>
+
+            <div class="note">
+                <div class="note-title">パフォーマンス最適化のポイント</div>
+                <ul>
+                    <li>使わないエージェントは<strong>Disable</strong>にする</li>
+                    <li>テスト環境と本番を分けて確認</li>
+                    <li>月1回、フィルターと条件を見直し</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="summary" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Summary</div>
+                <h2 class="section-title">作成したエージェント一覧</h2>
+            </div>
+
+            <div class="agent-summary-grid">
+                <div class="agent-summary-card">
+                    <h4><span class="agent-badge">第2回</span> 見込み顧客メール要約</h4>
+                    <p>スケジュールスターター → Gmailステップ → Geminiステップ → Chat DMステップで通知</p>
+                </div>
+                <div class="agent-summary-card">
+                    <h4><span class="agent-badge">第3回</span> 追客漏れゼロ</h4>
+                    <p>Gmailスターター → Geminiステップ → 条件分岐 → ラベル付与 → Chat DMステップで通知</p>
+                </div>
+                <div class="agent-summary-card">
+                    <h4><span class="agent-badge">第4回</span> 添付ファイル自動保存</h4>
+                    <p>Gmailスターター → Driveステップで保存 → Chat DMステップで通知</p>
+                </div>
+                <div class="agent-summary-card">
+                    <h4><span class="agent-badge">第4回</span> 週次営業活動レポート</h4>
+                    <p>スケジュールスターター → Driveステップ → Geminiステップ → Chat DMステップで送信</p>
+                </div>
+                <div class="agent-summary-card">
+                    <h4><span class="agent-badge">第5回</span> 確度高案件監視</h4>
+                    <p>Gmailスターター → Geminiステップで確度判定 → 条件分岐 → Chat DMステップで優先アラート</p>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="section-label">FILTER DESIGN</div>
-        <h2 class="section-title">重複を避けるフィルター設計</h2>
-        <p class="section-description">
-            複数のエージェントが同じメールに反応しないよう、フィルターを適切に設計します。
-        </p>
-
-        <table class="filter-table">
-            <thead>
-                <tr>
-                    <th>エージェント</th>
-                    <th>スターター</th>
-                    <th>フィルター</th>
-                    <th>起動条件</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>メール要約</td>
-                    <td>スケジュールスターター 9AM</td>
-                    <td>is:unread</td>
-                    <td>全ての未読メール</td>
-                </tr>
-                <tr>
-                    <td>追客漏れゼロ</td>
-                    <td>Gmailスターター</td>
-                    <td>from:メールアドレス</td>
-                    <td>重要顧客からの全メール</td>
-                </tr>
-                <tr>
-                    <td>資料自動整理</td>
-                    <td>Gmailスターター</td>
-                    <td>has:attachment</td>
-                    <td>添付ファイル付きのみ</td>
-                </tr>
-                <tr>
-                    <td>確度高案件監視</td>
-                    <td>Gmailスターター</td>
-                    <td>キーワード含む</td>
-                    <td>特定キーワードを含む</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="warning-box">
-            <h4>通知先の整理</h4>
-            <p>通知が多すぎると逆効果です。以下のように整理しましょう：</p>
-            <ul>
-                <li><strong>個人DM</strong>：緊急アラート（確度HIGH、追客漏れ）</li>
-                <li><strong>メール</strong>：日次要約、週次レポート</li>
-            </ul>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="section-label">DASHBOARD</div>
-        <h2 class="section-title">営業ダッシュボード通知</h2>
-        <p class="section-description">
-            毎朝の通知を「営業ダッシュボード」として活用できます。
-        </p>
-
-        <div class="code-block">📊 本日の営業ダッシュボード
-
-━━━━━━━━━━━━━━━━━━
-🔥 確度HIGH案件
-━━━━━━━━━━━━━━━━━━
-{high_probability_summary}
-
-━━━━━━━━━━━━━━━━━━
-📌 要対応メール
-━━━━━━━━━━━━━━━━━━
-{pending_actions_count}件（「要対応」ラベルで確認）
-
-━━━━━━━━━━━━━━━━━━
-📁 今週の資料
-━━━━━━━━━━━━━━━━━━
-新規: {new_docs}件
-更新: {updated_docs}件
-
-━━━━━━━━━━━━━━━━━━
-✅ 本日の優先アクション
-━━━━━━━━━━━━━━━━━━
-{priority_actions}
-
----
-詳細はGmailの各ラベルで確認してください</div>
-    </section>
-
-    <section class="section">
-        <div class="section-label">TROUBLESHOOTING</div>
-        <h2 class="section-title">運用時の注意点</h2>
-
-        <div class="troubleshooting-grid">
-            <div class="trouble-card">
-                <h4>エージェントが起動しない</h4>
-                <p><strong>原因：</strong>フィルター条件が厳しすぎる</p>
-                <p class="trouble-solution">対処：条件を緩めてテスト、対象メールが存在するか確認</p>
-            </div>
-            <div class="trouble-card">
-                <h4>通知が多すぎる</h4>
-                <p><strong>原因：</strong>条件が緩すぎる</p>
-                <p class="trouble-solution">対処：フィルターを追加、条件分岐でHIGHのみに絞る</p>
-            </div>
-            <div class="trouble-card">
-                <h4>Geminiの出力が不安定</h4>
-                <p><strong>原因：</strong>プロンプトが曖昧</p>
-                <p class="trouble-solution">対処：出力形式を厳密に指定、例を含める</p>
-            </div>
-            <div class="trouble-card">
-                <h4>変数が展開されない</h4>
-                <p><strong>原因：</strong>変数名の入力ミス</p>
-                <p class="trouble-solution">対処：変数メニューから選択して入力</p>
-            </div>
-        </div>
-
-        <div class="highlight-box">
-            <h4>パフォーマンス最適化のポイント</h4>
-            <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
-                <li>使わないエージェントは<strong>Disable</strong>にする</li>
-                <li>テスト環境と本番を分けて確認</li>
-                <li>月1回、フィルターと条件を見直し</li>
-            </ul>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="section-label">RESULTS</div>
-        <h2 class="section-title">導入効果</h2>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">80%</div>
-                <div class="stat-label">メール確認時間削減</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">0件</div>
-                <div class="stat-label">追客漏れ</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">95%</div>
-                <div class="stat-label">資料探索時間削減</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">250h</div>
-                <div class="stat-label">年間削減時間</div>
-            </div>
-        </div>
-
-        <table class="comparison-table">
-            <thead>
-                <tr>
-                    <th>項目</th>
-                    <th>Before</th>
-                    <th>After</th>
-                    <th>効果</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>メール確認時間</td>
-                    <td class="before">1時間/日</td>
-                    <td class="after">12分/日</td>
-                    <td>80%削減</td>
-                </tr>
-                <tr>
-                    <td>追客漏れ</td>
-                    <td class="before">月1-2件</td>
-                    <td class="after">0件</td>
-                    <td>100%解消</td>
-                </tr>
-                <tr>
-                    <td>資料探索時間</td>
-                    <td class="before">30分/回</td>
-                    <td class="after">即座</td>
-                    <td>95%削減</td>
-                </tr>
-                <tr>
-                    <td>重要案件の見落とし</td>
-                    <td class="before">時々発生</td>
-                    <td class="after">0件</td>
-                    <td>100%解消</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-
-    <section class="section">
-        <div class="section-label">SUMMARY</div>
-        <h2 class="section-title">作成したエージェント一覧</h2>
-
-        <div class="agent-summary-grid">
-            <div class="agent-summary-card">
-                <h4><span class="agent-badge">第2回</span> 見込み顧客メール要約</h4>
-                <p>スケジュールスターター → Gmailステップ → Geminiステップ → Chat DMステップで通知</p>
-            </div>
-            <div class="agent-summary-card">
-                <h4><span class="agent-badge">第3回</span> 追客漏れゼロ</h4>
-                <p>Gmailスターター → Geminiステップ → 条件分岐 → ラベル付与 → Chat DMステップで通知</p>
-            </div>
-            <div class="agent-summary-card">
-                <h4><span class="agent-badge">第4回</span> 営業資料自動整理</h4>
-                <p>Gmailスターター → Geminiステップで分類 → Driveステップで保存</p>
-            </div>
-            <div class="agent-summary-card">
-                <h4><span class="agent-badge">第4回</span> 営業資料週次レポート</h4>
-                <p>スケジュールスターター → Driveステップ → Geminiステップ → Chat DMステップで送信</p>
-            </div>
-            <div class="agent-summary-card">
-                <h4><span class="agent-badge">第5回</span> 確度高案件監視</h4>
-                <p>Gmailスターター → Geminiステップで確度判定 → 条件分岐 → Chat DMステップで優先アラート</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="section-label">NEXT STEPS</div>
-        <h2 class="section-title">今後のステップ</h2>
-
-        <div class="checklist">
-            <h3>導入後のチェックリスト</h3>
-            <ul>
-                <li>1週間運用して動作を確認</li>
-                <li>通知が多すぎ/少なすぎないか評価</li>
-                <li>フィルターや条件を調整</li>
-                <li>チームメンバーへ展開</li>
-                <li>新しいユースケースを検討</li>
-            </ul>
         </div>
     </section>
 
@@ -1328,13 +1368,13 @@
     </section>
 
     <nav class="lesson-nav">
-        <a href="lesson4.html" class="nav-prev">
+        <a href="lesson4.html" class="nav-btn nav-prev">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
             前のレッスン
         </a>
-        <a href="index.html" class="nav-next">
+        <a href="index.html" class="nav-btn nav-next">
             コース一覧へ
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
