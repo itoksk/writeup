@@ -350,9 +350,23 @@
             flex-shrink: 0;
         }
 
+        .flow-step-icon.edit {
+            background: var(--yellow);
+        }
+
         .flow-step span {
             font-size: 0.9375rem;
             color: var(--text-secondary);
+        }
+
+        .flow-step .new-badge {
+            background: var(--green);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
         }
 
         .code-block {
@@ -411,6 +425,25 @@
             color: var(--text-secondary);
         }
 
+        .edit-notice {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--yellow);
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 1.5rem 0;
+        }
+
+        .edit-notice-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--yellow);
+        }
+
+        .edit-notice p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
         .step-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -431,6 +464,11 @@
             box-shadow: var(--shadow-md);
         }
 
+        .step-card.new-step {
+            border: 2px solid var(--green);
+            background: rgba(34, 197, 94, 0.03);
+        }
+
         .step-number {
             display: inline-flex;
             align-items: center;
@@ -443,6 +481,10 @@
             font-weight: 700;
             border-radius: var(--radius-sm);
             margin-bottom: 1rem;
+        }
+
+        .step-number.new {
+            background: var(--green);
         }
 
         .step-card h3 {
@@ -600,6 +642,47 @@
             left: 0;
         }
 
+        .sheet-preview {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .sheet-header {
+            background: var(--green);
+            color: white;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .sheet-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .sheet-table th {
+            background: var(--bg-secondary);
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .sheet-table td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .sheet-table tr:last-child td {
+            border-bottom: none;
+        }
+
         .next-preview {
             background: var(--text-primary);
             color: white;
@@ -698,6 +781,10 @@
             .lesson-nav {
                 flex-direction: column;
             }
+
+            .sheet-table {
+                font-size: 0.7rem;
+            }
         }
 
         [id] {
@@ -727,11 +814,10 @@
                 <span class="hero-title-accent">添付ファイル自動保存 × 週次レポートで営業活動を見える化</span>
             </h1>
             <p class="hero-description">
-                メールの添付ファイルを自動でDriveに保存。
-                週次でGeminiが資料を分析し、営業活動のサマリーレポートを自動生成します。
+                第3回で作成したエージェントに機能を追加し、添付ファイルを自動でDriveに保存＆スプレッドシートにログ記録。
+                週次レポートエージェントがログを分析し、営業活動のサマリーを自動生成します。
             </p>
 
-            <!-- Before/After: このレッスンで何が変わるか -->
             <div class="comparison-grid" style="margin-top: 2.5rem;">
                 <div class="comparison-card before">
                     <div class="comparison-header" style="color: var(--coral); margin-bottom: 1rem;">BEFORE：受講前</div>
@@ -746,7 +832,7 @@
                     <div class="comparison-header" style="color: var(--green); margin-bottom: 1rem;">AFTER：受講後</div>
                     <ul style="list-style: none; font-size: 0.9375rem; color: var(--text-secondary);">
                         <li style="padding: 0.5rem 0;">添付ファイルが自動でDriveに蓄積</li>
-                        <li style="padding: 0.5rem 0;">Driveで即座に検索可能</li>
+                        <li style="padding: 0.5rem 0;">スプレッドシートでログ管理</li>
                         <li style="padding: 0.5rem 0;">週次レポートで活動を振り返り</li>
                         <li style="padding: 0.5rem 0;">どの顧客と活発にやり取りしているか一目瞭然</li>
                     </ul>
@@ -763,14 +849,16 @@
             </div>
 
             <p class="section-description" style="margin-bottom: 2rem;">
-                メールに添付された提案書・見積書・契約書などを自動でDriveに保存し、週次でGeminiが分析・レポート化します。<strong>2つのシンプルなエージェント</strong>で営業活動の可視化を実現します。
+                第3回で作成した「追客漏れゼロエージェント」に<strong>添付ファイル保存機能</strong>と<strong>スプレッドシートへのログ記録</strong>を追加。さらに<strong>週次レポートエージェント</strong>を新規作成し、営業活動の可視化を実現します。
             </p>
 
             <div class="goal-card">
-                <h3>作成するエージェント（2つ）</h3>
+                <h3>今回やること</h3>
                 <ul class="goal-list">
-                    <li><strong>エージェント1</strong>：添付ファイル自動保存（Gmailスターター → Driveに保存 → 通知）</li>
-                    <li><strong>エージェント2</strong>：週次営業活動レポート（スケジュールスターター → Geminiで分析 → レポート送信）</li>
+                    <li><strong>既存エージェントの編集</strong>：追客漏れゼロエージェントにステップを追加</li>
+                    <li><strong>Driveステップ</strong>：添付ファイルを「営業資料」フォルダに保存</li>
+                    <li><strong>Sheetsステップ</strong>：保存したファイルの情報をログに記録</li>
+                    <li><strong>週次レポート</strong>：スプレッドシートのログをGeminiで分析</li>
                 </ul>
             </div>
 
@@ -786,36 +874,124 @@
         </div>
     </section>
 
-    <section class="section" id="flows" style="background: var(--bg-secondary);">
+    <section class="section" id="preparation" style="background: var(--bg-secondary);">
         <div class="section-container">
             <div class="section-header">
-                <div class="section-label">Dual Flow</div>
-                <h2 class="section-title">2つのエージェントを作成</h2>
-                <p class="section-description">「蓄積」と「可視化」の2つの役割を分けてシンプルに構築します。</p>
+                <div class="section-label">Preparation</div>
+                <h2 class="section-title">事前準備</h2>
+            </div>
+
+            <div class="step-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Driveフォルダの作成</h3>
+                    <p>Google Driveに<strong>「営業資料」</strong>フォルダを作成してください。添付ファイルはこのフォルダに保存されます。</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>スプレッドシートの作成</h3>
+                    <p>Google Sheetsで<strong>「営業資料ログ」</strong>スプレッドシートを作成し、以下のヘッダー行を設定してください。</p>
+                </div>
+            </div>
+
+            <div class="sheet-preview">
+                <div class="sheet-header">営業資料ログ（スプレッドシート）</div>
+                <table class="sheet-table">
+                    <thead>
+                        <tr>
+                            <th>日付</th>
+                            <th>送信者名</th>
+                            <th>送信者メール</th>
+                            <th>件名</th>
+                            <th>ファイル名</th>
+                            <th>ファイル種類</th>
+                            <th>案件ステージ</th>
+                            <th>緊急度</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-01-06</td>
+                            <td>山田太郎</td>
+                            <td>yamada@a-corp.co.jp</td>
+                            <td>【ご提案】業務効率化システム</td>
+                            <td>A社向け_提案書_v1.pdf</td>
+                            <td>提案書</td>
+                            <td>提案中</td>
+                            <td>MEDIUM</td>
+                        </tr>
+                        <tr>
+                            <td>2025-01-07</td>
+                            <td>鈴木花子</td>
+                            <td>suzuki@b-inc.com</td>
+                            <td>見積書送付の件</td>
+                            <td>見積書_B社_202501.pdf</td>
+                            <td>見積書</td>
+                            <td>見積もり</td>
+                            <td>HIGH</td>
+                        </tr>
+                        <tr>
+                            <td>2025-01-09</td>
+                            <td>佐藤一郎</td>
+                            <td>sato@d-inc.com</td>
+                            <td>【至急】契約書の確認依頼</td>
+                            <td>契約書_D社_最終版.pdf</td>
+                            <td>契約書</td>
+                            <td>契約交渉</td>
+                            <td>HIGH</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="note">
+                <div class="note-title">ヒント</div>
+                <p>ヘッダー行（1行目）は必ず設定してください。エージェントはこのヘッダーに従ってデータを追記します。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="flows">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Flow Overview</div>
+                <h2 class="section-title">作業の流れ</h2>
             </div>
 
             <div class="dual-flow">
                 <div class="flow-card">
-                    <h3>エージェント1：添付ファイル自動保存</h3>
-                    <p class="flow-desc">添付ファイル付きメールを受信したら自動でDriveに保存</p>
+                    <h3>作業1：既存エージェントの編集</h3>
+                    <p class="flow-desc">第3回で作った追客漏れゼロエージェントにステップを追加</p>
                     <div class="flow-steps">
                         <div class="flow-step">
                             <div class="flow-step-icon">1</div>
-                            <span>Gmailスターター（has:attachment）</span>
+                            <span>Gmailスターター（has:attachment追加）</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">2</div>
-                            <span>Driveステップで指定フォルダに保存</span>
+                            <span>Geminiステップ（要対応判定）</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">3</div>
-                            <span>Chat DMステップで保存完了を通知</span>
+                            <span>条件分岐 → ラベル付与</span>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-step-icon new">4</div>
+                            <span>Driveステップ（保存）<span class="new-badge">NEW</span></span>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-step-icon new">5</div>
+                            <span>Sheetsステップ（ログ記録）<span class="new-badge">NEW</span></span>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-step-icon">6</div>
+                            <span>Chat DMステップ（通知）</span>
                         </div>
                     </div>
                 </div>
                 <div class="flow-card">
-                    <h3>エージェント2：週次営業活動レポート</h3>
-                    <p class="flow-desc">毎週月曜に蓄積された資料をGeminiが分析・レポート化</p>
+                    <h3>作業2：週次レポートエージェント新規作成</h3>
+                    <p class="flow-desc">毎週月曜にログを分析してレポート送信</p>
                     <div class="flow-steps">
                         <div class="flow-step">
                             <div class="flow-step-icon">1</div>
@@ -823,15 +999,15 @@
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">2</div>
-                            <span>Driveステップでファイル一覧取得</span>
+                            <span>Sheetsステップ（ログ読み込み）</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">3</div>
-                            <span>Geminiステップで営業活動を分析</span>
+                            <span>Geminiステップ（分析）</span>
                         </div>
                         <div class="flow-step">
                             <div class="flow-step-icon">4</div>
-                            <span>Chat DMステップでレポート送信</span>
+                            <span>Chat DMステップ（レポート送信）</span>
                         </div>
                     </div>
                 </div>
@@ -839,92 +1015,111 @@
         </div>
     </section>
 
-    <section class="section" id="flow1">
+    <section class="section" id="edit-agent" style="background: var(--bg-secondary);">
         <div class="section-container">
             <div class="section-header">
-                <div class="section-label">Agent 1</div>
-                <h2 class="section-title">添付ファイル自動保存エージェント</h2>
-                <p class="section-description">添付ファイル付きのメールを受信したら、自動でGoogle Driveの指定フォルダに保存します。</p>
+                <div class="section-label">Edit Existing Agent</div>
+                <h2 class="section-title">作業1：追客漏れゼロエージェントの編集</h2>
+                <p class="section-description">第3回で作成したエージェントを開き、新しいステップを追加します。</p>
             </div>
+
+            <div class="edit-notice">
+                <div class="edit-notice-title">エージェントの編集方法</div>
+                <p>Workspace Studioで第3回で作成した「追客漏れゼロエージェント」を開き、「Edit」ボタンをクリックして編集モードに入ります。</p>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">追加するステップ</h3>
 
             <div class="step-grid">
                 <div class="step-card">
-                    <div class="step-number">01</div>
-                    <h3>Gmailスターター設定</h3>
-                    <p>Gmail - Email received<br>Filter: <code>has:attachment</code><br>添付ファイル付きメールで起動</p>
+                    <div class="step-number">1</div>
+                    <h3>フィルター条件の変更</h3>
+                    <p>Gmailスターターのフィルターに<code>has:attachment</code>を追加して、添付ファイル付きメールも対象にします。</p>
+                </div>
+                <div class="step-card new-step">
+                    <div class="step-number new">2</div>
+                    <h3>Driveステップを追加</h3>
+                    <p><strong>Drive - Upload file</strong><br>添付ファイルを「営業資料」フォルダに保存</p>
+                </div>
+                <div class="step-card new-step">
+                    <div class="step-number new">3</div>
+                    <h3>Sheetsステップを追加</h3>
+                    <p><strong>Sheets - Add row</strong><br>「営業資料ログ」スプレッドシートにデータを追記</p>
                 </div>
                 <div class="step-card">
-                    <div class="step-number">02</div>
-                    <h3>Driveステップ（保存）</h3>
-                    <p>Drive - Upload file<br>事前に作成した「営業資料」フォルダに保存</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">03</div>
-                    <h3>Chat DMステップ（通知）</h3>
-                    <p>保存完了をChat DMで通知<br>ファイル名とDriveリンクを含める</p>
+                    <div class="step-number">4</div>
+                    <h3>通知内容の更新</h3>
+                    <p>Chat DM通知にファイル保存の情報を追加</p>
                 </div>
             </div>
 
-            <div class="warning">
-                <div class="warning-title">事前準備</div>
-                <p>Google Driveに「営業資料」フォルダを事前に作成してください。エージェントはこのフォルダに添付ファイルを保存します。</p>
-            </div>
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Sheetsステップの設定</h3>
+            <div class="code-block">【追記するデータ】
+日付: {when_email_was_sent}
+送信者名: {sender_name}
+送信者メール: {sender_email}
+件名: {email_subject}
+ファイル名: {attachment_name}
+ファイル種類: {file_type}（Geminiの判定結果）
+案件ステージ: {deal_stage}（Geminiの判定結果）
+緊急度: {urgency}（Geminiの判定結果）</div>
 
-            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">通知テンプレート</h3>
-            <div class="code-block">📁 添付ファイルを保存しました
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem;">更新後の通知テンプレート</h3>
+            <div class="code-block">📌 要対応メールを検知しました
 
-【ファイル名】{attachment_name}
 【送信者】{sender_name} ({sender_email})
 【件名】{email_subject}
+【受信日時】{when_email_was_sent}
+【緊急度】{urgency}
+
+{email_summary}
+
+📁 添付ファイルを保存しました
+【ファイル名】{attachment_name}
 【保存先】営業資料フォルダ
 
-📂 Driveで確認: {drive_link}</div>
-
-            <div class="note">
-                <div class="note-title">フィルターの追加（オプション）</div>
-                <p>全ての添付ファイルを保存すると量が多くなる場合は、重要顧客からのメールに絞ることもできます。</p>
-                <div class="code-block" style="margin-top: 0.5rem;">has:attachment (from:yamada@a-corp.co.jp OR from:tanaka@b-inc.com)</div>
-            </div>
+📋 次のアクション: {next_action}
+📧 メールを確認: {email_link}</div>
         </div>
     </section>
 
-    <section class="section" id="flow2" style="background: var(--bg-secondary);">
+    <section class="section" id="weekly-report">
         <div class="section-container">
             <div class="section-header">
-                <div class="section-label">Agent 2</div>
-                <h2 class="section-title">週次営業活動レポートエージェント</h2>
-                <p class="section-description">毎週月曜日に、蓄積された営業資料をGeminiが分析し、営業活動のサマリーレポートを自動生成します。</p>
+                <div class="section-label">New Agent</div>
+                <h2 class="section-title">作業2：週次レポートエージェントの作成</h2>
+                <p class="section-description">新しいエージェントを作成し、スプレッドシートのログを分析して週次レポートを生成します。</p>
             </div>
 
             <div class="step-grid">
                 <div class="step-card">
                     <div class="step-number">01</div>
-                    <h3>スケジュールスターター設定</h3>
+                    <h3>スケジュールスターター</h3>
                     <p>Scheduled<br>毎週月曜 9:00 AM<br>Asia/Tokyo</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">02</div>
-                    <h3>Driveステップ（一覧取得）</h3>
-                    <p>Drive - List files<br>「営業資料」フォルダのファイル一覧を取得</p>
+                    <h3>Sheetsステップ（読み込み）</h3>
+                    <p><strong>Sheets - Read spreadsheet</strong><br>「営業資料ログ」の全データを取得</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">03</div>
                     <h3>Geminiステップ（分析）</h3>
-                    <p>ファイル名から顧客・資料タイプを分析<br>営業活動のサマリーを生成</p>
+                    <p>ログデータを分析し、営業活動のサマリーを生成</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">04</div>
-                    <h3>Chat DMステップ（送信）</h3>
+                    <h3>Chat DMステップ</h3>
                     <p>週次レポートをChat DMで送信</p>
                 </div>
             </div>
 
             <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Geminiプロンプト</h3>
-            <div class="code-block">以下は今週保存された営業資料のファイル一覧です。
-この情報を分析して、営業活動の週次レポートを作成してください。
+            <div class="code-block">以下は今週の営業資料ログデータです。
+このデータを分析して、営業活動の週次レポートを作成してください。
 
-ファイル一覧:
-{drive_files}
+ログデータ:
+{sheets_data}
 
 以下の形式で出力してください：
 
@@ -934,48 +1129,62 @@
 - 保存されたファイル数と主な種類（提案書、見積書など）を要約
 
 【活発な商談】
-- ファイル名から推測される顧客名をリストアップ
+- 送信者名/会社ごとにファイル数を集計
 - 複数のファイルがある顧客は特に注目
 
-【資料の種類】
-- 提案書: X件（推定）
-- 見積書: X件（推定）
-- 契約書: X件（推定）
+【資料の種類別集計】
+- 提案書: X件
+- 見積書: X件
+- 契約書: X件
 - その他: X件
 
+【案件ステージ別状況】
+- 問い合わせ: X件
+- 提案中: X件
+- 見積もり: X件
+- 契約交渉: X件
+
 【注目ポイント】
-- 見積書や契約書がある場合は、商談が進んでいる可能性を指摘
+- 緊急度HIGHの案件をリストアップ
+- 契約書や見積書がある場合は、商談が進んでいる可能性を指摘
 - 今週フォローすべき顧客を提案
 
-ファイルがない場合は「今週は新規ファイルはありません」と出力してください。</div>
+データがない場合は「今週は新規データはありません」と出力してください。</div>
 
             <div class="output-example">
                 <h4>週次レポートの出力例</h4>
                 <div class="output-content">📊 今週の営業活動レポート
 
 【今週の概要】
-今週は5件のファイルが保存されました。
-提案書2件、見積書2件、契約書1件と、複数の商談が活発に動いています。
+今週は10件のファイルが保存されました。
+提案書3件、見積書3件、契約書2件、その他2件と、複数の商談が活発に動いています。
 
 【活発な商談】
-- 株式会社ABC：提案書、見積書の2件 → 商談が進行中
-- XYZ株式会社：見積書1件 → 検討段階
-- DEF株式会社：契約書1件 → 契約間近の可能性
+- 山田太郎（A社）：2件（提案書×2）→ 提案書を改訂中
+- 鈴木花子（B社）：2件（見積書、発注書）→ 発注段階に進行！
+- 佐藤一郎（D社）：1件（契約書）→ 契約交渉中
 
-【資料の種類】
-- 提案書: 2件
-- 見積書: 2件
-- 契約書: 1件
-- その他: 0件
+【資料の種類別集計】
+- 提案書: 3件
+- 見積書: 3件
+- 契約書: 2件
+- その他: 2件
+
+【案件ステージ別状況】
+- 問い合わせ: 2件
+- 提案中: 3件
+- 見積もり: 3件
+- 契約交渉: 2件
 
 【注目ポイント】
-⭐ DEF株式会社は契約書が届いています。契約締結に向けた最終確認を優先してください。
-⭐ 株式会社ABCは見積もり段階です。今週中にフォローの連絡を入れることをお勧めします。</div>
+⭐ B社は発注書が届いています！最優先で対応してください。
+⭐ D社は契約交渉中。契約締結に向けた最終確認を進めましょう。
+⭐ A社は提案書を複数回改訂中。顧客の要望を確認してください。</div>
             </div>
         </div>
     </section>
 
-    <section class="section" id="result">
+    <section class="section" id="result" style="background: var(--bg-secondary);">
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">Result</div>
@@ -997,19 +1206,19 @@
                         <td>自動でDriveに蓄積</td>
                     </tr>
                     <tr>
+                        <td>ログ管理</td>
+                        <td>なし（記憶に頼る）</td>
+                        <td>スプレッドシートで自動記録</td>
+                    </tr>
+                    <tr>
                         <td>資料の検索</td>
                         <td>メールを探し回る</td>
-                        <td>Driveで即座に検索</td>
+                        <td>Drive・スプレッドシートで即座に検索</td>
                     </tr>
                     <tr>
                         <td>営業活動の把握</td>
                         <td>何をやったか分からない</td>
                         <td>週次レポートで可視化</td>
-                    </tr>
-                    <tr>
-                        <td>商談の進捗確認</td>
-                        <td>記憶に頼る</td>
-                        <td>資料の種類から推測可能</td>
                     </tr>
                     <tr>
                         <td>フォローすべき顧客</td>
@@ -1021,7 +1230,7 @@
         </div>
     </section>
 
-    <section class="section" id="tips" style="background: var(--bg-secondary);">
+    <section class="section" id="tips">
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">Tips</div>
@@ -1030,12 +1239,12 @@
 
             <div class="tips-grid">
                 <div class="tip-card">
-                    <h4>フォルダの定期整理</h4>
-                    <p>ファイルが溜まってきたら、月1回程度で古いファイルを別フォルダに移動するか、削除しましょう。Geminiの分析精度も向上します。</p>
+                    <h4>スプレッドシートの定期整理</h4>
+                    <p>データが溜まってきたら、月1回程度で古いデータを別シートにアーカイブしましょう。Geminiの分析精度も向上します。</p>
                 </div>
                 <div class="tip-card">
-                    <h4>ファイル名での検索</h4>
-                    <p>Driveの検索機能を使えば、顧客名や「見積」などのキーワードで簡単に資料を見つけられます。週次レポートと組み合わせると効果的です。</p>
+                    <h4>フィルターとソート</h4>
+                    <p>スプレッドシートのフィルター機能を使えば、特定の顧客や緊急度でデータを絞り込めます。週次レポート前に確認すると効果的です。</p>
                 </div>
                 <div class="tip-card">
                     <h4>レポートの活用</h4>
@@ -1053,7 +1262,7 @@
             <p>"使える営業フロー"に仕上げる最終調整</p>
             <p style="margin-top: 1rem;">
                 最終回は、営業キーワード（契約/発注/検討など）を監視して確度高い案件を優先アラートします。
-                また、これまで作成した4つのエージェントを統合し、実際に"使える営業フロー"として運用開始する方法を学びます。
+                また、これまで作成したエージェントを統合し、実際に"使える営業フロー"として運用開始する方法を学びます。
             </p>
         </div>
     </section>
