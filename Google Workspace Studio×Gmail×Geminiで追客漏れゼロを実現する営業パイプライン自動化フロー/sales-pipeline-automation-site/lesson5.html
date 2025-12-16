@@ -1020,7 +1020,7 @@
                 <div class="step-card">
                     <div class="step-number">04</div>
                     <h3>Gmailステップ（ラベル付与）</h3>
-                    <p>確度に応じたラベル（「確度HIGH」「検討中」）を自動付与します。</p>
+                    <p>条件分岐がTRUE（HIGH）の場合のみ、「確度HIGH」ラベルを自動付与します。事前にGmailでラベルを作成してください。</p>
                 </div>
                 <div class="step-card">
                     <div class="step-number">05</div>
@@ -1055,8 +1055,8 @@
             <div class="note">
                 <div class="note-title">プロンプトのポイント</div>
                 <ul>
-                    <li><strong>確度を最初に</strong>：条件分岐で使いやすいよう、HIGH/MEDIUM/LOWを明確に出力</li>
-                    <li><strong>確度スコア</strong>：数値化することで優先順位付けに活用</li>
+                    <li><strong>確度を明確に出力</strong>：条件分岐で「contains "HIGH"」を使うため、HIGHを確実に出力させる</li>
+                    <li><strong>確度スコア・根拠</strong>：通知内容に含めて判断材料にする（条件分岐では使用不可）</li>
                     <li><strong>推奨アクション</strong>：すぐに行動できるよう具体的なアクションを出力</li>
                 </ul>
             </div>
@@ -1097,29 +1097,29 @@
                 <p>正式リリースでは<strong>Chatスペースへの投稿機能は削除</strong>されました。Chat通知は<strong>個人へのDM（ダイレクトメッセージ）のみ</strong>利用可能です。チーム共有が必要な場合は、Gmailでのメール送信を検討してください。</p>
             </div>
 
+            <div class="note">
+                <div class="note-title">条件分岐の制約</div>
+                <p>条件分岐ステップはTRUE/FALSEの2択のみです。「contains "HIGH"」で判定し、HIGHの場合のみラベル付与と通知を実行します。MEDIUM/LOWで別のラベルを付けることはできません。</p>
+            </div>
+
             <table class="comparison-table">
                 <thead>
                     <tr>
-                        <th>確度</th>
-                        <th>ラベル</th>
-                        <th>通知先</th>
+                        <th>条件分岐の結果</th>
+                        <th>対象</th>
+                        <th>アクション</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>HIGH</td>
-                        <td>確度HIGH</td>
-                        <td>個人DM（優先アラート）</td>
+                        <td>TRUE（HIGHを含む）</td>
+                        <td>確度HIGH案件</td>
+                        <td>ラベル「確度HIGH」付与 → Chat DM通知</td>
                     </tr>
                     <tr>
-                        <td>MEDIUM</td>
-                        <td>検討中</td>
-                        <td>通知なし（ラベルのみ）</td>
-                    </tr>
-                    <tr>
-                        <td>LOW</td>
-                        <td>-</td>
-                        <td>処理終了</td>
+                        <td>FALSE（HIGHを含まない）</td>
+                        <td>MEDIUM/LOW案件</td>
+                        <td>処理終了（何もしない）</td>
                     </tr>
                 </tbody>
             </table>
