@@ -198,6 +198,42 @@
             line-height: 1.8;
         }
 
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-card {
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+
+        .comparison-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .comparison-card.before {
+            border-top: 4px solid var(--coral);
+        }
+
+        .comparison-card.after {
+            border-top: 4px solid var(--green);
+        }
+
+        .comparison-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+
         .goal-card {
             background: var(--accent-gradient);
             color: white;

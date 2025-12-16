@@ -158,7 +158,7 @@
 
         .comparison-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
             margin: 2rem 0;
         }
@@ -167,12 +167,12 @@
             padding: 2rem;
             background: var(--bg-card);
             border: 1px solid var(--border-light);
-            border-radius: 16px;
+            border-radius: var(--radius-lg);
             transition: all 0.3s ease;
         }
 
         .comparison-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-lg);
             transform: translateY(-4px);
         }
 
@@ -188,6 +188,8 @@
             font-size: 0.75rem;
             font-weight: 700;
             letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
         }
 
         /* Sections */
