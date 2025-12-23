@@ -494,6 +494,57 @@
             line-height: 1.6;
         }
 
+        /* Flow Steps */
+        .flow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .flow-step {
+            display: flex;
+            gap: 1.5rem;
+            padding: 2rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+
+        .flow-step:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .step-number {
+            width: 56px;
+            height: 56px;
+            background: var(--accent-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .step-content p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
         /* Highlight Box */
         .highlight-box {
             background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(236, 72, 153, 0.05));
@@ -672,6 +723,17 @@
             .lesson-nav {
                 flex-direction: column;
             }
+
+            .flow-step {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .step-number {
+                width: 48px;
+                height: 48px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -696,8 +758,7 @@
                 <span>選考フロー全体をStudioで一本化する方法</span>
             </h1>
             <p class="hero-desc">
-                これまで作成した6つのエージェントを統合し、選考フロー全体を一本化する運用設計を完成させます。
-                日次ダッシュボードで全体を可視化し、持続可能な運用を実現しましょう。
+                これまで作成した4つのエージェントに加え、Daily Dashboardエージェントを作成。計5つのエージェントを統合し、選考フロー全体を一本化する運用設計を完成させます。
             </p>
 
             <div class="comparison-grid">
@@ -713,7 +774,7 @@
                 <div class="comparison-card after">
                     <div class="comparison-header">AFTER：受講後</div>
                     <ul>
-                        <li>6つのエージェントが統合運用</li>
+                        <li>5つのエージェントが統合運用</li>
                         <li>日次ダッシュボードで全体可視化</li>
                         <li>誰でも運用可能な仕組み化</li>
                         <li>採用業務70%削減を実現</li>
@@ -788,15 +849,67 @@
             </div>
             <div class="agent-item">
                 <div class="agent-num">05</div>
-                <div class="agent-name">Delay Alert</div>
-                <div class="agent-role">遅延アラート</div>
-                <div class="agent-trigger">Daily 9AM</div>
-            </div>
-            <div class="agent-item">
-                <div class="agent-num">06</div>
                 <div class="agent-name">Daily Recruiting Dashboard</div>
                 <div class="agent-role">日次サマリー</div>
                 <div class="agent-trigger">Daily 9AM</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-container" style="padding-top: 0;">
+        <div class="section-label">STEPS</div>
+        <h2 class="section-title">Daily Recruiting Dashboard エージェント作成手順</h2>
+
+        <div class="flow-steps">
+            <div class="flow-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>新規エージェント作成</h3>
+                    <p>Google Workspace Studio → 「Create agent」→ エージェント名「Daily Recruiting Dashboard」とDescriptionを入力</p>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>スケジュールトリガー設定</h3>
+                    <p>「Add starter」→「On schedule」を選択<br>
+                    Frequency: Daily | Time: 9:00 AM | Days: Weekdays</p>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Sheets読み取りステップ追加</h3>
+                    <p>「Add step」→「Get values from Sheets」→ 候補者管理シートから全候補者データを取得</p>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Calendar検索ステップ追加</h3>
+                    <p>「Add step」→「Calendar」→ Today's eventsを取得<br>
+                    Filter: Title contains '面接' or 'Interview'</p>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Geminiダッシュボード生成ステップ追加</h3>
+                    <p>「Add step」→「Generate with Gemini」→ プロンプトを入力<br>
+                    パイプライン概況・本日の面接・フォロー必要候補者・週次指標をサマリー化</p>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <h3>Chat送信ステップ追加</h3>
+                    <p>「Add step」→「チャットで通知する」→ 自分へのDMで日次ダッシュボードを受信 ※スペースへの投稿機能は削除されました</p>
+                </div>
             </div>
         </div>
     </section>
@@ -1184,7 +1297,7 @@ Chatメッセージ形式で、一目で把握できアクションにつなが�
                 <li>ステータス自動更新でデータの一貫性を確保</li>
                 <li>日次ダッシュボードで全体を可視化</li>
                 <li>運用ルールの設計で持続的な運用を実現</li>
-                <li>6つのエージェントで採用業務の70%を自動化</li>
+                <li>5つのエージェントで採用業務の70%を自動化</li>
             </ul>
         </div>
     </section>

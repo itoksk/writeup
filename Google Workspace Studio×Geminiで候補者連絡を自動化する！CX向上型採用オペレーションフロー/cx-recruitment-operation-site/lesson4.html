@@ -783,7 +783,7 @@
                 <span>面接リマインド・評価提出リマインドを自動化する</span>
             </h1>
             <p class="hero-desc">
-                面接リマインド、評価シート提出リマインド、遅延アラートを自動化するエージェントを作成。
+                面接リマインドと評価シート提出リマインドの2つのエージェントを作成。
                 24h・48h・72hの段階的エスカレーションで漏れゼロを実現します。
             </p>
 
@@ -814,13 +814,13 @@
         <div class="section-label">GOAL</div>
         <h2 class="section-title">学習目標</h2>
         <div class="goal-card">
-            面接リマインド、評価シート提出リマインド、遅延アラートを自動化するエージェントを作成する
+            面接リマインドと評価シート提出リマインドを自動化する2つのエージェントを作成する
         </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
         <div class="section-label">AGENTS</div>
-        <h2 class="section-title">3種類のリマインドエージェント</h2>
+        <h2 class="section-title">2種類のリマインドエージェント</h2>
 
         <div class="agent-grid">
             <div class="agent-card">
@@ -832,11 +832,6 @@
                 <div class="agent-number">AGENT 02</div>
                 <h3>Evaluation Reminder</h3>
                 <p>評価シート未提出の場合、24h・48h・72hで段階的エスカレーション。迅速な評価収集を実現</p>
-            </div>
-            <div class="agent-card">
-                <div class="agent-number">AGENT 03</div>
-                <h3>Delay Alert</h3>
-                <p>候補者への連絡が3日以上滞っている場合にアラート通知。連絡漏れを防止</p>
             </div>
         </div>
     </section>
@@ -993,6 +988,57 @@
 
 ■ 評価シートリンク
 {evaluation_sheet_link}</div>
+        </div>
+    </section>
+
+    <section class="section-container" style="padding-top: 0;">
+        <div class="section-label">STEPS 2</div>
+        <h2 class="section-title">Evaluation Reminder 作成手順</h2>
+
+        <div class="step-list">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>新規エージェント作成</h3>
+                    <p>Google Workspace Studio → 「Create agent」→ エージェント名「Evaluation Reminder」を入力</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>スケジュールトリガー設定</h3>
+                    <p>「Add starter」→「Schedule」を選択 → Daily 10:00 AM</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Sheets検索ステップ追加</h3>
+                    <p>「Add step」→「Get values from Sheets」→ 候補者管理シートから「面接完了 & 評価未提出」レコードを取得</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>経過時間判定の条件分岐</h3>
+                    <p>「Add condition」→ 面接終了からの経過時間を計算<br>
+                    24時間 / 48時間 / 72時間でアクションを分岐</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Gmail送信設定（面接官向け）</h3>
+                    <p>「Add step」→「Send Gmail」を選択 → 24時間・48時間経過時はリマインドメール</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <h3>Chat送信設定（マネージャー向け）</h3>
+                    <p>「Add step」→「チャットで通知する」→ 72時間経過時はマネージャーへDMでエスカレーション</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -1156,135 +1202,6 @@
     </section>
 
     <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">DELAY ALERT</div>
-        <h2 class="section-title">Delay Alert 設計</h2>
-
-        <table class="config-table">
-            <thead>
-                <tr>
-                    <th>項目</th>
-                    <th>設定値</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>エージェント名</td>
-                    <td>Delay Alert</td>
-                </tr>
-                <tr>
-                    <td>Description</td>
-                    <td>Alerts recruiting team when candidate communication is delayed</td>
-                </tr>
-                <tr>
-                    <td>スターター</td>
-                    <td>Schedule (Daily, 9:00 AM)</td>
-                </tr>
-                <tr>
-                    <td>データソース</td>
-                    <td>候補者管理シート（最終連絡日列）</td>
-                </tr>
-                <tr>
-                    <td>条件</td>
-                    <td>最終連絡から3日以上経過</td>
-                </tr>
-                <tr>
-                    <td>出力</td>
-                    <td>Chat (DM通知)</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">FORMULA</div>
-        <h2 class="section-title">候補者管理シート - 遅延判定式</h2>
-
-        <p style="margin-bottom: 1rem; color: var(--text-secondary);">候補者管理シートに以下の数式を追加して、遅延状態を自動判定します。</p>
-
-        <div class="formula-box">=IF(TODAY() - [最終連絡日] >= 3, "要フォロー", "OK")</div>
-
-        <div class="info-box">
-            <h4>列構成の例</h4>
-            <ul>
-                <li><strong>I列：最終連絡日</strong> - 候補者との最後の連絡日（手動更新またはエージェント自動更新）</li>
-                <li><strong>J列：経過日数</strong> - =TODAY()-I2 で自動計算</li>
-                <li><strong>K列：フォロー状態</strong> - 上記数式で「要フォロー」「OK」を判定</li>
-            </ul>
-        </div>
-    </section>
-
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">DELAY TEMPLATE</div>
-        <h2 class="section-title">遅延アラート - 採用チーム向け</h2>
-
-        <div class="code-block-wrapper">
-            <div class="copy-hint">クリックでコピー</div>
-            <div class="code-block" onclick="copyToClipboard(this)">【遅延アラート】候補者フォロー必要
-
-以下の候補者への連絡が3日以上滞っています。
-
-■ 要フォロー候補者一覧
-
-1. {candidate_name_1}（{position_1}）
-   最終連絡: {last_contact_date_1}（{days_elapsed_1}日経過）
-   ステータス: {status_1}
-   担当: {recruiter_1}
-
-2. {candidate_name_2}（{position_2}）
-   最終連絡: {last_contact_date_2}（{days_elapsed_2}日経過）
-   ステータス: {status_2}
-   担当: {recruiter_2}
-
-■ 本日のフォロー数: {follow_up_count}名
-■ 平均遅延日数: {avg_delay_days}日
-
-早急にフォローをお願いします。
-CX向上のため、候補者への迅速な連絡を心がけましょう。</div>
-        </div>
-    </section>
-
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">DETECTION PROMPT</div>
-        <h2 class="section-title">遅延検知プロンプト</h2>
-
-        <div class="code-block-wrapper">
-            <div class="copy-hint">クリックでコピー</div>
-            <div class="code-block" onclick="copyToClipboard(this)">あなたはコミュニケーション遅延を検知するHRオペレーションアシスタントです。
-
-本日の日付: {today_date}
-
-候補者管理シートデータ:
-{sheet_data}
-
-以下の条件に該当する候補者を特定してください：
-1. 最終連絡日が3日以上前
-2. ステータスが「内定」「辞退」「不採用」ではない（アクティブな候補者のみ）
-
-遅延している候補者ごとに以下を抽出：
-- 候補者名
-- ポジション
-- 最終連絡日
-- 経過日数
-- 現在のステータス
-- 担当リクルーター
-
-出力形式：
----
-遅延候補者:
-- {name} ({position})
-  最終連絡: {date}（{days}日経過）
-  ステータス: {status}
-  担当: {recruiter}
-
-サマリー:
-- 遅延合計: {count}名
-- 平均遅延日数: {avg_days}日
-- 最長遅延: {name}（{max_days}日）
----</div>
-        </div>
-    </section>
-
-    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">BEST PRACTICES</div>
         <h2 class="section-title">運用のポイント</h2>
 
@@ -1351,21 +1268,7 @@ CX向上のため、候補者への迅速な連絡を心がけましょう。</d
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                <span>3日以上連絡なしの候補者が正しく検出されるか</span>
-            </div>
-            <div class="checklist-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-                <span>遅延アラートがDMで届くか</span>
-            </div>
-            <div class="checklist-item">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-                <span>終了ステータスの候補者がアラート対象外になるか</span>
+                <span>72時間経過でマネージャーにエスカレーションされるか</span>
             </div>
         </div>
     </section>
@@ -1379,7 +1282,6 @@ CX向上のため、候補者への迅速な連絡を心がけましょう。</d
             <ul>
                 <li><strong>Interview Reminder:</strong> 前日と1時間前に候補者・面接官に自動送信</li>
                 <li><strong>Evaluation Reminder:</strong> 24時間・48時間・72時間でエスカレーション</li>
-                <li><strong>Delay Alert:</strong> 3日以上連絡なしでDM通知</li>
                 <li>トーンと頻度の調整が重要（多すぎるとCXを損なう）</li>
                 <li>候補者管理シートとの連携で正確な検知を実現</li>
                 <li>エスカレーションルールを事前にチームで合意</li>

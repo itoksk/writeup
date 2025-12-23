@@ -756,7 +756,61 @@
         </div>
     </section>
 
-    <section class="section" id="settings">
+    <section class="section" id="steps">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">STEPS</div>
+                <h2 class="section-title">エージェント作成手順</h2>
+            </div>
+
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>新規エージェント作成</h3>
+                        <p>Google Workspace Studio → 「Create agent」→ エージェント名「Interview Prep Notification」を入力</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>スケジュールトリガー設定</h3>
+                        <p>「Add starter」→「On schedule」を選択<br>
+                        Frequency: Daily | Time: 9:00 AM | Days: Weekdays</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Calendar検索ステップ追加</h3>
+                        <p>「Add step」→「Calendar」→ Today's eventsを取得<br>
+                        Filter: Title contains '面接' or 'Interview'</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Gemini要約ステップ追加</h3>
+                        <p>「Add step」→「Generate with Gemini」→ プロンプトを入力<br>
+                        候補者情報を面接官向けサマリーに変換</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Chat送信ステップ追加</h3>
+                        <p>「Add step」→「チャットで通知する」→ 自分へのDMで面接準備情報を受信 ※スペースへの投稿機能は削除されました</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="settings" style="background: var(--bg-secondary);">
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">Agent Settings</div>
