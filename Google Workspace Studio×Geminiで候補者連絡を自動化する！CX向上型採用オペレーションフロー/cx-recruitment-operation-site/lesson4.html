@@ -3,447 +3,717 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第4回：遅延しない採用運用！ | CX向上型採用オペレーションフロー</title>
+    <title>第4回：遅延しない採用運用！面接リマインド・評価提出リマインドを自動化する | "CX向上型" 採用オペレーションフロー</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --ink: #0A0E27;
-            --paper: #FEFEF8;
-            --electric: #EC4899;
-            --violet: #7C3AED;
-            --gray: #4A5568;
-            --green: #22C55E;
-            --red: #EF4444;
-            --amber: #F59E0B;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --accent-primary: #7c3aed;
+            --accent-secondary: #ec4899;
+            --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #ec4899 50%, #8b5cf6 100%);
+            --border-light: #e2e8f0;
+            --border-medium: #cbd5e1;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --green: #22c55e;
+            --amber: #f59e0b;
+            --orange: #f97316;
+            --red: #ef4444;
         }
+
         body {
-            font-family: 'Zen Kaku Gothic New', sans-serif;
-            background: var(--paper);
-            color: var(--ink);
-            line-height: 1.8;
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-feature-settings: "palt";
         }
+
+        /* Navigation */
         nav {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(254, 254, 248, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             z-index: 1000;
-            padding: 1rem 0;
-            box-shadow: 0 1px 0 rgba(10, 14, 39, 0.1);
+            border-bottom: 1px solid var(--border-light);
         }
+
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .nav-back {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             text-decoration: none;
-            color: var(--ink);
+            color: var(--text-primary);
             font-weight: 500;
-            transition: opacity 0.2s;
+            font-size: 0.9375rem;
+            transition: color 0.2s;
         }
-        .nav-back:hover { opacity: 0.7; }
+
+        .nav-back:hover {
+            color: var(--accent-primary);
+        }
+
         .nav-lesson {
-            font-family: 'Space Grotesk', monospace;
-            font-size: 0.9rem;
-            color: var(--violet);
-            font-weight: 700;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1));
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
         }
+
+        /* Hero Section */
         .hero {
-            min-height: 60vh;
-            display: flex;
-            align-items: center;
-            padding: 0 2rem;
-            margin-top: 60px;
-            background: linear-gradient(135deg, var(--ink) 0%, #1a1f3a 100%);
-            color: var(--paper);
-            position: relative;
-            overflow: hidden;
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
         }
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--violet), var(--electric));
-            clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
-            opacity: 0.15;
-        }
+
         .hero-content {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
-            width: 100%;
-            position: relative;
-            z-index: 1;
         }
+
         .hero-label {
-            display: inline-block;
-            background: var(--violet);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--accent-gradient);
             color: white;
-            padding: 0.5rem 1.5rem;
-            font-size: 0.85rem;
-            font-weight: 700;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
             margin-bottom: 1.5rem;
         }
+
         .hero-title {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 900;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
         }
+
         .hero-title span {
             display: block;
-            color: var(--electric);
-            font-size: 0.5em;
-            margin-top: 0.5em;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-top: 0.25rem;
         }
+
         .hero-desc {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            max-width: 600px;
+            font-size: 1.0625rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin-bottom: 2rem;
         }
+
+        /* Comparison Grid */
         .comparison-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin: 2rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
+
         .comparison-card {
-            padding: 2rem;
-            background: var(--paper);
-            border: 1px solid rgba(10, 14, 39, 0.1);
-            border-radius: 16px;
-            transition: all 0.3s ease;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
         }
-        .comparison-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            transform: translateY(-4px);
-        }
+
         .comparison-card.before {
-            border-top: 4px solid var(--red);
+            border-top: 3px solid var(--red);
         }
+
         .comparison-card.after {
-            border-top: 4px solid var(--green);
+            border-top: 3px solid var(--green);
         }
+
         .comparison-header {
             font-size: 0.75rem;
             font-weight: 700;
             letter-spacing: 0.05em;
             text-transform: uppercase;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
         }
-        .section {
-            max-width: 1200px;
+
+        .comparison-card.before .comparison-header {
+            color: var(--red);
+        }
+
+        .comparison-card.after .comparison-header {
+            color: var(--green);
+        }
+
+        .comparison-card ul {
+            list-style: none;
+        }
+
+        .comparison-card li {
+            padding: 0.5rem 0;
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .comparison-card li:last-child {
+            border-bottom: none;
+        }
+
+        /* Section Container */
+        .section-container {
+            max-width: 900px;
             margin: 0 auto;
             padding: 4rem 2rem;
         }
+
         .section-label {
-            font-family: 'Space Grotesk', monospace;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.2em;
-            color: var(--violet);
-            margin-bottom: 0.5rem;
-        }
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 3px solid var(--violet);
-            display: inline-block;
-        }
-        .goal-card {
-            background: linear-gradient(135deg, var(--violet), var(--electric));
-            color: white;
-            padding: 2rem;
-            font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 2rem;
-        }
-        .agent-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-        .agent-card {
-            background: white;
-            border: 2px solid var(--ink);
-            padding: 1.5rem;
-        }
-        .agent-number {
-            font-family: 'Space Grotesk', monospace;
             font-size: 0.75rem;
             font-weight: 700;
-            color: var(--electric);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-primary);
             margin-bottom: 0.5rem;
         }
-        .agent-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: var(--violet);
-        }
-        .agent-card p {
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-        .config-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 2rem 0;
-        }
-        .config-table th {
-            background: var(--ink);
-            color: var(--paper);
-            padding: 1rem;
-            text-align: left;
-            font-weight: 500;
-        }
-        .config-table td {
-            padding: 1rem;
-            border-bottom: 1px solid rgba(10, 14, 39, 0.1);
-        }
-        .config-table tr:hover {
-            background: rgba(124, 58, 237, 0.03);
-        }
-        .code-block {
-            background: var(--ink);
-            color: #00F0FF;
-            padding: 1.5rem;
-            font-family: 'Space Grotesk', monospace;
-            font-size: 0.85rem;
-            overflow-x: auto;
-            margin: 1rem 0;
-            white-space: pre-wrap;
-            line-height: 1.6;
-        }
-        .escalation-timeline {
-            position: relative;
-            padding-left: 3rem;
-            margin: 2rem 0;
-        }
-        .escalation-timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(to bottom, var(--amber), var(--red));
-        }
-        .escalation-item {
-            position: relative;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: white;
-            border: 1px solid rgba(10, 14, 39, 0.1);
-        }
-        .escalation-item::before {
-            content: '';
-            position: absolute;
-            left: -3rem;
-            top: 1.5rem;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            transform: translateX(-8px);
-        }
-        .escalation-item.level-1::before { background: var(--amber); }
-        .escalation-item.level-2::before { background: #F97316; }
-        .escalation-item.level-3::before { background: var(--red); }
-        .escalation-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            font-family: 'Space Grotesk', monospace;
-            font-size: 0.8rem;
+
+        .section-title {
+            font-size: 1.5rem;
             font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+
+        /* Goal Card */
+        .goal-card {
+            background: var(--accent-gradient);
             color: white;
-            margin-bottom: 0.5rem;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
         }
-        .escalation-item.level-1 .escalation-badge { background: var(--amber); }
-        .escalation-item.level-2 .escalation-badge { background: #F97316; }
-        .escalation-item.level-3 .escalation-badge { background: var(--red); }
-        .escalation-item h4 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: var(--violet);
-        }
-        .escalation-item p {
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-        .points-grid {
+
+        /* Agent Grid */
+        .agent-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin: 2rem 0;
         }
-        .point-card {
-            background: white;
-            border: 2px solid var(--ink);
+
+        .agent-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
             padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
         }
-        .point-number {
-            font-family: 'Space Grotesk', monospace;
+
+        .agent-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .agent-number {
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--accent-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .agent-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .agent-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Config Table */
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+
+        .config-table th {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .config-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .config-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .config-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--text-primary);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            font-size: 0.8125rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        /* Escalation Timeline */
+        .escalation-timeline {
+            position: relative;
+            padding-left: 3rem;
+            margin: 2rem 0;
+        }
+
+        .escalation-timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--amber), var(--orange), var(--red));
+            border-radius: 2px;
+        }
+
+        .escalation-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .escalation-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 1.75rem;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid var(--bg-primary);
+        }
+
+        .escalation-item.level-1::before {
+            background: var(--amber);
+        }
+
+        .escalation-item.level-2::before {
+            background: var(--orange);
+        }
+
+        .escalation-item.level-3::before {
+            background: var(--red);
+        }
+
+        .escalation-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
             font-size: 0.75rem;
             font-weight: 700;
-            color: var(--electric);
+            color: white;
+            border-radius: 9999px;
+            margin-bottom: 0.75rem;
+        }
+
+        .escalation-item.level-1 .escalation-badge {
+            background: var(--amber);
+        }
+
+        .escalation-item.level-2 .escalation-badge {
+            background: var(--orange);
+        }
+
+        .escalation-item.level-3 .escalation-badge {
+            background: var(--red);
+        }
+
+        .escalation-item h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .escalation-item p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        /* Step List */
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 1.25rem;
+            padding: 1.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+
+        .step-item:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-medium);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .step-content p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Points Grid */
+        .points-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .point-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+
+        .point-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .point-number {
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--accent-secondary);
             margin-bottom: 0.5rem;
         }
+
         .point-card h3 {
-            font-size: 1.1rem;
+            font-size: 1rem;
+            font-weight: 600;
             margin-bottom: 0.5rem;
-            color: var(--violet);
+            color: var(--text-primary);
         }
+
         .point-card p {
-            font-size: 0.9rem;
-            color: var(--gray);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
+
+        /* Checklist */
         .checklist {
-            background: rgba(124, 58, 237, 0.05);
-            border: 2px solid var(--violet);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
             padding: 2rem;
             margin: 2rem 0;
         }
+
         .checklist h3 {
-            color: var(--violet);
+            color: var(--accent-primary);
+            font-size: 1.125rem;
+            font-weight: 600;
             margin-bottom: 1rem;
         }
+
         .checklist-item {
             display: flex;
             align-items: center;
             gap: 0.75rem;
             padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
         }
-        .checklist-item:last-child { border-bottom: none; }
-        .checklist-item svg { color: var(--violet); flex-shrink: 0; }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checklist-item svg {
+            color: var(--accent-primary);
+            flex-shrink: 0;
+        }
+
+        /* Template Section */
         .template-section {
-            background: rgba(10, 14, 39, 0.03);
-            padding: 2rem;
-            margin: 2rem 0;
-        }
-        .template-section h3 {
-            color: var(--violet);
-            margin-bottom: 1rem;
-        }
-        .highlight-box {
-            background: rgba(124, 58, 237, 0.1);
-            border-left: 4px solid var(--violet);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
             padding: 1.5rem;
             margin: 1.5rem 0;
         }
+
+        .template-section h3 {
+            color: var(--accent-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(236, 72, 153, 0.05));
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
         .highlight-box h4 {
-            color: var(--violet);
+            color: var(--accent-primary);
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .highlight-box ul {
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .highlight-box li {
             margin-bottom: 0.5rem;
         }
+
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(236, 72, 153, 0.05));
+            border-left: 4px solid var(--accent-primary);
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 2rem 0;
+        }
+
+        .info-box h4 {
+            color: var(--accent-primary);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box ul {
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .info-box li {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Formula Box */
         .formula-box {
-            background: var(--ink);
-            color: #00F0FF;
+            background: var(--text-primary);
+            color: #00f0ff;
             padding: 1rem 1.5rem;
-            font-family: 'Space Grotesk', monospace;
-            font-size: 0.9rem;
+            font-family: 'SF Mono', 'Monaco', monospace;
+            font-size: 0.875rem;
+            border-radius: var(--radius-md);
             margin: 1rem 0;
             display: inline-block;
         }
-        .step-list {
-            margin: 2rem 0;
-        }
-        .step-item {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-            padding: 1.5rem;
-            background: white;
-            border: 1px solid rgba(10, 14, 39, 0.1);
-        }
-        .step-number {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--violet), var(--electric));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Space Grotesk', monospace;
-            font-size: 1.2rem;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-        .step-content h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: var(--violet);
-        }
-        .step-content p {
-            font-size: 0.95rem;
-            color: var(--gray);
-        }
+
+        /* Next Preview */
         .next-preview {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1));
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
             padding: 2rem;
             text-align: center;
-            margin-top: 3rem;
+            margin: 3rem 0 0;
         }
+
         .next-preview h3 {
-            color: var(--gray);
-            font-size: 1rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
             margin-bottom: 0.5rem;
         }
+
         .next-preview p {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--violet);
+            font-size: 1.125rem;
+            font-weight: 600;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
+
+        /* Lesson Nav */
         .lesson-nav {
             display: flex;
             justify-content: space-between;
             padding: 2rem;
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
             gap: 1rem;
         }
-        .nav-prev, .nav-next {
+
+        .nav-prev,
+        .nav-next {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             padding: 1rem 1.5rem;
             text-decoration: none;
-            color: var(--ink);
-            border: 2px solid var(--ink);
             font-weight: 500;
+            font-size: 0.9375rem;
+            border-radius: var(--radius-md);
             transition: all 0.2s;
         }
-        .nav-prev:hover, .nav-next:hover {
-            background: var(--ink);
-            color: var(--paper);
+
+        .nav-prev {
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
         }
+
+        .nav-prev:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border-medium);
+        }
+
         .nav-next {
-            background: var(--violet);
+            background: var(--accent-gradient);
             color: white;
-            border-color: var(--violet);
+            border: none;
         }
+
         .nav-next:hover {
-            background: #6D28D9;
-            border-color: #6D28D9;
+            opacity: 0.9;
+            transform: translateX(2px);
         }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .agent-grid { grid-template-columns: 1fr; }
-            .points-grid { grid-template-columns: 1fr; }
-            .lesson-nav { flex-direction: column; }
+            .hero {
+                padding: 6rem 1.5rem 3rem;
+            }
+
+            .section-container {
+                padding: 3rem 1.5rem;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .points-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lesson-nav {
+                flex-direction: column;
+            }
+
+            .step-item {
+                flex-direction: column;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
@@ -472,31 +742,30 @@
                 24h・48h・72hの段階的エスカレーションで漏れゼロを実現します。
             </p>
 
-            <!-- Before/After: このレッスンで何が変わるか -->
-            <div class="comparison-grid" style="margin-top: 2.5rem;">
+            <div class="comparison-grid">
                 <div class="comparison-card before">
-                    <div class="comparison-header" style="color: var(--red); margin-bottom: 1rem;">BEFORE：受講前</div>
-                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
-                        <li style="padding: 0.5rem 0;">面接リマインドを手動で送信</li>
-                        <li style="padding: 0.5rem 0;">評価シート未提出の催促に追われる</li>
-                        <li style="padding: 0.5rem 0;">遅延に気づくのが遅れる</li>
-                        <li style="padding: 0.5rem 0;">リマインド漏れで選考が停滞</li>
+                    <div class="comparison-header">BEFORE：受講前</div>
+                    <ul>
+                        <li>面接リマインドを手動で送信</li>
+                        <li>評価シート未提出の催促に追われる</li>
+                        <li>遅延に気づくのが遅れる</li>
+                        <li>リマインド漏れで選考が停滞</li>
                     </ul>
                 </div>
                 <div class="comparison-card after">
-                    <div class="comparison-header" style="color: var(--green); margin-bottom: 1rem;">AFTER：受講後</div>
-                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
-                        <li style="padding: 0.5rem 0;">面接リマインドが自動送信</li>
-                        <li style="padding: 0.5rem 0;">24h・48h・72hで段階的催促</li>
-                        <li style="padding: 0.5rem 0;">遅延は即座にアラート通知</li>
-                        <li style="padding: 0.5rem 0;">リマインド漏れゼロを実現</li>
+                    <div class="comparison-header">AFTER：受講後</div>
+                    <ul>
+                        <li>面接リマインドが自動送信</li>
+                        <li>24h・48h・72hで段階的催促</li>
+                        <li>遅延は即座にアラート通知</li>
+                        <li>リマインド漏れゼロを実現</li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <section class="section">
+    <section class="section-container">
         <div class="section-label">GOAL</div>
         <h2 class="section-title">学習目標</h2>
         <div class="goal-card">
@@ -504,7 +773,7 @@
         </div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">AGENTS</div>
         <h2 class="section-title">3種類のリマインドエージェント</h2>
 
@@ -527,7 +796,7 @@
         </div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">INTERVIEW REMINDER</div>
         <h2 class="section-title">Interview Reminder 設計</h2>
 
@@ -567,7 +836,7 @@
         </table>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">STEPS</div>
         <h2 class="section-title">Interview Reminder 作成手順</h2>
 
@@ -606,13 +875,13 @@
                 <div class="step-number">5</div>
                 <div class="step-content">
                     <h3>Chat送信設定（面接官向け）</h3>
-                    <p>「Add step」→「Send Chat message」→ 面接官に1時間前リマインドをChat通知</p>
+                    <p>「Add step」→「チャットで通知する」→ 面接官にDMで1時間前リマインドを通知</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">CANDIDATE REMINDER</div>
         <h2 class="section-title">面接リマインド - 候補者向け（前日）</h2>
 
@@ -646,7 +915,7 @@
 採用チーム</div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">INTERVIEWER REMINDER</div>
         <h2 class="section-title">面接リマインド - 面接官向け（1時間前）</h2>
 
@@ -676,7 +945,7 @@
 {evaluation_sheet_link}</div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">EVALUATION REMINDER</div>
         <h2 class="section-title">Evaluation Reminder 設計</h2>
 
@@ -716,7 +985,7 @@
         </table>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">ESCALATION</div>
         <h2 class="section-title">評価提出エスカレーション</h2>
 
@@ -742,7 +1011,7 @@
         </div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">24H TEMPLATE</div>
         <h2 class="section-title">評価提出リマインド - 1回目（24時間経過）</h2>
 
@@ -767,7 +1036,7 @@
 採用チーム</div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">48H TEMPLATE</div>
         <h2 class="section-title">評価提出リマインド - 2回目（48時間経過）</h2>
 
@@ -797,7 +1066,7 @@
 採用チーム</div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">72H TEMPLATE</div>
         <h2 class="section-title">評価提出リマインド - エスカレーション（72時間経過）</h2>
 
@@ -826,7 +1095,7 @@
 3. 評価シートなしで次ステップ判断</div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">DELAY ALERT</div>
         <h2 class="section-title">Delay Alert 設計</h2>
 
@@ -860,23 +1129,23 @@
                 </tr>
                 <tr>
                     <td>出力</td>
-                    <td>Chat (採用チームスペース)</td>
+                    <td>Chat (DM通知)</td>
                 </tr>
             </tbody>
         </table>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">FORMULA</div>
         <h2 class="section-title">候補者管理シート - 遅延判定式</h2>
 
-        <p>候補者管理シートに以下の数式を追加して、遅延状態を自動判定します。</p>
+        <p style="margin-bottom: 1rem; color: var(--text-secondary);">候補者管理シートに以下の数式を追加して、遅延状態を自動判定します。</p>
 
         <div class="formula-box">=IF(TODAY() - [最終連絡日] >= 3, "要フォロー", "OK")</div>
 
-        <div class="highlight-box">
+        <div class="info-box">
             <h4>列構成の例</h4>
-            <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+            <ul>
                 <li><strong>I列：最終連絡日</strong> - 候補者との最後の連絡日（手動更新またはエージェント自動更新）</li>
                 <li><strong>J列：経過日数</strong> - =TODAY()-I2 で自動計算</li>
                 <li><strong>K列：フォロー状態</strong> - 上記数式で「要フォロー」「OK」を判定</li>
@@ -884,7 +1153,7 @@
         </div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">DELAY TEMPLATE</div>
         <h2 class="section-title">遅延アラート - 採用チーム向け</h2>
 
@@ -911,7 +1180,7 @@
 CX向上のため、候補者への迅速な連絡を心がけましょう。</div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">DETECTION PROMPT</div>
         <h2 class="section-title">遅延検知プロンプト</h2>
 
@@ -951,7 +1220,7 @@ SUMMARY:
 Output in Japanese.</div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">BEST PRACTICES</div>
         <h2 class="section-title">運用のポイント</h2>
 
@@ -979,7 +1248,7 @@ Output in Japanese.</div>
         </div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">TESTING</div>
         <h2 class="section-title">テスト確認ポイント</h2>
 
@@ -997,7 +1266,7 @@ Output in Japanese.</div>
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                <span>1時間前リマインドが面接官のChatに届くか</span>
+                <span>1時間前リマインドが面接官のChat DMに届くか</span>
             </div>
             <div class="checklist-item">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1025,7 +1294,7 @@ Output in Japanese.</div>
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                <span>遅延アラートがチームスペースに届くか</span>
+                <span>遅延アラートがDMで届くか</span>
             </div>
             <div class="checklist-item">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1037,16 +1306,16 @@ Output in Japanese.</div>
         </div>
     </section>
 
-    <section class="section">
+    <section class="section-container" style="padding-top: 0;">
         <div class="section-label">SUMMARY</div>
         <h2 class="section-title">今日のポイント</h2>
 
         <div class="highlight-box">
             <h4>まとめ</h4>
-            <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+            <ul>
                 <li><strong>Interview Reminder:</strong> 前日と1時間前に候補者・面接官に自動送信</li>
                 <li><strong>Evaluation Reminder:</strong> 24時間・48時間・72時間でエスカレーション</li>
-                <li><strong>Delay Alert:</strong> 3日以上連絡なしで採用チームに通知</li>
+                <li><strong>Delay Alert:</strong> 3日以上連絡なしでDM通知</li>
                 <li>トーンと頻度の調整が重要（多すぎるとCXを損なう）</li>
                 <li>候補者管理シートとの連携で正確な検知を実現</li>
                 <li>エスカレーションルールを事前にチームで合意</li>
@@ -1054,10 +1323,12 @@ Output in Japanese.</div>
         </div>
     </section>
 
-    <div class="next-preview">
-        <h3>次回予告</h3>
-        <p>採用オペレーションを完全自動化！選考フロー全体をStudioで一本化する方法</p>
-    </div>
+    <section class="section-container" style="padding-top: 0;">
+        <div class="next-preview">
+            <h3>次回予告</h3>
+            <p>採用オペレーションを完全自動化！選考フロー全体をStudioで一本化する方法</p>
+        </div>
+    </section>
 
     <nav class="lesson-nav">
         <a href="lesson3.html" class="nav-prev">
