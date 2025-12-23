@@ -4,63 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>第3回：面接後作業をゼロにする！要約＆評価ポイントをGmail/Chatへ自動送信するフローを作る | "CX向上型" 採用オペレーションフロー</title>
+    <meta name="description" content="Google Workspace Studio × Geminiで面接後の評価フローを自動化する">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         :root {
             --bg-primary: #ffffff;
             --bg-secondary: #f8fafc;
             --bg-tertiary: #f1f5f9;
+            --bg-card: #ffffff;
             --text-primary: #0f172a;
             --text-secondary: #475569;
-            --text-muted: #64748b;
+            --text-muted: #94a3b8;
             --accent-primary: #7c3aed;
             --accent-secondary: #ec4899;
+            --accent-tertiary: #8b5cf6;
             --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #ec4899 50%, #8b5cf6 100%);
-            --border-light: #e2e8f0;
-            --border-medium: #cbd5e1;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --radius-sm: 6px;
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
+            --transition-fast: 0.15s ease;
+            --transition-base: 0.3s ease;
+            --coral: #ef4444;
             --green: #22c55e;
             --amber: #f59e0b;
-            --red: #ef4444;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.7;
-            font-feature-settings: "palt";
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Navigation */
-        nav {
+        ::selection {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .nav {
             position: fixed;
             top: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.9);
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -70,134 +77,94 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            color: var(--text-secondary);
             text-decoration: none;
-            color: var(--text-primary);
+            font-size: 0.875rem;
             font-weight: 500;
-            font-size: 0.9375rem;
-            transition: color 0.2s;
+            transition: var(--transition-fast);
         }
 
-        .nav-back:hover {
-            color: var(--accent-primary);
-        }
+        .nav-back:hover { color: var(--accent-primary); }
 
         .nav-lesson {
-            font-size: 0.875rem;
-            font-weight: 600;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
             color: var(--accent-primary);
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1));
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
         }
 
-        /* Hero Section */
         .hero {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
             padding: 8rem 2rem 4rem;
             background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            position: relative;
+        }
+
+        .hero-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0);
+            background-size: 40px 40px;
+            opacity: 0.5;
         }
 
         .hero-content {
             max-width: 900px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
-        .hero-label {
+        .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: var(--accent-gradient);
-            color: white;
             padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            font-size: 0.75rem;
             font-weight: 600;
+            color: var(--accent-primary);
             margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
         }
 
         .hero-title {
-            font-size: clamp(1.75rem, 4vw, 2.5rem);
-            font-weight: 700;
-            line-height: 1.3;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
             margin-bottom: 1rem;
-            color: var(--text-primary);
         }
 
-        .hero-title span {
-            display: block;
+        .hero-title-accent {
             background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-top: 0.25rem;
         }
 
-        .hero-desc {
-            font-size: 1.0625rem;
+        .hero-description {
+            font-size: 1.125rem;
             color: var(--text-secondary);
             max-width: 700px;
-            margin-bottom: 2rem;
+            line-height: 1.8;
         }
 
-        /* Comparison Grid */
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+        .section {
+            padding: 5rem 2rem;
         }
 
-        .comparison-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .comparison-card.before {
-            border-top: 3px solid var(--red);
-        }
-
-        .comparison-card.after {
-            border-top: 3px solid var(--green);
-        }
-
-        .comparison-header {
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-        }
-
-        .comparison-card.before .comparison-header {
-            color: var(--red);
-        }
-
-        .comparison-card.after .comparison-header {
-            color: var(--green);
-        }
-
-        .comparison-card ul {
-            list-style: none;
-        }
-
-        .comparison-card li {
-            padding: 0.5rem 0;
-            font-size: 0.9375rem;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .comparison-card li:last-child {
-            border-bottom: none;
-        }
-
-        /* Section Container */
         .section-container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 4rem 2rem;
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
         }
 
         .section-label {
@@ -206,136 +173,95 @@
             letter-spacing: 0.1em;
             text-transform: uppercase;
             color: var(--accent-primary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
 
         .section-title {
-            font-size: 1.5rem;
+            font-size: clamp(1.5rem, 3vw, 2rem);
             font-weight: 700;
-            margin-bottom: 2rem;
-            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
         }
 
-        /* Goal Card */
+        .section-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.8;
+        }
+
         .goal-card {
             background: var(--accent-gradient);
             color: white;
             padding: 2rem;
             border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
             font-size: 1.125rem;
             font-weight: 500;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow-md);
         }
 
-        /* Config Table */
-        .config-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-            background: var(--bg-primary);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-light);
-        }
-
-        .config-table th {
-            background: var(--bg-tertiary);
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .config-table td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-light);
-            font-size: 0.9375rem;
-            color: var(--text-secondary);
-        }
-
-        .config-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .config-table tr:hover {
-            background: var(--bg-secondary);
-        }
-
-        /* Flow Diagram */
-        .flow-diagram {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
             margin: 2rem 0;
         }
 
-        .flow-row {
+        .comparison-card {
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+
+        .comparison-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .comparison-card.before { border-top: 4px solid var(--coral); }
+        .comparison-card.after { border-top: 4px solid var(--green); }
+
+        .comparison-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+
+        .comparison-card.before .comparison-header { color: var(--coral); }
+        .comparison-card.after .comparison-header { color: var(--green); }
+
+        .comparison-list {
+            list-style: none;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        .flow-box {
-            padding: 1rem 1.5rem;
-            border-radius: var(--radius-md);
-            text-align: center;
-            font-weight: 500;
+        .comparison-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: var(--text-secondary);
             font-size: 0.9375rem;
-            background: var(--bg-primary);
-            border: 2px solid var(--border-medium);
+            line-height: 1.6;
         }
 
-        .flow-box.trigger {
-            background: var(--accent-primary);
-            color: white;
-            border-color: var(--accent-primary);
+        .comparison-list li::before {
+            content: '';
+            flex-shrink: 0;
+            width: 6px;
+            height: 6px;
+            margin-top: 0.5rem;
+            border-radius: 50%;
         }
 
-        .flow-box.action {
-            background: var(--accent-secondary);
-            color: white;
-            border-color: var(--accent-secondary);
-        }
+        .comparison-card.before .comparison-list li::before { background: var(--coral); }
+        .comparison-card.after .comparison-list li::before { background: var(--green); }
 
-        .flow-box.gemini {
-            background: var(--text-primary);
-            color: #00f0ff;
-            border-color: var(--text-primary);
-        }
-
-        .flow-box.proceed {
-            background: var(--green);
-            color: white;
-            border-color: var(--green);
-        }
-
-        .flow-box.hold {
-            background: var(--amber);
-            color: white;
-            border-color: var(--amber);
-        }
-
-        .flow-box.decline {
-            background: var(--red);
-            color: white;
-            border-color: var(--red);
-        }
-
-        .flow-arrow {
-            font-size: 1.5rem;
-            color: var(--accent-primary);
-            text-align: center;
-            padding: 0.25rem 0;
-        }
-
-        /* Flow Steps */
         .flow-steps {
             display: flex;
             flex-direction: column;
@@ -347,10 +273,10 @@
             display: flex;
             gap: 1.5rem;
             padding: 2rem;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            transition: all 0.3s ease;
+            transition: var(--transition-base);
         }
 
         .flow-step:hover {
@@ -382,27 +308,64 @@
         .step-content p {
             color: var(--text-secondary);
             font-size: 0.9375rem;
-            line-height: 1.6;
+            margin-bottom: 0.75rem;
         }
 
-        /* Code Block */
+        .step-content ul {
+            list-style: disc;
+            margin-left: 1.25rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .step-content li { margin-bottom: 0.25rem; }
+
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .config-table th {
+            background: var(--text-primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .config-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .config-table tr:last-child td { border-bottom: none; }
+        .config-table tr:hover td { background: var(--bg-secondary); }
+
         .code-block-wrapper {
             position: relative;
-            margin: 1.5rem 0;
+            margin: 1rem 0;
         }
 
         .code-block {
             background: var(--text-primary);
-            color: #e2e8f0;
+            color: var(--accent-secondary);
             padding: 1.5rem;
             border-radius: var(--radius-md);
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-            font-size: 0.8125rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
             overflow-x: auto;
             white-space: pre-wrap;
-            line-height: 1.6;
+            line-height: 1.8;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: var(--transition-fast);
         }
 
         .code-block:hover {
@@ -444,33 +407,304 @@
             opacity: 1;
         }
 
-        /* Branch Grid */
-        .branch-grid {
+        .highlight-box {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--accent-primary);
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 2rem 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--accent-primary);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .highlight-box p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-box ul {
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .highlight-box li {
+            margin-bottom: 0.5rem;
+        }
+
+        .tips-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin: 2rem 0;
         }
 
+        .tip-card {
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
+        }
+
+        .tip-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .tip-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .tip-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .checklist {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .checklist h3 {
+            color: var(--accent-primary);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .checklist ul { list-style: none; }
+
+        .checklist li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .checklist li:last-child { border-bottom: none; }
+
+        .checklist li::before {
+            content: '□';
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+
+        .summary-box {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
+        }
+
+        .summary-box h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .summary-box ul {
+            list-style: none;
+        }
+
+        .summary-box li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.9375rem;
+        }
+
+        .summary-box li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+
+        .next-preview {
+            background: var(--text-primary);
+            color: white;
+            padding: 4rem 2rem;
+        }
+
+        .next-preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .next-preview .section-label {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .next-preview h2 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .next-preview h3 {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .next-preview p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9375rem;
+            max-width: 600px;
+        }
+
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9375rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
+        }
+
+        .nav-prev {
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-prev:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .nav-next {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .nav-next:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* Flow Diagram */
+        .flow-diagram {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-box {
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9375rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+        }
+
+        .flow-box.trigger {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .flow-box.action {
+            background: var(--accent-secondary);
+            color: white;
+            border-color: var(--accent-secondary);
+        }
+
+        .flow-box.gemini {
+            background: var(--text-primary);
+            color: #00f0ff;
+            border-color: var(--text-primary);
+        }
+
+        .flow-box.proceed {
+            background: var(--green);
+            color: white;
+            border-color: var(--green);
+        }
+
+        .flow-box.hold {
+            background: var(--amber);
+            color: white;
+            border-color: var(--amber);
+        }
+
+        .flow-box.decline {
+            background: var(--coral);
+            color: white;
+            border-color: var(--coral);
+        }
+
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: var(--accent-primary);
+            text-align: center;
+            padding: 0.25rem 0;
+        }
+
+        /* Branch Grid */
+        .branch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
         .branch-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             padding: 1.5rem;
-            box-shadow: var(--shadow-sm);
+            transition: var(--transition-base);
         }
 
-        .branch-card.proceed {
-            border-top: 3px solid var(--green);
+        .branch-card:hover {
+            box-shadow: var(--shadow-md);
         }
 
-        .branch-card.hold {
-            border-top: 3px solid var(--amber);
-        }
-
-        .branch-card.decline {
-            border-top: 3px solid var(--red);
-        }
+        .branch-card.proceed { border-top: 4px solid var(--green); }
+        .branch-card.hold { border-top: 4px solid var(--amber); }
+        .branch-card.decline { border-top: 4px solid var(--coral); }
 
         .branch-label {
             font-size: 0.6875rem;
@@ -494,7 +728,7 @@
 
         .branch-card.decline .branch-label {
             background: rgba(239, 68, 68, 0.1);
-            color: var(--red);
+            color: var(--coral);
         }
 
         .branch-card h3 {
@@ -510,31 +744,10 @@
             line-height: 1.6;
         }
 
-        /* Info Box */
-        .info-box {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(236, 72, 153, 0.05));
-            border-left: 4px solid var(--accent-primary);
-            padding: 1.5rem;
-            border-radius: 0 var(--radius-md) var(--radius-md) 0;
-            margin: 2rem 0;
-        }
-
-        .info-box h4 {
-            color: var(--accent-primary);
-            font-size: 0.9375rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .info-box p {
-            font-size: 0.9375rem;
-            color: var(--text-secondary);
-        }
-
         /* Template Section */
         .template-section {
             background: var(--bg-secondary);
-            border: 1px solid var(--border-light);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             padding: 1.5rem;
             margin: 1.5rem 0;
@@ -547,83 +760,6 @@
             margin-bottom: 1rem;
         }
 
-        /* Points Grid */
-        .points-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .point-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s;
-        }
-
-        .point-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-
-        .point-number {
-            font-size: 0.6875rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            color: var(--accent-secondary);
-            margin-bottom: 0.5rem;
-        }
-
-        .point-card h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-        }
-
-        .point-card p {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        /* Checklist */
-        .checklist {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            margin: 2rem 0;
-        }
-
-        .checklist h3 {
-            color: var(--accent-primary);
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .checklist-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border-light);
-            font-size: 0.9375rem;
-            color: var(--text-secondary);
-        }
-
-        .checklist-item:last-child {
-            border-bottom: none;
-        }
-
-        .checklist-item svg {
-            color: var(--accent-primary);
-            flex-shrink: 0;
-        }
-
         /* Variable Table */
         .variable-table {
             width: 100%;
@@ -633,16 +769,16 @@
         }
 
         .variable-table th {
-            background: var(--bg-tertiary);
+            background: var(--text-primary);
+            color: white;
             padding: 0.875rem;
             text-align: left;
             font-weight: 600;
-            border-bottom: 1px solid var(--border-light);
         }
 
         .variable-table td {
             padding: 0.875rem;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-color);
             color: var(--text-secondary);
         }
 
@@ -650,153 +786,28 @@
             background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.1));
             padding: 0.25rem 0.5rem;
             border-radius: var(--radius-sm);
-            font-family: 'SF Mono', 'Monaco', monospace;
+            font-family: 'Monaco', 'Consolas', monospace;
             font-size: 0.8125rem;
             color: var(--accent-primary);
         }
 
-        /* Highlight Box */
-        .highlight-box {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(236, 72, 153, 0.05));
-            border: 1px solid rgba(124, 58, 237, 0.2);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            margin: 2rem 0;
-        }
-
-        .highlight-box h4 {
-            color: var(--accent-primary);
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .highlight-box ul {
-            padding-left: 1.5rem;
-            color: var(--text-secondary);
-        }
-
-        .highlight-box li {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Next Preview */
-        .next-preview {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            text-align: center;
-            margin: 3rem 0 0;
-        }
-
-        .next-preview h3 {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .next-preview p {
-            font-size: 1.125rem;
-            font-weight: 600;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Lesson Nav */
-        .lesson-nav {
-            display: flex;
-            justify-content: space-between;
-            padding: 2rem;
-            max-width: 900px;
-            margin: 0 auto;
-            gap: 1rem;
-        }
-
-        .nav-prev,
-        .nav-next {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem 1.5rem;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9375rem;
-            border-radius: var(--radius-md);
-            transition: all 0.2s;
-        }
-
-        .nav-prev {
-            color: var(--text-primary);
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-light);
-        }
-
-        .nav-prev:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--border-medium);
-        }
-
-        .nav-next {
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-        }
-
-        .nav-next:hover {
-            opacity: 0.9;
-            transform: translateX(2px);
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .hero {
-                padding: 6rem 1.5rem 3rem;
-            }
-
-            .section-container {
-                padding: 3rem 1.5rem;
-            }
-
-            .comparison-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .branch-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .points-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .lesson-nav {
-                flex-direction: column;
-            }
-
-            .flow-row {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .flow-step {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .step-number {
-                width: 48px;
-                height: 48px;
-                font-size: 1rem;
-            }
+            .hero { padding: 6rem 1.5rem 3rem; }
+            .section { padding: 3rem 1.5rem; }
+            .comparison-grid { grid-template-columns: 1fr; }
+            .tips-grid { grid-template-columns: 1fr; }
+            .branch-grid { grid-template-columns: 1fr; }
+            .flow-step { flex-direction: column; gap: 1rem; }
+            .step-number { width: 48px; height: 48px; font-size: 1rem; }
+            .lesson-nav { flex-direction: column; }
+            .flow-row { flex-direction: column; gap: 0.5rem; }
         }
+
+        [id] { scroll-margin-top: 80px; }
     </style>
 </head>
 <body>
-    <nav>
+    <nav class="nav">
         <div class="nav-container">
             <a href="index.html" class="nav-back">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -808,12 +819,13 @@
         </div>
     </nav>
 
-    <div class="hero">
+    <section class="hero">
+        <div class="hero-pattern"></div>
         <div class="hero-content">
-            <div class="hero-label">第3回 / 全5回</div>
+            <div class="hero-badge">第3回 / 全5回</div>
             <h1 class="hero-title">
                 面接後作業をゼロにする！
-                <span>要約＆評価ポイントをGmail/Chatへ自動送信するフローを作る</span>
+                <span class="hero-title-accent">要約＆評価ポイントをGmail/Chatへ自動送信するフローを作る</span>
             </h1>
             <p class="hero-desc">
                 面接終了をトリガーに、評価依頼の自動送信と次ステップの条件分岐処理を実装します。
@@ -823,7 +835,7 @@
             <div class="comparison-grid">
                 <div class="comparison-card before">
                     <div class="comparison-header">BEFORE：受講前</div>
-                    <ul>
+                    <ul class="comparison-list">
                         <li>面接後の評価依頼を手動で送信</li>
                         <li>次ステップの判断に時間がかかる</li>
                         <li>候補者への連絡が遅れがち</li>
@@ -832,7 +844,7 @@
                 </div>
                 <div class="comparison-card after">
                     <div class="comparison-header">AFTER：受講後</div>
-                    <ul>
+                    <ul class="comparison-list">
                         <li>面接終了で評価依頼が自動送信</li>
                         <li>Proceed/Hold/Declineで自動分岐</li>
                         <li>候補者へ即座に次ステップ連絡</li>
@@ -841,19 +853,26 @@
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <section class="section-container">
-        <div class="section-label">GOAL</div>
-        <h2 class="section-title">学習目標</h2>
-        <div class="goal-card">
-            面接終了をトリガーに、評価依頼の自動送信と次ステップの条件分岐処理を実装する
+    <section class="section" id="goal">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Goal</div>
+                <h2 class="section-title">学習目標</h2>
+            </div>
+            <div class="goal-card">
+                面接終了をトリガーに、評価依頼の自動送信と次ステップの条件分岐処理を実装する
+            </div>
         </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">AGENT DESIGN</div>
-        <h2 class="section-title">Post-Interview Workflow エージェント設計</h2>
+    <section class="section" id="agent-design" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Agent Design</div>
+                <h2 class="section-title">Post-Interview Workflow エージェント設計</h2>
+            </div>
 
         <table class="config-table">
             <thead>
@@ -889,11 +908,15 @@
                 </tr>
             </tbody>
         </table>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">FLOW</div>
-        <h2 class="section-title">フロー全体像</h2>
+    <section class="section" id="flow">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Flow</div>
+                <h2 class="section-title">フロー全体像</h2>
+            </div>
 
         <div class="flow-diagram">
             <div class="flow-row">
@@ -918,11 +941,15 @@
                 <div class="flow-box decline">Decline</div>
             </div>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">STEPS</div>
-        <h2 class="section-title">エージェント作成手順</h2>
+    <section class="section" id="steps" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Steps</div>
+                <h2 class="section-title">エージェント作成手順</h2>
+            </div>
 
         <div class="flow-steps">
             <div class="flow-step">
@@ -971,11 +998,15 @@
                 </div>
             </div>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">EMAIL TEMPLATE</div>
-        <h2 class="section-title">Gmail評価依頼テンプレート</h2>
+    <section class="section" id="email-template">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Email Template</div>
+                <h2 class="section-title">Gmail評価依頼テンプレート</h2>
+            </div>
 
         <div class="code-block-wrapper">
             <div class="copy-hint">クリックでコピー</div>
@@ -1006,11 +1037,15 @@
 
 採用チーム</div>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">GEMINI PROMPT</div>
-        <h2 class="section-title">評価フィードバック要約プロンプト</h2>
+    <section class="section" id="gemini-prompt" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Gemini Prompt</div>
+                <h2 class="section-title">評価フィードバック要約プロンプト</h2>
+            </div>
 
         <div class="code-block-wrapper">
             <div class="copy-hint">クリックでコピー</div>
@@ -1054,11 +1089,15 @@
 - 総合: [1-5]
 ---</div>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">CHAT TEMPLATE</div>
-        <h2 class="section-title">Chat結果共有テンプレート</h2>
+    <section class="section" id="chat-template">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Chat Template</div>
+                <h2 class="section-title">Chat結果共有テンプレート</h2>
+            </div>
 
         <div class="code-block-wrapper">
             <div class="copy-hint">クリックでコピー</div>
@@ -1087,11 +1126,15 @@
 詳細は評価シートをご確認ください：
 {evaluation_sheet_link}</div>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">BRANCHING</div>
-        <h2 class="section-title">条件分岐ロジック</h2>
+    <section class="section" id="branching" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Branching</div>
+                <h2 class="section-title">条件分岐ロジック</h2>
+            </div>
 
         <div class="branch-grid">
             <div class="branch-card proceed">
@@ -1127,11 +1170,15 @@
             <h4>重要ポイント</h4>
             <p>最終判断は人間が行う設計です。エージェントは「準備」と「提案」を行い、実際の送信は人間が確認してから行います。特にお見送りメールは必ず人間がレビューしてから送信します。</p>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">CONDITION LOGIC</div>
-        <h2 class="section-title">条件分岐の設定方法</h2>
+    <section class="section" id="condition-logic">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Condition Logic</div>
+                <h2 class="section-title">条件分岐の設定方法</h2>
+            </div>
 
         <div class="code-block-wrapper">
             <div class="copy-hint">クリックでコピー</div>
@@ -1151,11 +1198,15 @@ ELSE IF 推奨アクション == "Decline":
     → Sheetsのステータスを「見送り予定」に更新
     → 人間レビュー用にフラグを立てる</div>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">NEXT STEP PROMPT</div>
-        <h2 class="section-title">次ステップ提案プロンプト</h2>
+    <section class="section" id="next-step-prompt" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Next Step Prompt</div>
+                <h2 class="section-title">次ステップ提案プロンプト</h2>
+            </div>
 
         <div class="code-block-wrapper">
             <div class="copy-hint">クリックでコピー</div>
@@ -1188,11 +1239,15 @@ ELSE IF 推奨アクション == "Decline":
 - メッセージ下書き
 - 特記事項（あれば）</div>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">EMAIL TEMPLATES</div>
-        <h2 class="section-title">メールテンプレート集</h2>
+    <section class="section" id="email-templates">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Email Templates</div>
+                <h2 class="section-title">メールテンプレート集</h2>
+            </div>
 
         <div class="template-section">
             <h3>次ステップ案内メール（Proceed時・下書き）</h3>
@@ -1271,11 +1326,15 @@ ELSE IF 推奨アクション == "Decline":
 採用チーム</div>
             </div>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">EVALUATION FORM</div>
-        <h2 class="section-title">評価シートの標準項目（推奨）</h2>
+    <section class="section" id="evaluation-form" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Evaluation Form</div>
+                <h2 class="section-title">評価シートの標準項目（推奨）</h2>
+            </div>
 
         <table class="config-table">
             <thead>
@@ -1328,11 +1387,15 @@ ELSE IF 推奨アクション == "Decline":
                 </tr>
             </tbody>
         </table>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">VARIABLES</div>
-        <h2 class="section-title">変数一覧</h2>
+    <section class="section" id="variables">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Variables</div>
+                <h2 class="section-title">変数一覧</h2>
+            </div>
 
         <table class="variable-table">
             <thead>
@@ -1395,11 +1458,15 @@ ELSE IF 推奨アクション == "Decline":
                 </tr>
             </tbody>
         </table>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">BEST PRACTICES</div>
-        <h2 class="section-title">運用のポイント</h2>
+    <section class="section" id="best-practices" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Best Practices</div>
+                <h2 class="section-title">運用のポイント</h2>
+            </div>
 
         <div class="points-grid">
             <div class="point-card">
@@ -1423,11 +1490,15 @@ ELSE IF 推奨アクション == "Decline":
                 <p>お見送りメールは下書きのみ作成し、送信は必ず人間が確認。誤送信を防ぐための重要なセーフガード</p>
             </div>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">TESTING</div>
-        <h2 class="section-title">テスト確認ポイント</h2>
+    <section class="section" id="testing">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Testing</div>
+                <h2 class="section-title">テスト確認ポイント</h2>
+            </div>
 
         <div class="checklist">
             <h3>動作確認チェックリスト</h3>
@@ -1481,11 +1552,15 @@ ELSE IF 推奨アクション == "Decline":
                 <span>お見送りメールが自動送信されず下書きに留まるか</span>
             </div>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="section-label">SUMMARY</div>
-        <h2 class="section-title">今日のポイント</h2>
+    <section class="section" id="summary" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Summary</div>
+                <h2 class="section-title">今日のポイント</h2>
+            </div>
 
         <div class="highlight-box">
             <h4>まとめ</h4>
@@ -1498,23 +1573,28 @@ ELSE IF 推奨アクション == "Decline":
                 <li>評価シートの標準化でGemini解析精度を向上</li>
             </ul>
         </div>
+        </div>
     </section>
 
-    <section class="section-container" style="padding-top: 0;">
-        <div class="next-preview">
-            <h3>次回予告</h3>
-            <p>遅延しない採用運用！面接リマインド・評価提出リマインドを自動化する</p>
+    <section class="next-preview">
+        <div class="next-preview-container">
+            <div class="section-label">Next</div>
+            <h2>次回予告</h2>
+            <h3>遅延しない採用運用！面接リマインド・評価提出リマインドを自動化する</h3>
+            <p>
+                リマインダーエージェントで、面接準備のリマインドと評価シート未記入者への督促を自動化します。
+            </p>
         </div>
     </section>
 
     <nav class="lesson-nav">
-        <a href="lesson2.html" class="nav-prev">
+        <a href="lesson2.html" class="nav-btn nav-prev">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
             前のレッスン
         </a>
-        <a href="lesson4.html" class="nav-next">
+        <a href="lesson4.html" class="nav-btn nav-next">
             次のレッスン
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
