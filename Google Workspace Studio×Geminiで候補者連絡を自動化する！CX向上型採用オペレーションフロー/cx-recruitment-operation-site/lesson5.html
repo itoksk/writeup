@@ -212,17 +212,16 @@
         }
 
         .section {
-            padding: 4rem 0;
+            padding: 5rem 2rem;
         }
 
         .section-container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
         }
 
         .section-header {
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }
 
         .section-label {
@@ -235,9 +234,17 @@
         }
 
         .section-title {
-            font-size: 1.75rem;
+            font-size: clamp(1.5rem, 3vw, 2rem);
             font-weight: 700;
             letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .section-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.8;
         }
 
         .goal-card {
@@ -431,6 +438,35 @@
             opacity: 1;
         }
 
+        .highlight-box {
+            background: rgba(124, 58, 237, 0.05);
+            border-left: 4px solid var(--accent-primary);
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 2rem 0;
+        }
+
+        .highlight-box h4 {
+            color: var(--accent-primary);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .highlight-box p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-box ul {
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .highlight-box li {
+            margin-bottom: 0.5rem;
+        }
+
         .status-table {
             width: 100%;
             border-collapse: collapse;
@@ -554,15 +590,15 @@
         }
 
         .summary-box {
-            background: var(--text-primary);
-            color: var(--bg-primary);
-            border-radius: var(--radius-lg);
+            background: var(--accent-gradient);
+            color: white;
             padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
         }
 
         .summary-box h3 {
             font-size: 1.25rem;
-            font-weight: 700;
             margin-bottom: 1rem;
         }
 
@@ -571,17 +607,17 @@
         }
 
         .summary-box li {
-            padding: 0.5rem 0;
+            margin-bottom: 0.5rem;
             padding-left: 1.5rem;
             position: relative;
-            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9375rem;
         }
 
         .summary-box li::before {
             content: "→";
             position: absolute;
             left: 0;
-            color: var(--accent-secondary);
+            font-weight: 700;
         }
 
         .future-grid {
@@ -651,98 +687,61 @@
         .lesson-nav {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 1rem;
         }
 
         .nav-btn {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.875rem 1.5rem;
+            padding: 1rem 1.5rem;
             text-decoration: none;
-            font-size: 0.9375rem;
             font-weight: 500;
+            font-size: 0.9375rem;
             border-radius: var(--radius-md);
             transition: var(--transition-base);
         }
 
-        .nav-btn.nav-prev {
-            color: var(--text-primary);
-            background: var(--bg-secondary);
+        .nav-prev {
+            color: var(--text-secondary);
             border: 1px solid var(--border-color);
         }
 
-        .nav-btn.nav-prev:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--border-hover);
+        .nav-prev:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
         }
 
-        .nav-btn.nav-next {
+        .nav-next {
             background: var(--accent-gradient);
             color: white;
         }
 
-        .nav-btn.nav-next:hover {
-            opacity: 0.9;
-            transform: translateX(4px);
+        .nav-next:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
         }
 
         @media (max-width: 768px) {
-            .hero {
-                min-height: auto;
-                padding: 6rem 1.5rem 3rem;
-            }
-
-            .section-container {
-                padding: 0 1.5rem;
-            }
-
-            .comparison-list {
-                flex-direction: column;
-            }
-
-            .stats-row {
-                grid-template-columns: 1fr;
-            }
-
-            .points-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .future-grid {
-                grid-template-columns: 1fr;
-            }
-
+            .hero { padding: 6rem 1.5rem 3rem; }
+            .section { padding: 3rem 1.5rem; }
+            .comparison-list { flex-direction: column; }
+            .stats-row { grid-template-columns: 1fr; }
+            .points-grid { grid-template-columns: 1fr; }
+            .future-grid { grid-template-columns: 1fr; }
             .agent-header,
-            .agent-item {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
-
+            .agent-item { grid-template-columns: 1fr; gap: 0.5rem; }
             .agent-header > div:first-child,
-            .agent-item > div:first-child {
-                display: none;
-            }
-
-            .lesson-nav {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .flow-step {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .step-number {
-                width: 48px;
-                height: 48px;
-                font-size: 1rem;
-            }
+            .agent-item > div:first-child { display: none; }
+            .flow-step { flex-direction: column; gap: 1rem; }
+            .step-number { width: 48px; height: 48px; font-size: 1rem; }
+            .lesson-nav { flex-direction: column; }
         }
+
+        [id] { scroll-margin-top: 80px; }
     </style>
 </head>
 <body>
