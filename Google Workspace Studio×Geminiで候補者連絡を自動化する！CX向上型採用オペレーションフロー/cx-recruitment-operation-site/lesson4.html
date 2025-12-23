@@ -452,45 +452,46 @@
             color: var(--text-secondary);
         }
 
-        /* Step List */
-        .step-list {
+        /* Flow Steps */
+        .flow-steps {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.5rem;
+            margin: 2rem 0;
         }
 
-        .step-item {
+        .flow-step {
             display: flex;
-            gap: 1.25rem;
-            padding: 1.5rem;
+            gap: 1.5rem;
+            padding: 2rem;
             background: var(--bg-primary);
             border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             box-shadow: var(--shadow-sm);
             transition: all 0.2s;
         }
 
-        .step-item:hover {
+        .flow-step:hover {
+            border-color: var(--accent-primary);
             box-shadow: var(--shadow-md);
-            border-color: var(--border-medium);
         }
 
         .step-number {
-            width: 40px;
-            height: 40px;
+            width: 56px;
+            height: 56px;
             background: var(--accent-gradient);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 1.25rem;
             flex-shrink: 0;
         }
 
         .step-content h3 {
-            font-size: 1rem;
+            font-size: 1.125rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
             color: var(--text-primary);
@@ -755,9 +756,15 @@
                 flex-direction: column;
             }
 
-            .step-item {
+            .flow-step {
                 flex-direction: column;
                 gap: 1rem;
+            }
+
+            .step-number {
+                width: 48px;
+                height: 48px;
+                font-size: 1rem;
             }
         }
     </style>
@@ -880,15 +887,15 @@
         <div class="section-label">STEPS</div>
         <h2 class="section-title">Interview Reminder 作成手順</h2>
 
-        <div class="step-list">
-            <div class="step-item">
+        <div class="flow-steps">
+            <div class="flow-step">
                 <div class="step-number">1</div>
                 <div class="step-content">
                     <h3>新規エージェント作成</h3>
                     <p>Google Workspace Studio → 「Create agent」→ エージェント名「Interview Reminder」を入力</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">2</div>
                 <div class="step-content">
                     <h3>前日リマインドトリガー設定</h3>
@@ -896,7 +903,7 @@
                     Calendarから翌日の面接イベントを検索</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">3</div>
                 <div class="step-content">
                     <h3>1時間前リマインドトリガー設定</h3>
@@ -904,14 +911,14 @@
                     Calendarから1時間後の面接イベントを検索</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">4</div>
                 <div class="step-content">
                     <h3>Gmail送信設定（候補者向け）</h3>
                     <p>「Add step」→「Send Gmail」を選択 → 候補者への前日リマインドメールを送信</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">5</div>
                 <div class="step-content">
                     <h3>Chat送信設定（面接官向け）</h3>
@@ -995,29 +1002,29 @@
         <div class="section-label">STEPS 2</div>
         <h2 class="section-title">Evaluation Reminder 作成手順</h2>
 
-        <div class="step-list">
-            <div class="step-item">
+        <div class="flow-steps">
+            <div class="flow-step">
                 <div class="step-number">1</div>
                 <div class="step-content">
                     <h3>新規エージェント作成</h3>
                     <p>Google Workspace Studio → 「Create agent」→ エージェント名「Evaluation Reminder」を入力</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">2</div>
                 <div class="step-content">
                     <h3>スケジュールトリガー設定</h3>
                     <p>「Add starter」→「Schedule」を選択 → Daily 10:00 AM</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">3</div>
                 <div class="step-content">
                     <h3>Sheets検索ステップ追加</h3>
                     <p>「Add step」→「Get values from Sheets」→ 候補者管理シートから「面接完了 & 評価未提出」レコードを取得</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">4</div>
                 <div class="step-content">
                     <h3>経過時間判定の条件分岐</h3>
@@ -1025,14 +1032,14 @@
                     24時間 / 48時間 / 72時間でアクションを分岐</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">5</div>
                 <div class="step-content">
                     <h3>Gmail送信設定（面接官向け）</h3>
                     <p>「Add step」→「Send Gmail」を選択 → 24時間・48時間経過時はリマインドメール</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">6</div>
                 <div class="step-content">
                     <h3>Chat送信設定（マネージャー向け）</h3>

@@ -335,45 +335,46 @@
             padding: 0.25rem 0;
         }
 
-        /* Step List */
-        .step-list {
+        /* Flow Steps */
+        .flow-steps {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.5rem;
+            margin: 2rem 0;
         }
 
-        .step-item {
+        .flow-step {
             display: flex;
-            gap: 1.25rem;
-            padding: 1.5rem;
+            gap: 1.5rem;
+            padding: 2rem;
             background: var(--bg-primary);
             border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             box-shadow: var(--shadow-sm);
             transition: all 0.2s;
         }
 
-        .step-item:hover {
+        .flow-step:hover {
+            border-color: var(--accent-primary);
             box-shadow: var(--shadow-md);
-            border-color: var(--border-medium);
         }
 
         .step-number {
-            width: 40px;
-            height: 40px;
+            width: 56px;
+            height: 56px;
             background: var(--accent-gradient);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 1.25rem;
             flex-shrink: 0;
         }
 
         .step-content h3 {
-            font-size: 1rem;
+            font-size: 1.125rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
             color: var(--text-primary);
@@ -782,9 +783,15 @@
                 gap: 0.5rem;
             }
 
-            .step-item {
+            .flow-step {
                 flex-direction: column;
                 gap: 1rem;
+            }
+
+            .step-number {
+                width: 48px;
+                height: 48px;
+                font-size: 1rem;
             }
         }
     </style>
@@ -918,15 +925,15 @@
         <div class="section-label">STEPS</div>
         <h2 class="section-title">エージェント作成手順</h2>
 
-        <div class="step-list">
-            <div class="step-item">
+        <div class="flow-steps">
+            <div class="flow-step">
                 <div class="step-number">1</div>
                 <div class="step-content">
                     <h3>新規エージェント作成</h3>
                     <p>Google Workspace Studio → 「Create agent」→ エージェント名「Post-Interview Workflow」とDescriptionを入力</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">2</div>
                 <div class="step-content">
                     <h3>Calendar イベントトリガー設定</h3>
@@ -934,7 +941,7 @@
                     <strong>Event filter:</strong> Title contains '面接' / <strong>Calendar:</strong> Primary calendar</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">3</div>
                 <div class="step-content">
                     <h3>Gmail 評価依頼送信</h3>
@@ -942,7 +949,7 @@
                     Calendarイベントの参加者情報から面接官メールアドレスを取得</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">4</div>
                 <div class="step-content">
                     <h3>Gemini 要約</h3>
@@ -950,14 +957,14 @@
                     総合評価・強み・懸念点・推奨アクションを抽出</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">5</div>
                 <div class="step-content">
                     <h3>Chat 結果共有</h3>
                     <p>「Add step」→「チャットで通知する」→ 自分へのDMで面接結果速報を受信 ※スペースへの投稿機能は削除されました</p>
                 </div>
             </div>
-            <div class="step-item">
+            <div class="flow-step">
                 <div class="step-number">6</div>
                 <div class="step-content">
                     <h3>条件分岐設定</h3>
