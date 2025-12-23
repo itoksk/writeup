@@ -1065,47 +1065,38 @@
                 <h2 class="section-title">評価フィードバック要約プロンプト</h2>
             </div>
 
+        <div class="highlight-box">
+            <h4>重要：「決める」ステップとの連携</h4>
+            <p>このプロンプトの出力に「推奨アクション: Proceed」「推奨アクション: Hold」「推奨アクション: Decline」のいずれかを含めることで、「決める」ステップで条件分岐できます。</p>
+        </div>
+
         <div class="code-block-wrapper">
             <div class="copy-hint">クリックでコピー</div>
             <div class="code-block" onclick="copyToClipboard(this)">あなたは面接フィードバックを要約するHRコーディネーターです。
-
-面接情報：
-- 候補者名: {candidate_name}
-- 応募ポジション: {position}
-- 面接官: {interviewer_name}
-- 面接日: {interview_date}
 
 評価シートの回答：
 {form_responses}
 
 以下の形式で整理してください：
-1. 総合印象（ポジティブ/ニュートラル/ネガティブ）
-2. 主な強み（最大3点）
-3. 懸念点（ある場合）
-4. 推奨次ステップ: 次選考へ進む / 保留 / 見送り
-5. 採用マネージャー向けサマリー（2-3文）
 
-また、以下の評価を抽出してください：
-- スキル評価（1-5）: {skill_rating}
-- カルチャーフィット評価（1-5）: {culture_rating}
-- 総合評価（1-5）: {overall_rating}
+■ 総合印象: [ポジティブ/ニュートラル/ネガティブ]
 
-出力形式：
----
-総合印象: [ポジティブ/ニュートラル/ネガティブ]
-強み:
+■ 強み（最大3点）:
 - [強み1]
 - [強み2]
 - [強み3]
-懸念点:
-- [懸念点（ある場合）]
-推奨アクション: [Proceed/Hold/Decline]
-サマリー: [採用マネージャー向け2-3文]
-評価スコア:
-- スキル: [1-5]
-- カルチャー: [1-5]
-- 総合: [1-5]
----</div>
+
+■ 懸念点:
+- [懸念点があれば記載、なければ「特になし」]
+
+■ 推奨アクション: [Proceed/Hold/Decline のいずれか1つ]
+
+判定基準:
+- Proceed: 総合評価4以上 かつ 重大な懸念なし
+- Hold: 総合評価3-4 または 確認が必要な懸念あり
+- Decline: 総合評価3未満 または 重大な懸念あり
+
+■ サマリー: [採用マネージャー向け2-3文]</div>
         </div>
         </div>
     </section>
@@ -1150,29 +1141,52 @@
     <section class="section" id="decide-prompt">
         <div class="section-container">
             <div class="section-header">
-                <div class="section-label">Decide Prompt</div>
-                <h2 class="section-title">「決める」ステップ用プロンプト</h2>
-                <p class="section-description">自動生成で「決める」ステップが作成された場合、以下のプロンプトで条件分岐を設定できます。</p>
+                <div class="section-label">Decide Step</div>
+                <h2 class="section-title">「決める」ステップの設定方法</h2>
+                <p class="section-description">Geminiの出力に含まれるキーワードで条件分岐を設定します。lesson2と同様のシンプルなパターンです。</p>
             </div>
 
-        <div class="code-block-wrapper">
-            <div class="copy-hint">クリックでコピー</div>
-            <div class="code-block" onclick="copyToClipboard(this)">評価結果に基づいて、次のアクションを判定してください。
+            <div class="highlight-box">
+                <h4>ポイント：Gemini出力 → 決める の連携</h4>
+                <p>Geminiステップで必ず「推奨アクション: Proceed / Hold / Decline」を出力させ、「決める」ステップでそのキーワードを検出します。</p>
+            </div>
 
-入力データ:
-- 総合評価スコア: {overall_rating}/5
-- スキル評価: {skill_rating}/5
-- カルチャーフィット: {culture_rating}/5
-- 面接官の推奨: {interviewer_recommendation}
-- 懸念点: {concerns}
+            <div class="branch-grid" style="margin-top: 1.5rem;">
+                <div class="branch-card proceed">
+                    <div class="branch-label">条件1</div>
+                    <h3>Proceed（次に進む）</h3>
+                    <p>
+                        <strong>条件：</strong> Gemini出力が「Proceed」を含む<br>
+                        <strong>アクション：</strong> 次面接の調整を開始
+                    </p>
+                </div>
+                <div class="branch-card hold">
+                    <div class="branch-label">条件2</div>
+                    <h3>Hold（保留）</h3>
+                    <p>
+                        <strong>条件：</strong> Gemini出力が「Hold」を含む<br>
+                        <strong>アクション：</strong> マネージャーに判断依頼
+                    </p>
+                </div>
+                <div class="branch-card decline">
+                    <div class="branch-label">条件3</div>
+                    <h3>Decline（見送り）</h3>
+                    <p>
+                        <strong>条件：</strong> Gemini出力が「Decline」を含む<br>
+                        <strong>アクション：</strong> お見送りメール下書き作成
+                    </p>
+                </div>
+            </div>
 
-判定基準:
-- Proceed（次に進む）: 総合評価4以上 かつ 重大な懸念なし
-- Hold（保留）: 総合評価3-4 または 確認が必要な懸念あり
-- Decline（見送り）: 総合評価3未満 または 重大な懸念あり
-
-出力: Proceed / Hold / Decline のいずれか1つ</div>
-        </div>
+            <div class="highlight-box" style="margin-top: 1.5rem;">
+                <h4>設定手順</h4>
+                <ol style="padding-left: 1.5rem; color: var(--text-secondary);">
+                    <li>「決める」ステップを追加</li>
+                    <li>条件として「Geminiの出力」を選択</li>
+                    <li>「Proceed を含む」「Hold を含む」「Decline を含む」でそれぞれ分岐を設定</li>
+                    <li>各分岐の先にChat通知ステップを追加</li>
+                </ol>
+            </div>
         </div>
     </section>
 
@@ -1612,12 +1626,11 @@ ELSE IF 推奨アクション == "Decline":
         <div class="highlight-box">
             <h4>まとめ</h4>
             <ul>
-                <li>学習目標をプロンプトとして入力し、エージェントを自動生成</li>
-                <li>スケジュールまたはフォーム送信をトリガーに設定</li>
-                <li>評価シート内容をGeminiが自動要約して構造化</li>
-                <li>「決める」ステップで Proceed / Hold / Decline を条件分岐</li>
-                <li>Chat DM通知で結果を即座に確認</li>
-                <li>お見送り対応は人間が最終確認（自動送信しない）</li>
+                <li>「面接終了後、評価結果に応じて次ステップを自動判定し、Chat通知するエージェントを作成する」で自動生成</li>
+                <li>Geminiプロンプトで「推奨アクション: Proceed/Hold/Decline」を出力させる</li>
+                <li>「決める」ステップで「Proceedを含む」「Holdを含む」「Declineを含む」で分岐</li>
+                <li>Chat DM通知で結果を即座に確認し、次のアクションへ</li>
+                <li>CX向上：候補者への連絡が面接後1日以内に可能に（従来：数日〜1週間）</li>
             </ul>
         </div>
         </div>

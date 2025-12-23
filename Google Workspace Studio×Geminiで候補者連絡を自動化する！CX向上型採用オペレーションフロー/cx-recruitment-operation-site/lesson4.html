@@ -1170,28 +1170,67 @@
     <section class="section" id="decide-prompt">
         <div class="section-container">
             <div class="section-header">
-                <div class="section-label">Decide Prompt</div>
-                <h2 class="section-title">「決める」ステップ用プロンプト</h2>
-                <p class="section-description">Evaluation Reminderで経過時間に応じたエスカレーションを設定する場合のプロンプト例です。</p>
+                <div class="section-label">Decide Step</div>
+                <h2 class="section-title">「決める」ステップの設定方法</h2>
+                <p class="section-description">Geminiの出力に含まれるキーワードで条件分岐を設定します。lesson2, 3と同様のシンプルなパターンです。</p>
             </div>
 
-        <div class="code-block-wrapper">
-            <div class="copy-hint">クリックでコピー</div>
-            <div class="code-block" onclick="copyToClipboard(this)">面接終了からの経過時間を計算し、リマインドレベルを判定してください。
+            <div class="highlight-box">
+                <h4>ポイント：Gemini出力 → 決める の連携</h4>
+                <p>Geminiステップで必ず「リマインドレベル: Level1 / Level2 / Level3 / NoAction」を出力させ、「決める」ステップでそのキーワードを検出します。</p>
+            </div>
+
+            <h4 style="margin-top: 1.5rem; color: var(--accent-primary);">Geminiプロンプト（経過時間判定用）</h4>
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">面接終了からの経過時間を計算し、リマインドレベルを判定してください。
 
 入力データ:
 - 面接終了日時: {interview_end_datetime}
-- 現在日時: {current_datetime}
 - 評価シート提出状況: {evaluation_status}
 
 判定基準:
-- 未提出 & 24時間以上経過: リマインドレベル1（丁寧なトーン）
-- 未提出 & 48時間以上経過: リマインドレベル2（緊急度アップ）
-- 未提出 & 72時間以上経過: リマインドレベル3（マネージャーエスカレーション）
-- 提出済み: リマインド不要
+- 提出済み → NoAction
+- 未提出 & 24時間以上経過 → Level1
+- 未提出 & 48時間以上経過 → Level2
+- 未提出 & 72時間以上経過 → Level3
 
-出力: Level1 / Level2 / Level3 / NoAction のいずれか1つ</div>
-        </div>
+出力形式:
+リマインドレベル: [Level1/Level2/Level3/NoAction]</div>
+            </div>
+
+            <h4 style="margin-top: 1.5rem; color: var(--accent-primary);">「決める」ステップの条件設定</h4>
+            <div class="escalation-timeline" style="margin-top: 1rem;">
+                <div class="escalation-item level-1">
+                    <div class="escalation-badge">条件1</div>
+                    <h4>Level1（24時間経過）</h4>
+                    <p><strong>条件：</strong> Gemini出力が「Level1」を含む<br>
+                    <strong>アクション：</strong> 丁寧なトーンでリマインド通知</p>
+                </div>
+                <div class="escalation-item level-2">
+                    <div class="escalation-badge">条件2</div>
+                    <h4>Level2（48時間経過）</h4>
+                    <p><strong>条件：</strong> Gemini出力が「Level2」を含む<br>
+                    <strong>アクション：</strong> 緊急度を上げたリマインド通知</p>
+                </div>
+                <div class="escalation-item level-3">
+                    <div class="escalation-badge">条件3</div>
+                    <h4>Level3（72時間経過）</h4>
+                    <p><strong>条件：</strong> Gemini出力が「Level3」を含む<br>
+                    <strong>アクション：</strong> マネージャーへエスカレーション通知</p>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 1.5rem;">
+                <h4>設定手順</h4>
+                <ol style="padding-left: 1.5rem; color: var(--text-secondary);">
+                    <li>「Geminiに質問する」ステップで上記プロンプトを設定</li>
+                    <li>「決める」ステップを追加</li>
+                    <li>条件として「Geminiの出力」を選択</li>
+                    <li>「Level1 を含む」「Level2 を含む」「Level3 を含む」でそれぞれ分岐を設定</li>
+                    <li>各分岐の先に対応するChat通知ステップを追加</li>
+                </ol>
+            </div>
         </div>
     </section>
 
@@ -1423,12 +1462,11 @@
         <div class="summary-box">
             <h3>まとめ</h3>
             <ul>
-                <li>学習目標をプロンプトとして入力し、2つのエージェントを自動生成</li>
-                <li><strong>Interview Reminder:</strong> 前日/1時間前にリマインド情報を自分へ通知</li>
-                <li><strong>Evaluation Reminder:</strong> 「決める」ステップで24h/48h/72hを条件分岐</li>
-                <li>現在のWorkspace Studioでは外部へのGmail送信は未対応（自分へのChat/メールのみ）</li>
-                <li>タスク作成でGoogle Tasksに追加し、カレンダーで確認することも可能</li>
-                <li>候補者管理シートとの連携で正確な検知を実現</li>
+                <li><strong>Interview Reminder:</strong> 「面接予定の前日と1時間前に、面接情報をChat通知する」で自動生成</li>
+                <li><strong>Evaluation Reminder:</strong> 「評価シート未提出の候補者をチェックし、経過時間に応じて段階的にChat通知する」で自動生成</li>
+                <li>Geminiプロンプトで「リマインドレベル: Level1/Level2/Level3」を出力させる</li>
+                <li>「決める」ステップで「Level1を含む」「Level2を含む」「Level3を含む」で分岐</li>
+                <li>CX向上：リマインド漏れゼロで候補者への連絡遅延を防止</li>
             </ul>
         </div>
         </div>
