@@ -681,18 +681,33 @@
             <div class="section-header">
                 <div class="section-label">Agent Flow</div>
                 <h2 class="section-title">エージェントのフロー</h2>
+                <p class="section-description">Workspace Studioの自動生成機能で提案されるフローをベースに構築します。</p>
             </div>
 
             <div class="flow-steps">
                 <div class="flow-step">
+                    <div class="step-number">S</div>
+                    <div class="step-content">
+                        <h3>スターター：会議に基づいて</h3>
+                        <p>Calendarの会議（面接）の前に自動でフローを開始します。繰り返しの会議の場合は、会議ごとにフローが実行されます。</p>
+                        <ul>
+                            <li>トリガー：会議の前の指定時間</li>
+                            <li>時間オフセット：10分（面接10分前に起動）</li>
+                            <li>対象：全てのミーティング or 特定のミーティング</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flow-step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3>Schedule Trigger</h3>
-                        <p>毎朝9時に自動実行されるスケジュールトリガーを設定します。</p>
+                        <h3>アクション：会議情報を取得</h3>
+                        <p>スターターで検知した会議の詳細情報を取得します。</p>
                         <ul>
-                            <li>実行頻度：Daily（毎日）</li>
-                            <li>実行時刻：9:00 AM</li>
-                            <li>対象日：Weekdays（平日のみ）</li>
+                            <li>イベントタイトル</li>
+                            <li>開始時刻・終了時刻</li>
+                            <li>参加者リスト</li>
+                            <li>イベント説明文（候補者情報など）</li>
                         </ul>
                     </div>
                 </div>
@@ -700,13 +715,12 @@
                 <div class="flow-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>Calendar イベント取得</h3>
-                        <p>Google Calendarから当日の面接予定を取得します。</p>
+                        <h3>決める：面接かどうかを判定</h3>
+                        <p>イベントタイトルや説明文から、面接イベントかどうかを判定します。</p>
                         <ul>
-                            <li>Calendar: Primary calendar</li>
-                            <li>Time range: Today</li>
-                            <li>Filter: Title contains '面接' or 'Interview'</li>
-                            <li>取得データ: イベントタイトル、時刻、参加者、候補者名</li>
+                            <li>条件：タイトルに「面接」「Interview」「選考」を含む</li>
+                            <li>面接でない場合：フローを終了</li>
+                            <li>面接の場合：次のステップへ進む</li>
                         </ul>
                     </div>
                 </div>
@@ -714,13 +728,11 @@
                 <div class="flow-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Drive ファイル検索</h3>
-                        <p>候補者名を使ってGoogle Driveから履歴書を検索・取得します。</p>
+                        <h3>条件確認：ステップ2の決定を確認</h3>
+                        <p>面接と判定された場合のみ、以降のステップを実行します。</p>
                         <ul>
-                            <li>Search query: {candidate_name} + '履歴書'</li>
-                            <li>Folder: 採用書類フォルダ</li>
-                            <li>File types: PDF, DOCX</li>
-                            <li>取得データ: ファイルリンク、ファイル内容</li>
+                            <li>TRUE：Geminiでの要約処理へ進む</li>
+                            <li>FALSE：フローを終了（通常の会議は対象外）</li>
                         </ul>
                     </div>
                 </div>
@@ -728,12 +740,11 @@
                 <div class="flow-step">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3>Gemini 要約生成</h3>
-                        <p>履歴書の内容をGeminiが解析し、面接官向けサマリーを生成します。</p>
+                        <h3>Geminiに聞く：候補者情報を要約</h3>
+                        <p>会議情報からGeminiが候補者サマリーを生成します。</p>
                         <ul>
-                            <li>入力: 履歴書テキスト、候補者情報、応募ポジション</li>
-                            <li>出力: 主要スキル、経験ハイライト、面接で確認すべき点</li>
-                            <li>文字数: 200語以内の簡潔な要約</li>
+                            <li>入力: イベントタイトル、説明文、参加者情報</li>
+                            <li>出力: 候補者名、ポジション、面接のポイント</li>
                             <li>言語: 日本語</li>
                         </ul>
                     </div>
@@ -742,13 +753,12 @@
                 <div class="flow-step">
                     <div class="step-number">5</div>
                     <div class="step-content">
-                        <h3>Chat 通知送信</h3>
-                        <p>面接10分前に面接官のGoogle Chatへ自動配信します。</p>
+                        <h3>チャットで通知する</h3>
+                        <p>面接官へGoogle Chatで自動通知します。</p>
                         <ul>
-                            <li>送信先: 面接官（Calendarイベント参加者）</li>
-                            <li>送信タイミング: 面接10分前</li>
-                            <li>内容: 候補者サマリー、履歴書リンク、面接情報</li>
-                            <li>フォールバック: 履歴書が見つからない場合の対応</li>
+                            <li>送信先: 自分へのDM（※スペース投稿機能は削除されました）</li>
+                            <li>内容: 候補者サマリー、面接情報</li>
+                            <li>タイミング: 面接10分前（スターターの設定）</li>
                         </ul>
                     </div>
                 </div>
@@ -761,6 +771,15 @@
             <div class="section-header">
                 <div class="section-label">STEPS</div>
                 <h2 class="section-title">エージェント作成手順</h2>
+                <p class="section-description">自然言語でプロンプトを入力すると、Workspace Studioが自動でフローを構築してくれます。</p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>自動生成プロンプト（コピー可能）</h4>
+                <div class="code-block-wrapper">
+                    <div class="copy-hint">クリックでコピー</div>
+                    <div class="code-block" onclick="copyToClipboard(this)">面接予定をCalendarから検知し、Geminiで候補者情報を要約、面接官へChat通知するエージェントを作成する</div>
+                </div>
             </div>
 
             <div class="flow-steps">
@@ -768,42 +787,56 @@
                     <div class="step-number">1</div>
                     <div class="step-content">
                         <h3>新規エージェント作成</h3>
-                        <p>Google Workspace Studio → 「Create agent」→ エージェント名「Interview Prep Notification」を入力</p>
+                        <p>Google Workspace Studio → 「Create agent」→ 上記のプロンプトをチャットに入力してフローを自動生成</p>
                     </div>
                 </div>
 
                 <div class="flow-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>スケジュールトリガー設定</h3>
-                        <p>「Add starter」→「On schedule」を選択<br>
-                        Frequency: Daily | Time: 9:00 AM | Days: Weekdays</p>
+                        <h3>スターター設定：会議に基づいて</h3>
+                        <p>自動生成された「会議に基づいて」スターターを確認・調整</p>
+                        <ul>
+                            <li>対象：全てのミーティング</li>
+                            <li>時間オフセット：10分</li>
+                            <li>タイミング：会議の前に開始</li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="flow-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Calendar検索ステップ追加</h3>
-                        <p>「Add step」→「Calendar」→ Today's eventsを取得<br>
-                        Filter: Title contains '面接' or 'Interview'</p>
+                        <h3>ステップ1：アクション設定</h3>
+                        <p>会議情報を取得するアクションを確認。イベントタイトル、参加者、説明文が取得されます。</p>
                     </div>
                 </div>
 
                 <div class="flow-step">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3>Gemini要約ステップ追加</h3>
-                        <p>「Add step」→「Generate with Gemini」→ プロンプトを入力<br>
-                        候補者情報を面接官向けサマリーに変換</p>
+                        <h3>ステップ2-3：条件分岐の設定</h3>
+                        <p>「決める」ステップで面接かどうかを判定。条件に合致した場合のみ次に進むよう設定。</p>
+                        <ul>
+                            <li>条件例：タイトルに「面接」を含む</li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="flow-step">
                     <div class="step-number">5</div>
                     <div class="step-content">
-                        <h3>Chat送信ステップ追加</h3>
-                        <p>「Add step」→「チャットで通知する」→ 自分へのDMで面接準備情報を受信 ※スペースへの投稿機能は削除されました</p>
+                        <h3>ステップ4：Geminiに聞く</h3>
+                        <p>「Geminiに聞く」ステップでプロンプトを設定。候補者情報の要約を生成します。</p>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>ステップ5：チャットで通知する</h3>
+                        <p>「チャットで通知する」→ 自分へのDMで面接準備情報を受信<br>
+                        ※スペースへの投稿機能は削除されました</p>
                     </div>
                 </div>
             </div>
@@ -835,19 +868,23 @@
                     </tr>
                     <tr>
                         <td>スターター</td>
-                        <td>Schedule (Daily, 9:00 AM, Weekdays)</td>
+                        <td>会議に基づいて（会議の10分前に開始）</td>
                     </tr>
                     <tr>
-                        <td>Calendar検索</td>
-                        <td>Today's events with '面接' in title</td>
+                        <td>時間オフセット</td>
+                        <td>10分（単位：分）</td>
                     </tr>
                     <tr>
-                        <td>Drive検索</td>
-                        <td>候補者名 + 履歴書</td>
+                        <td>対象ミーティング</td>
+                        <td>全てのミーティング（または特定のミーティングを選択可）</td>
                     </tr>
                     <tr>
-                        <td>Chat送信タイミング</td>
-                        <td>面接10分前</td>
+                        <td>条件分岐</td>
+                        <td>タイトルに「面接」「Interview」「選考」を含む場合のみ実行</td>
+                    </tr>
+                    <tr>
+                        <td>Chat送信先</td>
+                        <td>自分へのDM</td>
                     </tr>
                     <tr>
                         <td>出力言語</td>
@@ -855,6 +892,13 @@
                     </tr>
                 </tbody>
             </table>
+
+            <div class="highlight-box">
+                <h4>スターター設定の詳細</h4>
+                <p><strong>会議に基づいて：</strong> 会議の前後の指定時間に開始します。繰り返しの会議の場合は、フローは会議ごとに実行されます。</p>
+                <p><strong>時間オフセット：</strong> 10分前に設定すると、面接の10分前に通知が届きます。</p>
+                <p><strong>注意：</strong> カレンダーの変更がフローと同期されるまでに最大5分かかる場合があります。</p>
+            </div>
         </div>
     </section>
 
@@ -1082,14 +1126,14 @@
             <div class="checklist">
                 <h3>エージェント動作確認</h3>
                 <ul>
-                    <li>Calendarからイベントが正しく取得できているか</li>
-                    <li>イベントタイトルから候補者名とポジションが抽出できているか</li>
-                    <li>Driveから履歴書が正しく取得できているか</li>
-                    <li>Geminiの要約が適切な長さ・内容か</li>
-                    <li>Chatメッセージが正しい宛先（面接官）に送信されるか</li>
-                    <li>履歴書が見つからない場合のフォールバックが動作するか</li>
-                    <li>送信タイミングが面接10分前に設定されているか</li>
-                    <li>複数の面接がある日でも各面接官に個別通知が届くか</li>
+                    <li>「会議に基づいて」スターターが正しく設定されているか</li>
+                    <li>時間オフセットが10分（会議前）に設定されているか</li>
+                    <li>会議情報（タイトル、参加者、説明文）が正しく取得されているか</li>
+                    <li>「決める」ステップで面接かどうか正しく判定されているか</li>
+                    <li>通常の会議（面接以外）ではフローが終了するか</li>
+                    <li>Geminiの要約が適切な内容・長さか</li>
+                    <li>Chatメッセージが自分のDMに正しく届くか</li>
+                    <li>カレンダー変更後、5分以内に同期されるか確認</li>
                 </ul>
             </div>
         </div>
@@ -1112,44 +1156,39 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{interview_time}</td>
-                        <td>面接時刻</td>
-                        <td>Calendar（イベント開始時刻）</td>
+                        <td>{event_title}</td>
+                        <td>イベントタイトル</td>
+                        <td>スターター（会議に基づいて）</td>
                     </tr>
                     <tr>
-                        <td>{candidate_name}</td>
-                        <td>候補者名</td>
-                        <td>Calendarイベントタイトルから抽出</td>
+                        <td>{event_start}</td>
+                        <td>開始時刻</td>
+                        <td>スターター（会議に基づいて）</td>
                     </tr>
                     <tr>
-                        <td>{interviewer}</td>
-                        <td>面接官</td>
-                        <td>Calendarイベント参加者</td>
+                        <td>{event_end}</td>
+                        <td>終了時刻</td>
+                        <td>スターター（会議に基づいて）</td>
                     </tr>
                     <tr>
-                        <td>{position}</td>
-                        <td>応募ポジション</td>
-                        <td>Calendarイベントタイトルまたは説明から抽出</td>
+                        <td>{attendees}</td>
+                        <td>参加者リスト</td>
+                        <td>スターター（会議に基づいて）</td>
                     </tr>
                     <tr>
-                        <td>{resume_content}</td>
-                        <td>履歴書の内容</td>
-                        <td>Drive（ファイル内容をテキスト化）</td>
+                        <td>{description}</td>
+                        <td>イベント説明文</td>
+                        <td>スターター（会議に基づいて）</td>
                     </tr>
                     <tr>
-                        <td>{resume_summary}</td>
-                        <td>履歴書要約</td>
-                        <td>Gemini生成（プロンプトに基づく）</td>
+                        <td>{is_interview}</td>
+                        <td>面接かどうか</td>
+                        <td>「決める」ステップの結果</td>
                     </tr>
                     <tr>
-                        <td>{resume_link}</td>
-                        <td>履歴書リンク</td>
-                        <td>Drive（ファイルの共有URL）</td>
-                    </tr>
-                    <tr>
-                        <td>{folder_link}</td>
-                        <td>採用書類フォルダリンク</td>
-                        <td>Drive（フォールバック用）</td>
+                        <td>{candidate_summary}</td>
+                        <td>候補者サマリー</td>
+                        <td>Gemini生成</td>
                     </tr>
                 </tbody>
             </table>
@@ -1166,14 +1205,14 @@
             <div class="summary-box">
                 <h3>まとめ</h3>
                 <ul>
-                    <li>Schedule Triggerで毎朝9時に自動実行</li>
-                    <li>Calendar連携で当日の面接予定を自動検知</li>
-                    <li>Drive連携で候補者の履歴書を自動取得</li>
-                    <li>Geminiで面接官向けサマリーを自動生成（200語以内）</li>
-                    <li>Chat通知で面接10分前に自動配信</li>
-                    <li>履歴書が見つからない場合のフォールバック対応</li>
-                    <li>命名規則の統一で検索精度を向上</li>
-                    <li>面接官の負担を最小化し、準備時間を10分→0分に短縮</li>
+                    <li>「会議に基づいて」スターターで面接前に自動起動</li>
+                    <li>時間オフセット10分で面接前に通知を配信</li>
+                    <li>「決める」ステップで面接かどうかを自動判定</li>
+                    <li>条件分岐で面接のみをフィルタリング</li>
+                    <li>Geminiで候補者情報を自動要約</li>
+                    <li>Chat通知で自分のDMに面接情報を配信</li>
+                    <li>自然言語プロンプトでフローを自動生成</li>
+                    <li>面接官の準備時間を10分→0分に短縮</li>
                 </ul>
             </div>
         </div>
