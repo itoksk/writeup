@@ -348,6 +348,11 @@
         .config-table tr:last-child td { border-bottom: none; }
         .config-table tr:hover td { background: var(--bg-secondary); }
 
+        .code-block-wrapper {
+            position: relative;
+            margin: 1rem 0;
+        }
+
         .code-block {
             background: var(--text-primary);
             color: var(--accent-secondary);
@@ -357,8 +362,48 @@
             font-size: 0.875rem;
             overflow-x: auto;
             white-space: pre-wrap;
-            margin: 1rem 0;
             line-height: 1.8;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .code-block:hover {
+            opacity: 0.9;
+        }
+
+        .copy-hint {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
         .highlight-box {
@@ -766,20 +811,22 @@
                 <h2 class="section-title">Geminiプロンプト</h2>
             </div>
 
-            <div class="code-block">You are an HR assistant preparing interview briefings.
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">あなたは面接準備を担当するHRアシスタントです。
 
-Candidate: {candidate_name}
-Position: {position}
-Resume content: {resume_content}
+候補者名: {candidate_name}
+応募ポジション: {position}
+履歴書の内容: {resume_content}
 
-Create a brief summary for the interviewer including:
-1. Key qualifications (3 bullet points)
-2. Relevant experience highlights
-3. Suggested interview focus areas
-4. Any notable points or concerns
+面接官向けに以下の情報を含む簡潔なサマリーを作成してください：
+1. 主要なスキル・資格（3つのポイント）
+2. 関連する経験のハイライト
+3. 面接で確認すべきポイント
+4. 特筆すべき点や懸念事項
 
-Keep the summary concise (under 200 words).
-Output in Japanese.</div>
+サマリーは200語以内で簡潔にまとめてください。</div>
+            </div>
 
             <div class="highlight-box">
                 <h4>プロンプト設計のポイント</h4>
@@ -819,7 +866,9 @@ Output in Japanese.</div>
                 <h2 class="section-title">Chatメッセージテンプレート</h2>
             </div>
 
-            <div class="code-block">【面接準備情報】
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">【面接準備情報】
 
 本日 {interview_time} からの面接情報です。
 
@@ -833,10 +882,13 @@ Output in Japanese.</div>
 {resume_link}
 
 面接頑張ってください！</div>
+            </div>
 
             <div class="highlight-box">
                 <h4>履歴書が見つからない場合のフォールバック</h4>
-                <div class="code-block">【面接準備情報 - 要確認】
+                <div class="code-block-wrapper">
+                    <div class="copy-hint">クリックでコピー</div>
+                    <div class="code-block" onclick="copyToClipboard(this)">【面接準備情報 - 要確認】
 
 本日 {interview_time} からの面接があります。
 
@@ -848,6 +900,7 @@ Output in Japanese.</div>
 {folder_link}
 
 お手数をおかけしますが、よろしくお願いいたします。</div>
+                </div>
             </div>
         </div>
     </section>
@@ -895,12 +948,17 @@ Output in Japanese.</div>
                 <h2 class="section-title">Driveファイル検索クエリ</h2>
             </div>
 
-            <div class="code-block">title contains '{candidate_name}' and
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">title contains '{candidate_name}' and
 (title contains '履歴書' or title contains '職務経歴書' or title contains 'Resume' or title contains 'CV')</div>
+            </div>
 
             <div class="highlight-box">
                 <h4>推奨：フォルダ構造</h4>
-                <div class="code-block">採用書類/
+                <div class="code-block-wrapper">
+                    <div class="copy-hint">クリックでコピー</div>
+                    <div class="code-block" onclick="copyToClipboard(this)">採用書類/
 ├── [候補者名A]_[日付]/
 │   ├── 履歴書_[候補者名].pdf
 │   └── 職務経歴書_[候補者名].pdf
@@ -908,6 +966,7 @@ Output in Japanese.</div>
 │   └── 履歴書_[候補者名].pdf
 └── [候補者名C]_[日付]/
     └── ...</div>
+                </div>
             </div>
 
             <div class="tips-grid">
@@ -1092,5 +1151,20 @@ Output in Japanese.</div>
             </svg>
         </a>
     </nav>
+
+    <div class="toast" id="toast">コピーしました</div>
+
+    <script>
+        function copyToClipboard(element) {
+            const text = element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>

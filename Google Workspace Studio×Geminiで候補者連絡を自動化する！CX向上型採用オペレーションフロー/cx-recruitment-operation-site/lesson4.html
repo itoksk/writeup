@@ -309,6 +309,11 @@
         }
 
         /* Code Block */
+        .code-block-wrapper {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
         .code-block {
             background: var(--text-primary);
             color: #e2e8f0;
@@ -317,9 +322,49 @@
             font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
             font-size: 0.8125rem;
             overflow-x: auto;
-            margin: 1.5rem 0;
             white-space: pre-wrap;
             line-height: 1.6;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .code-block:hover {
+            opacity: 0.9;
+        }
+
+        .copy-hint {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
         /* Escalation Timeline */
@@ -885,7 +930,9 @@
         <div class="section-label">CANDIDATE REMINDER</div>
         <h2 class="section-title">面接リマインド - 候補者向け（前日）</h2>
 
-        <div class="code-block">件名：【明日の面接のご案内】{company_name}
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">件名：【明日の面接のご案内】{company_name}
 
 {candidate_name}様
 
@@ -913,13 +960,16 @@
 
 {company_name}
 採用チーム</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
         <div class="section-label">INTERVIEWER REMINDER</div>
         <h2 class="section-title">面接リマインド - 面接官向け（1時間前）</h2>
 
-        <div class="code-block">【面接リマインド】
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">【面接リマインド】
 
 1時間後に面接があります。
 
@@ -943,6 +993,7 @@
 
 ■ 評価シートリンク
 {evaluation_sheet_link}</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
@@ -1015,7 +1066,9 @@
         <div class="section-label">24H TEMPLATE</div>
         <h2 class="section-title">評価提出リマインド - 1回目（24時間経過）</h2>
 
-        <div class="code-block">件名：【リマインド】評価シート記入のお願い - {candidate_name}さん
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">件名：【リマインド】評価シート記入のお願い - {candidate_name}さん
 
 {interviewer}さん
 
@@ -1034,13 +1087,16 @@
 候補者体験（CX）向上のため、迅速な対応にご協力をお願いいたします。
 
 採用チーム</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
         <div class="section-label">48H TEMPLATE</div>
         <h2 class="section-title">評価提出リマインド - 2回目（48時間経過）</h2>
 
-        <div class="code-block">件名：【再リマインド・本日期限】評価シート記入のお願い - {candidate_name}さん
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">件名：【再リマインド・本日期限】評価シート記入のお願い - {candidate_name}さん
 
 {interviewer}さん
 
@@ -1064,13 +1120,16 @@
 ご多忙のところ恐縮ですが、よろしくお願いいたします。
 
 採用チーム</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
         <div class="section-label">72H TEMPLATE</div>
         <h2 class="section-title">評価提出リマインド - エスカレーション（72時間経過）</h2>
 
-        <div class="code-block">【エスカレーション】評価シート未提出
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">【エスカレーション】評価シート未提出
 
 以下の面接について、評価シートが72時間以上未提出です。
 
@@ -1093,6 +1152,7 @@
 1. 面接官に直接フォロー
 2. 口頭フィードバックを代理記入
 3. 評価シートなしで次ステップ判断</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
@@ -1157,7 +1217,9 @@
         <div class="section-label">DELAY TEMPLATE</div>
         <h2 class="section-title">遅延アラート - 採用チーム向け</h2>
 
-        <div class="code-block">【遅延アラート】候補者フォロー必要
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">【遅延アラート】候補者フォロー必要
 
 以下の候補者への連絡が3日以上滞っています。
 
@@ -1178,46 +1240,48 @@
 
 早急にフォローをお願いします。
 CX向上のため、候補者への迅速な連絡を心がけましょう。</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
         <div class="section-label">DETECTION PROMPT</div>
         <h2 class="section-title">遅延検知プロンプト</h2>
 
-        <div class="code-block">You are an HR operations assistant detecting communication delays.
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">あなたはコミュニケーション遅延を検知するHRオペレーションアシスタントです。
 
-Today's date: {today_date}
+本日の日付: {today_date}
 
-Candidate management sheet data:
+候補者管理シートデータ:
 {sheet_data}
 
-Identify candidates where:
-1. Last contact date is 3 or more days ago
-2. Status is NOT "内定", "辞退", "不採用" (active candidates only)
+以下の条件に該当する候補者を特定してください：
+1. 最終連絡日が3日以上前
+2. ステータスが「内定」「辞退」「不採用」ではない（アクティブな候補者のみ）
 
-For each delayed candidate, extract:
-- Candidate name
-- Position
-- Last contact date
-- Days elapsed
-- Current status
-- Assigned recruiter
+遅延している候補者ごとに以下を抽出：
+- 候補者名
+- ポジション
+- 最終連絡日
+- 経過日数
+- 現在のステータス
+- 担当リクルーター
 
-Output format:
+出力形式：
 ---
-DELAYED_CANDIDATES:
+遅延候補者:
 - {name} ({position})
-  Last contact: {date} ({days} days)
-  Status: {status}
-  Recruiter: {recruiter}
+  最終連絡: {date}（{days}日経過）
+  ステータス: {status}
+  担当: {recruiter}
 
-SUMMARY:
-- Total delayed: {count}
-- Average delay: {avg_days} days
-- Most delayed: {name} ({max_days} days)
----
-
-Output in Japanese.</div>
+サマリー:
+- 遅延合計: {count}名
+- 平均遅延日数: {avg_days}日
+- 最長遅延: {name}（{max_days}日）
+---</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
@@ -1344,5 +1408,20 @@ Output in Japanese.</div>
             </svg>
         </a>
     </nav>
+
+    <div class="toast" id="toast">コピーしました</div>
+
+    <script>
+        function copyToClipboard(element) {
+            const text = element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>

@@ -386,6 +386,11 @@
         }
 
         /* Code Block */
+        .code-block-wrapper {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
         .code-block {
             background: var(--text-primary);
             color: #e2e8f0;
@@ -394,9 +399,49 @@
             font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
             font-size: 0.8125rem;
             overflow-x: auto;
-            margin: 1.5rem 0;
             white-space: pre-wrap;
             line-height: 1.6;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .code-block:hover {
+            opacity: 0.9;
+        }
+
+        .copy-hint {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
         /* Branch Grid */
@@ -829,10 +874,6 @@
                     <td>Gmail (面接終了直後)</td>
                 </tr>
                 <tr>
-                    <td>評価検知</td>
-                    <td>Forms response trigger</td>
-                </tr>
-                <tr>
                     <td>結果共有</td>
                     <td>Chat (DM通知)</td>
                 </tr>
@@ -855,10 +896,6 @@
             <div class="flow-arrow">↓</div>
             <div class="flow-row">
                 <div class="flow-box action">Gmail 評価依頼送信</div>
-            </div>
-            <div class="flow-arrow">↓</div>
-            <div class="flow-row">
-                <div class="flow-box trigger">Forms 回答受信</div>
             </div>
             <div class="flow-arrow">↓</div>
             <div class="flow-row">
@@ -908,28 +945,20 @@
             <div class="step-item">
                 <div class="step-number">4</div>
                 <div class="step-content">
-                    <h3>フォーム回答トリガー</h3>
-                    <p>「Add trigger」→「Form response received」を選択<br>
-                    <strong>Form:</strong> 面接評価シート（Google Forms）を指定</p>
-                </div>
-            </div>
-            <div class="step-item">
-                <div class="step-number">5</div>
-                <div class="step-content">
                     <h3>Gemini 要約</h3>
                     <p>「Add step」→「Generate with Gemini」→ 評価内容を構造化して要約<br>
                     総合評価・強み・懸念点・推奨アクションを抽出</p>
                 </div>
             </div>
             <div class="step-item">
-                <div class="step-number">6</div>
+                <div class="step-number">5</div>
                 <div class="step-content">
                     <h3>Chat 結果共有</h3>
                     <p>「Add step」→「チャットで通知する」→ 自分へのDMで面接結果速報を受信 ※スペースへの投稿機能は削除されました</p>
                 </div>
             </div>
             <div class="step-item">
-                <div class="step-number">7</div>
+                <div class="step-number">6</div>
                 <div class="step-content">
                     <h3>条件分岐設定</h3>
                     <p>「Add condition」→ Geminiの判定結果（Proceed/Hold/Decline）に応じてアクションを分岐</p>
@@ -942,7 +971,9 @@
         <div class="section-label">EMAIL TEMPLATE</div>
         <h2 class="section-title">Gmail評価依頼テンプレート</h2>
 
-        <div class="code-block">件名：【評価シート記入依頼】{candidate_name}さん面接
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">件名：【評価シート記入依頼】{candidate_name}さん面接
 
 {interviewer}さん
 
@@ -968,60 +999,64 @@
 ご不明点があればお知らせください。
 
 採用チーム</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
         <div class="section-label">GEMINI PROMPT</div>
         <h2 class="section-title">評価フィードバック要約プロンプト</h2>
 
-        <div class="code-block">You are an HR coordinator summarizing interview feedback.
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">あなたは面接フィードバックを要約するHRコーディネーターです。
 
-Interview details:
-- Candidate: {candidate_name}
-- Position: {position}
-- Interviewer: {interviewer_name}
-- Date: {interview_date}
+面接情報：
+- 候補者名: {candidate_name}
+- 応募ポジション: {position}
+- 面接官: {interviewer_name}
+- 面接日: {interview_date}
 
-Evaluation form responses:
+評価シートの回答：
 {form_responses}
 
-Please organize:
-1. Overall impression (Positive/Neutral/Negative)
-2. Key strengths identified (3 bullets max)
-3. Areas of concern (if any)
-4. Recommended next step: Proceed to next round / Hold / Decline
-5. Summary for hiring manager (2-3 sentences)
+以下の形式で整理してください：
+1. 総合印象（ポジティブ/ニュートラル/ネガティブ）
+2. 主な強み（最大3点）
+3. 懸念点（ある場合）
+4. 推奨次ステップ: 次選考へ進む / 保留 / 見送り
+5. 採用マネージャー向けサマリー（2-3文）
 
-Also extract:
-- Skill rating (1-5): {skill_rating}
-- Culture fit rating (1-5): {culture_rating}
-- Overall rating (1-5): {overall_rating}
+また、以下の評価を抽出してください：
+- スキル評価（1-5）: {skill_rating}
+- カルチャーフィット評価（1-5）: {culture_rating}
+- 総合評価（1-5）: {overall_rating}
 
-Output format:
+出力形式：
 ---
-OVERALL_IMPRESSION: [Positive/Neutral/Negative]
-STRENGTHS:
-- [strength 1]
-- [strength 2]
-- [strength 3]
-CONCERNS:
-- [concern 1 if any]
-RECOMMENDATION: [Proceed/Hold/Decline]
-SUMMARY: [2-3 sentences for hiring manager]
-RATINGS:
-- Skill: [1-5]
-- Culture: [1-5]
-- Overall: [1-5]
----
-
-Output in Japanese.</div>
+総合印象: [ポジティブ/ニュートラル/ネガティブ]
+強み:
+- [強み1]
+- [強み2]
+- [強み3]
+懸念点:
+- [懸念点（ある場合）]
+推奨アクション: [Proceed/Hold/Decline]
+サマリー: [採用マネージャー向け2-3文]
+評価スコア:
+- スキル: [1-5]
+- カルチャー: [1-5]
+- 総合: [1-5]
+---</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
         <div class="section-label">CHAT TEMPLATE</div>
         <h2 class="section-title">Chat結果共有テンプレート</h2>
 
-        <div class="code-block">【面接結果速報】
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">【面接結果速報】
 
 ■ 候補者: {candidate_name}
 ■ ポジション: {position}
@@ -1045,6 +1080,7 @@ Output in Japanese.</div>
 
 詳細は評価シートをご確認ください：
 {evaluation_sheet_link}</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
@@ -1091,55 +1127,61 @@ Output in Japanese.</div>
         <div class="section-label">CONDITION LOGIC</div>
         <h2 class="section-title">条件分岐の設定方法</h2>
 
-        <div class="code-block">IF RECOMMENDATION == "Proceed":
-    → Create Calendar invite for next interviewer
-    → Draft next-step email for candidate
-    → Update Sheets status to "次面接予定"
-    → Notify hiring manager via Chat
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">IF 推奨アクション == "Proceed":
+    → 次の面接官にCalendar招待を作成
+    → 候補者に次ステップ案内メールの下書きを作成
+    → Sheetsのステータスを「次面接予定」に更新
+    → Chatで採用マネージャーに通知
 
-ELSE IF RECOMMENDATION == "Hold":
-    → Send decision request to hiring manager
-    → Update Sheets status to "検討中"
-    → Set reminder for 48h follow-up
+ELSE IF 推奨アクション == "Hold":
+    → 採用マネージャーに判断依頼を送信
+    → Sheetsのステータスを「検討中」に更新
+    → 48時間後フォローアップのリマインダーを設定
 
-ELSE IF RECOMMENDATION == "Decline":
-    → Draft rejection email (DO NOT SEND automatically)
-    → Update Sheets status to "見送り予定"
-    → Flag for human review</div>
+ELSE IF 推奨アクション == "Decline":
+    → お見送りメールの下書きを作成（自動送信しない）
+    → Sheetsのステータスを「見送り予定」に更新
+    → 人間レビュー用にフラグを立てる</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
         <div class="section-label">NEXT STEP PROMPT</div>
         <h2 class="section-title">次ステップ提案プロンプト</h2>
 
-        <div class="code-block">Based on the interview feedback:
-- Overall impression: {overall_impression}
-- Strengths: {strengths}
-- Concerns: {concerns}
-- Interviewer recommendation: {interviewer_recommendation}
-- Skill rating: {skill_rating}/5
-- Culture rating: {culture_rating}/5
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">面接フィードバックに基づいて、次のステップを提案してください。
 
-Suggest the most appropriate next step:
+入力情報：
+- 総合印象: {overall_impression}
+- 強み: {strengths}
+- 懸念点: {concerns}
+- 面接官の推奨: {interviewer_recommendation}
+- スキル評価: {skill_rating}/5
+- カルチャー評価: {culture_rating}/5
 
-1. If "Proceed" (ratings >= 4, no major concerns):
-   - Draft calendar invite for next interview round
-   - Suggest appropriate next interviewer based on role
+次のステップを提案：
 
-2. If "Hold" (ratings 3-4, some concerns):
-   - Draft message requesting hiring manager decision
-   - List specific points requiring clarification
+1. 「Proceed」の場合（評価4以上、重大な懸念なし）：
+   - 次の面接ラウンドのCalendar招待を下書き
+   - ポジションに応じた適切な次の面接官を提案
 
-3. If "Decline" (ratings < 3, major concerns):
-   - Draft polite rejection email
-   - Summarize key reasons (internal use only)
+2. 「Hold」の場合（評価3-4、いくつかの懸念あり）：
+   - 採用マネージャーへの判断依頼メッセージを下書き
+   - 確認が必要な具体的ポイントをリスト化
 
-Provide:
-- Recommended action
-- Draft message content
-- Any special considerations
+3. 「Decline」の場合（評価3未満、重大な懸念あり）：
+   - 丁寧なお見送りメールを下書き
+   - 主な理由をまとめる（内部使用のみ）
 
-Output in Japanese.</div>
+出力内容：
+- 推奨アクション
+- メッセージ下書き
+- 特記事項（あれば）</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
@@ -1148,7 +1190,9 @@ Output in Japanese.</div>
 
         <div class="template-section">
             <h3>次ステップ案内メール（Proceed時・下書き）</h3>
-            <div class="code-block">件名：次回面接のご案内【{company_name}】
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">件名：次回面接のご案内【{company_name}】
 
 {candidate_name}様
 
@@ -1168,11 +1212,14 @@ Output in Japanese.</div>
 
 {company_name}
 採用チーム</div>
+            </div>
         </div>
 
         <div class="template-section">
             <h3>マネージャー判断依頼（Hold時）</h3>
-            <div class="code-block">【判断依頼】{candidate_name}さんの選考について
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">【判断依頼】{candidate_name}さんの選考について
 
 以下の候補者について、面接官の評価が「保留」となっています。
 次のステップについてご判断をお願いいたします。
@@ -1195,11 +1242,14 @@ Output in Japanese.</div>
 3. 見送りとする
 
 ご判断をお願いいたします。</div>
+            </div>
         </div>
 
         <div class="template-section">
             <h3>お見送りメール（Decline時・下書き）</h3>
-            <div class="code-block">件名：選考結果のご連絡【{company_name}】
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">件名：選考結果のご連絡【{company_name}】
 
 {candidate_name}様
 
@@ -1213,6 +1263,7 @@ Output in Japanese.</div>
 
 {company_name}
 採用チーム</div>
+            </div>
         </div>
     </section>
 
@@ -1393,7 +1444,7 @@ Output in Japanese.</div>
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                <span>フォーム回答時にGemini要約が動作するか</span>
+                <span>Geminiで評価内容が正しく要約されるか</span>
             </div>
             <div class="checklist-item">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1434,7 +1485,7 @@ Output in Japanese.</div>
             <h4>まとめ</h4>
             <ul>
                 <li>Calendar終了トリガーで面接官に評価依頼を自動送信</li>
-                <li>Formsの回答をGeminiが自動要約して構造化</li>
+                <li>評価シート内容をGeminiが自動要約して構造化</li>
                 <li>Proceed / Hold / Decline の3段階で条件分岐処理</li>
                 <li>Chat DM通知で結果を即座に確認</li>
                 <li>お見送りメールは下書きのみ作成（人間が最終確認）</li>
@@ -1464,5 +1515,20 @@ Output in Japanese.</div>
             </svg>
         </a>
     </nav>
+
+    <div class="toast" id="toast">コピーしました</div>
+
+    <script>
+        function copyToClipboard(element) {
+            const text = element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>

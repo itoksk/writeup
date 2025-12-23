@@ -359,6 +359,11 @@
         }
 
         /* Code Block */
+        .code-block-wrapper {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
         .code-block {
             background: var(--text-primary);
             color: #e2e8f0;
@@ -367,9 +372,49 @@
             font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
             font-size: 0.8125rem;
             overflow-x: auto;
-            margin: 1.5rem 0;
             white-space: pre-wrap;
             line-height: 1.6;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .code-block:hover {
+            opacity: 0.9;
+        }
+
+        .copy-hint {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
         /* Status Table */
@@ -796,25 +841,26 @@
         <div class="section-label">DASHBOARD PROMPT</div>
         <h2 class="section-title">日次ダッシュボード生成プロンプト</h2>
 
-        <div class="code-block">You are an HR analytics assistant creating a daily recruiting summary.
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">あなたは日次の採用サマリーを作成するHRアナリティクスアシスタントです。
 
-Candidate data from sheet:
+候補者管理シートのデータ：
 {sheet_data}
 
-Today's interviews from calendar:
+本日の面接予定（Calendarより）：
 {today_interviews}
 
-Generate a daily recruiting dashboard including:
+日次の採用ダッシュボードを生成してください。以下の項目を含めること：
 
-1. Pipeline Overview (count by status)
-2. Today's Interview Schedule
-3. Candidates requiring follow-up (3+ days no contact)
-4. This Week's Metrics (applications, interviews, offers)
+1. パイプライン概況（ステータス別人数）
+2. 本日の面接スケジュール
+3. フォローが必要な候補者（3日以上連絡なし）
+4. 今週の指標（応募、面接、オファー）
 
-Format as a Chat message, use Japanese.
-Keep it scannable and actionable.
+Chatメッセージ形式で、一目で把握できアクションにつながる形式にしてください。
 
-Output format:
+出力形式：
 ---
 【採用パイプライン日次サマリー】
 
@@ -836,13 +882,16 @@ Output format:
 ・面接実施: {week_interviews}件
 ・内定承諾: {week_acceptances}名
 ---</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
         <div class="section-label">CHAT TEMPLATE</div>
         <h2 class="section-title">日次サマリーテンプレート</h2>
 
-        <div class="code-block">【採用パイプライン日次サマリー】
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">【採用パイプライン日次サマリー】
 
 ■ パイプライン概況
 ・応募受付: {count_応募受付}名
@@ -864,6 +913,7 @@ Output format:
 
 ■ 注目ポイント
 {highlights}</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
@@ -937,15 +987,18 @@ Output format:
         <div class="section-label">AUTO UPDATE</div>
         <h2 class="section-title">ステータス自動更新クエリ</h2>
 
-        <div class="code-block">Update Google Sheets:
-- Sheet: 候補者管理
-- Row: {candidate_row}
-- Column: ステータス
-- Value: "{new_status}"
-- Column: 最終連絡日
-- Value: =TODAY()
-- Column: 更新者
-- Value: "Agent: {agent_name}"</div>
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">Google Sheetsを更新:
+- シート名: 候補者管理
+- 行: {candidate_row}
+- 列: ステータス
+- 値: "{new_status}"
+- 列: 最終連絡日
+- 値: =TODAY()
+- 列: 更新者
+- 値: "Agent: {agent_name}"</div>
+        </div>
 
         <table class="status-table">
             <thead>
@@ -1025,22 +1078,24 @@ Output format:
         <div class="section-label">WEEKLY REPORT</div>
         <h2 class="section-title">週次レポートプロンプト（拡張用）</h2>
 
-        <div class="code-block">You are an HR analytics assistant creating a weekly recruiting report.
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">あなたは週次の採用レポートを作成するHRアナリティクスアシスタントです。
 
-This week's data:
-- New applications: {week_applications}
-- Interviews conducted: {week_interviews}
-- Offers extended: {week_offers}
-- Offers accepted: {week_acceptances}
-- Candidates declined: {week_declines}
+今週のデータ：
+- 新規応募: {week_applications}名
+- 面接実施: {week_interviews}件
+- オファー提示: {week_offers}件
+- 内定承諾: {week_acceptances}名
+- 辞退: {week_declines}名
 
-Generate a weekly report including:
-1. Key metrics summary
-2. Conversion rates (application to interview, interview to offer, offer to accept)
-3. Notable trends or concerns
-4. Recommendations for next week
+以下の項目を含む週次レポートを生成してください：
+1. 主要指標サマリー
+2. コンバージョン率（応募→面接、面接→オファー、オファー→承諾）
+3. 注目すべき傾向や懸念点
+4. 来週の推奨アクション
 
-Output format:
+出力形式：
 ---
 【週次採用レポート】{week_start}〜{week_end}
 
@@ -1061,9 +1116,8 @@ Output format:
 
 ■ 来週の推奨アクション
 {recommendations}
----
-
-Output in Japanese.</div>
+---</div>
+        </div>
     </section>
 
     <section class="section-container" style="padding-top: 0;">
@@ -1157,5 +1211,20 @@ Output in Japanese.</div>
             </svg>
         </a>
     </nav>
+
+    <div class="toast" id="toast">コピーしました</div>
+
+    <script>
+        function copyToClipboard(element) {
+            const text = element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>

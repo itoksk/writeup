@@ -608,6 +608,11 @@
             border-bottom: none;
         }
 
+        .code-block-wrapper {
+            position: relative;
+            margin: 1rem 0;
+        }
+
         .code-block {
             background: var(--text-primary);
             color: var(--accent-secondary);
@@ -617,7 +622,47 @@
             font-size: 0.875rem;
             overflow-x: auto;
             white-space: pre-wrap;
-            margin: 1rem 0;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .code-block:hover {
+            opacity: 0.9;
+        }
+
+        .copy-hint {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
         .highlight-box {
@@ -1126,23 +1171,25 @@
                 <p class="section-description">第2回で実際に使用するプロンプトの参考例です。</p>
             </div>
 
-            <div class="code-block">You are an HR assistant helping interview preparation.
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">あなたは面接準備をサポートするHRアシスタントです。
 
-Summarize the following candidate information for the interviewer:
+以下の候補者情報を面接官向けに要約してください：
 
-Candidate Name: {candidate_name}
-Position: {position}
-Resume/CV content: {resume_content}
-Previous interview notes: {previous_notes}
+候補者名: {candidate_name}
+応募ポジション: {position}
+履歴書/職務経歴書の内容: {resume_content}
+前回の面接メモ: {previous_notes}
 
-Provide:
-1. Key qualifications (3 bullet points)
-2. Relevant experience highlights
-3. Points to explore in interview
-4. Any concerns or gaps to address
+以下の項目を含めて回答してください：
+1. 主要なスキル・資格（3つのポイント）
+2. 関連する経験のハイライト
+3. 面接で深掘りすべきポイント
+4. 懸念点や確認すべきギャップ
 
-Format as a brief, scannable summary for the interviewer.
-Output in Japanese.</div>
+面接官がすぐに把握できる、簡潔で読みやすいサマリー形式で出力してください。</div>
+            </div>
         </div>
     </section>
 
@@ -1233,5 +1280,20 @@ Output in Japanese.</div>
             </svg>
         </a>
     </nav>
+
+    <div class="toast" id="toast">コピーしました</div>
+
+    <script>
+        function copyToClipboard(element) {
+            const text = element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>
