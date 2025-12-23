@@ -1004,27 +1004,27 @@
                 <tbody>
                     <tr>
                         <td>Interview Prep Notification</td>
-                        <td>面接前日に候補者サマリーと履歴書リンクを面接官に自動送信</td>
+                        <td>面接前日に候補者サマリーをGeminiで要約し、Chat DMで通知</td>
                         <td>第2回</td>
                     </tr>
                     <tr>
                         <td>Post-Interview Workflow</td>
-                        <td>面接終了後に評価依頼を自動送信、次ステップを条件分岐で処理</td>
+                        <td>評価フォーム送信後、結果に応じて次ステップを条件分岐で判定・通知</td>
                         <td>第3回</td>
                     </tr>
                     <tr>
                         <td>Interview Reminder</td>
-                        <td>面接前日と1時間前に候補者・面接官へリマインド</td>
+                        <td>面接前日と1時間前にChat DMでリマインド通知</td>
                         <td>第4回</td>
                     </tr>
                     <tr>
                         <td>Evaluation Reminder</td>
-                        <td>24h・48h・72hでエスカレーション付き評価リマインド</td>
+                        <td>24h・48h・72hでエスカレーション付き評価リマインド通知</td>
                         <td>第4回</td>
                     </tr>
                     <tr>
                         <td>Daily Recruiting Dashboard</td>
-                        <td>毎朝パイプライン状況を集計してチームに配信</td>
+                        <td>毎朝パイプライン状況を集計してChat DMで配信</td>
                         <td>第5回</td>
                     </tr>
                 </tbody>
@@ -1043,20 +1043,20 @@
                 <div class="comparison-card before">
                     <div class="comparison-header">Before</div>
                     <ul class="comparison-list">
-                        <li>面接日程調整：返信まで平均24時間</li>
                         <li>面接前情報共有：面接官が自分で確認（10分/件）</li>
-                        <li>面接後フィードバック：手動で依頼（5分/件）</li>
-                        <li>リマインド：手動でカレンダー確認</li>
+                        <li>面接後フィードバック：手動で依頼・確認（5分/件）</li>
+                        <li>リマインド：手動でシート確認・連絡</li>
+                        <li>パイプライン把握：都度スプレッドシートを確認</li>
                         <li>1日の連絡業務時間：2〜3時間</li>
                     </ul>
                 </div>
                 <div class="comparison-card after">
                     <div class="comparison-header">After</div>
                     <ul class="comparison-list">
-                        <li>面接日程調整：Calendar登録で即座に案内</li>
-                        <li>面接前情報共有：Geminiが自動要約してChat配信</li>
-                        <li>面接後フィードバック：終了検知で自動依頼</li>
-                        <li>リマインド：スケジュールトリガーで自動送信</li>
+                        <li>面接前情報共有：Geminiが自動要約してChat DM配信</li>
+                        <li>面接後フィードバック：評価フォーム連携で自動判定・通知</li>
+                        <li>リマインド：スケジュールトリガーで自動通知</li>
+                        <li>パイプライン把握：毎朝自動で日次サマリー配信</li>
                         <li>1日の連絡業務時間：30分以下</li>
                     </ul>
                 </div>
@@ -1083,24 +1083,24 @@
                     <p>要約・分析・文面生成</p>
                 </div>
                 <div class="tool-card">
-                    <div class="tool-icon">M</div>
-                    <h4>Gmail</h4>
-                    <p>メール検知・自動返信</p>
+                    <div class="tool-icon">H</div>
+                    <h4>Sheets</h4>
+                    <p>候補者データ管理</p>
                 </div>
                 <div class="tool-card">
-                    <div class="tool-icon">C</div>
-                    <h4>Calendar</h4>
-                    <p>面接予定管理</p>
+                    <div class="tool-icon">F</div>
+                    <h4>Forms</h4>
+                    <p>評価フォーム連携</p>
                 </div>
                 <div class="tool-card">
                     <div class="tool-icon">T</div>
                     <h4>Chat</h4>
-                    <p>社内連絡・通知</p>
+                    <p>DM通知・連絡</p>
                 </div>
                 <div class="tool-card">
-                    <div class="tool-icon">D</div>
-                    <h4>Drive</h4>
-                    <p>書類保存・管理</p>
+                    <div class="tool-icon">K</div>
+                    <h4>Tasks</h4>
+                    <p>タスク作成・管理</p>
                 </div>
             </div>
         </div>
@@ -1118,10 +1118,9 @@
                 <ul>
                     <li>Google Workspaceアカウント（Business Standard以上推奨）</li>
                     <li>候補者管理スプレッドシート（下記構成で作成）</li>
-                    <li>履歴書保存用Google Driveフォルダ</li>
-                    <li>Google Chat（DM通知用） ※スペースへの投稿機能は削除されました</li>
-                    <li>面接用Googleカレンダー</li>
                     <li>面接評価シート（Googleフォーム）</li>
+                    <li>Google Chat（DM通知用） ※外部送信・スペース投稿は未対応</li>
+                    <li>面接用Googleカレンダー（「会議に基づいて」スターター用）</li>
                 </ul>
             </div>
         </div>
@@ -1255,8 +1254,8 @@
             <h2>次回予告</h2>
             <h3>面接前準備を自動化！カレンダー × Gemini × Chatで候補者へ必要情報を自動送信する</h3>
             <p>
-                実際にStudioにアクセスして、面接前に候補者情報を自動要約し、面接官へChat通知するエージェントを作成します。
-                Calendar連携から、実際の画面を見ながら学びます。
+                実際にStudioにアクセスして、面接前に候補者情報をGeminiで自動要約し、Chat DMで通知するエージェントを作成します。
+                「会議に基づいて」スターターを使って、実際の画面を見ながら学びます。
             </p>
         </div>
     </section>
