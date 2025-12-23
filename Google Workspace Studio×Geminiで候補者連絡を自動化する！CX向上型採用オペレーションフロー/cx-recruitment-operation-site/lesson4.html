@@ -805,7 +805,8 @@
             </h1>
             <p class="hero-desc">
                 面接リマインドと評価シート提出リマインドの2つのエージェントを作成。
-                24h・48h・72hの段階的エスカレーションで漏れゼロを実現します。
+                24h・48h・72hの段階的エスカレーションで漏れゼロを実現します。<br>
+                <small style="color: var(--text-muted);">※現在のWorkspace Studioでは外部へのGmail送信は未対応。自分へのChat/メール通知として運用します。</small>
             </p>
 
             <div class="comparison-grid" style="margin-top: 2.5rem;">
@@ -839,6 +840,35 @@
             </div>
             <div class="goal-card">
                 面接リマインドと評価シート提出リマインドを自動化する2つのエージェントを作成する
+            </div>
+
+            <div class="highlight-box" style="margin-top: 2rem;">
+                <h4>自動生成プロンプト（コピー可能）</h4>
+                <p>以下のプロンプトをWorkspace Studioの「Create agent」画面で入力すると、エージェントが自動生成されます。</p>
+
+                <h5 style="margin-top: 1rem; color: var(--accent-primary);">Agent 1: Interview Reminder</h5>
+                <div class="code-block-wrapper">
+                    <div class="copy-hint">クリックでコピー</div>
+                    <div class="code-block" onclick="copyToClipboard(this)">面接予定の前日と1時間前に、面接情報をChat通知するエージェントを作成する</div>
+                </div>
+
+                <h5 style="margin-top: 1rem; color: var(--accent-primary);">Agent 2: Evaluation Reminder</h5>
+                <div class="code-block-wrapper">
+                    <div class="copy-hint">クリックでコピー</div>
+                    <div class="code-block" onclick="copyToClipboard(this)">評価シート未提出の候補者をチェックし、経過時間に応じて段階的にChat通知するエージェントを作成する</div>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 1rem;">
+                <h4>Workspace Studioの現在の制約について</h4>
+                <p>現在のWorkspace Studioでは、<strong>外部へのGmail送信（Send Gmail）は未対応</strong>です。</p>
+                <p>利用可能な通知方法：</p>
+                <ul>
+                    <li><strong>自分へのChat通知</strong> - 自分へのDMでリマインド情報を受け取る</li>
+                    <li><strong>自分へのメール通知</strong> - 自分のGmailにリマインド情報を受け取る</li>
+                    <li><strong>タスク作成</strong> - Google Tasksにタスクを追加（カレンダーで確認可能）</li>
+                </ul>
+                <p style="margin-top: 1rem;">本レッスンでは、自分へのChat通知を活用し、受け取った情報を元に候補者・面接官へ手動で連絡するワークフローを構築します。</p>
             </div>
         </div>
     </section>
@@ -902,7 +932,7 @@
                 </tr>
                 <tr>
                     <td>出力</td>
-                    <td>Gmail (候補者), Chat (面接官)</td>
+                    <td>Chat (自分へのDM) ※Gmailでの外部送信は現在未対応</td>
                 </tr>
             </tbody>
         </table>
@@ -920,38 +950,34 @@
             <div class="flow-step">
                 <div class="step-number">1</div>
                 <div class="step-content">
-                    <h3>新規エージェント作成</h3>
-                    <p>Google Workspace Studio → 「Create agent」→ エージェント名「Interview Reminder」を入力</p>
+                    <h3>エージェント自動生成</h3>
+                    <p>Google Workspace Studio → 「Create agent」→ 自動生成プロンプトを入力してエージェントを自動生成</p>
+                    <ul>
+                        <li>自動で「スケジュール」スターターと「チャットで通知する」ステップが設定される</li>
+                        <li>「会議に基づいて」スターターが設定される場合もある</li>
+                    </ul>
                 </div>
             </div>
             <div class="flow-step">
                 <div class="step-number">2</div>
                 <div class="step-content">
-                    <h3>前日リマインドトリガー設定</h3>
-                    <p>「Add starter」→「Schedule」を選択 → Daily 9:00 AM<br>
-                    Calendarから翌日の面接イベントを検索</p>
+                    <h3>スターターの確認・調整</h3>
+                    <p>自動生成されたスターターを確認し、必要に応じて調整</p>
+                    <ul>
+                        <li>「会議に基づいて」: 面接イベントの10分前/1日前に起動</li>
+                        <li>「スケジュール」: Daily 9:00 AM で前日リマインド</li>
+                    </ul>
                 </div>
             </div>
             <div class="flow-step">
                 <div class="step-number">3</div>
                 <div class="step-content">
-                    <h3>1時間前リマインドトリガー設定</h3>
-                    <p>「Add starter」→「Schedule」を選択 → Hourly<br>
-                    Calendarから1時間後の面接イベントを検索</p>
-                </div>
-            </div>
-            <div class="flow-step">
-                <div class="step-number">4</div>
-                <div class="step-content">
-                    <h3>Gmail送信設定（候補者向け）</h3>
-                    <p>「Add step」→「Send Gmail」を選択 → 候補者への前日リマインドメールを送信</p>
-                </div>
-            </div>
-            <div class="flow-step">
-                <div class="step-number">5</div>
-                <div class="step-content">
-                    <h3>Chat送信設定（面接官向け）</h3>
-                    <p>「Add step」→「チャットで通知する」→ 面接官にDMで1時間前リマインドを通知</p>
+                    <h3>Chat通知ステップの確認</h3>
+                    <p>「チャットで通知する」ステップが設定されているか確認 → 自分へのDMで面接リマインド情報を受け取る</p>
+                    <ul>
+                        <li>候補者・面接官への連絡は、受け取った情報を元に手動で送信</li>
+                        <li>または、GASなど別の仕組みで外部送信を実装</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -961,8 +987,9 @@
     <section class="section" id="candidate-reminder">
         <div class="section-container">
             <div class="section-header">
-                <div class="section-label">Candidate Reminder</div>
-                <h2 class="section-title">面接リマインド - 候補者向け（前日）</h2>
+                <div class="section-label">Reminder Template</div>
+                <h2 class="section-title">面接リマインド通知テンプレート（前日用）</h2>
+                <p class="section-description">自分へのChat DMで受け取る通知内容。この情報を元に候補者へメール送信等を行います。</p>
             </div>
 
         <div class="code-block-wrapper">
@@ -1002,8 +1029,9 @@
     <section class="section" id="interviewer-reminder" style="background: var(--bg-secondary);">
         <div class="section-container">
             <div class="section-header">
-                <div class="section-label">Interviewer Reminder</div>
-                <h2 class="section-title">面接リマインド - 面接官向け（1時間前）</h2>
+                <div class="section-label">Reminder Template</div>
+                <h2 class="section-title">面接リマインド通知テンプレート（1時間前用）</h2>
+                <p class="section-description">自分へのChat DMで受け取る通知内容。この情報を元に面接官へ連絡等を行います。</p>
             </div>
 
         <div class="code-block-wrapper">
@@ -1047,44 +1075,48 @@
             <div class="flow-step">
                 <div class="step-number">1</div>
                 <div class="step-content">
-                    <h3>新規エージェント作成</h3>
-                    <p>Google Workspace Studio → 「Create agent」→ エージェント名「Evaluation Reminder」を入力</p>
+                    <h3>エージェント自動生成</h3>
+                    <p>Google Workspace Studio → 「Create agent」→ 自動生成プロンプトを入力してエージェントを自動生成</p>
+                    <ul>
+                        <li>自動で「スケジュール」スターターと「Sheets検索」ステップが設定される</li>
+                        <li>「決める」ステップで条件分岐が自動生成される場合がある</li>
+                    </ul>
                 </div>
             </div>
             <div class="flow-step">
                 <div class="step-number">2</div>
                 <div class="step-content">
-                    <h3>スケジュールトリガー設定</h3>
-                    <p>「Add starter」→「Schedule」を選択 → Daily 10:00 AM</p>
+                    <h3>スターターの確認・調整</h3>
+                    <p>自動生成されたスターターを確認し、必要に応じて調整</p>
+                    <ul>
+                        <li>「スケジュール」: Daily 10:00 AM で毎日チェック</li>
+                    </ul>
                 </div>
             </div>
             <div class="flow-step">
                 <div class="step-number">3</div>
                 <div class="step-content">
-                    <h3>Sheets検索ステップ追加</h3>
-                    <p>「Add step」→「Get values from Sheets」→ 候補者管理シートから「面接完了 & 評価未提出」レコードを取得</p>
+                    <h3>Sheetsステップの確認</h3>
+                    <p>「Sheetsから値を取得する」ステップで候補者管理シートから「面接完了 & 評価未提出」レコードを取得</p>
                 </div>
             </div>
             <div class="flow-step">
                 <div class="step-number">4</div>
                 <div class="step-content">
-                    <h3>経過時間判定の条件分岐</h3>
-                    <p>「Add condition」→ 面接終了からの経過時間を計算<br>
-                    24時間 / 48時間 / 72時間でアクションを分岐</p>
+                    <h3>「決める」ステップの確認・追加</h3>
+                    <p>経過時間に応じた条件分岐を設定。以下のプロンプトで調整可能：</p>
                 </div>
             </div>
             <div class="flow-step">
                 <div class="step-number">5</div>
                 <div class="step-content">
-                    <h3>Gmail送信設定（面接官向け）</h3>
-                    <p>「Add step」→「Send Gmail」を選択 → 24時間・48時間経過時はリマインドメール</p>
-                </div>
-            </div>
-            <div class="flow-step">
-                <div class="step-number">6</div>
-                <div class="step-content">
-                    <h3>Chat送信設定（マネージャー向け）</h3>
-                    <p>「Add step」→「チャットで通知する」→ 72時間経過時はマネージャーへDMでエスカレーション</p>
+                    <h3>Chat通知設定（自分へのDM）</h3>
+                    <p>「Add step」→「チャットで通知する」→ 自分へのDMで評価提出リマインド情報を受け取る</p>
+                    <ul>
+                        <li>24h・48h・72h経過時に、経過時間と対象者情報を通知</li>
+                        <li>面接官・マネージャーへの連絡は、受け取った情報を元に手動で送信</li>
+                        <li>または、GASなど別の仕組みで外部送信を実装</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -1128,14 +1160,42 @@
                 </tr>
                 <tr>
                     <td>出力</td>
-                    <td>Gmail (面接官), Chat (マネージャー)</td>
+                    <td>Chat (自分へのDM) ※Gmailでの外部送信は現在未対応</td>
                 </tr>
             </tbody>
         </table>
         </div>
     </section>
 
-    <section class="section" id="escalation">
+    <section class="section" id="decide-prompt">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Decide Prompt</div>
+                <h2 class="section-title">「決める」ステップ用プロンプト</h2>
+                <p class="section-description">Evaluation Reminderで経過時間に応じたエスカレーションを設定する場合のプロンプト例です。</p>
+            </div>
+
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">面接終了からの経過時間を計算し、リマインドレベルを判定してください。
+
+入力データ:
+- 面接終了日時: {interview_end_datetime}
+- 現在日時: {current_datetime}
+- 評価シート提出状況: {evaluation_status}
+
+判定基準:
+- 未提出 & 24時間以上経過: リマインドレベル1（丁寧なトーン）
+- 未提出 & 48時間以上経過: リマインドレベル2（緊急度アップ）
+- 未提出 & 72時間以上経過: リマインドレベル3（マネージャーエスカレーション）
+- 提出済み: リマインド不要
+
+出力: Level1 / Level2 / Level3 / NoAction のいずれか1つ</div>
+        </div>
+        </div>
+    </section>
+
+    <section class="section" id="escalation" style="background: var(--bg-secondary);">
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">Escalation</div>
@@ -1169,7 +1229,8 @@
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">24h Template</div>
-                <h2 class="section-title">評価提出リマインド - 1回目（24時間経過）</h2>
+                <h2 class="section-title">評価提出リマインド通知 - 1回目（24時間経過）</h2>
+                <p class="section-description">自分へのChat DMで受け取る通知内容。この情報を元に面接官へ連絡等を行います。</p>
             </div>
 
         <div class="code-block-wrapper">
@@ -1201,7 +1262,8 @@
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">48h Template</div>
-                <h2 class="section-title">評価提出リマインド - 2回目（48時間経過）</h2>
+                <h2 class="section-title">評価提出リマインド通知 - 2回目（48時間経過）</h2>
+                <p class="section-description">自分へのChat DMで受け取る通知内容。この情報を元に面接官へ連絡等を行います。</p>
             </div>
 
         <div class="code-block-wrapper">
@@ -1238,7 +1300,8 @@
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">72h Template</div>
-                <h2 class="section-title">評価提出リマインド - エスカレーション（72時間経過）</h2>
+                <h2 class="section-title">評価提出リマインド通知 - エスカレーション（72時間経過）</h2>
+                <p class="section-description">自分へのChat DMで受け取る通知内容。この情報を元にマネージャーへ連絡等を行います。</p>
             </div>
 
         <div class="code-block-wrapper">
@@ -1316,14 +1379,14 @@
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                <span>前日リマインドが候補者のGmailに届くか</span>
+                <span>前日リマインド情報が自分へのChat DMに届くか</span>
             </div>
             <div class="checklist-item">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                <span>1時間前リマインドが面接官のChat DMに届くか</span>
+                <span>1時間前リマインド情報が自分へのChat DMに届くか</span>
             </div>
             <div class="checklist-item">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1337,14 +1400,14 @@
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                <span>24h/48h/72hで段階的にエスカレーションされるか</span>
+                <span>24h/48h/72hで段階的に通知内容が変わるか</span>
             </div>
             <div class="checklist-item">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
-                <span>72時間経過でマネージャーにエスカレーションされるか</span>
+                <span>通知に候補者名・面接官名・経過時間が正しく含まれているか</span>
             </div>
         </div>
         </div>
@@ -1360,11 +1423,12 @@
         <div class="summary-box">
             <h3>まとめ</h3>
             <ul>
-                <li><strong>Interview Reminder:</strong> 前日と1時間前に候補者・面接官に自動送信</li>
-                <li><strong>Evaluation Reminder:</strong> 24時間・48時間・72時間でエスカレーション</li>
-                <li>トーンと頻度の調整が重要（多すぎるとCXを損なう）</li>
+                <li>学習目標をプロンプトとして入力し、2つのエージェントを自動生成</li>
+                <li><strong>Interview Reminder:</strong> 前日/1時間前にリマインド情報を自分へ通知</li>
+                <li><strong>Evaluation Reminder:</strong> 「決める」ステップで24h/48h/72hを条件分岐</li>
+                <li>現在のWorkspace Studioでは外部へのGmail送信は未対応（自分へのChat/メールのみ）</li>
+                <li>タスク作成でGoogle Tasksに追加し、カレンダーで確認することも可能</li>
                 <li>候補者管理シートとの連携で正確な検知を実現</li>
-                <li>エスカレーションルールを事前にチームで合意</li>
             </ul>
         </div>
         </div>

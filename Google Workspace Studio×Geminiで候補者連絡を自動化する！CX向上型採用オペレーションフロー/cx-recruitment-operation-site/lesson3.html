@@ -862,7 +862,17 @@
                 <h2 class="section-title">学習目標</h2>
             </div>
             <div class="goal-card">
-                面接終了をトリガーに、評価依頼の自動送信と次ステップの条件分岐処理を実装する
+                面接終了後、評価結果に応じて次ステップを自動判定し、Chat通知するエージェントを作成する
+            </div>
+
+            <div class="highlight-box" style="margin-top: 2rem;">
+                <h4>Workspace Studioの現在の制約について</h4>
+                <p>現在のWorkspace Studioでは、以下の制約があります：</p>
+                <ul>
+                    <li><strong>外部へのGmail送信は未対応</strong> - 自分へのChat/メール通知のみ</li>
+                    <li><strong>Calendar イベント終了トリガーは未対応</strong> - スケジュールトリガーを使用</li>
+                </ul>
+                <p style="margin-top: 1rem;">本レッスンでは、自動生成機能を活用してエージェントを作成し、必要に応じてプロンプトをカスタマイズします。</p>
             </div>
         </div>
     </section>
@@ -888,23 +898,23 @@
                 </tr>
                 <tr>
                     <td>Description</td>
-                    <td>Automates post-interview tasks including feedback collection and team notification</td>
+                    <td>面接終了後、評価結果に応じて次ステップを自動判定し通知</td>
                 </tr>
                 <tr>
                     <td>スターター</td>
-                    <td>Calendar event ends (面接イベント終了時)</td>
+                    <td>スケジュール（Daily 18:00）または フォーム送信時</td>
                 </tr>
                 <tr>
-                    <td>評価依頼送信</td>
-                    <td>Gmail (面接終了直後)</td>
+                    <td>処理</td>
+                    <td>Geminiで評価要約 → 「決める」で条件分岐</td>
                 </tr>
                 <tr>
                     <td>結果共有</td>
-                    <td>Chat (DM通知)</td>
+                    <td>Chat (自分へのDM通知)</td>
                 </tr>
                 <tr>
                     <td>次ステップ</td>
-                    <td>条件分岐で自動提案</td>
+                    <td>Proceed/Hold/Declineで条件分岐</td>
                 </tr>
             </tbody>
         </table>
@@ -920,11 +930,7 @@
 
         <div class="flow-diagram">
             <div class="flow-row">
-                <div class="flow-box trigger">Calendar イベント終了</div>
-            </div>
-            <div class="flow-arrow">↓</div>
-            <div class="flow-row">
-                <div class="flow-box action">Gmail 評価依頼送信</div>
+                <div class="flow-box trigger">スケジュール / フォーム送信</div>
             </div>
             <div class="flow-arrow">↓</div>
             <div class="flow-row">
@@ -932,13 +938,17 @@
             </div>
             <div class="flow-arrow">↓</div>
             <div class="flow-row">
-                <div class="flow-box action">Chat 結果共有</div>
+                <div class="flow-box action" style="background: var(--amber); border-color: var(--amber);">決める（条件分岐）</div>
             </div>
             <div class="flow-arrow">↓</div>
             <div class="flow-row">
                 <div class="flow-box proceed">Proceed</div>
                 <div class="flow-box hold">Hold</div>
                 <div class="flow-box decline">Decline</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-row">
+                <div class="flow-box action">Chat通知（自分へのDM）</div>
             </div>
         </div>
         </div>
@@ -951,50 +961,58 @@
                 <h2 class="section-title">エージェント作成手順</h2>
             </div>
 
+            <div class="highlight-box">
+                <h4>自動生成プロンプト（コピー可能）</h4>
+                <p>以下のプロンプトをWorkspace Studioの「Create agent」画面で入力すると、エージェントが自動生成されます。</p>
+                <div class="code-block-wrapper">
+                    <div class="copy-hint">クリックでコピー</div>
+                    <div class="code-block" onclick="copyToClipboard(this)">面接終了後、評価結果に応じて次ステップを自動判定し、Chat通知するエージェントを作成する</div>
+                </div>
+            </div>
+
         <div class="flow-steps">
             <div class="flow-step">
                 <div class="step-number">1</div>
                 <div class="step-content">
-                    <h3>新規エージェント作成</h3>
-                    <p>Google Workspace Studio → 「Create agent」→ エージェント名「Post-Interview Workflow」とDescriptionを入力</p>
+                    <h3>エージェント自動生成</h3>
+                    <p>Google Workspace Studio → 「Create agent」→ 上記プロンプトを入力してエージェントを自動生成</p>
+                    <ul>
+                        <li>自動で「スケジュール」スターターと「Geminiに質問する」ステップが設定される</li>
+                        <li>「決める」ステップで条件分岐が自動生成される場合がある</li>
+                    </ul>
                 </div>
             </div>
             <div class="flow-step">
                 <div class="step-number">2</div>
                 <div class="step-content">
-                    <h3>Calendar イベントトリガー設定</h3>
-                    <p>「Add starter」→「Calendar event ends」を選択<br>
-                    <strong>Event filter:</strong> Title contains '面接' / <strong>Calendar:</strong> Primary calendar</p>
+                    <h3>スターターの確認・調整</h3>
+                    <p>自動生成されたスターターを確認し、必要に応じて調整</p>
+                    <ul>
+                        <li>スケジュール: Daily / 面接終了後の時間帯（例: 18:00）</li>
+                        <li>または「フォームが送信されたとき」をトリガーに設定（評価シート送信時）</li>
+                    </ul>
                 </div>
             </div>
             <div class="flow-step">
                 <div class="step-number">3</div>
                 <div class="step-content">
-                    <h3>Gmail 評価依頼送信</h3>
-                    <p>「Add step」→「Send Gmail」を選択 → 面接官へ評価シート記入依頼を送信<br>
-                    Calendarイベントの参加者情報から面接官メールアドレスを取得</p>
+                    <h3>Geminiステップのプロンプト調整</h3>
+                    <p>自動生成された「Geminiに質問する」ステップのプロンプトを確認・カスタマイズ<br>
+                    総合評価・強み・懸念点・推奨アクションを抽出するよう調整</p>
                 </div>
             </div>
             <div class="flow-step">
                 <div class="step-number">4</div>
                 <div class="step-content">
-                    <h3>Gemini 要約</h3>
-                    <p>「Add step」→「Generate with Gemini」→ 評価内容を構造化して要約<br>
-                    総合評価・強み・懸念点・推奨アクションを抽出</p>
+                    <h3>「決める」ステップの確認</h3>
+                    <p>条件分岐（Proceed/Hold/Decline）が設定されているか確認。必要に応じて以下のプロンプトで分岐条件を調整</p>
                 </div>
             </div>
             <div class="flow-step">
                 <div class="step-number">5</div>
                 <div class="step-content">
-                    <h3>Chat 結果共有</h3>
-                    <p>「Add step」→「チャットで通知する」→ 自分へのDMで面接結果速報を受信 ※スペースへの投稿機能は削除されました</p>
-                </div>
-            </div>
-            <div class="flow-step">
-                <div class="step-number">6</div>
-                <div class="step-content">
-                    <h3>条件分岐設定</h3>
-                    <p>「Add condition」→ Geminiの判定結果（Proceed/Hold/Decline）に応じてアクションを分岐</p>
+                    <h3>Chat通知ステップの確認</h3>
+                    <p>「チャットで通知する」ステップが設定されているか確認 → 自分へのDMで面接結果速報を受信</p>
                 </div>
             </div>
         </div>
@@ -1125,6 +1143,35 @@
 
 詳細は評価シートをご確認ください：
 {evaluation_sheet_link}</div>
+        </div>
+        </div>
+    </section>
+
+    <section class="section" id="decide-prompt">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Decide Prompt</div>
+                <h2 class="section-title">「決める」ステップ用プロンプト</h2>
+                <p class="section-description">自動生成で「決める」ステップが作成された場合、以下のプロンプトで条件分岐を設定できます。</p>
+            </div>
+
+        <div class="code-block-wrapper">
+            <div class="copy-hint">クリックでコピー</div>
+            <div class="code-block" onclick="copyToClipboard(this)">評価結果に基づいて、次のアクションを判定してください。
+
+入力データ:
+- 総合評価スコア: {overall_rating}/5
+- スキル評価: {skill_rating}/5
+- カルチャーフィット: {culture_rating}/5
+- 面接官の推奨: {interviewer_recommendation}
+- 懸念点: {concerns}
+
+判定基準:
+- Proceed（次に進む）: 総合評価4以上 かつ 重大な懸念なし
+- Hold（保留）: 総合評価3-4 または 確認が必要な懸念あり
+- Decline（見送り）: 総合評価3未満 または 重大な懸念あり
+
+出力: Proceed / Hold / Decline のいずれか1つ</div>
         </div>
         </div>
     </section>
@@ -1565,12 +1612,12 @@ ELSE IF 推奨アクション == "Decline":
         <div class="highlight-box">
             <h4>まとめ</h4>
             <ul>
-                <li>Calendar終了トリガーで面接官に評価依頼を自動送信</li>
+                <li>学習目標をプロンプトとして入力し、エージェントを自動生成</li>
+                <li>スケジュールまたはフォーム送信をトリガーに設定</li>
                 <li>評価シート内容をGeminiが自動要約して構造化</li>
-                <li>Proceed / Hold / Decline の3段階で条件分岐処理</li>
+                <li>「決める」ステップで Proceed / Hold / Decline を条件分岐</li>
                 <li>Chat DM通知で結果を即座に確認</li>
-                <li>お見送りメールは下書きのみ作成（人間が最終確認）</li>
-                <li>評価シートの標準化でGemini解析精度を向上</li>
+                <li>お見送り対応は人間が最終確認（自動送信しない）</li>
             </ul>
         </div>
         </div>

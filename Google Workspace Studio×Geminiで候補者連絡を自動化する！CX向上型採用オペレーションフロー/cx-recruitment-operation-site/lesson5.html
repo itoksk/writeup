@@ -800,7 +800,26 @@
                 <h2 class="section-title">学習目標</h2>
             </div>
             <div class="goal-card">
-                これまで作成したエージェントを統合し、選考フロー全体を一本化する運用設計を完成させる
+                日次の採用パイプラインサマリーをChat通知するエージェントを作成し、選考フロー全体を可視化する
+            </div>
+
+            <div class="highlight-box" style="margin-top: 2rem;">
+                <h4>自動生成プロンプト（コピー可能）</h4>
+                <p>以下のプロンプトをWorkspace Studioの「Create agent」画面で入力すると、Daily Dashboardエージェントが自動生成されます。</p>
+                <div class="code-block-wrapper">
+                    <div class="copy-hint">クリックでコピー</div>
+                    <div class="code-block" onclick="copyToClipboard(this)">毎朝、候補者管理シートからパイプライン概況を集計し、日次サマリーをChat通知するエージェントを作成する</div>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 1rem;">
+                <h4>Workspace Studioの現在の制約について</h4>
+                <p>現在のWorkspace Studioでは、以下の制約があります：</p>
+                <ul>
+                    <li><strong>Googleカレンダー読み取りは未対応</strong> - 候補者管理シートを主なデータソースとして使用</li>
+                    <li><strong>外部へのGmail送信は未対応</strong> - 自分へのChat/メール通知のみ</li>
+                    <li><strong>タスク作成は可能</strong> - Google Tasksに追加し、カレンダーで確認可能</li>
+                </ul>
             </div>
         </div>
     </section>
@@ -851,7 +870,7 @@
                     <div class="agent-num">02</div>
                     <div class="agent-name">Post-Interview Workflow</div>
                     <div class="agent-role">面接後作業</div>
-                    <div class="agent-trigger">Event ends</div>
+                    <div class="agent-trigger">Schedule/Form</div>
                 </div>
                 <div class="agent-item">
                     <div class="agent-num">03</div>
@@ -885,51 +904,52 @@
                 <div class="flow-step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3>新規エージェント作成</h3>
-                        <p>Google Workspace Studio → 「Create agent」→ エージェント名「Daily Recruiting Dashboard」とDescriptionを入力</p>
+                        <h3>エージェント自動生成</h3>
+                        <p>Google Workspace Studio → 「Create agent」→ 自動生成プロンプトを入力してエージェントを自動生成</p>
+                        <ul>
+                            <li>自動で「スケジュール」スターターと「Sheets読み取り」ステップが設定される</li>
+                            <li>「Geminiに質問する」と「チャットで通知する」ステップが自動生成される場合がある</li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="flow-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>スケジュールトリガー設定</h3>
-                        <p>「Add starter」→「On schedule」を選択<br>
-                        Frequency: Daily | Time: 9:00 AM | Days: Weekdays</p>
+                        <h3>スターターの確認・調整</h3>
+                        <p>自動生成されたスターターを確認し、必要に応じて調整</p>
+                        <ul>
+                            <li>「スケジュール」: Daily 9:00 AM / 平日のみ</li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="flow-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Sheets読み取りステップ追加</h3>
-                        <p>「Add step」→「Get values from Sheets」→ 候補者管理シートから全候補者データを取得</p>
+                        <h3>Sheetsステップの確認</h3>
+                        <p>「Sheetsから値を取得する」ステップで候補者管理シートから全候補者データを取得</p>
+                        <ul>
+                            <li>面接予定は候補者管理シートの「面接日」列で管理</li>
+                            <li>※Googleカレンダー読み取りは現在未対応のため、シートで一元管理</li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="flow-step">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3>Calendar検索ステップ追加</h3>
-                        <p>「Add step」→「Calendar」→ Today's eventsを取得<br>
-                        Filter: Title contains '面接' or 'Interview'</p>
+                        <h3>Geminiステップのプロンプト調整</h3>
+                        <p>自動生成された「Geminiに質問する」ステップのプロンプトを確認・カスタマイズ<br>
+                        パイプライン概況・本日の面接予定・フォロー必要候補者をサマリー化</p>
                     </div>
                 </div>
 
                 <div class="flow-step">
                     <div class="step-number">5</div>
                     <div class="step-content">
-                        <h3>Geminiダッシュボード生成ステップ追加</h3>
-                        <p>「Add step」→「Generate with Gemini」→ プロンプトを入力<br>
-                        パイプライン概況・本日の面接・フォロー必要候補者・週次指標をサマリー化</p>
-                    </div>
-                </div>
-
-                <div class="flow-step">
-                    <div class="step-number">6</div>
-                    <div class="step-content">
-                        <h3>Chat送信ステップ追加</h3>
-                        <p>「Add step」→「チャットで通知する」→ 自分へのDMで日次ダッシュボードを受信 ※スペースへの投稿機能は削除されました</p>
+                        <h3>Chat通知ステップの確認</h3>
+                        <p>「チャットで通知する」ステップが設定されているか確認 → 自分へのDMで日次ダッシュボードを受信</p>
                     </div>
                 </div>
             </div>
@@ -964,11 +984,11 @@
                     </tr>
                     <tr>
                         <td>データソース</td>
-                        <td>候補者管理シート + Calendar</td>
+                        <td>候補者管理シート（面接日・ステータス列を含む）</td>
                     </tr>
                     <tr>
                         <td>出力</td>
-                        <td>Chat (DM通知)</td>
+                        <td>Chat (自分へのDM) ※外部送信は未対応</td>
                     </tr>
                 </tbody>
             </table>
@@ -987,14 +1007,12 @@
 
 候補者管理シートのデータ：
 {sheet_data}
-
-本日の面接予定（Calendarより）：
-{today_interviews}
+※シートには「面接日」列があり、本日の面接予定はそこから抽出してください
 
 日次の採用ダッシュボードを生成してください。以下の項目を含めること：
 
 1. パイプライン概況（ステータス別人数）
-2. 本日の面接スケジュール
+2. 本日の面接スケジュール（シートの「面接日」列を参照）
 3. フォローが必要な候補者（3日以上連絡なし）
 4. 今週の指標（応募、面接、オファー）
 
@@ -1012,7 +1030,7 @@ Chatメッセージ形式で、一目で把握できアクションにつなが�
 ・内定: {count_内定}名
 
 ■ 本日の面接予定
-{today_interviews}
+{today_interviews_from_sheet}
 
 ■ 要フォロー（3日以上連絡なし）
 {delayed_candidates}
@@ -1088,22 +1106,22 @@ Chatメッセージ形式で、一目で把握できアクションにつなが�
                     <tr>
                         <td>一次面接予定</td>
                         <td>面接日程確定</td>
-                        <td>Calendar登録</td>
+                        <td>シート更新（面接日列）</td>
                     </tr>
                     <tr>
                         <td>一次面接完了</td>
                         <td>評価待ち</td>
-                        <td>Calendarイベント終了</td>
+                        <td>評価フォーム送信 / 手動</td>
                     </tr>
                     <tr>
                         <td>二次面接予定</td>
                         <td>次面接確定</td>
-                        <td>Calendar登録</td>
+                        <td>シート更新（面接日列）</td>
                     </tr>
                     <tr>
                         <td>最終面接完了</td>
                         <td>採否判定中</td>
-                        <td>Calendarイベント終了</td>
+                        <td>評価フォーム送信 / 手動</td>
                     </tr>
                     <tr>
                         <td>内定</td>
@@ -1165,12 +1183,12 @@ Chatメッセージ形式で、一目で把握できアクションにつなが�
                     </tr>
                     <tr>
                         <td>面接設定</td>
-                        <td>Calendar登録時</td>
-                        <td>自動</td>
+                        <td>シート更新時（面接日列）</td>
+                        <td>手動</td>
                     </tr>
                     <tr>
                         <td>面接完了</td>
-                        <td>イベント終了時</td>
+                        <td>評価フォーム送信時</td>
                         <td>自動</td>
                     </tr>
                     <tr>
@@ -1344,10 +1362,10 @@ Chatメッセージ形式で、一目で把握できアクションにつなが�
             <div class="summary-box">
                 <h3>まとめ</h3>
                 <ul>
-                    <li>候補者管理シートを中心に全エージェントを統合</li>
-                    <li>ステータス自動更新でデータの一貫性を確保</li>
-                    <li>日次ダッシュボードで全体を可視化</li>
-                    <li>運用ルールの設計で持続的な運用を実現</li>
+                    <li>「毎朝、候補者管理シートからパイプライン概況を集計し、日次サマリーをChat通知するエージェントを作成する」で自動生成</li>
+                    <li>候補者管理シートを唯一のデータソースとして全エージェントを統合</li>
+                    <li>面接予定もシートの「面接日」列で管理（カレンダー読み取りは未対応）</li>
+                    <li>日次ダッシュボードで採用パイプライン全体を可視化</li>
                     <li>5つのエージェントで採用業務の70%を自動化</li>
                 </ul>
             </div>
