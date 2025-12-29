@@ -3,41 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第3回：チェックリストを自動で判定する審査フロー | ゼロタッチマネジメント</title>
+    <title>第3回：合格・要修正・再提出を条件分岐で仕分ける！チェックリストを自動で判定する審査フロー | ゼロタッチマネジメント</title>
+    <meta name="description" content="Google Workspace Studioで報告・承認・進捗管理を自動化する">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --ink: #0A0E27;
-            --paper: #FEFEF8;
-            --electric: #06B6D4;
-            --violet: #0EA5E9;
-            --gray: #4A5568;
-            --border: #E2E8F0;
-            --bg-light: #F8FAFC;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-primary: #0ea5e9;
+            --accent-secondary: #06b6d4;
+            --accent-tertiary: #38bdf8;
+            --accent-gradient: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #38bdf8 100%);
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition-fast: 0.15s ease;
+            --transition-base: 0.3s ease;
+            --coral: #ef4444;
+            --green: #22c55e;
+            --orange: #f97316;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Inter', 'Noto Sans JP', -apple-system, sans-serif;
-            background: var(--paper);
-            color: var(--ink);
-            line-height: 1.8;
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
         }
-        nav {
+        ::selection { background: var(--accent-primary); color: white; }
+
+        .nav {
             position: fixed;
             top: 0;
-            width: 100%;
-            background: rgba(254, 254, 248, 0.95);
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(20px);
-            z-index: 1000;
-            padding: 1.5rem 0;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-color);
         }
         .nav-container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -46,516 +69,454 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: var(--gray);
+            color: var(--text-secondary);
             text-decoration: none;
             font-size: 0.875rem;
             font-weight: 500;
-            transition: color 0.2s;
+            transition: var(--transition-fast);
         }
-        .nav-back:hover { color: var(--electric); }
+        .nav-back:hover { color: var(--accent-primary); }
         .nav-lesson {
-            font-size: 0.875rem;
-            color: var(--gray);
-        }
-        main {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 8rem 2rem 4rem;
-        }
-        .lesson-header {
-            text-align: center;
-            margin-bottom: 4rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .lesson-number {
-            font-size: 6rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--violet), var(--electric));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1;
-            margin-bottom: 1.5rem;
-        }
-        .lesson-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 1rem 0 0.5rem;
-            letter-spacing: -0.02em;
-        }
-        .lesson-subtitle {
-            font-size: 1.125rem;
-            color: var(--gray);
-        }
-        section {
-            margin-bottom: 3rem;
-        }
-        h2 {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            padding-left: 1rem;
-            border-left: 4px solid var(--electric);
-        }
-        .goal-card {
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(6, 182, 212, 0.05));
-            border-radius: 12px;
-            padding: 2rem;
-            border-left: 4px solid var(--violet);
-        }
-        .goal-card p {
-            font-size: 1.05rem;
-            color: var(--gray);
-            line-height: 1.8;
-        }
-        .problem-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
-        .problem-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-        }
-        .problem-card.issue { border-top: 4px solid #EF4444; }
-        .problem-card.solution { border-top: 4px solid #22C55E; }
-        .problem-card h3 {
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-            letter-spacing: 0.05em;
-        }
-        .problem-card.issue h3 { color: #EF4444; }
-        .problem-card.solution h3 { color: #22C55E; }
-        .problem-card ul {
-            list-style: none;
-        }
-        .problem-card li {
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-bottom: 0.5rem;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-        .problem-card.issue li::before {
-            content: "×";
-            position: absolute;
-            left: 0;
-            color: #EF4444;
-            font-weight: 700;
-        }
-        .problem-card.solution li::before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #22C55E;
-            font-weight: 700;
-        }
-        .element-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-        .element-card {
-            padding: 1.5rem;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-        }
-        .element-number {
             font-size: 0.75rem;
             font-weight: 700;
-            color: var(--electric);
+            letter-spacing: 0.05em;
+            color: var(--accent-primary);
+        }
+
+        .hero {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            position: relative;
+        }
+        .hero-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0);
+            background-size: 40px 40px;
+            opacity: 0.5;
+        }
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        .hero-title-accent {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.8;
+        }
+
+        .section { padding: 5rem 2rem; }
+        .section-container { max-width: 1200px; margin: 0 auto; }
+        .section-header { margin-bottom: 3rem; }
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-primary);
+            margin-bottom: 0.75rem;
+        }
+        .section-title {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .goal-card {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .comparison-card {
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+        .comparison-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+        .comparison-card.before { border-top: 4px solid var(--coral); }
+        .comparison-card.after { border-top: 4px solid var(--green); }
+        .comparison-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+        .comparison-card.before .comparison-header { color: var(--coral); }
+        .comparison-card.after .comparison-header { color: var(--green); }
+        .comparison-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .comparison-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+        .comparison-list li::before {
+            content: '';
+            flex-shrink: 0;
+            width: 6px;
+            height: 6px;
+            margin-top: 0.5rem;
+            border-radius: 50%;
+        }
+        .comparison-card.before .comparison-list li::before { background: var(--coral); }
+        .comparison-card.after .comparison-list li::before { background: var(--green); }
+
+        .judgment-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .judgment-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 2px solid;
+            transition: var(--transition-base);
+        }
+        .judgment-card:hover { transform: translateY(-4px); }
+        .judgment-card.approved { background: #f0fdf4; border-color: var(--green); }
+        .judgment-card.revision { background: #fff7ed; border-color: var(--orange); }
+        .judgment-card.resubmit { background: #fef2f2; border-color: var(--coral); }
+        .judgment-card h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
         }
-        .element-card h3 {
+        .judgment-card.approved h4 { color: var(--green); }
+        .judgment-card.revision h4 { color: var(--orange); }
+        .judgment-card.resubmit h4 { color: var(--coral); }
+        .judgment-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+        .judgment-card .action {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .flow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .flow-step {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+        .flow-step:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+        }
+        .step-number {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-gradient);
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .step-content { flex: 1; }
+        .step-content h4 {
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
         }
-        .element-card p {
+        .step-content p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .config-table th {
+            background: var(--text-primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
             font-size: 0.875rem;
-            color: var(--gray);
         }
-        .flow-diagram {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
+        .config-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+        .config-table tr:last-child td { border-bottom: none; }
+        .config-table tr:hover td { background: var(--bg-secondary); }
+
+        .code-block-wrapper { position: relative; margin: 1rem 0; }
+        .code-block {
+            background: var(--text-primary);
+            color: var(--accent-secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .code-block:hover { opacity: 0.9; }
+        .copy-hint {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+        }
+
+        .highlight-box {
+            background: var(--accent-gradient);
+            color: white;
             padding: 2rem;
-            text-align: center;
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
         }
-        .flow-step {
+        .highlight-box h4 { font-size: 1.25rem; margin-bottom: 1rem; }
+        .highlight-box ul { list-style: disc; padding-left: 1.5rem; }
+        .highlight-box li { margin-bottom: 0.5rem; font-size: 0.9375rem; }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 1rem 0;
+        }
+        .warning-box p { color: #92400e; font-size: 0.9375rem; }
+        .warning-box strong { color: #78350f; }
+
+        .info-box {
+            background: rgba(6, 182, 212, 0.1);
+            border-left: 4px solid var(--accent-primary);
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 1rem 0;
+        }
+        .info-box p { color: var(--text-secondary); font-size: 0.9375rem; }
+        .info-box strong { color: var(--text-primary); }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
+        }
+        .flow-item {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, var(--violet), var(--electric));
+            background: var(--accent-gradient);
             color: white;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             font-size: 0.9rem;
             font-weight: 600;
-            margin: 0.5rem;
         }
-        .flow-arrow {
-            color: var(--gray);
-            margin: 0 0.5rem;
+        .flow-arrow { color: var(--text-muted); font-size: 1.5rem; }
+
+        .checklist {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .checklist h3 { color: var(--accent-primary); font-size: 1.25rem; margin-bottom: 1rem; }
+        .checklist ul { list-style: none; }
+        .checklist li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+        .checklist li:last-child { border-bottom: none; }
+        .checklist li::before {
+            content: '[ ]';
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+
+        .next-preview {
+            background: var(--text-primary);
+            color: white;
+            padding: 4rem 2rem;
+        }
+        .next-preview-container { max-width: 1200px; margin: 0 auto; }
+        .next-preview .section-label { color: rgba(255, 255, 255, 0.5); }
+        .next-preview h2 { color: white; font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .next-preview h3 {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             font-size: 1.25rem;
+            margin-bottom: 1rem;
         }
-        .branch-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .next-preview p { color: rgba(255, 255, 255, 0.8); font-size: 0.9375rem; max-width: 600px; }
+
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
             gap: 1rem;
-            margin-top: 1.5rem;
         }
-        .branch-card {
-            border-radius: 8px;
-            padding: 1.25rem;
-            text-align: center;
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9375rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
         }
-        .branch-card.approved {
-            background: #F0FDF4;
-            border: 1px solid #BBF7D0;
+        .nav-prev { color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .nav-prev:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+        .nav-next { background: var(--accent-gradient); color: white; }
+        .nav-next:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
         }
-        .branch-card.revision {
-            background: #FFF7ED;
-            border: 1px solid #FDBA74;
-        }
-        .branch-card.resubmit {
-            background: #FEF2F2;
-            border: 1px solid #FECACA;
-        }
-        .branch-card h4 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        .branch-card.approved h4 { color: #22C55E; }
-        .branch-card.revision h4 { color: #F97316; }
-        .branch-card.resubmit h4 { color: #EF4444; }
-        .branch-card p {
-            font-size: 0.8rem;
-            color: var(--gray);
-        }
-        .status-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-        .status-table th,
-        .status-table td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-        }
-        .status-table th {
-            background: var(--bg-light);
-            font-weight: 600;
-        }
-        .status-badge {
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        .badge {
             display: inline-block;
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
             font-size: 0.75rem;
             font-weight: 600;
         }
-        .status-badge.required {
-            background: #DBEAFE;
-            color: #1D4ED8;
-        }
-        .status-badge.optional {
-            background: #F3F4F6;
-            color: #6B7280;
-        }
-        .code-block {
-            background: #1e1e1e;
-            color: var(--electric);
-            border-radius: 8px;
-            padding: 1.5rem;
-            font-family: 'Monaco', 'Consolas', monospace;
-            font-size: 0.85rem;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            margin: 1rem 0;
-            line-height: 1.6;
-        }
-        .step-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .step-item {
-            display: flex;
-            gap: 1rem;
-            padding: 1.5rem;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-        }
-        .step-number {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--violet), var(--electric));
-            color: white;
-            font-weight: 700;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-        .step-content h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        .step-content p {
-            font-size: 0.9rem;
-            color: var(--gray);
-            line-height: 1.6;
-        }
-        .checklist {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .checklist-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            background: var(--bg-light);
-            border-radius: 8px;
-        }
-        .checklist-item svg {
-            color: #22c55e;
-            flex-shrink: 0;
-        }
-        .checklist-item span {
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
-        .comparison-card {
-            padding: 1.5rem;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-        }
-        .comparison-card.before { border-top: 4px solid #EF4444; }
-        .comparison-card.after { border-top: 4px solid #22C55E; }
-        .comparison-header {
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-        }
-        .comparison-card.before .comparison-header { color: #EF4444; }
-        .comparison-card.after .comparison-header { color: #22C55E; }
-        .comparison-card ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .comparison-card li {
-            font-size: 0.875rem;
-            color: var(--gray);
-        }
-        .summary-box {
-            background: var(--ink);
-            color: var(--paper);
-            border-radius: 12px;
-            padding: 2rem;
-        }
-        .summary-box h3 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-        .summary-box ul {
-            list-style: none;
-        }
-        .summary-box li {
-            margin-bottom: 0.5rem;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-        .summary-box li::before {
-            content: "→";
-            position: absolute;
-            left: 0;
-            color: var(--electric);
-        }
-        .next-preview {
-            margin-top: 3rem;
-            padding: 2rem;
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(6, 182, 212, 0.1));
-            border-radius: 12px;
-            text-align: center;
-        }
-        .next-preview h3 {
-            font-size: 1rem;
-            color: var(--violet);
-            margin-bottom: 0.5rem;
-        }
-        .next-preview p {
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-        .lesson-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
-        }
-        .nav-prev, .nav-next {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: var(--bg-light);
-            color: var(--ink);
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        .nav-prev:hover, .nav-next:hover {
-            background: var(--electric);
-            color: white;
-        }
-        .config-note {
-            background: rgba(6, 182, 212, 0.1);
-            border-radius: 8px;
-            padding: 1rem 1.25rem;
-            font-size: 0.875rem;
-            color: var(--gray);
-            margin-top: 1rem;
-            border-left: 3px solid var(--electric);
-        }
-        .config-note strong {
-            color: var(--ink);
-        }
-        .judgment-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        .judgment-card {
-            text-align: center;
-            padding: 1.25rem;
-            border-radius: 8px;
-        }
-        .judgment-card.approved {
-            background: #F0FDF4;
-            border: 2px solid #22C55E;
-        }
-        .judgment-card.revision {
-            background: #FFF7ED;
-            border: 2px solid #F97316;
-        }
-        .judgment-card.resubmit {
-            background: #FEF2F2;
-            border: 2px solid #EF4444;
-        }
-        .judgment-card h4 {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        .judgment-card.approved h4 { color: #22C55E; }
-        .judgment-card.revision h4 { color: #F97316; }
-        .judgment-card.resubmit h4 { color: #EF4444; }
-        .judgment-card p {
-            font-size: 0.8rem;
-            color: var(--gray);
-            margin-bottom: 0.5rem;
-        }
-        .judgment-card .action {
-            font-size: 0.75rem;
-            color: var(--ink);
-            font-weight: 500;
-        }
-        .template-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-        }
-        .template-header {
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        .template-header.approved {
-            background: #F0FDF4;
-            color: #22C55E;
-            border-bottom: 1px solid #BBF7D0;
-        }
-        .template-header.revision {
-            background: #FFF7ED;
-            color: #F97316;
-            border-bottom: 1px solid #FDBA74;
-        }
-        .template-header.resubmit {
-            background: #FEF2F2;
-            color: #EF4444;
-            border-bottom: 1px solid #FECACA;
-        }
-        .template-body {
-            padding: 0;
-        }
-        .template-body .code-block {
-            margin: 0;
-            border-radius: 0;
-        }
-        .output-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        .output-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.25rem;
-        }
-        .output-card h4 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--ink);
-            margin-bottom: 0.75rem;
-        }
-        .output-card p {
-            font-size: 0.85rem;
-            color: var(--gray);
-            line-height: 1.6;
-        }
+        .badge.required { background: #dbeafe; color: #1d4ed8; }
+        .badge.optional { background: #f3f4f6; color: #6b7280; }
+
         @media (max-width: 768px) {
-            .lesson-number { font-size: 4rem; }
-            .lesson-title { font-size: 1.5rem; }
-            .problem-grid, .element-grid, .comparison-grid, .branch-grid, .judgment-grid, .output-grid {
-                grid-template-columns: 1fr;
-            }
+            .hero { padding: 6rem 1.5rem 3rem; }
+            .section { padding: 3rem 1.5rem; }
+            .comparison-grid, .judgment-grid { grid-template-columns: 1fr; }
+            .flow-diagram { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); }
+            .lesson-nav { flex-direction: column; }
         }
+        [id] { scroll-margin-top: 80px; }
     </style>
 </head>
 <body>
-    <nav>
+    <nav class="nav">
         <div class="nav-container">
             <a href="index.html" class="nav-back">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -563,188 +524,66 @@
                 </svg>
                 コース一覧
             </a>
-            <div class="nav-lesson">第3回 / 全5回</div>
+            <div class="nav-lesson">LESSON 3 / 5</div>
         </div>
     </nav>
 
-    <main>
-        <header class="lesson-header">
-            <div class="lesson-number">03</div>
-            <h1 class="lesson-title">チェックリストを自動で判定する審査フロー</h1>
-            <p class="lesson-subtitle">合格・要修正・再提出を条件分岐で仕分ける</p>
+    <section class="hero">
+        <div class="hero-pattern"></div>
+        <div class="hero-content">
+            <div class="hero-badge">第3回 / 全5回</div>
+            <h1 class="hero-title">
+                合格・要修正・再提出を条件分岐で仕分ける！<br>
+                <span class="hero-title-accent">チェックリストを自動で判定する審査フロー</span>
+            </h1>
+            <p class="hero-description">
+                日報・週報の品質をチェックリストで自動判定し、APPROVED（合格）/ NEEDS_REVISION（要修正）/ RESUBMIT（再提出）の3段階で条件分岐処理を実装。
+                提出者への即時フィードバックと管理者への通知を自動化するQuality Check Agentを構築します。
+            </p>
 
-            <!-- Before/After: このレッスンで何が変わるか -->
-            <div class="comparison-grid" style="margin-top: 2.5rem; text-align: left;">
+            <div class="comparison-grid" style="margin-top: 2.5rem;">
                 <div class="comparison-card before">
-                    <div class="comparison-header" style="color: #EF4444;">BEFORE：受講前</div>
-                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
-                        <li style="padding: 0.5rem 0;">品質チェックを毎日30分手動で実施</li>
-                        <li style="padding: 0.5rem 0;">判定基準が曖昧で属人的</li>
-                        <li style="padding: 0.5rem 0;">フィードバックが翌日以降に遅延</li>
-                        <li style="padding: 0.5rem 0;">同じ指摘を繰り返す非効率</li>
+                    <div class="comparison-header">BEFORE：受講前</div>
+                    <ul class="comparison-list">
+                        <li>品質チェックを毎日30分手動で実施</li>
+                        <li>判定基準が曖昧で属人的</li>
+                        <li>フィードバックが翌日以降に遅延</li>
+                        <li>同じ指摘を繰り返す非効率</li>
                     </ul>
                 </div>
                 <div class="comparison-card after">
-                    <div class="comparison-header" style="color: #22C55E;">AFTER：受講後</div>
-                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
-                        <li style="padding: 0.5rem 0;">AIが自動判定でチェック時間90%削減</li>
-                        <li style="padding: 0.5rem 0;">判定基準が統一・明確・公平に</li>
-                        <li style="padding: 0.5rem 0;">即時フィードバックで改善サイクル加速</li>
-                        <li style="padding: 0.5rem 0;">Quality Check Agentを構築</li>
+                    <div class="comparison-header">AFTER：受講後</div>
+                    <ul class="comparison-list">
+                        <li>AIが自動判定でチェック時間90%削減</li>
+                        <li>判定基準が統一・明確・公平に</li>
+                        <li>即時フィードバックで改善サイクル加速</li>
+                        <li>Quality Check Agentを構築</li>
                     </ul>
                 </div>
             </div>
-        </header>
+        </div>
+    </section>
 
-        <section>
-            <h2>学習目標 GOAL</h2>
+    <section class="section" id="goal">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Goal</div>
+                <h2 class="section-title">学習目標</h2>
+            </div>
             <div class="goal-card">
-                <p>日報・週報の品質をチェックリストで自動判定し、APPROVED（合格）/ NEEDS_REVISION（要修正）/ RESUBMIT（再提出）の3段階で条件分岐処理を実装。提出者への即時フィードバックと管理者への通知を自動化するQuality Check Agentを構築する</p>
+                日報・週報の品質をチェックリストで自動判定し、APPROVED（合格）/ NEEDS_REVISION（要修正）/ RESUBMIT（再提出）の3段階で条件分岐処理を実装。
+                提出者への即時フィードバックと管理者への通知を自動化するQuality Check Agentを構築する
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>現状の課題</h2>
-            <div class="problem-grid">
-                <div class="problem-card issue">
-                    <h3>Before: 手動チェック</h3>
-                    <ul>
-                        <li>品質チェックは管理職が手動で実施</li>
-                        <li>判定基準が曖昧で属人的になりがち</li>
-                        <li>フィードバックが遅れて改善が進まない</li>
-                        <li>同じ指摘を繰り返し、効率が悪い</li>
-                        <li>チェック漏れやミスが発生</li>
-                        <li>管理職の負担が大きい</li>
-                    </ul>
-                </div>
-                <div class="problem-card solution">
-                    <h3>After: AI自動判定</h3>
-                    <ul>
-                        <li>品質チェックをAIが自動で判定</li>
-                        <li>判定基準が統一・明確化される</li>
-                        <li>即時フィードバックで改善サイクルが加速</li>
-                        <li>再発防止のための具体的指摘が可能</li>
-                        <li>チェック漏れゼロ、精度向上</li>
-                        <li>管理職は例外対応に集中できる</li>
-                    </ul>
-                </div>
+    <section class="section" id="judgment" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Judgment</div>
+                <h2 class="section-title">判定基準の定義</h2>
             </div>
-        </section>
 
-        <section>
-            <h2>エージェントフロー AGENT FLOW</h2>
-            <div class="flow-diagram">
-                <div class="flow-step">提出物受信</div>
-                <span class="flow-arrow">→</span>
-                <div class="flow-step">Gemini判定</div>
-                <span class="flow-arrow">→</span>
-                <div class="flow-step">条件分岐</div>
-                <div class="branch-grid">
-                    <div class="branch-card approved">
-                        <h4>APPROVED</h4>
-                        <p>承認通知 + ステータス更新</p>
-                    </div>
-                    <div class="branch-card revision">
-                        <h4>NEEDS_REVISION</h4>
-                        <p>修正依頼 + フィードバック</p>
-                    </div>
-                    <div class="branch-card resubmit">
-                        <h4>RESUBMIT</h4>
-                        <p>再提出依頼 + 管理者通知</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <h2>エージェント設計</h2>
-            <table class="status-table">
-                <tr>
-                    <th>項目</th>
-                    <th>設定値</th>
-                </tr>
-                <tr>
-                    <td>エージェント名</td>
-                    <td>品質チェック</td>
-                </tr>
-                <tr>
-                    <td>説明</td>
-                    <td>提出物の品質を自動チェックし、適切なアクションにルーティング</td>
-                </tr>
-                <tr>
-                    <td>スターター</td>
-                    <td>Gmail - Email received または Forms - Form submitted</td>
-                </tr>
-                <tr>
-                    <td>処理ステップ</td>
-                    <td>Geminiによるチェックリスト評価</td>
-                </tr>
-                <tr>
-                    <td>条件分岐</td>
-                    <td>APPROVED / NEEDS_REVISION / RESUBMIT</td>
-                </tr>
-                <tr>
-                    <td>出力（提出者へ）</td>
-                    <td>Chat DM（自分）でフィードバック受信 → 手動で転送 ※外部送信は未対応</td>
-                </tr>
-                <tr>
-                    <td>出力（Sheets）</td>
-                    <td>ステータス更新と判定詳細の記録</td>
-                </tr>
-                <tr>
-                    <td>出力（管理職へ）</td>
-                    <td>Chat DM通知（RESSUBMITの場合のみ）</td>
-                </tr>
-            </table>
-        </section>
-
-        <section>
-            <h2>日報チェックリスト項目</h2>
-            <table class="status-table">
-                <tr>
-                    <th>項目</th>
-                    <th>必須</th>
-                    <th>チェック内容</th>
-                    <th>NG例</th>
-                </tr>
-                <tr>
-                    <td>業務内容</td>
-                    <td><span class="status-badge required">必須</span></td>
-                    <td>具体的な作業が記載されているか</td>
-                    <td>「業務した」のみ</td>
-                </tr>
-                <tr>
-                    <td>進捗状況</td>
-                    <td><span class="status-badge required">必須</span></td>
-                    <td>数値や達成率が含まれているか</td>
-                    <td>「順調」のみ</td>
-                </tr>
-                <tr>
-                    <td>課題</td>
-                    <td><span class="status-badge optional">任意</span></td>
-                    <td>課題がある場合に記載されているか</td>
-                    <td>課題あるのに未記載</td>
-                </tr>
-                <tr>
-                    <td>翌日予定</td>
-                    <td><span class="status-badge required">必須</span></td>
-                    <td>翌日の計画が記載されているか</td>
-                    <td>「引き続き」のみ</td>
-                </tr>
-                <tr>
-                    <td>文字数</td>
-                    <td><span class="status-badge required">必須</span></td>
-                    <td>最低100文字以上か</td>
-                    <td>50文字未満</td>
-                </tr>
-            </table>
-            <div class="config-note">
-                <strong>ポイント:</strong> チェックリストは業務に合わせてカスタマイズ可能。週報の場合は「今週の成果」「来週の計画」などを追加します。
-            </div>
-        </section>
-
-        <section>
-            <h2>判定基準の定義</h2>
             <div class="judgment-grid">
                 <div class="judgment-card approved">
                     <h4>APPROVED</h4>
@@ -762,59 +601,200 @@
                     <div class="action">→ 再提出依頼 + 管理者通知</div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>作成ステップ</h2>
-            <div class="step-list">
-                <div class="step-item">
+    <section class="section" id="flow">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Agent Flow</div>
+                <h2 class="section-title">エージェントフロー</h2>
+            </div>
+
+            <div class="flow-diagram">
+                <div class="flow-item">提出物受信</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">Gemini判定</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">条件分岐</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">Chat DM通知</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="config" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Configuration</div>
+                <h2 class="section-title">エージェント設計</h2>
+            </div>
+
+            <table class="config-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>設定値</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>エージェント名</td>
+                        <td>品質チェック</td>
+                    </tr>
+                    <tr>
+                        <td>説明</td>
+                        <td>提出物の品質を自動チェックし、適切なアクションにルーティング</td>
+                    </tr>
+                    <tr>
+                        <td>スターター</td>
+                        <td>Gmail - Email received または Forms - Form submitted</td>
+                    </tr>
+                    <tr>
+                        <td>処理ステップ</td>
+                        <td>Geminiによるチェックリスト評価</td>
+                    </tr>
+                    <tr>
+                        <td>条件分岐</td>
+                        <td>APPROVED / NEEDS_REVISION / RESUBMIT</td>
+                    </tr>
+                    <tr>
+                        <td>出力（提出者へ）</td>
+                        <td>Chat DM（自分）でフィードバック受信 → 手動で転送 ※外部送信は未対応</td>
+                    </tr>
+                    <tr>
+                        <td>出力（Sheets）</td>
+                        <td>ステータス更新と判定詳細の記録</td>
+                    </tr>
+                    <tr>
+                        <td>出力（管理職へ）</td>
+                        <td>Chat DM通知（RESSUBMITの場合のみ）</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section" id="checklist-items">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Checklist</div>
+                <h2 class="section-title">日報チェックリスト項目</h2>
+            </div>
+
+            <table class="config-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>必須</th>
+                        <th>チェック内容</th>
+                        <th>NG例</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>業務内容</td>
+                        <td><span class="badge required">必須</span></td>
+                        <td>具体的な作業が記載されているか</td>
+                        <td>「業務した」のみ</td>
+                    </tr>
+                    <tr>
+                        <td>進捗状況</td>
+                        <td><span class="badge required">必須</span></td>
+                        <td>数値や達成率が含まれているか</td>
+                        <td>「順調」のみ</td>
+                    </tr>
+                    <tr>
+                        <td>課題</td>
+                        <td><span class="badge optional">任意</span></td>
+                        <td>課題がある場合に記載されているか</td>
+                        <td>課題あるのに未記載</td>
+                    </tr>
+                    <tr>
+                        <td>翌日予定</td>
+                        <td><span class="badge required">必須</span></td>
+                        <td>翌日の計画が記載されているか</td>
+                        <td>「引き続き」のみ</td>
+                    </tr>
+                    <tr>
+                        <td>文字数</td>
+                        <td><span class="badge required">必須</span></td>
+                        <td>最低100文字以上か</td>
+                        <td>50文字未満</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <p><strong>ポイント:</strong> チェックリストは業務に合わせてカスタマイズ可能。週報の場合は「今週の成果」「来週の計画」などを追加します。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="steps" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Steps</div>
+                <h2 class="section-title">作成ステップ</h2>
+            </div>
+
+            <div class="flow-steps">
+                <div class="flow-step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3>新規エージェント作成</h3>
+                        <h4>新規エージェント作成</h4>
                         <p>studio.workspace.google.com → 「新規作成」→ エージェント名「品質チェック」を入力</p>
                     </div>
                 </div>
-                <div class="step-item">
+                <div class="flow-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>スターター設定</h3>
+                        <h4>スターター設定</h4>
                         <p>スターター: Gmail - Email received または Forms - Form submitted → フィルター: 件名に「提出」「報告」を含む</p>
                     </div>
                 </div>
-                <div class="step-item">
+                <div class="flow-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Geminiステップでチェック</h3>
+                        <h4>Geminiステップでチェック</h4>
                         <p>ステップを追加 → 「Gemini」を選択 → 下記のチェックリスト評価プロンプトを設定。各項目をOK/NGで判定</p>
                     </div>
                 </div>
-                <div class="step-item">
+                <div class="flow-step">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3>条件分岐ステップ設定</h3>
+                        <h4>条件分岐ステップ設定</h4>
                         <p>ステップを追加 → 「条件分岐」→ Gemini出力のJUDGMENTフィールドでAPPROVED / NEEDS_REVISION / RESUBMIT に分岐</p>
                     </div>
                 </div>
-                <div class="step-item">
+                <div class="flow-step">
                     <div class="step-number">5</div>
                     <div class="step-content">
-                        <h3>Chat DMステップ設定</h3>
+                        <h4>Chat DMステップ設定</h4>
                         <p>各分岐にChat DM送信ステップを追加。自分宛に通知を受け取り、承認・修正依頼・再提出依頼の結果を確認後、手動で提出者へ転送 ※外部送信は未対応</p>
                     </div>
                 </div>
-                <div class="step-item">
+                <div class="flow-step">
                     <div class="step-number">6</div>
                     <div class="step-content">
-                        <h3>Sheets・Chat DMステップ設定</h3>
+                        <h4>Sheets・Chat DMステップ設定</h4>
                         <p>Sheetsステップでステータス列を更新。RESSUBMITの場合のみChat DMで管理職に通知（※スペースへの投稿は削除済み）</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>品質チェックプロンプト GEMINI PROMPT</h2>
-            <div class="code-block">You are a quality control assistant checking submissions against a checklist.
+    <section class="section" id="prompt">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Prompt</div>
+                <h2 class="section-title">品質チェックプロンプト</h2>
+            </div>
+
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">You are a quality control assistant checking submissions against a checklist.
 
 Submission content:
 ---
@@ -849,11 +829,20 @@ CHECKLIST_RESULT:
 JUDGMENT: [APPROVED/NEEDS_REVISION/RESUBMIT]
 FEEDBACK: [提出者向けの具体的なフィードバック（日本語）]
 ---</div>
-        </section>
+            </div>
+        </div>
+    </section>
 
-        <section>
-            <h2>条件分岐ロジック</h2>
-            <div class="code-block">IF JUDGMENT == "APPROVED":
+    <section class="section" id="logic" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Logic</div>
+                <h2 class="section-title">条件分岐ロジック</h2>
+            </div>
+
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">IF JUDGMENT == "APPROVED":
     → Chat DM（自分）で承認結果を受信
     → Update status to "承認済" (Sheets)
     → 手動で提出者へ承認通知を転送
@@ -868,383 +857,90 @@ ELSE IF JUDGMENT == "RESUBMIT":
     → Chat DM（自分）で再提出依頼内容を受信
     → Update status to "再提出" (Sheets)
     → 手動で提出者へ再提出依頼を転送 (+48h期限)</div>
-            <p style="margin-top: 1rem; padding: 1rem; background: #FEF3C7; border-left: 4px solid #F59E0B; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #92400E;">
-                <strong>注意:</strong> 現在のWorkspace Studioでは外部へのメール・Chat送信は未対応です。フィードバックは自分へのDMで受け取り、内容を確認後、手動で提出者へ転送してください。
-            </p>
-        </section>
-
-        <section>
-            <h2>Chat DM通知テンプレート（自分宛 → 手動転送用）</h2>
-
-            <div class="template-card">
-                <div class="template-header approved">APPROVED: 合格通知（転送用）</div>
-                <div class="template-body">
-                    <div class="code-block">✅ **判定結果：承認**
-
-■ 提出者: {submitter_name}
-■ 種類: {submission_type}
-■ 判定: APPROVED
-
---- 以下、提出者へ転送するメッセージ ---
-
-件名：【承認】{submission_type}が承認されました
-
-{submitter_name}さん
-
-お疲れ様です。
-提出いただいた{submission_type}を確認し、承認しました。
-
-■ 確認結果
-{checklist_result}
-
-■ コメント
-{feedback}
-
-引き続きよろしくお願いいたします。
-
---- 転送用メッセージここまで ---</div>
-                </div>
             </div>
 
-            <div class="template-card">
-                <div class="template-header revision">NEEDS_REVISION: 要修正通知（転送用）</div>
-                <div class="template-body">
-                    <div class="code-block">⚠️ **判定結果：要修正**
+            <div class="warning-box" style="margin-top: 1.5rem;">
+                <p><strong>注意:</strong> 現在のWorkspace Studioでは外部へのメール・Chat送信は未対応です。フィードバックは自分へのDMで受け取り、内容を確認後、手動で提出者へ転送してください。</p>
+            </div>
+        </div>
+    </section>
 
-■ 提出者: {submitter_name}
-■ 種類: {submission_type}
-■ 判定: NEEDS_REVISION
-
---- 以下、提出者へ転送するメッセージ ---
-
-件名：【要修正】{submission_type}の修正をお願いします
-
-{submitter_name}さん
-
-お疲れ様です。
-提出いただいた{submission_type}を確認しました。
-
-以下の点について修正をお願いします。
-
-■ 修正が必要な項目
-{revision_points}
-
-■ 改善のポイント
-{feedback}
-
-修正後、再度提出をお願いします。
-期限: {deadline}（24時間以内）
-
-ご不明点があればお知らせください。
-
---- 転送用メッセージここまで ---</div>
-                </div>
+    <section class="section" id="metrics">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Metrics</div>
+                <h2 class="section-title">効果測定の指標</h2>
             </div>
 
-            <div class="template-card">
-                <div class="template-header resubmit">RESUBMIT: 再提出通知（転送用）</div>
-                <div class="template-body">
-                    <div class="code-block">🚨 **判定結果：再提出**
-
-■ 提出者: {submitter_name}
-■ 種類: {submission_type}
-■ 判定: RESUBMIT
-
---- 以下、提出者へ転送するメッセージ ---
-
-件名：【再提出】{submission_type}の再提出をお願いします
-
-{submitter_name}さん
-
-お疲れ様です。
-提出いただいた{submission_type}を確認しましたが、
-必須項目に不備があるため、再提出をお願いします。
-
-■ 不備内容
-{issues}
-
-■ 再提出時のチェックポイント
-・業務内容: 具体的な作業内容を記載してください
-・進捗状況: 数値（%、件数など）を含めてください
-・翌日予定: 具体的なタスクを記載してください
-・文字数: 100文字以上で記載してください
-
-内容を確認の上、再度提出をお願いします。
-期限: {deadline}（48時間以内）
-
-ご質問があれば、遠慮なくお問い合わせください。
-
---- 転送用メッセージここまで ---</div>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <h2>Chat DM通知テンプレート（再提出案件アラート）</h2>
-            <div class="code-block">⚠️ **再提出案件発生**
-
-■ 提出者: {submitter_name}
-■ 種類: {submission_type}
-■ 判定: RESUBMIT（再提出）
-■ 日時: {timestamp}
-
-🚨 **不備内容**
-{issues}
-
-📋 **対応状況**
-・再提出依頼メール送信済み
-・期限: {deadline}
-
-※ フォローが必要な場合は直接ご連絡ください。</div>
-            <div class="config-note">
-                <strong>ポイント:</strong> 全ての判定結果が自分へのDMで届きます。RESSUBMITの場合は優先的に対応し、提出者へ手動で転送してください。
-            </div>
-        </section>
-
-        <section>
-            <h2>Sheets記録フォーマット</h2>
-            <table class="status-table">
-                <tr>
-                    <th>列</th>
-                    <th>内容</th>
-                    <th>自動入力値</th>
-                </tr>
-                <tr>
-                    <td>A</td>
-                    <td>提出日時</td>
-                    <td>{timestamp}</td>
-                </tr>
-                <tr>
-                    <td>B</td>
-                    <td>提出者</td>
-                    <td>{submitter_name}</td>
-                </tr>
-                <tr>
-                    <td>C</td>
-                    <td>種類</td>
-                    <td>日報 / 週報</td>
-                </tr>
-                <tr>
-                    <td>D</td>
-                    <td>判定</td>
-                    <td>承認済 / 要修正 / 再提出</td>
-                </tr>
-                <tr>
-                    <td>E</td>
-                    <td>チェック結果</td>
-                    <td>{checklist_summary}</td>
-                </tr>
-                <tr>
-                    <td>F</td>
-                    <td>フィードバック</td>
-                    <td>{feedback}</td>
-                </tr>
-                <tr>
-                    <td>G</td>
-                    <td>期限</td>
-                    <td>{deadline}（要修正・再提出のみ）</td>
-                </tr>
-                <tr>
-                    <td>H</td>
-                    <td>対応完了</td>
-                    <td>未 / 済</td>
-                </tr>
+            <table class="config-table">
+                <thead>
+                    <tr>
+                        <th>指標</th>
+                        <th>Before</th>
+                        <th>After</th>
+                        <th>改善率</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>チェック時間</td>
+                        <td>30分/日</td>
+                        <td>3分/日</td>
+                        <td>90%削減</td>
+                    </tr>
+                    <tr>
+                        <td>フィードバック遅延</td>
+                        <td>平均24時間</td>
+                        <td>即時（数秒）</td>
+                        <td>99%短縮</td>
+                    </tr>
+                    <tr>
+                        <td>再提出率</td>
+                        <td>25%</td>
+                        <td>8%</td>
+                        <td>68%改善</td>
+                    </tr>
+                    <tr>
+                        <td>品質スコア平均</td>
+                        <td>72点</td>
+                        <td>88点</td>
+                        <td>22%向上</td>
+                    </tr>
+                </tbody>
             </table>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>拡張例：経費申請チェック</h2>
-            <div class="code-block">You are a finance assistant checking expense reports.
-
-Expense report:
----
-{expense_content}
----
-
-Checklist:
-1. 申請者情報: 氏名、部署、社員番号が記載されているか (Required)
-2. 経費区分: 適切な経費区分が選択されているか (Required)
-3. 金額: 金額が明記されているか (Required)
-4. 日付: 発生日が記載されているか (Required)
-5. 目的: 経費の目的・用途が明確か (Required)
-6. 領収書: 領収書が添付されているか (Required)
-7. 承認者: 事前承認の有無（高額の場合）(Conditional)
-
-Judgment criteria:
-- APPROVED: All items OK, ready for processing
-- NEEDS_REVISION: Minor issues (purpose unclear, date format, etc.)
-- RESUBMIT: Missing required items (no receipt, no amount, etc.)
-- ESCALATE: Amount over 50,000 JPY without prior approval
-
-Output in the same format as before, in Japanese.</div>
-            <div class="config-note">
-                <strong>応用:</strong> 経費申請では「ESCALATE」という第4の判定を追加し、高額案件を上位承認者に自動エスカレーションすることも可能です。
+    <section class="section" id="test" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Test</div>
+                <h2 class="section-title">テスト確認ポイント</h2>
             </div>
-        </section>
 
-        <section>
-            <h2>拡張例：稟議書チェック</h2>
-            <div class="code-block">You are a business assistant checking approval requests.
-
-Approval request content:
----
-{request_content}
----
-
-Checklist:
-1. 件名: 案件が明確に記載されているか (Required)
-2. 背景・目的: なぜこの案件が必要か説明されているか (Required)
-3. 内容詳細: 具体的な内容が記載されているか (Required)
-4. 金額・予算: 費用が明記されているか (Required if applicable)
-5. スケジュール: 実施時期が記載されているか (Required)
-6. 効果・メリット: 期待される効果が説明されているか (Required)
-7. リスク: 想定されるリスクと対策が記載されているか (Optional)
-8. 代替案: 他の選択肢の検討があるか (Optional)
-
-Provide judgment and detailed feedback in Japanese.
-For APPROVED cases, highlight strengths.
-For NEEDS_REVISION cases, provide specific improvement suggestions.
-For RESUBMIT cases, clearly identify missing required items.</div>
-        </section>
-
-        <section>
-            <h2>活用シーン</h2>
-            <div class="output-grid">
-                <div class="output-card">
-                    <h4>日報・週報の品質管理</h4>
-                    <p>記載漏れを自動検知し、形式の統一を促進。チェック時間を90%削減しながら品質を向上</p>
-                </div>
-                <div class="output-card">
-                    <h4>申請書類の事前チェック</h4>
-                    <p>経費申請の添付漏れ検知、稟議書の必須項目チェック。差し戻し削減で承認フローを効率化</p>
-                </div>
-                <div class="output-card">
-                    <h4>報告書の品質向上</h4>
-                    <p>テンプレート準拠の確認、数値データの有無チェック。結論・考察の記載漏れを防止</p>
-                </div>
-                <div class="output-card">
-                    <h4>新人教育・OJT</h4>
-                    <p>即時フィードバックによる学習効果向上。具体的な改善点が明示されるため成長が加速</p>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <h2>Before / After</h2>
-            <div class="comparison-grid">
-                <div class="comparison-card before">
-                    <div class="comparison-header">Before</div>
-                    <ul>
-                        <li>品質チェックは管理職が手動で30分/日</li>
-                        <li>判定基準が曖昧で属人的</li>
-                        <li>フィードバックが翌日以降に遅延</li>
-                        <li>同じ指摘を毎回繰り返す</li>
-                        <li>チェック漏れやミスが発生</li>
-                        <li>品質のばらつきが改善されない</li>
-                    </ul>
-                </div>
-                <div class="comparison-card after">
-                    <div class="comparison-header">After</div>
-                    <ul>
-                        <li>品質チェックは自動判定で3分/日（90%削減）</li>
-                        <li>判定基準が統一・明確・公平</li>
-                        <li>即時フィードバックで改善サイクル加速</li>
-                        <li>具体的な指摘で再発防止</li>
-                        <li>チェック漏れゼロ、精度向上</li>
-                        <li>継続的な品質向上が実現</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <h2>効果測定の指標</h2>
-            <table class="status-table">
-                <tr>
-                    <th>指標</th>
-                    <th>Before</th>
-                    <th>After</th>
-                    <th>改善率</th>
-                </tr>
-                <tr>
-                    <td>チェック時間</td>
-                    <td>30分/日</td>
-                    <td>3分/日</td>
-                    <td>90%削減</td>
-                </tr>
-                <tr>
-                    <td>フィードバック遅延</td>
-                    <td>平均24時間</td>
-                    <td>即時（数秒）</td>
-                    <td>99%短縮</td>
-                </tr>
-                <tr>
-                    <td>再提出率</td>
-                    <td>25%</td>
-                    <td>8%</td>
-                    <td>68%改善</td>
-                </tr>
-                <tr>
-                    <td>品質スコア平均</td>
-                    <td>72点</td>
-                    <td>88点</td>
-                    <td>22%向上</td>
-                </tr>
-            </table>
-        </section>
-
-        <section>
-            <h2>テスト確認ポイント</h2>
             <div class="checklist">
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>合格ケース: 全項目記載済みの完璧な提出物 → APPROVED判定 → Chat DM受信後、手動転送</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>要修正ケース: 数値が曖昧、具体性に欠ける → NEEDS_REVISION判定 → Chat DM受信後、手動転送</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>再提出ケース: 必須項目が未記載 → RESUBMIT判定 → Chat DM受信後、手動転送</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>フィードバック内容が具体的で改善に役立つ内容か</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>Sheetsのステータスが正しく更新されているか</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>期限が正しく設定されているか（要修正: +24h、再提出: +48h）</span>
-                </div>
+                <h3>動作確認チェックリスト</h3>
+                <ul>
+                    <li>合格ケース: 全項目記載済みの完璧な提出物 → APPROVED判定 → Chat DM受信後、手動転送</li>
+                    <li>要修正ケース: 数値が曖昧、具体性に欠ける → NEEDS_REVISION判定 → Chat DM受信後、手動転送</li>
+                    <li>再提出ケース: 必須項目が未記載 → RESUBMIT判定 → Chat DM受信後、手動転送</li>
+                    <li>フィードバック内容が具体的で改善に役立つ内容か</li>
+                    <li>Sheetsのステータスが正しく更新されているか</li>
+                    <li>期限が正しく設定されているか（要修正: +24h、再提出: +48h）</li>
+                </ul>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>今日のポイント SUMMARY</h2>
-            <div class="summary-box">
-                <h3>まとめ</h3>
+    <section class="section" id="summary">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Summary</div>
+                <h2 class="section-title">今日のポイント</h2>
+            </div>
+
+            <div class="highlight-box">
+                <h4>まとめ</h4>
                 <ul>
                     <li>5つのチェック項目（業務内容・進捗・課題・予定・文字数）で品質を自動判定</li>
                     <li>APPROVED / NEEDS_REVISION / RESUBMIT の3段階で条件分岐処理</li>
@@ -1254,27 +950,48 @@ For RESUBMIT cases, clearly identify missing required items.</div>
                     <li>チェック業務時間90%削減、品質スコア22%向上を実現</li>
                 </ul>
             </div>
-        </section>
-
-        <div class="next-preview">
-            <h3>次回予告</h3>
-            <p>Driveとスプレッドシートを連携する！進捗ダッシュボードが自動で更新される仕組み</p>
         </div>
+    </section>
 
-        <nav class="lesson-nav">
-            <a href="lesson2.html" class="nav-prev">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-                前のレッスン
-            </a>
-            <a href="lesson4.html" class="nav-next">
-                次のレッスン
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-            </a>
-        </nav>
-    </main>
+    <section class="next-preview">
+        <div class="next-preview-container">
+            <div class="section-label">Next</div>
+            <h2>次回予告</h2>
+            <h3>Driveとスプレッドシートを連携する！進捗ダッシュボードが自動で更新される仕組み</h3>
+            <p>
+                チームの日報・週報提出状況をリアルタイムで可視化するダッシュボードを構築。未提出者の自動検知と週次サマリーの自動生成を実装します。
+            </p>
+        </div>
+    </section>
+
+    <nav class="lesson-nav">
+        <a href="lesson2.html" class="nav-btn nav-prev">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            前のレッスン
+        </a>
+        <a href="lesson4.html" class="nav-btn nav-next">
+            次のレッスン
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </nav>
+
+    <div class="toast" id="toast">コピーしました</div>
+
+    <script>
+        function copyToClipboard(element) {
+            const text = element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>

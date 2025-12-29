@@ -3,115 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第1回:属人管理から卒業するための基礎設計！条件分岐で日報・週報提出依頼を自動化する | ゼロタッチマネジメント</title>
+    <title>第1回：属人管理から卒業するための基礎設計！条件分岐で日報・週報提出依頼を自動化する | ゼロタッチマネジメント</title>
+    <meta name="description" content="Google Workspace Studioで報告・承認・進捗管理を自動化する">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --ink: #0A0E27;
-            --paper: #FEFEF8;
-            --electric: #06B6D4;
-            --violet: #0EA5E9;
-            --gray: #4A5568;
-            --border: #E2E8F0;
-            --bg-light: #F8FAFC;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-primary: #0ea5e9;
+            --accent-secondary: #06b6d4;
+            --accent-tertiary: #38bdf8;
+            --accent-gradient: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #38bdf8 100%);
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition-fast: 0.15s ease;
+            --transition-base: 0.3s ease;
+            --coral: #ef4444;
+            --green: #22c55e;
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Inter', 'Noto Sans JP', -apple-system, sans-serif;
-            background: var(--paper);
-            color: var(--ink);
-            line-height: 1.8;
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
         }
-        nav {
+
+        ::selection {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .nav {
             position: fixed;
             top: 0;
-            width: 100%;
-            background: rgba(254, 254, 248, 0.95);
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(20px);
-            z-index: 1000;
-            padding: 1.5rem 0;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-color);
         }
+
         .nav-container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .nav-back {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: var(--gray);
+            color: var(--text-secondary);
             text-decoration: none;
             font-size: 0.875rem;
             font-weight: 500;
-            transition: color 0.2s;
+            transition: var(--transition-fast);
         }
-        .nav-back:hover { color: var(--electric); }
+
+        .nav-back:hover {
+            color: var(--accent-primary);
+        }
+
         .nav-lesson {
-            font-size: 0.875rem;
-            color: var(--gray);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--accent-primary);
         }
-        main {
+
+        .hero {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            position: relative;
+        }
+
+        .hero-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0);
+            background-size: 40px 40px;
+            opacity: 0.5;
+        }
+
+        .hero-content {
             max-width: 900px;
             margin: 0 auto;
-            padding: 8rem 2rem 4rem;
+            position: relative;
+            z-index: 1;
         }
-        .lesson-header {
-            text-align: center;
-            margin-bottom: 4rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
         }
-        .lesson-number {
-            font-size: 6rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--violet), var(--electric));
+
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .hero-title-accent {
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            line-height: 1;
-            margin-bottom: 1.5rem;
+            background-clip: text;
         }
-        .lesson-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 1rem 0 0.5rem;
-            letter-spacing: -0.02em;
-        }
-        .lesson-subtitle {
+
+        .hero-description {
             font-size: 1.125rem;
-            color: var(--gray);
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.8;
         }
+
+        .section {
+            padding: 5rem 2rem;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .section-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.8;
+        }
+
+        .goal-card {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
         .comparison-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
-            margin: 2.5rem auto 0;
-            max-width: 800px;
-            text-align: left;
+            margin: 2rem 0;
         }
+
         .comparison-card {
             padding: 2rem;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
         }
+
         .comparison-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-lg);
             transform: translateY(-4px);
         }
+
         .comparison-card.before {
-            border-top: 4px solid #EF4444;
+            border-top: 4px solid var(--coral);
         }
+
         .comparison-card.after {
-            border-top: 4px solid #22C55E;
+            border-top: 4px solid var(--green);
         }
+
         .comparison-header {
             font-size: 0.75rem;
             font-weight: 700;
@@ -119,337 +242,490 @@
             text-transform: uppercase;
             margin-bottom: 1.25rem;
         }
-        section {
-            margin-bottom: 3rem;
+
+        .comparison-card.before .comparison-header {
+            color: var(--coral);
         }
-        h2 {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            padding-left: 1rem;
-            border-left: 4px solid var(--electric);
+
+        .comparison-card.after .comparison-header {
+            color: var(--green);
         }
-        .goal-card {
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(6, 182, 212, 0.05));
-            border-radius: 12px;
-            padding: 2rem;
-            border-left: 4px solid var(--violet);
-        }
-        .goal-card p {
-            font-size: 1.05rem;
-            color: var(--gray);
-            line-height: 1.8;
-        }
-        .problem-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
-        .problem-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-        }
-        .problem-card.issue { border-top: 4px solid #EF4444; }
-        .problem-card.solution { border-top: 4px solid #22C55E; }
-        .problem-card h3 {
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-            letter-spacing: 0.05em;
-        }
-        .problem-card.issue h3 { color: #EF4444; }
-        .problem-card.solution h3 { color: #22C55E; }
-        .problem-card ul {
+
+        .comparison-list {
             list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
-        .problem-card li {
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-bottom: 0.5rem;
-            padding-left: 1.5rem;
-            position: relative;
+
+        .comparison-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.6;
         }
-        .problem-card.issue li::before {
-            content: "×";
-            position: absolute;
-            left: 0;
-            color: #EF4444;
-            font-weight: 700;
+
+        .comparison-list li::before {
+            content: '';
+            flex-shrink: 0;
+            width: 6px;
+            height: 6px;
+            margin-top: 0.5rem;
+            border-radius: 50%;
         }
-        .problem-card.solution li::before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #22C55E;
-            font-weight: 700;
+
+        .comparison-card.before .comparison-list li::before {
+            background: var(--coral);
         }
-        .element-grid {
+
+        .comparison-card.after .comparison-list li::before {
+            background: var(--green);
+        }
+
+        .issue-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
         }
-        .element-card {
-            padding: 1.5rem;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
+
+        .issue-card {
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
         }
-        .element-number {
+
+        .issue-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .issue-number {
             font-size: 0.75rem;
             font-weight: 700;
-            color: var(--electric);
+            color: var(--accent-secondary);
             margin-bottom: 0.5rem;
         }
-        .element-card h3 {
+
+        .issue-card h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--accent-primary);
+        }
+
+        .issue-card p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .flow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .flow-step {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+
+        .flow-step:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-gradient);
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
         }
-        .element-card p {
-            font-size: 0.875rem;
-            color: var(--gray);
+
+        .step-content p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
         }
-        .flow-diagram {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
+
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
-        .flow-step {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, var(--violet), var(--electric));
+
+        .config-table th {
+            background: var(--text-primary);
             color: white;
-            border-radius: 8px;
-            font-size: 0.9rem;
+            padding: 1rem;
+            text-align: left;
             font-weight: 600;
-            margin: 0.5rem;
+            font-size: 0.875rem;
         }
-        .flow-arrow {
-            color: var(--gray);
-            margin: 0 0.5rem;
+
+        .config-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .config-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .config-table tr:hover td {
+            background: var(--bg-secondary);
+        }
+
+        .code-block-wrapper {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .code-block {
+            background: var(--text-primary);
+            color: var(--accent-secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .code-block:hover {
+            opacity: 0.9;
+        }
+
+        .copy-hint {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+        }
+
+        .highlight-box {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
+        }
+
+        .highlight-box h4 {
             font-size: 1.25rem;
+            margin-bottom: 1rem;
         }
+
+        .highlight-box ul {
+            list-style: disc;
+            padding-left: 1.5rem;
+        }
+
+        .highlight-box li {
+            margin-bottom: 0.5rem;
+            font-size: 0.9375rem;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            color: #92400e;
+            font-size: 0.9375rem;
+        }
+
+        .warning-box strong {
+            color: #78350f;
+        }
+
         .condition-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
-            margin-top: 1.5rem;
+            margin: 2rem 0;
         }
+
         .condition-card {
-            background: rgba(14, 165, 233, 0.05);
-            border-radius: 8px;
-            padding: 1.25rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
             text-align: center;
+            border: 1px solid var(--border-color);
+            transition: var(--transition-base);
         }
+
+        .condition-card:hover {
+            border-color: var(--accent-primary);
+        }
+
         .condition-card h4 {
-            font-size: 0.9rem;
-            color: var(--violet);
+            font-size: 1rem;
+            color: var(--accent-primary);
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
+
         .condition-card p {
-            font-size: 0.85rem;
-            color: var(--gray);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
-        .status-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
+
+        .checklist {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
         }
-        .status-table th,
-        .status-table td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
+
+        .checklist h3 {
+            color: var(--accent-primary);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
         }
-        .status-table th {
-            background: var(--bg-light);
-            font-weight: 600;
+
+        .checklist ul {
+            list-style: none;
         }
-        .code-block {
-            background: #1e1e1e;
-            color: var(--electric);
-            border-radius: 8px;
-            padding: 1.5rem;
-            font-family: 'Monaco', 'Consolas', monospace;
-            font-size: 0.85rem;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            margin: 1rem 0;
-            line-height: 1.6;
+
+        .checklist li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
         }
-        .step-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+
+        .checklist li:last-child {
+            border-bottom: none;
         }
-        .step-item {
-            display: flex;
-            gap: 1rem;
-            padding: 1.5rem;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
+
+        .checklist li::before {
+            content: '[ ]';
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+            font-weight: 700;
         }
-        .step-number {
-            width: 40px;
-            height: 40px;
+
+        .flow-diagram {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, var(--violet), var(--electric));
-            color: white;
-            font-weight: 700;
-            border-radius: 50%;
-            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
         }
-        .step-content h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        .step-content p {
-            font-size: 0.9rem;
-            color: var(--gray);
-            line-height: 1.6;
-        }
-        .checklist {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .checklist-item {
-            display: flex;
+
+        .flow-item {
+            display: inline-flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            background: var(--bg-light);
-            border-radius: 8px;
-        }
-        .checklist-item svg {
-            color: #22c55e;
-            flex-shrink: 0;
-        }
-        .checklist-item span {
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent-gradient);
+            color: white;
+            border-radius: var(--radius-sm);
             font-size: 0.9rem;
-            color: var(--gray);
+            font-weight: 600;
         }
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
+
+        .flow-arrow {
+            color: var(--text-muted);
+            font-size: 1.5rem;
         }
-        .comparison-card {
-            padding: 1.5rem;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-        }
-        .comparison-card.before { border-top: 4px solid #EF4444; }
-        .comparison-card.after { border-top: 4px solid #22C55E; }
-        .comparison-header {
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-        }
-        .comparison-card.before .comparison-header { color: #EF4444; }
-        .comparison-card.after .comparison-header { color: #22C55E; }
-        .comparison-card ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .comparison-card li {
-            font-size: 0.875rem;
-            color: var(--gray);
-        }
-        .summary-box {
-            background: var(--ink);
-            color: var(--paper);
-            border-radius: 12px;
-            padding: 2rem;
-        }
-        .summary-box h3 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-        .summary-box ul {
-            list-style: none;
-        }
-        .summary-box li {
-            margin-bottom: 0.5rem;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-        .summary-box li::before {
-            content: "→";
-            position: absolute;
-            left: 0;
-            color: var(--electric);
-        }
+
         .next-preview {
-            margin-top: 3rem;
-            padding: 2rem;
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(6, 182, 212, 0.1));
-            border-radius: 12px;
-            text-align: center;
+            background: var(--text-primary);
+            color: white;
+            padding: 4rem 2rem;
         }
-        .next-preview h3 {
-            font-size: 1rem;
-            color: var(--violet);
+
+        .next-preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .next-preview .section-label {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .next-preview h2 {
+            color: white;
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
         }
-        .next-preview p {
-            font-size: 0.9rem;
-            color: var(--gray);
+
+        .next-preview h3 {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
         }
+
+        .next-preview p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9375rem;
+            max-width: 600px;
+        }
+
         .lesson-nav {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 1rem;
         }
-        .nav-prev, .nav-next {
+
+        .nav-btn {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: var(--bg-light);
-            color: var(--ink);
+            padding: 1rem 1.5rem;
             text-decoration: none;
-            font-size: 0.875rem;
             font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.2s;
+            font-size: 0.9375rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
         }
-        .nav-prev:hover, .nav-next:hover {
-            background: var(--electric);
+
+        .nav-prev {
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-prev:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .nav-next {
+            background: var(--accent-gradient);
             color: white;
         }
+
+        .nav-next:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
         @media (max-width: 768px) {
-            .lesson-number { font-size: 4rem; }
-            .lesson-title { font-size: 1.5rem; }
-            .problem-grid, .element-grid, .condition-grid, .comparison-grid {
+            .hero {
+                padding: 6rem 1.5rem 3rem;
+            }
+
+            .section {
+                padding: 3rem 1.5rem;
+            }
+
+            .comparison-grid {
                 grid-template-columns: 1fr;
             }
+
+            .issue-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .condition-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-diagram {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            .lesson-nav {
+                flex-direction: column;
+            }
+        }
+
+        [id] {
+            scroll-margin-top: 80px;
         }
     </style>
 </head>
 <body>
-    <nav>
+    <nav class="nav">
         <div class="nav-container">
             <a href="index.html" class="nav-back">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -457,52 +733,102 @@
                 </svg>
                 コース一覧
             </a>
-            <div class="nav-lesson">第1回 / 全5回</div>
+            <div class="nav-lesson">LESSON 1 / 5</div>
         </div>
     </nav>
 
-    <main>
-        <header class="lesson-header">
-            <div class="lesson-number">01</div>
-            <h1 class="lesson-title">属人管理から卒業するための基礎設計</h1>
-            <p class="lesson-subtitle">条件分岐で日報・週報提出依頼を自動化する</p>
+    <section class="hero">
+        <div class="hero-pattern"></div>
+        <div class="hero-content">
+            <div class="hero-badge">第1回 / 全5回</div>
+            <h1 class="hero-title">
+                属人管理から卒業するための基礎設計！<br>
+                <span class="hero-title-accent">条件分岐で日報・週報提出依頼を自動化する</span>
+            </h1>
+            <p class="hero-description">
+                管理業務の課題を整理し、Google Workspace Studioで曜日判定による条件分岐を実装。
+                日報・週報提出依頼の自動化エージェントを作成して、属人管理から卒業するための基礎を構築します。
+            </p>
 
-            <!-- Before/After: このレッスンで何が変わるか -->
-            <div class="comparison-grid">
+            <div class="comparison-grid" style="margin-top: 2.5rem;">
                 <div class="comparison-card before">
-                    <div class="comparison-header" style="color: #EF4444;">BEFORE：受講前</div>
-                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
-                        <li style="padding: 0.5rem 0;">日報確認に毎日30分〜1時間</li>
-                        <li style="padding: 0.5rem 0;">提出依頼を毎日手動送信</li>
-                        <li style="padding: 0.5rem 0;">送り忘れが月に数回発生</li>
-                        <li style="padding: 0.5rem 0;">管理業務が属人化</li>
+                    <div class="comparison-header">BEFORE：受講前</div>
+                    <ul class="comparison-list">
+                        <li>日報確認に毎日30分〜1時間</li>
+                        <li>提出依頼を毎日手動送信</li>
+                        <li>送り忘れが月に数回発生</li>
+                        <li>管理業務が属人化</li>
                     </ul>
                 </div>
                 <div class="comparison-card after">
-                    <div class="comparison-header" style="color: #22C55E;">AFTER：受講後</div>
-                    <ul style="list-style: none; font-size: 0.9375rem; color: var(--gray);">
-                        <li style="padding: 0.5rem 0;">日報・週報依頼が自動送信</li>
-                        <li style="padding: 0.5rem 0;">曜日判定で条件分岐</li>
-                        <li style="padding: 0.5rem 0;">送り忘れゼロを実現</li>
-                        <li style="padding: 0.5rem 0;">管理業務70%削減の第一歩</li>
+                    <div class="comparison-header">AFTER：受講後</div>
+                    <ul class="comparison-list">
+                        <li>日報・週報依頼が自動送信</li>
+                        <li>曜日判定で条件分岐</li>
+                        <li>送り忘れゼロを実現</li>
+                        <li>管理業務70%削減の第一歩</li>
                     </ul>
                 </div>
             </div>
-        </header>
+        </div>
+    </section>
 
-        <section>
-            <h2>学習目標 GOAL</h2>
-            <div class="goal-card">
-                <p>管理業務の課題を整理し、Google Workspace Studioで曜日判定による条件分岐を実装。日報・週報提出依頼の自動化エージェントを作成して、属人管理から卒業するための基礎を構築する</p>
+    <section class="section" id="goal">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Goal</div>
+                <h2 class="section-title">学習目標</h2>
             </div>
-        </section>
+            <div class="goal-card">
+                管理業務の課題を整理し、Google Workspace Studioで曜日判定による条件分岐を実装。
+                日報・週報提出依頼の自動化エージェントを作成して、属人管理から卒業するための基礎を構築する
+            </div>
+        </div>
+    </section>
 
-        <section>
-            <h2>管理業務の課題</h2>
-            <div class="problem-grid">
-                <div class="problem-card issue">
-                    <h3>Before: 属人管理</h3>
-                    <ul>
+    <section class="section" id="problems" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Problems</div>
+                <h2 class="section-title">管理業務の4つの課題</h2>
+            </div>
+
+            <div class="issue-grid">
+                <div class="issue-card">
+                    <div class="issue-number">ISSUE 01</div>
+                    <h3>提出依頼の手間</h3>
+                    <p>毎日17時に日報提出依頼を送信。金曜日は週報も追加で依頼する必要がある</p>
+                </div>
+                <div class="issue-card">
+                    <div class="issue-number">ISSUE 02</div>
+                    <h3>確認作業の負荷</h3>
+                    <p>10人分の日報を毎日読んで確認。内容を理解するだけで60分以上かかる</p>
+                </div>
+                <div class="issue-card">
+                    <div class="issue-number">ISSUE 03</div>
+                    <h3>品質のばらつき</h3>
+                    <p>記載内容の質が人によって異なり、個別に指摘や修正依頼が必要</p>
+                </div>
+                <div class="issue-card">
+                    <div class="issue-number">ISSUE 04</div>
+                    <h3>進捗把握の遅れ</h3>
+                    <p>チーム全体の状況把握に時間がかかり、課題の早期発見が困難</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="before-after">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Before / After</div>
+                <h2 class="section-title">導入効果</h2>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before：属人管理</div>
+                    <ul class="comparison-list">
                         <li>日報確認に毎日30分〜1時間かかる</li>
                         <li>未提出者への個別リマインドが必要</li>
                         <li>承認待ち案件を放置してしまう</li>
@@ -511,9 +837,9 @@
                         <li>送り忘れが月に数回発生</li>
                     </ul>
                 </div>
-                <div class="problem-card solution">
-                    <h3>After: ゼロタッチ</h3>
-                    <ul>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After：ゼロタッチ</div>
+                    <ul class="comparison-list">
                         <li>提出依頼は自動送信で完全自動化</li>
                         <li>未提出は自動検知・リマインド</li>
                         <li>承認依頼は自動通知で漏れゼロ</li>
@@ -523,166 +849,147 @@
                     </ul>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>日常的に発生する管理業務の手間</h2>
-            <div class="element-grid">
-                <div class="element-card">
-                    <div class="element-number">01</div>
-                    <h3>提出依頼の手間</h3>
-                    <p>毎日17時に日報提出依頼を送信。金曜日は週報も追加で依頼する必要がある</p>
-                </div>
-                <div class="element-card">
-                    <div class="element-number">02</div>
-                    <h3>確認作業の負荷</h3>
-                    <p>10人分の日報を毎日読んで確認。内容を理解するだけで60分以上かかる</p>
-                </div>
-                <div class="element-card">
-                    <div class="element-number">03</div>
-                    <h3>品質のばらつき</h3>
-                    <p>記載内容の質が人によって異なり、個別に指摘や修正依頼が必要</p>
-                </div>
-                <div class="element-card">
-                    <div class="element-number">04</div>
-                    <h3>進捗把握の遅れ</h3>
-                    <p>チーム全体の状況把握に時間がかかり、課題の早期発見が困難</p>
-                </div>
+    <section class="section" id="flow" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Agent Flow</div>
+                <h2 class="section-title">エージェントフロー</h2>
             </div>
-        </section>
 
-        <section>
-            <h2>エージェントフロー AGENT FLOW</h2>
             <div class="flow-diagram">
-                <div class="flow-step">Schedule (17:00)</div>
+                <div class="flow-item">Schedule (17:00)</div>
                 <span class="flow-arrow">→</span>
-                <div class="flow-step">曜日判定 (Gemini)</div>
+                <div class="flow-item">曜日判定 (Gemini)</div>
                 <span class="flow-arrow">→</span>
-                <div class="flow-step">メール/Chat送信</div>
-                <div class="condition-grid">
-                    <div class="condition-card">
-                        <h4>月〜木</h4>
-                        <p>日報提出依頼を送信</p>
-                    </div>
-                    <div class="condition-card">
-                        <h4>金曜日</h4>
-                        <p>週報提出依頼を送信</p>
-                    </div>
-                    <div class="condition-card">
-                        <h4>土日</h4>
-                        <p>送信しない (NO_SEND)</p>
-                    </div>
+                <div class="flow-item">条件分岐</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">Chat DM送信</div>
+            </div>
+
+            <div class="condition-grid">
+                <div class="condition-card">
+                    <h4>月〜木</h4>
+                    <p>日報提出依頼を送信</p>
+                </div>
+                <div class="condition-card">
+                    <h4>金曜日</h4>
+                    <p>週報提出依頼を送信</p>
+                </div>
+                <div class="condition-card">
+                    <h4>土日</h4>
+                    <p>送信しない (NO_SEND)</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>エージェント設計</h2>
-            <table class="status-table">
-                <tr>
-                    <th>項目</th>
-                    <th>設定値</th>
-                </tr>
-                <tr>
-                    <td>エージェント名</td>
-                    <td>日報週報提出依頼</td>
-                </tr>
-                <tr>
-                    <td>説明</td>
-                    <td>曜日に応じて日報/週報の提出依頼を自動送信</td>
-                </tr>
-                <tr>
-                    <td>スターター</td>
-                    <td>Scheduled（スケジュール）- 毎日17:00</td>
-                </tr>
-                <tr>
-                    <td>ステップ</td>
-                    <td>Gemini → 条件分岐 → Chat DM</td>
-                </tr>
-                <tr>
-                    <td>出力先</td>
-                    <td>Chat DM（自分へのダイレクトメッセージ） ※外部送信は未対応</td>
-                </tr>
+    <section class="section" id="config">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Configuration</div>
+                <h2 class="section-title">エージェント設計</h2>
+            </div>
+
+            <table class="config-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>設定値</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>エージェント名</td>
+                        <td>日報週報提出依頼</td>
+                    </tr>
+                    <tr>
+                        <td>説明</td>
+                        <td>曜日に応じて日報/週報の提出依頼を自動送信</td>
+                    </tr>
+                    <tr>
+                        <td>スターター</td>
+                        <td>Scheduled（スケジュール）- 毎日17:00</td>
+                    </tr>
+                    <tr>
+                        <td>ステップ</td>
+                        <td>Gemini → 条件分岐 → Chat DM</td>
+                    </tr>
+                    <tr>
+                        <td>出力先</td>
+                        <td>Chat DM（自分へのダイレクトメッセージ） ※外部送信は未対応</td>
+                    </tr>
+                </tbody>
             </table>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>条件分岐ロジック</h2>
-            <table class="status-table">
-                <tr>
-                    <th>曜日</th>
-                    <th>アクション</th>
-                    <th>内容</th>
-                </tr>
-                <tr>
-                    <td>月〜木</td>
-                    <td>日報提出依頼を送信</td>
-                    <td>本日23:59までに提出</td>
-                </tr>
-                <tr>
-                    <td>金曜日</td>
-                    <td>週報提出依頼を送信</td>
-                    <td>今週のサマリーと来週の計画</td>
-                </tr>
-                <tr>
-                    <td>土日</td>
-                    <td>送信しない</td>
-                    <td>NO_SENDで自動スキップ</td>
-                </tr>
-            </table>
-        </section>
+    <section class="section" id="steps" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Steps</div>
+                <h2 class="section-title">作成ステップ</h2>
+            </div>
 
-        <section>
-            <h2>作成ステップ</h2>
-            <div class="step-list">
-                <div class="step-item">
+            <div class="flow-steps">
+                <div class="flow-step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3>新規エージェント作成</h3>
+                        <h4>新規エージェント作成</h4>
                         <p>studio.workspace.google.com にアクセス → 「新規作成」をクリック → エージェント名「日報週報提出依頼」を入力</p>
                     </div>
                 </div>
-                <div class="step-item">
+                <div class="flow-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>スケジュールスターター設定</h3>
+                        <h4>スケジュールスターター設定</h4>
                         <p>スターターで「Scheduled（スケジュール）」を選択 → 頻度: 毎日 → 時刻: 17:00 を設定して定時実行を有効化</p>
                     </div>
                 </div>
-                <div class="step-item">
+                <div class="flow-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Geminiステップで曜日判定</h3>
+                        <h4>Geminiステップで曜日判定</h4>
                         <p>ステップを追加 → 「Gemini」を選択 → 下記の曜日判定プロンプトを設定し、曜日に応じた出力を生成</p>
                     </div>
                 </div>
-                <div class="step-item">
+                <div class="flow-step">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3>条件分岐ステップ設定</h3>
+                        <h4>条件分岐ステップ設定</h4>
                         <p>ステップを追加 → 「条件分岐」を選択 → Geminiの出力が「NO_SEND」以外の場合のみ次のステップを実行</p>
                     </div>
                 </div>
-                <div class="step-item">
+                <div class="flow-step">
                     <div class="step-number">5</div>
                     <div class="step-content">
-                        <h3>Chat DMステップ設定</h3>
+                        <h4>Chat DMステップ設定</h4>
                         <p>Chat DM送信のステップを追加。自分への通知を受け取り、必要に応じて手動でチームへ転送。※Chat通知は個人へのDMのみ対応（スペースへの投稿・外部送信は未対応）</p>
                     </div>
                 </div>
-                <div class="step-item">
+                <div class="flow-step">
                     <div class="step-number">6</div>
                     <div class="step-content">
-                        <h3>テスト実行と有効化</h3>
+                        <h4>テスト実行と有効化</h4>
                         <p>「テスト」で動作確認を行い、曜日判定とメッセージ生成が正しく機能することを確認後、「有効化」で本番稼働を開始</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>曜日判定プロンプト GEMINI PROMPT</h2>
-            <div class="code-block">Today is {current_date}.
+    <section class="section" id="prompt">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Prompt</div>
+                <h2 class="section-title">曜日判定プロンプト</h2>
+            </div>
+
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">Today is {current_date}.
 
 Determine the day of the week and generate the appropriate message:
 
@@ -700,26 +1007,21 @@ If Saturday or Sunday:
 - Output: "NO_SEND"
 
 Output the message only, no explanations.</div>
-        </section>
+            </div>
+        </div>
+    </section>
 
-        <section>
-            <h2>祝日考慮版プロンプト（拡張用）</h2>
-            <div class="code-block">Today is {current_date}.
-Japanese holidays this month: {holidays_list}
+    <section class="section" id="template" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Templates</div>
+                <h2 class="section-title">メッセージテンプレート</h2>
+            </div>
 
-Determine if today is:
-1. A Japanese national holiday → Output: "NO_SEND"
-2. Saturday or Sunday → Output: "NO_SEND"
-3. Friday → Generate weekly report request in Japanese
-4. Monday to Thursday → Generate daily report request in Japanese
-
-Include appropriate deadline and keep the message professional.
-Output the message only, no explanations.</div>
-        </section>
-
-        <section>
-            <h2>日報提出依頼テンプレート（月〜木）</h2>
-            <div class="code-block">件名：【提出依頼】本日の日報
+            <h3 style="font-size: 1.125rem; margin-bottom: 1rem; color: var(--accent-primary);">日報提出依頼（月〜木）</h3>
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">件名：【提出依頼】本日の日報
 
 チームの皆さん
 
@@ -736,11 +1038,12 @@ Output the message only, no explanations.</div>
 ・明日の予定
 
 よろしくお願いいたします。</div>
-        </section>
+            </div>
 
-        <section>
-            <h2>週報提出依頼テンプレート（金曜日）</h2>
-            <div class="code-block">件名：【提出依頼】今週の週報
+            <h3 style="font-size: 1.125rem; margin: 2rem 0 1rem; color: var(--accent-primary);">週報提出依頼（金曜日）</h3>
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">件名：【提出依頼】今週の週報
 
 チームの皆さん
 
@@ -758,95 +1061,60 @@ Output the message only, no explanations.</div>
 ・共有事項
 
 よろしくお願いいたします。</div>
-        </section>
+            </div>
 
-        <section>
-            <h2>Chat DM通知テンプレート</h2>
-            <div class="code-block">📋 【提出依頼】{report_type}
+            <div class="warning-box" style="margin-top: 2rem;">
+                <p><strong>注意:</strong> Chat通知は自分へのDM（ダイレクトメッセージ）のみ送信可能です。スペースへの投稿機能・外部への送信機能は正式リリースで削除されました。チーム全体への通知が必要な場合は、自分へのDMを受け取った後、手動で転送してください。</p>
+            </div>
+        </div>
+    </section>
 
-提出期限: 本日 23:59
+    <section class="section" id="condition">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Condition</div>
+                <h2 class="section-title">条件分岐ステップ設定</h2>
+            </div>
 
-{report_instructions}
-
-よろしくお願いします！</div>
-            <p style="margin-top: 1rem; padding: 1rem; background: #FEF3C7; border-left: 4px solid #F59E0B; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #92400E;">
-                <strong>注意:</strong> Chat通知は自分へのDM（ダイレクトメッセージ）のみ送信可能です。スペースへの投稿機能・外部への送信機能は正式リリースで削除されました。チーム全体への通知が必要な場合は、自分へのDMを受け取った後、手動で転送してください。
-            </p>
-        </section>
-
-        <section>
-            <h2>条件分岐ステップ設定</h2>
-            <div class="code-block">IF Gemini出力 != "NO_SEND":
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">IF Gemini出力 != "NO_SEND":
     → Chat DM送信ステップ実行（自分へ）
     → 必要に応じて手動でチームへ転送
 ELSE:
     → 何もしない (土日・祝日は自動スキップ)</div>
-        </section>
-
-        <section>
-            <h2>Before / After</h2>
-            <div class="comparison-grid">
-                <div class="comparison-card before">
-                    <div class="comparison-header">Before</div>
-                    <ul>
-                        <li>毎日17時に手動で依頼メールを送信</li>
-                        <li>金曜日は週報も追加で送信する必要</li>
-                        <li>送り忘れが月に数回発生していた</li>
-                        <li>宛先の追加・削除が手作業で管理</li>
-                        <li>休日にも誤送信してしまうことがある</li>
-                    </ul>
-                </div>
-                <div class="comparison-card after">
-                    <div class="comparison-header">After</div>
-                    <ul>
-                        <li>17時に自動配信、人手不要</li>
-                        <li>金曜日は自動で週報依頼も追加</li>
-                        <li>送り忘れゼロ、完全自動化</li>
-                        <li>宛先管理もシステム化が可能</li>
-                        <li>土日・祝日は自動でスキップ</li>
-                    </ul>
-                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>テスト確認ポイント</h2>
+    <section class="section" id="test" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Test</div>
+                <h2 class="section-title">テスト確認ポイント</h2>
+            </div>
+
             <div class="checklist">
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>曜日判定が正しく行われているか（月〜木、金、土日の判別）</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>メッセージの内容が適切か（日報/週報の切り替えが正しい）</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>送信先（メール・Chat）が正しく設定されているか</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>土日は送信されないか（NO_SEND判定が機能しているか）</span>
-                </div>
+                <h3>動作確認チェックリスト</h3>
+                <ul>
+                    <li>曜日判定が正しく行われているか（月〜木、金、土日の判別）</li>
+                    <li>メッセージの内容が適切か（日報/週報の切り替えが正しい）</li>
+                    <li>送信先（Chat DM）が正しく設定されているか</li>
+                    <li>土日は送信されないか（NO_SEND判定が機能しているか）</li>
+                </ul>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>今日のポイント SUMMARY</h2>
-            <div class="summary-box">
-                <h3>まとめ</h3>
+    <section class="section" id="summary">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Summary</div>
+                <h2 class="section-title">今日のポイント</h2>
+            </div>
+
+            <div class="highlight-box">
+                <h4>まとめ</h4>
                 <ul>
                     <li>Google Workspace Studioで「スケジュールスターター」を設定して定時実行を実現</li>
                     <li>Geminiステップで曜日を判定し、条件分岐ロジックを実装</li>
@@ -856,22 +1124,48 @@ ELSE:
                     <li>属人管理から脱却し、ゼロタッチマネジメントの基礎を構築</li>
                 </ul>
             </div>
-        </section>
-
-        <div class="next-preview">
-            <h3>次回予告</h3>
-            <p>重要ポイントだけを抽出して確認時間を5分の1にする！日報と週報を自動要約する確認時短フロー</p>
         </div>
+    </section>
 
-        <nav class="lesson-nav">
-            <div></div>
-            <a href="lesson2.html" class="nav-next">
-                次のレッスン
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-            </a>
-        </nav>
-    </main>
+    <section class="next-preview">
+        <div class="next-preview-container">
+            <div class="section-label">Next</div>
+            <h2>次回予告</h2>
+            <h3>重要ポイントだけを抽出して確認時間を1/5にする！日報と週報を自動要約する確認時短フロー</h3>
+            <p>
+                日報・週報の内容をGeminiで自動要約し、重要ポイントだけを抽出して確認時間を大幅に削減するエージェントを作成します。
+            </p>
+        </div>
+    </section>
+
+    <nav class="lesson-nav">
+        <a href="index.html" class="nav-btn nav-prev">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            コース一覧
+        </a>
+        <a href="lesson2.html" class="nav-btn nav-next">
+            次のレッスン
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </nav>
+
+    <div class="toast" id="toast">コピーしました</div>
+
+    <script>
+        function copyToClipboard(element) {
+            const text = element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>
