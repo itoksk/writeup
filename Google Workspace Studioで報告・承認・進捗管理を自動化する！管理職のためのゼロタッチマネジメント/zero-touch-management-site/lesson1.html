@@ -597,11 +597,11 @@
                 </tr>
                 <tr>
                     <td>ステップ</td>
-                    <td>Gemini → 条件分岐 → Gmail / Chat DM</td>
+                    <td>Gemini → 条件分岐 → Chat DM</td>
                 </tr>
                 <tr>
                     <td>出力先</td>
-                    <td>Gmail + Chat DM（個人へのダイレクトメッセージ）</td>
+                    <td>Chat DM（自分へのダイレクトメッセージ） ※外部送信は未対応</td>
                 </tr>
             </table>
         </section>
@@ -666,8 +666,8 @@
                 <div class="step-item">
                     <div class="step-number">5</div>
                     <div class="step-content">
-                        <h3>Gmail / Chat DMステップ設定</h3>
-                        <p>Gmail送信とChat DM送信のステップを追加。※Chat通知は個人へのDMのみ対応（スペースへの投稿機能は削除済み）</p>
+                        <h3>Chat DMステップ設定</h3>
+                        <p>Chat DM送信のステップを追加。自分への通知を受け取り、必要に応じて手動でチームへ転送。※Chat通知は個人へのDMのみ対応（スペースへの投稿・外部送信は未対応）</p>
                     </div>
                 </div>
                 <div class="step-item">
@@ -770,15 +770,15 @@ Output the message only, no explanations.</div>
 
 よろしくお願いします！</div>
             <p style="margin-top: 1rem; padding: 1rem; background: #FEF3C7; border-left: 4px solid #F59E0B; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #92400E;">
-                <strong>注意:</strong> Chat通知は個人へのDM（ダイレクトメッセージ）のみ送信可能です。スペースへの投稿機能は正式リリースで削除されました。チーム全体への通知が必要な場合はGmailを使用してください。
+                <strong>注意:</strong> Chat通知は自分へのDM（ダイレクトメッセージ）のみ送信可能です。スペースへの投稿機能・外部への送信機能は正式リリースで削除されました。チーム全体への通知が必要な場合は、自分へのDMを受け取った後、手動で転送してください。
             </p>
         </section>
 
         <section>
             <h2>条件分岐ステップ設定</h2>
             <div class="code-block">IF Gemini出力 != "NO_SEND":
-    → Gmail送信ステップ実行（チーム全体）
-    → Chat DM送信ステップ実行（個人へ）
+    → Chat DM送信ステップ実行（自分へ）
+    → 必要に応じて手動でチームへ転送
 ELSE:
     → 何もしない (土日・祝日は自動スキップ)</div>
         </section>
@@ -850,7 +850,7 @@ ELSE:
                 <ul>
                     <li>Google Workspace Studioで「スケジュールスターター」を設定して定時実行を実現</li>
                     <li>Geminiステップで曜日を判定し、条件分岐ロジックを実装</li>
-                    <li>Gmail送信ステップとChat DM送信ステップで提出依頼を自動送信</li>
+                    <li>Chat DMステップで自分へ提出依頼を自動送信（外部送信は未対応）</li>
                     <li>金曜日のみ週報依頼を追加する条件分岐を実装</li>
                     <li>土日・祝日はNO_SENDで自動スキップし、休日の誤送信を防止</li>
                     <li>属人管理から脱却し、ゼロタッチマネジメントの基礎を構築</li>

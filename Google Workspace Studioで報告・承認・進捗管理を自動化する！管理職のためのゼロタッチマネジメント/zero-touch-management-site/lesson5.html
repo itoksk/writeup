@@ -609,16 +609,12 @@
                     <td>Geminiステップ（申請分類）→ 条件分岐ステップ（承認者決定）</td>
                 </tr>
                 <tr>
-                    <td>出力（承認者へ）</td>
-                    <td>Gmailステップ: 承認依頼メール送信</td>
+                    <td>出力（自分へ）</td>
+                    <td>Chat DMステップ: 承認依頼内容を自分に通知 → 手動で承認者へ転送 ※外部送信は未対応</td>
                 </tr>
                 <tr>
                     <td>出力（Sheets）</td>
                     <td>Sheetsステップ: 承認管理シートに記録</td>
-                </tr>
-                <tr>
-                    <td>出力（申請者へ）</td>
-                    <td>Gmailステップ: 申請受付確認メール送信</td>
                 </tr>
             </table>
         </section>
@@ -651,16 +647,16 @@
                     <td>Geminiステップ（経過時間・緊急度判定）→ 条件分岐ステップ</td>
                 </tr>
                 <tr>
-                    <td>出力（承認者へ）</td>
-                    <td>Gmailステップ: リマインドメール送信</td>
+                    <td>出力（自分へ）</td>
+                    <td>Chat DMステップ: リマインド対象を自分に通知 → 手動で承認者へ連絡</td>
                 </tr>
                 <tr>
-                    <td>出力（上位者へ）</td>
-                    <td>Gmailステップ: エスカレーションメール（閾値超過時）</td>
+                    <td>出力（エスカレーション）</td>
+                    <td>Chat DMステップ: エスカレーション対象を自分に通知 → 手動で上位者へ連絡</td>
                 </tr>
             </table>
             <div class="config-note">
-                <strong>注意:</strong> Chat DMステップでの通知も可能ですが、現在のWorkspace Studioではスペースへの投稿機能は削除されています。個人へのDM送信のみ対応しています。
+                <strong>注意:</strong> 現在のWorkspace Studioでは外部へのメール送信・スペースへの投稿は未対応です。承認依頼・リマインド・エスカレーションは自分へのChat DMで受信し、手動で転送してください。
             </div>
         </section>
 
@@ -749,10 +745,10 @@
                 </div>
                 <div class="flow-arrow">↓</div>
                 <div class="flow-item">
-                    <div class="flow-icon">📧</div>
+                    <div class="flow-icon">💬</div>
                     <div class="flow-content">
-                        <h3>承認依頼の自動送信</h3>
-                        <p>承認者に詳細情報と承認リンクを送信</p>
+                        <h3>承認依頼の通知（自分へ）</h3>
+                        <p>Chat DMで自分に通知 → 手動で承認者へ転送</p>
                     </div>
                 </div>
                 <div class="flow-arrow">↓</div>
@@ -855,8 +851,29 @@ Output messages in Japanese.</div>
         </section>
 
         <section>
-            <h2>承認依頼メールテンプレート</h2>
-            <div class="code-block">件名：【承認依頼】{request_type} - {requester}
+            <h2>承認依頼通知テンプレート（自分宛Chat DM → 手動転送用）</h2>
+            <div class="code-block">📝 **承認依頼が届きました**
+
+■ 申請内容
+・種類: {request_type}
+・申請者: {requester}
+・部署: {department}
+・金額: {amount}円
+・緊急度: {urgency}
+・承認者: {approver}
+
+■ 概要
+{summary}
+
+■ 詳細
+{request_detail}
+
+■ 対応期限
+{deadline}（{reminder_hours}時間後にリマインド）
+
+--- 以下、承認者へ転送するメッセージ ---
+
+件名：【承認依頼】{request_type} - {requester}
 
 {approver}さん
 
@@ -877,15 +894,17 @@ Output messages in Japanese.</div>
 {request_detail}
 
 ■ 対応期限
-{deadline}（{reminder_hours}時間後にリマインド送信）
+{deadline}
 
 ■ 承認・差し戻し・却下
-以下のリンクより対応をお願いいたします。
-✅ 承認: {approval_link}
-🔄 差し戻し: {return_link}
-❌ 却下: {reject_link}
+メール返信またはフォームにてご連絡ください。
 
-よろしくお願いいたします。</div>
+よろしくお願いいたします。
+
+--- 転送用メッセージここまで ---</div>
+            <div class="config-note">
+                <strong>運用:</strong> 外部送信は未対応のため、Chat DMで受信後、手動で承認者へメール転送してください。
+            </div>
         </section>
 
         <section>
@@ -962,32 +981,27 @@ Output messages in Japanese.</div>
         </section>
 
         <section>
-            <h2>リマインド・エスカレーションテンプレート</h2>
-            <div class="code-block">■ リマインドメール
+            <h2>リマインド・エスカレーション通知テンプレート（自分宛Chat DM）</h2>
+            <div class="code-block">⏰ **リマインド対象案件**
 ---
-件名：【リマインド】承認待ち案件があります
-
-{approver}さん
-
-お疲れ様です。
-以下の承認依頼が{hours}時間以上未処理となっています。
+以下の承認依頼が{hours}時間以上未処理です。
+承認者へ直接連絡してください。
 
 ■ 承認待ち案件
 {pending_items_list}
 
+■ 承認者: {approver}
+
+--- 承認者への連絡文（参考）---
+件名：【リマインド】承認待ち案件があります
+{approver}さん、以下の承認依頼が{hours}時間以上未処理となっています。
 お手数ですが、ご確認・ご対応をお願いいたします。
-
-{approval_link}
 ---
 
-■ エスカレーションメール
+🚨 **エスカレーション対象案件**
 ---
-件名：【エスカレーション】承認遅延案件のご確認
-
-{manager}さん
-
-お疲れ様です。
-以下の承認依頼が{escalation_hours}時間以上未処理となっています。
+以下の承認依頼が{escalation_hours}時間以上未処理です。
+上位者へ連絡してください。
 
 ■ 遅延案件
 ・申請: {request_summary}
@@ -996,8 +1010,16 @@ Output messages in Japanese.</div>
 ・経過時間: {hours}時間
 ・緊急度: {urgency}
 
+■ エスカレーション先: {manager}
+
+--- 上位者への連絡文（参考）---
+件名：【エスカレーション】承認遅延案件のご確認
+{manager}さん、以下の承認依頼が{escalation_hours}時間以上未処理です。
 フォローをお願いいたします。
 ---</div>
+            <div class="config-note">
+                <strong>運用:</strong> 外部送信は未対応のため、Chat DMで受信後、手動で承認者・上位者へ連絡してください。
+            </div>
         </section>
 
         <section>
@@ -1048,14 +1070,14 @@ ELSE IF approval_status == "REJECTED":
                     <div class="step-number">3</div>
                     <div class="step-content">
                         <h3>Approval Request Agent 作成</h3>
-                        <p>Gmailスターター/Formsスターター → Geminiステップで分類 → 条件分岐で承認者決定 → Gmailステップで承認依頼送信 → Sheetsステップで記録</p>
+                        <p>Gmailスターター/Formsスターター → Geminiステップで分類 → 条件分岐で承認者決定 → Chat DMステップで自分に通知 → Sheetsステップで記録 → 手動で承認者へ転送</p>
                     </div>
                 </div>
                 <div class="step-item">
                     <div class="step-number">4</div>
                     <div class="step-content">
                         <h3>Approval Monitor Agent 作成</h3>
-                        <p>スケジュールスターター（10:00/15:00）→ Sheetsステップで承認待ちチェック → Geminiステップで判定 → Gmailステップでリマインド/エスカレーション送信</p>
+                        <p>スケジュールスターター（10:00/15:00）→ Sheetsステップで承認待ちチェック → Geminiステップで判定 → Chat DMステップで自分に通知 → 手動で承認者/上位者へ連絡</p>
                     </div>
                 </div>
                 <div class="step-item">
@@ -1259,8 +1281,8 @@ ELSE IF approval_status == "REJECTED":
                 <h3>まとめ</h3>
                 <ul>
                     <li>Gmail/Formsスターターで申請を受け付け、Geminiステップで自動分類・承認者決定</li>
-                    <li>条件分岐ステップで承認依頼を適切な承認者に自動送信（単段階/多段階対応）</li>
-                    <li>スケジュールスターター（10:00/15:00）で承認待ちを監視、リマインド・エスカレーションを自動実行</li>
+                    <li>条件分岐ステップで適切な承認者を判定、Chat DMで自分に通知（手動で承認者へ転送）</li>
+                    <li>スケジュールスターター（10:00/15:00）で承認待ちを監視、Chat DMでリマインド・エスカレーション対象を通知</li>
                     <li>承認・差し戻し・却下の結果に応じた自動処理で申請者に即時通知</li>
                     <li>8つのエージェントで「ゼロタッチマネジメント」を完全実現</li>
                     <li>管理業務70%削減、連絡漏れゼロ、即時進捗把握を達成</li>

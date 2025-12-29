@@ -685,7 +685,7 @@
                 </tr>
                 <tr>
                     <td>出力（提出者へ）</td>
-                    <td>Gmailでフィードバック送信</td>
+                    <td>Chat DM（自分）でフィードバック受信 → 手動で転送 ※外部送信は未対応</td>
                 </tr>
                 <tr>
                     <td>出力（Sheets）</td>
@@ -798,8 +798,8 @@
                 <div class="step-item">
                     <div class="step-number">5</div>
                     <div class="step-content">
-                        <h3>Gmailステップ設定</h3>
-                        <p>各分岐にGmail送信ステップを追加。承認・修正依頼・再提出依頼の3パターンのテンプレートを用意</p>
+                        <h3>Chat DMステップ設定</h3>
+                        <p>各分岐にChat DM送信ステップを追加。自分宛に通知を受け取り、承認・修正依頼・再提出依頼の結果を確認後、手動で提出者へ転送 ※外部送信は未対応</p>
                     </div>
                 </div>
                 <div class="step-item">
@@ -854,30 +854,40 @@ FEEDBACK: [提出者向けの具体的なフィードバック（日本語）]
         <section>
             <h2>条件分岐ロジック</h2>
             <div class="code-block">IF JUDGMENT == "APPROVED":
-    → Send approval notification (Gmail to submitter)
+    → Chat DM（自分）で承認結果を受信
     → Update status to "承認済" (Sheets)
-    → Log completion (no manager notification needed)
+    → 手動で提出者へ承認通知を転送
 
 ELSE IF JUDGMENT == "NEEDS_REVISION":
-    → Send revision request (Gmail to submitter)
+    → Chat DM（自分）で修正依頼内容を受信
     → Update status to "要修正" (Sheets)
     → Include specific feedback from CHECKLIST_RESULT
-    → Set revision deadline (+24h)
+    → 手動で提出者へ修正依頼を転送 (+24h期限)
 
 ELSE IF JUDGMENT == "RESUBMIT":
-    → Send resubmit request (Gmail to submitter)
+    → Chat DM（自分）で再提出依頼内容を受信
     → Update status to "再提出" (Sheets)
-    → Flag for manager attention (Chat notification)
-    → Set resubmit deadline (+48h)</div>
+    → 手動で提出者へ再提出依頼を転送 (+48h期限)</div>
+            <p style="margin-top: 1rem; padding: 1rem; background: #FEF3C7; border-left: 4px solid #F59E0B; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #92400E;">
+                <strong>注意:</strong> 現在のWorkspace Studioでは外部へのメール・Chat送信は未対応です。フィードバックは自分へのDMで受け取り、内容を確認後、手動で提出者へ転送してください。
+            </p>
         </section>
 
         <section>
-            <h2>通知メールテンプレート</h2>
+            <h2>Chat DM通知テンプレート（自分宛 → 手動転送用）</h2>
 
             <div class="template-card">
-                <div class="template-header approved">APPROVED: 合格通知</div>
+                <div class="template-header approved">APPROVED: 合格通知（転送用）</div>
                 <div class="template-body">
-                    <div class="code-block">件名：【承認】{submission_type}が承認されました
+                    <div class="code-block">✅ **判定結果：承認**
+
+■ 提出者: {submitter_name}
+■ 種類: {submission_type}
+■ 判定: APPROVED
+
+--- 以下、提出者へ転送するメッセージ ---
+
+件名：【承認】{submission_type}が承認されました
 
 {submitter_name}さん
 
@@ -890,14 +900,24 @@ ELSE IF JUDGMENT == "RESUBMIT":
 ■ コメント
 {feedback}
 
-引き続きよろしくお願いいたします。</div>
+引き続きよろしくお願いいたします。
+
+--- 転送用メッセージここまで ---</div>
                 </div>
             </div>
 
             <div class="template-card">
-                <div class="template-header revision">NEEDS_REVISION: 要修正通知</div>
+                <div class="template-header revision">NEEDS_REVISION: 要修正通知（転送用）</div>
                 <div class="template-body">
-                    <div class="code-block">件名：【要修正】{submission_type}の修正をお願いします
+                    <div class="code-block">⚠️ **判定結果：要修正**
+
+■ 提出者: {submitter_name}
+■ 種類: {submission_type}
+■ 判定: NEEDS_REVISION
+
+--- 以下、提出者へ転送するメッセージ ---
+
+件名：【要修正】{submission_type}の修正をお願いします
 
 {submitter_name}さん
 
@@ -915,14 +935,24 @@ ELSE IF JUDGMENT == "RESUBMIT":
 修正後、再度提出をお願いします。
 期限: {deadline}（24時間以内）
 
-ご不明点があればお知らせください。</div>
+ご不明点があればお知らせください。
+
+--- 転送用メッセージここまで ---</div>
                 </div>
             </div>
 
             <div class="template-card">
-                <div class="template-header resubmit">RESUBMIT: 再提出通知</div>
+                <div class="template-header resubmit">RESUBMIT: 再提出通知（転送用）</div>
                 <div class="template-body">
-                    <div class="code-block">件名：【再提出】{submission_type}の再提出をお願いします
+                    <div class="code-block">🚨 **判定結果：再提出**
+
+■ 提出者: {submitter_name}
+■ 種類: {submission_type}
+■ 判定: RESUBMIT
+
+--- 以下、提出者へ転送するメッセージ ---
+
+件名：【再提出】{submission_type}の再提出をお願いします
 
 {submitter_name}さん
 
@@ -942,13 +972,15 @@ ELSE IF JUDGMENT == "RESUBMIT":
 内容を確認の上、再度提出をお願いします。
 期限: {deadline}（48時間以内）
 
-ご質問があれば、遠慮なくお問い合わせください。</div>
+ご質問があれば、遠慮なくお問い合わせください。
+
+--- 転送用メッセージここまで ---</div>
                 </div>
             </div>
         </section>
 
         <section>
-            <h2>Chat通知テンプレート（管理者向け）</h2>
+            <h2>Chat DM通知テンプレート（再提出案件アラート）</h2>
             <div class="code-block">⚠️ **再提出案件発生**
 
 ■ 提出者: {submitter_name}
@@ -965,7 +997,7 @@ ELSE IF JUDGMENT == "RESUBMIT":
 
 ※ フォローが必要な場合は直接ご連絡ください。</div>
             <div class="config-note">
-                <strong>ポイント:</strong> 管理者への通知はRESSUBMIT（必須項目不備）の場合のみ。APPROVEDとNEEDS_REVISIONは自動処理で完結させ、管理者の負担を最小化します。
+                <strong>ポイント:</strong> 全ての判定結果が自分へのDMで届きます。RESSUBMITの場合は優先的に対応し、提出者へ手動で転送してください。
             </div>
         </section>
 
@@ -1169,21 +1201,21 @@ For RESUBMIT cases, clearly identify missing required items.</div>
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                         <polyline points="22 4 12 14.01 9 11.01"/>
                     </svg>
-                    <span>合格ケース: 全項目記載済みの完璧な提出物 → APPROVED判定 → 承認メール送信</span>
+                    <span>合格ケース: 全項目記載済みの完璧な提出物 → APPROVED判定 → Chat DM受信後、手動転送</span>
                 </div>
                 <div class="checklist-item">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                         <polyline points="22 4 12 14.01 9 11.01"/>
                     </svg>
-                    <span>要修正ケース: 数値が曖昧、具体性に欠ける → NEEDS_REVISION判定 → 修正依頼メール送信</span>
+                    <span>要修正ケース: 数値が曖昧、具体性に欠ける → NEEDS_REVISION判定 → Chat DM受信後、手動転送</span>
                 </div>
                 <div class="checklist-item">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                         <polyline points="22 4 12 14.01 9 11.01"/>
                     </svg>
-                    <span>再提出ケース: 必須項目が未記載 → RESUBMIT判定 → 再提出メール + 管理者Chat通知</span>
+                    <span>再提出ケース: 必須項目が未記載 → RESUBMIT判定 → Chat DM受信後、手動転送</span>
                 </div>
                 <div class="checklist-item">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1216,7 +1248,7 @@ For RESUBMIT cases, clearly identify missing required items.</div>
                 <ul>
                     <li>5つのチェック項目（業務内容・進捗・課題・予定・文字数）で品質を自動判定</li>
                     <li>APPROVED / NEEDS_REVISION / RESUBMIT の3段階で条件分岐処理</li>
-                    <li>判定結果に応じた通知メールを自動送信（承認・修正依頼・再提出依頼）</li>
+                    <li>判定結果はChat DMで即時通知（手動で転送してフィードバック）</li>
                     <li>RESSUBMITのみ管理者に通知し、管理者の負担を最小化</li>
                     <li>即時フィードバックで品質向上サイクルを確立</li>
                     <li>チェック業務時間90%削減、品質スコア22%向上を実現</li>
