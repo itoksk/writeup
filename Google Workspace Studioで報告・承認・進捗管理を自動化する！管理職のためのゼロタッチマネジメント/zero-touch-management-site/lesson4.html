@@ -3,68 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesson 4：Driveとスプレッドシートを連携する！進捗ダッシュボードが自動で更新される仕組み | ゼロタッチマネジメント</title>
+    <title>第4回：Driveとスプレッドシートを連携する！進捗ダッシュボードが自動で更新される仕組み | ゼロタッチマネジメント</title>
+    <meta name="description" content="Google Workspace Studioで報告・承認・進捗管理を自動化する">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent-primary: #0ea5e9;
-            --accent-secondary: #06b6d4;
-            --accent-gradient: linear-gradient(135deg, #0ea5e9, #06b6d4);
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --text-muted: #64748b;
             --bg-primary: #ffffff;
             --bg-secondary: #f8fafc;
             --bg-tertiary: #f1f5f9;
-            --border-light: #e2e8f0;
-            --border-medium: #cbd5e1;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-primary: #0ea5e9;
+            --accent-secondary: #06b6d4;
+            --accent-tertiary: #38bdf8;
+            --accent-gradient: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #38bdf8 100%);
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition-fast: 0.15s ease;
+            --transition-base: 0.3s ease;
+            --coral: #ef4444;
             --green: #22c55e;
             --green-bg: #f0fdf4;
-            --yellow: #eab308;
-            --yellow-bg: #fefce8;
             --orange: #f97316;
             --orange-bg: #fff7ed;
-            --coral: #ef4444;
-            --coral-bg: #fef2f2;
             --purple: #8b5cf6;
             --purple-bg: #f5f3ff;
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.8;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
         }
-        /* Navigation */
-        nav {
+
+        ::selection {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .nav {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            height: 64px;
-            background: rgba(255, 255, 255, 0.9);
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-light);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            padding: 0 2rem;
+            border-bottom: 1px solid var(--border-color);
         }
+
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
-            width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .nav-back {
             display: flex;
             align-items: center;
@@ -73,201 +91,419 @@
             text-decoration: none;
             font-size: 0.875rem;
             font-weight: 500;
-            transition: color 0.2s;
+            transition: var(--transition-fast);
         }
+
         .nav-back:hover {
             color: var(--accent-primary);
         }
-        .nav-progress {
-            font-size: 0.875rem;
-            color: var(--text-muted);
+
+        .nav-lesson {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--accent-primary);
         }
-        /* Hero Section */
+
         .hero {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
             padding: 8rem 2rem 4rem;
-            background: var(--bg-secondary);
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
             position: relative;
-            overflow: hidden;
         }
-        .hero::before {
-            content: '';
+
+        .hero-pattern {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: radial-gradient(circle at 1px 1px, var(--border-light) 1px, transparent 0);
-            background-size: 24px 24px;
+            inset: 0;
+            background-image: radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0);
+            background-size: 40px 40px;
             opacity: 0.5;
         }
-        .hero-container {
+
+        .hero-content {
             max-width: 900px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
         }
-        .lesson-badge {
+
+        .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem 1rem;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 100px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-        }
-        .lesson-badge-number {
-            background: var(--accent-gradient);
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
         }
-        .hero h1 {
-            font-size: 2.5rem;
+
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3rem);
             font-weight: 800;
-            line-height: 1.3;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
             margin-bottom: 1rem;
-            letter-spacing: -0.02em;
         }
-        .hero h1 .accent {
+
+        .hero-title-accent {
             background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
         .hero-description {
             font-size: 1.125rem;
             color: var(--text-secondary);
-            max-width: 640px;
+            max-width: 700px;
+            line-height: 1.8;
         }
-        /* Main Content */
-        main {
-            max-width: 900px;
+
+        .section {
+            padding: 5rem 2rem;
+        }
+
+        .section-container {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 4rem 2rem;
         }
-        section {
-            margin-bottom: 4rem;
+
+        .section-header {
+            margin-bottom: 3rem;
         }
+
         .section-label {
             font-size: 0.75rem;
             font-weight: 700;
             letter-spacing: 0.1em;
             text-transform: uppercase;
             color: var(--accent-primary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
+
         .section-title {
-            font-size: 1.5rem;
+            font-size: clamp(1.5rem, 3vw, 2rem);
             font-weight: 700;
-            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
         }
-        /* Comparison Grid */
+
+        .section-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.8;
+        }
+
+        .goal-card {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
         .comparison-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
             margin: 2rem 0;
         }
+
         .comparison-card {
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-light);
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
         }
+
+        .comparison-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
         .comparison-card.before {
-            background: var(--coral-bg);
-            border-color: var(--coral);
+            border-top: 4px solid var(--coral);
         }
+
         .comparison-card.after {
-            background: var(--green-bg);
-            border-color: var(--green);
+            border-top: 4px solid var(--green);
         }
+
         .comparison-header {
             font-size: 0.75rem;
             font-weight: 700;
             letter-spacing: 0.05em;
             text-transform: uppercase;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
         }
+
         .comparison-card.before .comparison-header {
             color: var(--coral);
         }
+
         .comparison-card.after .comparison-header {
             color: var(--green);
         }
-        .comparison-card ul {
+
+        .comparison-list {
             list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
-        .comparison-card li {
-            font-size: 0.9375rem;
+
+        .comparison-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
             color: var(--text-secondary);
-            padding: 0.5rem 0;
-            padding-left: 1.5rem;
-            position: relative;
+            font-size: 0.9375rem;
+            line-height: 1.6;
         }
-        .comparison-card li::before {
+
+        .comparison-list li::before {
             content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
+            flex-shrink: 0;
             width: 6px;
             height: 6px;
+            margin-top: 0.5rem;
             border-radius: 50%;
         }
-        .comparison-card.before li::before {
+
+        .comparison-card.before .comparison-list li::before {
             background: var(--coral);
         }
-        .comparison-card.after li::before {
+
+        .comparison-card.after .comparison-list li::before {
             background: var(--green);
         }
-        /* Agent Grid */
+
         .agent-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             margin: 2rem 0;
         }
+
         .agent-card {
-            padding: 1.5rem;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            border-top: 4px solid var(--accent-primary);
+            padding: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
         }
-        .agent-card.purple {
-            border-top-color: var(--purple);
+
+        .agent-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
         }
-        .agent-card.green {
-            border-top-color: var(--green);
+
+        .agent-number {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-secondary);
+            margin-bottom: 0.5rem;
         }
-        .agent-card.orange {
-            border-top-color: var(--orange);
-        }
+
         .agent-card h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--accent-primary);
+        }
+
+        .agent-card p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .flow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .flow-step {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+
+        .flow-step:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-gradient);
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: var(--text-primary);
         }
-        .agent-card p {
+
+        .step-content p {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .config-table th {
+            background: var(--text-primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
             font-size: 0.875rem;
+        }
+
+        .config-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9375rem;
             color: var(--text-secondary);
         }
-        /* Timeline */
+
+        .config-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .config-table tr:hover td {
+            background: var(--bg-secondary);
+        }
+
+        .config-table code {
+            background: var(--bg-tertiary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            color: var(--accent-primary);
+        }
+
+        .code-block-wrapper {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .code-block {
+            background: var(--text-primary);
+            color: var(--accent-secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .code-block:hover {
+            opacity: 0.9;
+        }
+
+        .copy-hint {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+        }
+
+        .highlight-box {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
+        }
+
+        .highlight-box h4 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .highlight-box ul {
+            list-style: disc;
+            padding-left: 1.5rem;
+        }
+
+        .highlight-box li {
+            margin-bottom: 0.5rem;
+            font-size: 0.9375rem;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 1rem 0;
+        }
+
+        .warning-box p {
+            color: #92400e;
+            font-size: 0.9375rem;
+        }
+
+        .warning-box strong {
+            color: #78350f;
+        }
+
         .timeline {
             position: relative;
             padding-left: 2rem;
             margin: 2rem 0;
         }
+
         .timeline::before {
             content: '';
             position: absolute;
@@ -277,13 +513,16 @@
             width: 2px;
             background: var(--accent-gradient);
         }
+
         .timeline-item {
             position: relative;
             padding-bottom: 1.5rem;
         }
+
         .timeline-item:last-child {
             padding-bottom: 0;
         }
+
         .timeline-item::before {
             content: '';
             position: absolute;
@@ -295,99 +534,27 @@
             border: 3px solid var(--accent-primary);
             border-radius: 50%;
         }
+
         .timeline-item h4 {
             font-size: 0.9375rem;
             font-weight: 600;
             color: var(--accent-primary);
             margin-bottom: 0.25rem;
         }
+
         .timeline-item p {
             font-size: 0.875rem;
             color: var(--text-secondary);
         }
-        /* Config Table */
-        .config-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-            font-size: 0.9375rem;
-        }
-        .config-table th,
-        .config-table td {
-            padding: 0.875rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-light);
-        }
-        .config-table th {
-            background: var(--bg-secondary);
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        .config-table td {
-            color: var(--text-secondary);
-        }
-        .config-table code {
-            background: var(--bg-tertiary);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.8125rem;
-            color: var(--accent-primary);
-        }
-        /* Code Block */
-        .code-block-wrapper {
-            margin: 1.5rem 0;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border-light);
-        }
-        .code-block-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-light);
-        }
-        .code-block-title {
-            font-size: 0.8125rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-        .copy-button {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            padding: 0.375rem 0.75rem;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .copy-button:hover {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-        }
-        .code-block {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 1.5rem;
-            font-family: 'Monaco', 'Consolas', monospace;
-            font-size: 0.8125rem;
-            line-height: 1.7;
-            overflow-x: auto;
-            white-space: pre-wrap;
-        }
-        /* Dashboard Preview */
+
         .dashboard-preview {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             overflow: hidden;
             margin: 2rem 0;
         }
+
         .dashboard-header {
             background: var(--text-primary);
             color: white;
@@ -396,14 +563,17 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .dashboard-title {
             font-weight: 600;
             font-size: 1rem;
         }
+
         .dashboard-date {
             font-size: 0.8rem;
             opacity: 0.7;
         }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -411,23 +581,27 @@
             padding: 1.5rem;
             background: var(--bg-secondary);
         }
+
         .stat-card {
             text-align: center;
             padding: 1rem;
             background: var(--bg-primary);
             border-radius: 8px;
-            border: 1px solid var(--border-light);
+            border: 1px solid var(--border-color);
         }
+
         .stat-value {
             font-size: 2rem;
             font-weight: 700;
             color: var(--accent-primary);
         }
+
         .stat-label {
             font-size: 0.75rem;
             color: var(--text-muted);
             margin-top: 0.25rem;
         }
+
         .status-badge {
             display: inline-block;
             padding: 0.25rem 0.5rem;
@@ -435,289 +609,263 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
+
         .status-badge.submitted {
             background: var(--green-bg);
             color: var(--green);
         }
+
         .status-badge.late {
             background: var(--orange-bg);
             color: var(--orange);
         }
+
         .status-badge.missing {
-            background: var(--coral-bg);
+            background: #fef2f2;
             color: var(--coral);
         }
-        /* Folder Tree */
+
         .folder-tree {
-            background: #1e293b;
+            background: var(--text-primary);
             color: #e2e8f0;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             padding: 1.5rem;
             font-family: 'Monaco', 'Consolas', monospace;
             font-size: 0.85rem;
             line-height: 1.8;
             margin: 1.5rem 0;
         }
+
         .folder-tree .folder {
             color: #fcd34d;
         }
+
         .folder-tree .file {
             color: var(--accent-secondary);
         }
-        /* Flow Steps */
-        .flow-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-        .flow-step {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-start;
-            padding: 1.25rem;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            transition: border-color 0.2s;
-        }
-        .flow-step:hover {
-            border-color: var(--accent-primary);
-        }
-        .flow-step-number {
-            width: 32px;
-            height: 32px;
-            background: var(--accent-gradient);
-            color: white;
-            font-weight: 700;
-            font-size: 0.875rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .flow-step-content h3 {
-            font-size: 0.9375rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-        .flow-step-content p {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-        /* Checklist */
-        .checklist {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin: 1.5rem 0;
-        }
-        .checklist-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-        }
-        .checklist-item svg {
-            color: var(--green);
-            flex-shrink: 0;
-        }
-        .checklist-item span {
-            font-size: 0.9375rem;
-            color: var(--text-secondary);
-        }
-        /* Highlight Box */
-        .highlight-box {
-            background: var(--text-primary);
-            color: white;
-            border-radius: 12px;
-            padding: 2rem;
-            margin: 2rem 0;
-        }
-        .highlight-box h3 {
-            font-size: 1.125rem;
-            margin-bottom: 1rem;
-        }
-        .highlight-box ul {
-            list-style: none;
-        }
-        .highlight-box li {
-            padding: 0.5rem 0;
-            padding-left: 1.5rem;
-            position: relative;
-            color: rgba(255, 255, 255, 0.9);
-        }
-        .highlight-box li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: var(--accent-secondary);
-        }
-        /* Note Box */
-        .note-box {
-            background: rgba(14, 165, 233, 0.1);
-            border-left: 4px solid var(--accent-primary);
-            padding: 1rem 1.25rem;
-            border-radius: 0 8px 8px 0;
-            margin: 1.5rem 0;
-        }
-        .note-box p {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-        .note-box strong {
-            color: var(--text-primary);
-        }
-        /* Metrics Table */
+
         .metrics-table {
             width: 100%;
             border-collapse: collapse;
             margin: 1.5rem 0;
         }
+
         .metrics-table th,
         .metrics-table td {
             padding: 0.875rem 1rem;
             text-align: left;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-color);
             font-size: 0.9375rem;
         }
+
         .metrics-table th {
             background: var(--bg-secondary);
             font-weight: 600;
         }
+
         .metrics-table .improvement {
             color: var(--green);
             font-weight: 600;
         }
-        /* Next Preview */
-        .next-preview {
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(6, 182, 212, 0.1));
-            border-radius: 12px;
+
+        .checklist {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             padding: 2rem;
-            text-align: center;
-            margin: 3rem 0 0;
+            margin: 2rem 0;
         }
-        .next-preview-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
+
+        .checklist h3 {
             color: var(--accent-primary);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .checklist ul {
+            list-style: none;
+        }
+
+        .checklist li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+
+        .checklist li::before {
+            content: '[ ]';
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+
+        .next-preview {
+            background: var(--text-primary);
+            color: white;
+            padding: 4rem 2rem;
+        }
+
+        .next-preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .next-preview .section-label {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .next-preview h2 {
+            color: white;
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
         }
+
         .next-preview h3 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-primary);
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
         }
-        /* Lesson Navigation */
+
+        .next-preview p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9375rem;
+            max-width: 600px;
+        }
+
         .lesson-nav {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border-light);
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 1rem;
         }
-        .nav-prev,
-        .nav-next {
+
+        .nav-btn {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
+            padding: 1rem 1.5rem;
             text-decoration: none;
-            font-size: 0.875rem;
             font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.2s;
+            font-size: 0.9375rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition-base);
         }
-        .nav-prev:hover,
-        .nav-next:hover {
-            background: var(--accent-primary);
+
+        .nav-prev {
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-prev:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .nav-next {
+            background: var(--accent-gradient);
             color: white;
         }
-        /* Toast */
+
+        .nav-next:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
         .toast {
             position: fixed;
             bottom: 2rem;
-            right: 2rem;
-            background: var(--text-primary);
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-gradient);
             color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9375rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
             opacity: 0;
-            transform: translateY(1rem);
-            transition: all 0.3s;
-            z-index: 1000;
+            transition: all 0.3s ease;
         }
+
         .toast.show {
+            transform: translateX(-50%) translateY(0);
             opacity: 1;
-            transform: translateY(0);
         }
-        /* Responsive */
+
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 1.75rem;
+            .hero {
+                padding: 6rem 1.5rem 3rem;
             }
-            .comparison-grid,
-            .agent-grid,
-            .stats-grid {
+
+            .section {
+                padding: 3rem 1.5rem;
+            }
+
+            .comparison-grid {
                 grid-template-columns: 1fr;
             }
+
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
             .lesson-nav {
                 flex-direction: column;
-                gap: 1rem;
             }
-            .nav-prev,
-            .nav-next {
-                width: 100%;
-                justify-content: center;
-            }
+        }
+
+        [id] {
+            scroll-margin-top: 80px;
         }
     </style>
 </head>
 <body>
-    <nav>
+    <nav class="nav">
         <div class="nav-container">
             <a href="index.html" class="nav-back">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M19 12H5M12 19l-7-7 7-7"/>
                 </svg>
-                コース一覧に戻る
+                コース一覧
             </a>
-            <div class="nav-progress">Lesson 4 / 5</div>
+            <div class="nav-lesson">LESSON 4 / 5</div>
         </div>
     </nav>
 
     <section class="hero">
-        <div class="hero-container">
-            <div class="lesson-badge">
-                <span class="lesson-badge-number">4</span>
-                Lesson 4
-            </div>
-            <h1>Driveとスプレッドシートを連携する！<br><span class="accent">進捗ダッシュボードが自動で更新される仕組み</span></h1>
-            <p class="hero-description">チームの日報・週報提出状況をリアルタイムで可視化するダッシュボードを構築。未提出者の自動検知、提出率の集計、週次サマリーの生成を自動化し、管理者がゼロタッチで進捗を把握できる仕組みを作ります。</p>
-        </div>
-    </section>
+        <div class="hero-pattern"></div>
+        <div class="hero-content">
+            <div class="hero-badge">第4回 / 全5回</div>
+            <h1 class="hero-title">
+                Driveとスプレッドシートを連携する！<br>
+                <span class="hero-title-accent">進捗ダッシュボードが自動で更新される仕組み</span>
+            </h1>
+            <p class="hero-description">
+                チームの日報・週報提出状況をリアルタイムで可視化するダッシュボードを構築。未提出者の自動検知、提出率の集計、週次サマリーの生成を自動化し、管理者がゼロタッチで進捗を把握できる仕組みを作ります。
+            </p>
 
-    <main>
-        <!-- Before/After -->
-        <section>
-            <div class="section-label">Transformation</div>
-            <h2 class="section-title">このレッスンで何が変わるか</h2>
-            <div class="comparison-grid">
+            <div class="comparison-grid" style="margin-top: 2.5rem;">
                 <div class="comparison-card before">
-                    <div class="comparison-header">Before：受講前</div>
-                    <ul>
+                    <div class="comparison-header">BEFORE：受講前</div>
+                    <ul class="comparison-list">
                         <li>提出状況を毎日手動で確認</li>
                         <li>未提出者の検知が翌朝になる</li>
                         <li>週次レポート作成に1時間</li>
@@ -725,8 +873,8 @@
                     </ul>
                 </div>
                 <div class="comparison-card after">
-                    <div class="comparison-header">After：受講後</div>
-                    <ul>
+                    <div class="comparison-header">AFTER：受講後</div>
+                    <ul class="comparison-list">
                         <li>ダッシュボードで即時確認</li>
                         <li>未提出者は当日20:00に自動アラート</li>
                         <li>週次レポートは自動生成</li>
@@ -734,36 +882,60 @@
                     </ul>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Agents Overview -->
-        <section>
-            <div class="section-label">Agents</div>
-            <h2 class="section-title">作成するエージェント一覧</h2>
+    <section class="section" id="goal">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Goal</div>
+                <h2 class="section-title">学習目標</h2>
+            </div>
+            <div class="goal-card">
+                提出ログ・メンバーマスタ・ダッシュボードの3シートでデータを一元管理し、4つのエージェントで未提出検知・ダッシュボード更新・週次サマリー生成・添付ファイル管理を自動化する
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="agents" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Agents</div>
+                <h2 class="section-title">作成するエージェント一覧</h2>
+            </div>
+
             <div class="agent-grid">
                 <div class="agent-card">
+                    <div class="agent-number">AGENT 01</div>
                     <h3>Submission Check Agent</h3>
                     <p>毎日20:00に未提出者を検知してアラート送信。遅延提出者のリストも作成</p>
                 </div>
-                <div class="agent-card purple">
+                <div class="agent-card">
+                    <div class="agent-number">AGENT 02</div>
                     <h3>Dashboard Update Agent</h3>
                     <p>毎日21:00にダッシュボードを自動更新。本日の提出数・提出率を集計</p>
                 </div>
-                <div class="agent-card green">
+                <div class="agent-card">
+                    <div class="agent-number">AGENT 03</div>
                     <h3>Weekly Summary Agent</h3>
                     <p>金曜18:00に週次サマリーを生成。提出率ランキングと改善提案を出力</p>
                 </div>
-                <div class="agent-card orange">
+                <div class="agent-card">
+                    <div class="agent-number">AGENT 04</div>
                     <h3>Drive Sync Agent</h3>
                     <p>添付ファイルをDriveに自動保存。日付・送信者で整理して管理</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- System Flow Timeline -->
-        <section>
-            <div class="section-label">System Flow</div>
-            <h2 class="section-title">システム全体の流れ</h2>
+    <section class="section" id="timeline">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">System Flow</div>
+                <h2 class="section-title">システム全体の流れ</h2>
+            </div>
+
             <div class="timeline">
                 <div class="timeline-item">
                     <h4>17:00 - 提出依頼</h4>
@@ -786,298 +958,229 @@
                     <p>Weekly Summary Agentが週次の提出率とトレンドを分析してレポート生成</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Submission Check Agent -->
-        <section>
-            <div class="section-label">Agent 1</div>
-            <h2 class="section-title">Submission Check Agent 設計</h2>
-            <table class="config-table">
-                <tr>
-                    <th>項目</th>
-                    <th>設定値</th>
-                </tr>
-                <tr>
-                    <td>エージェント名</td>
-                    <td>未提出チェック</td>
-                </tr>
-                <tr>
-                    <td>説明</td>
-                    <td>未提出者を検知し、管理職に通知</td>
-                </tr>
-                <tr>
-                    <td>スターター</td>
-                    <td><code>Scheduled</code>（毎日20:00）</td>
-                </tr>
-                <tr>
-                    <td>データソース</td>
-                    <td><code>Sheets</code>（提出ログシート、メンバーマスタシート）</td>
-                </tr>
-                <tr>
-                    <td>処理ステップ</td>
-                    <td><code>Gemini</code>でメンバーリストと本日の提出を比較</td>
-                </tr>
-                <tr>
-                    <td>出力</td>
-                    <td><code>Chat DM</code>通知（未提出者がいる場合）</td>
-                </tr>
-            </table>
-        </section>
+    <section class="section" id="agent1" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Agent 1</div>
+                <h2 class="section-title">Submission Check Agent 設計</h2>
+            </div>
 
-        <!-- Dashboard Update Agent -->
-        <section>
-            <div class="section-label">Agent 2</div>
-            <h2 class="section-title">Dashboard Update Agent 設計</h2>
             <table class="config-table">
-                <tr>
-                    <th>項目</th>
-                    <th>設定値</th>
-                </tr>
-                <tr>
-                    <td>エージェント名</td>
-                    <td>ダッシュボード更新</td>
-                </tr>
-                <tr>
-                    <td>説明</td>
-                    <td>日次の提出統計でダッシュボードを更新</td>
-                </tr>
-                <tr>
-                    <td>スターター</td>
-                    <td><code>Scheduled</code>（毎日21:00）</td>
-                </tr>
-                <tr>
-                    <td>データソース</td>
-                    <td><code>Sheets</code>（提出ログシート）</td>
-                </tr>
-                <tr>
-                    <td>処理ステップ</td>
-                    <td>本日のデータを集計、統計を算出</td>
-                </tr>
-                <tr>
-                    <td>出力</td>
-                    <td><code>Sheets</code>更新（ダッシュボードシート）</td>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>設定値</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>エージェント名</td>
+                        <td>未提出チェック</td>
+                    </tr>
+                    <tr>
+                        <td>説明</td>
+                        <td>未提出者を検知し、管理職に通知</td>
+                    </tr>
+                    <tr>
+                        <td>スターター</td>
+                        <td><code>Scheduled</code>（毎日20:00）</td>
+                    </tr>
+                    <tr>
+                        <td>データソース</td>
+                        <td><code>Sheets</code>（提出ログシート、メンバーマスタシート）</td>
+                    </tr>
+                    <tr>
+                        <td>処理ステップ</td>
+                        <td><code>Gemini</code>でメンバーリストと本日の提出を比較</td>
+                    </tr>
+                    <tr>
+                        <td>出力</td>
+                        <td><code>Chat DM</code>通知（未提出者がいる場合）</td>
+                    </tr>
+                </tbody>
             </table>
-        </section>
+        </div>
+    </section>
 
-        <!-- Weekly Summary Agent -->
-        <section>
-            <div class="section-label">Agent 3</div>
-            <h2 class="section-title">Weekly Summary Agent 設計</h2>
+    <section class="section" id="agent2">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Agent 2</div>
+                <h2 class="section-title">Dashboard Update Agent 設計</h2>
+            </div>
+
             <table class="config-table">
-                <tr>
-                    <th>項目</th>
-                    <th>設定値</th>
-                </tr>
-                <tr>
-                    <td>エージェント名</td>
-                    <td>週次サマリー</td>
-                </tr>
-                <tr>
-                    <td>説明</td>
-                    <td>週次の提出サマリーとランキングを生成</td>
-                </tr>
-                <tr>
-                    <td>スターター</td>
-                    <td><code>Scheduled</code>（金曜18:00）</td>
-                </tr>
-                <tr>
-                    <td>データソース</td>
-                    <td><code>Sheets</code>（今週の提出ログ）</td>
-                </tr>
-                <tr>
-                    <td>処理ステップ</td>
-                    <td><code>Gemini</code>で週次データを分析、傾向を検出</td>
-                </tr>
-                <tr>
-                    <td>出力</td>
-                    <td><code>Chat DM</code>通知（週次レポート）</td>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>設定値</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>エージェント名</td>
+                        <td>ダッシュボード更新</td>
+                    </tr>
+                    <tr>
+                        <td>説明</td>
+                        <td>日次の提出統計でダッシュボードを更新</td>
+                    </tr>
+                    <tr>
+                        <td>スターター</td>
+                        <td><code>Scheduled</code>（毎日21:00）</td>
+                    </tr>
+                    <tr>
+                        <td>データソース</td>
+                        <td><code>Sheets</code>（提出ログシート）</td>
+                    </tr>
+                    <tr>
+                        <td>処理ステップ</td>
+                        <td>本日のデータを集計、統計を算出</td>
+                    </tr>
+                    <tr>
+                        <td>出力</td>
+                        <td><code>Sheets</code>更新（ダッシュボードシート）</td>
+                    </tr>
+                </tbody>
             </table>
-            <div class="note-box">
+        </div>
+    </section>
+
+    <section class="section" id="agent3" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Agent 3</div>
+                <h2 class="section-title">Weekly Summary Agent 設計</h2>
+            </div>
+
+            <table class="config-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>設定値</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>エージェント名</td>
+                        <td>週次サマリー</td>
+                    </tr>
+                    <tr>
+                        <td>説明</td>
+                        <td>週次の提出サマリーとランキングを生成</td>
+                    </tr>
+                    <tr>
+                        <td>スターター</td>
+                        <td><code>Scheduled</code>（金曜18:00）</td>
+                    </tr>
+                    <tr>
+                        <td>データソース</td>
+                        <td><code>Sheets</code>（今週の提出ログ）</td>
+                    </tr>
+                    <tr>
+                        <td>処理ステップ</td>
+                        <td><code>Gemini</code>で週次データを分析、傾向を検出</td>
+                    </tr>
+                    <tr>
+                        <td>出力</td>
+                        <td><code>Chat DM</code>通知（週次レポート）</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="warning-box">
                 <p><strong>注意:</strong> Workspace Studioでは外部へのメール送信は未対応です。週次レポートは自分宛のChat DMで通知します。</p>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Sheets Structure -->
-        <section>
-            <div class="section-label">Data Structure</div>
-            <h2 class="section-title">提出ログシート構成</h2>
+    <section class="section" id="sheets">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Data Structure</div>
+                <h2 class="section-title">提出ログシート構成</h2>
+            </div>
+
             <table class="config-table">
-                <tr>
-                    <th>列</th>
-                    <th>列名</th>
-                    <th>データ型</th>
-                    <th>例</th>
-                </tr>
-                <tr>
-                    <td>A</td>
-                    <td>日付</td>
-                    <td>Date</td>
-                    <td>2024/01/15</td>
-                </tr>
-                <tr>
-                    <td>B</td>
-                    <td>提出者</td>
-                    <td>Text</td>
-                    <td>山田太郎</td>
-                </tr>
-                <tr>
-                    <td>C</td>
-                    <td>メールアドレス</td>
-                    <td>Email</td>
-                    <td>yamada@company.com</td>
-                </tr>
-                <tr>
-                    <td>D</td>
-                    <td>種類</td>
-                    <td>Text</td>
-                    <td>日報 / 週報</td>
-                </tr>
-                <tr>
-                    <td>E</td>
-                    <td>提出時刻</td>
-                    <td>Time</td>
-                    <td>17:30</td>
-                </tr>
-                <tr>
-                    <td>F</td>
-                    <td>ステータス</td>
-                    <td>Text</td>
-                    <td>提出済 / 遅延</td>
-                </tr>
-                <tr>
-                    <td>G</td>
-                    <td>品質判定</td>
-                    <td>Text</td>
-                    <td>承認済 / 要修正 / 再提出</td>
-                </tr>
-                <tr>
-                    <td>H</td>
-                    <td>Driveリンク</td>
-                    <td>URL</td>
-                    <td>（添付がある場合）</td>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>列</th>
+                        <th>列名</th>
+                        <th>データ型</th>
+                        <th>例</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A</td>
+                        <td>日付</td>
+                        <td>Date</td>
+                        <td>2024/01/15</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>提出者</td>
+                        <td>Text</td>
+                        <td>山田太郎</td>
+                    </tr>
+                    <tr>
+                        <td>C</td>
+                        <td>メールアドレス</td>
+                        <td>Email</td>
+                        <td>yamada@company.com</td>
+                    </tr>
+                    <tr>
+                        <td>D</td>
+                        <td>種類</td>
+                        <td>Text</td>
+                        <td>日報 / 週報</td>
+                    </tr>
+                    <tr>
+                        <td>E</td>
+                        <td>提出時刻</td>
+                        <td>Time</td>
+                        <td>17:30</td>
+                    </tr>
+                    <tr>
+                        <td>F</td>
+                        <td>ステータス</td>
+                        <td>Text</td>
+                        <td>提出済 / 遅延</td>
+                    </tr>
+                    <tr>
+                        <td>G</td>
+                        <td>品質判定</td>
+                        <td>Text</td>
+                        <td>承認済 / 要修正 / 再提出</td>
+                    </tr>
+                    <tr>
+                        <td>H</td>
+                        <td>Driveリンク</td>
+                        <td>URL</td>
+                        <td>（添付がある場合）</td>
+                    </tr>
+                </tbody>
             </table>
-            <div class="note-box">
+
+            <div class="warning-box">
                 <p><strong>ポイント:</strong> このシートはLesson 2-3で作成したReport Summary Agent / Quality Check Agentが自動で記録します。</p>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Member Master Sheet -->
-        <section>
-            <div class="section-label">Data Structure</div>
-            <h2 class="section-title">メンバーマスタシート構成</h2>
-            <table class="config-table">
-                <tr>
-                    <th>列</th>
-                    <th>列名</th>
-                    <th>データ型</th>
-                    <th>用途</th>
-                </tr>
-                <tr>
-                    <td>A</td>
-                    <td>メンバー名</td>
-                    <td>Text</td>
-                    <td>表示名</td>
-                </tr>
-                <tr>
-                    <td>B</td>
-                    <td>メールアドレス</td>
-                    <td>Email</td>
-                    <td>提出者照合用</td>
-                </tr>
-                <tr>
-                    <td>C</td>
-                    <td>部署</td>
-                    <td>Text</td>
-                    <td>部署別集計用</td>
-                </tr>
-                <tr>
-                    <td>D</td>
-                    <td>上長</td>
-                    <td>Text</td>
-                    <td>エスカレーション先</td>
-                </tr>
-                <tr>
-                    <td>E</td>
-                    <td>日報必須</td>
-                    <td>Boolean</td>
-                    <td>TRUE / FALSE</td>
-                </tr>
-                <tr>
-                    <td>F</td>
-                    <td>週報必須</td>
-                    <td>Boolean</td>
-                    <td>TRUE / FALSE</td>
-                </tr>
-            </table>
-        </section>
+    <section class="section" id="prompt" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Gemini Prompt</div>
+                <h2 class="section-title">未提出検知プロンプト</h2>
+            </div>
 
-        <!-- Dashboard Sheet -->
-        <section>
-            <div class="section-label">Data Structure</div>
-            <h2 class="section-title">ダッシュボードシート構成</h2>
-            <table class="config-table">
-                <tr>
-                    <th>セル/範囲</th>
-                    <th>内容</th>
-                    <th>自動更新</th>
-                </tr>
-                <tr>
-                    <td>B2</td>
-                    <td>本日の提出数</td>
-                    <td>毎日21:00</td>
-                </tr>
-                <tr>
-                    <td>B3</td>
-                    <td>本日の提出率（%）</td>
-                    <td>毎日21:00</td>
-                </tr>
-                <tr>
-                    <td>B4</td>
-                    <td>未提出者数</td>
-                    <td>毎日21:00</td>
-                </tr>
-                <tr>
-                    <td>B5</td>
-                    <td>遅延提出数</td>
-                    <td>毎日21:00</td>
-                </tr>
-                <tr>
-                    <td>B6</td>
-                    <td>今週の提出率</td>
-                    <td>毎日21:00</td>
-                </tr>
-                <tr>
-                    <td>B7</td>
-                    <td>最終更新日時</td>
-                    <td>毎日21:00</td>
-                </tr>
-                <tr>
-                    <td>A10:E25</td>
-                    <td>個人別ステータス表</td>
-                    <td>毎日21:00</td>
-                </tr>
-            </table>
-        </section>
-
-        <!-- Submission Check Prompt -->
-        <section>
-            <div class="section-label">Gemini Prompt</div>
-            <h2 class="section-title">未提出検知プロンプト</h2>
             <div class="code-block-wrapper">
-                <div class="code-block-header">
-                    <span class="code-block-title">Geminiステップ - 未提出検知</span>
-                    <button class="copy-button" onclick="copyCode(this)">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                        コピー
-                    </button>
-                </div>
-                <div class="code-block">You are checking daily report submissions.
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">You are checking daily report submissions.
 
 Today's date: {current_date}
 Deadline: 17:00
@@ -1110,24 +1213,19 @@ SUMMARY:
 ---
 Output in Japanese.</div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Alert Template -->
-        <section>
-            <div class="section-label">Template</div>
-            <h2 class="section-title">未提出アラートテンプレート</h2>
+    <section class="section" id="alert-template">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Template</div>
+                <h2 class="section-title">未提出アラートテンプレート</h2>
+            </div>
+
             <div class="code-block-wrapper">
-                <div class="code-block-header">
-                    <span class="code-block-title">Chat DM通知テンプレート</span>
-                    <button class="copy-button" onclick="copyCode(this)">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                        コピー
-                    </button>
-                </div>
-                <div class="code-block">**日報未提出アラート** ({date})
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">**日報未提出アラート** ({date})
 
 以下のメンバーが本日の日報を提出していません。
 
@@ -1144,24 +1242,19 @@ Output in Japanese.</div>
 
 フォローをお願いします。</div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Weekly Summary Prompt -->
-        <section>
-            <div class="section-label">Gemini Prompt</div>
-            <h2 class="section-title">週次サマリー生成プロンプト</h2>
+    <section class="section" id="weekly-prompt" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Gemini Prompt</div>
+                <h2 class="section-title">週次サマリー生成プロンプト</h2>
+            </div>
+
             <div class="code-block-wrapper">
-                <div class="code-block-header">
-                    <span class="code-block-title">Geminiステップ - 週次分析</span>
-                    <button class="copy-button" onclick="copyCode(this)">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                        コピー
-                    </button>
-                </div>
-                <div class="code-block">You are generating a weekly submission summary.
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">You are generating a weekly submission summary.
 
 Week period: {week_start} 〜 {week_end}
 
@@ -1182,53 +1275,16 @@ Generate a summary including:
 Output in Japanese, formatted for Chat message.
 Keep it concise but informative.</div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Weekly Summary Template -->
-        <section>
-            <div class="section-label">Template</div>
-            <h2 class="section-title">週次サマリーテンプレート</h2>
-            <div class="code-block-wrapper">
-                <div class="code-block-header">
-                    <span class="code-block-title">Chat DM週次レポート</span>
-                    <button class="copy-button" onclick="copyCode(this)">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                        コピー
-                    </button>
-                </div>
-                <div class="code-block">**週次提出サマリー** ({week_start} 〜 {week_end})
-
-■ 提出率
-・日報: {daily_rate}% ({daily_submitted}/{daily_total}件)
-・週報: {weekly_rate}%
-
-■ 提出率ランキング
-1. {rank1_name}: {rank1_rate}%
-2. {rank2_name}: {rank2_rate}%
-3. {rank3_name}: {rank3_rate}%
-
-■ 要フォロー（80%未満）
-{low_rate_members}
-
-■ 前週比較
-・日報提出率: {daily_diff}ポイント ({trend_emoji})
-・週報提出率: {weekly_diff}ポイント ({trend_emoji})
-
-■ チーム傾向
-{team_trend_analysis}
-
-■ 改善提案
-{ai_suggestions}</div>
+    <section class="section" id="folder">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">File Management</div>
+                <h2 class="section-title">Driveフォルダ構成</h2>
             </div>
-        </section>
 
-        <!-- Drive Folder Structure -->
-        <section>
-            <div class="section-label">File Management</div>
-            <h2 class="section-title">Driveフォルダ構成</h2>
             <div class="folder-tree">
 <span class="folder">日報週報/</span>
 ├── <span class="folder">2024/</span>
@@ -1240,15 +1296,20 @@ Keep it concise but informative.</div>
 │   └── <span class="folder">03/</span>
 └── <span class="folder">2025/</span>
     └── <span class="folder">01/</span></div>
-            <div class="note-box">
+
+            <div class="warning-box">
                 <p><strong>ポイント:</strong> 添付ファイルはDriveに自動保存され、提出ログシートにリンクが記録されます。後から検索・参照が容易になります。</p>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Dashboard Preview -->
-        <section>
-            <div class="section-label">Preview</div>
-            <h2 class="section-title">ダッシュボードイメージ</h2>
+    <section class="section" id="dashboard" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Preview</div>
+                <h2 class="section-title">ダッシュボードイメージ</h2>
+            </div>
+
             <div class="dashboard-preview">
                 <div class="dashboard-header">
                     <div class="dashboard-title">チーム進捗ダッシュボード</div>
@@ -1272,191 +1333,182 @@ Keep it concise but informative.</div>
                         <div class="stat-label">提出率</div>
                     </div>
                 </div>
-                <table class="config-table" style="margin: 0; border-radius: 0;">
-                    <tr>
-                        <th>メンバー</th>
-                        <th>日報</th>
-                        <th>提出時刻</th>
-                        <th>品質</th>
-                    </tr>
-                    <tr>
-                        <td>山田太郎</td>
-                        <td><span class="status-badge submitted">提出済</span></td>
-                        <td>16:45</td>
-                        <td>承認済</td>
-                    </tr>
-                    <tr>
-                        <td>佐藤花子</td>
-                        <td><span class="status-badge late">遅延</span></td>
-                        <td>18:30</td>
-                        <td>承認済</td>
-                    </tr>
-                    <tr>
-                        <td>鈴木一郎</td>
-                        <td><span class="status-badge missing">未提出</span></td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>高橋美咲</td>
-                        <td><span class="status-badge submitted">提出済</span></td>
-                        <td>16:55</td>
-                        <td>要修正</td>
-                    </tr>
-                    <tr>
-                        <td>田中健二</td>
-                        <td><span class="status-badge submitted">提出済</span></td>
-                        <td>17:00</td>
-                        <td>承認済</td>
-                    </tr>
+                <table class="config-table" style="margin: 0; border-radius: 0; border: none;">
+                    <thead>
+                        <tr>
+                            <th>メンバー</th>
+                            <th>日報</th>
+                            <th>提出時刻</th>
+                            <th>品質</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>山田太郎</td>
+                            <td><span class="status-badge submitted">提出済</span></td>
+                            <td>16:45</td>
+                            <td>承認済</td>
+                        </tr>
+                        <tr>
+                            <td>佐藤花子</td>
+                            <td><span class="status-badge late">遅延</span></td>
+                            <td>18:30</td>
+                            <td>承認済</td>
+                        </tr>
+                        <tr>
+                            <td>鈴木一郎</td>
+                            <td><span class="status-badge missing">未提出</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>高橋美咲</td>
+                            <td><span class="status-badge submitted">提出済</span></td>
+                            <td>16:55</td>
+                            <td>要修正</td>
+                        </tr>
+                        <tr>
+                            <td>田中健二</td>
+                            <td><span class="status-badge submitted">提出済</span></td>
+                            <td>17:00</td>
+                            <td>承認済</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Implementation Steps -->
-        <section>
-            <div class="section-label">Implementation</div>
-            <h2 class="section-title">作成ステップ</h2>
+    <section class="section" id="steps">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Steps</div>
+                <h2 class="section-title">作成ステップ</h2>
+            </div>
+
             <div class="flow-steps">
                 <div class="flow-step">
-                    <div class="flow-step-number">1</div>
-                    <div class="flow-step-content">
-                        <h3>Sheetsの準備</h3>
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Sheetsの準備</h4>
                         <p>提出ログシート、メンバーマスタシート、ダッシュボードシートを同一スプレッドシートに作成。列構成は上記の通り設定</p>
                     </div>
                 </div>
                 <div class="flow-step">
-                    <div class="flow-step-number">2</div>
-                    <div class="flow-step-content">
-                        <h3>Submission Check Agent 作成</h3>
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Submission Check Agent 作成</h4>
                         <p>Google Workspace Studio → Create Agent → Schedule: Daily 20:00 → Data Source: Sheets → Process: Gemini未提出検知 → Output: Chat DM</p>
                     </div>
                 </div>
                 <div class="flow-step">
-                    <div class="flow-step-number">3</div>
-                    <div class="flow-step-content">
-                        <h3>Dashboard Update Agent 作成</h3>
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Dashboard Update Agent 作成</h4>
                         <p>Create Agent → Schedule: Daily 21:00 → Data Source: 提出ログシート → Process: 集計 → Output: ダッシュボードシート更新</p>
                     </div>
                 </div>
                 <div class="flow-step">
-                    <div class="flow-step-number">4</div>
-                    <div class="flow-step-content">
-                        <h3>Weekly Summary Agent 作成</h3>
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Weekly Summary Agent 作成</h4>
                         <p>Create Agent → Schedule: Friday 18:00 → Data Source: 今週の提出ログ → Process: Gemini分析 → Output: Chat DM週次レポート（自分宛）</p>
                     </div>
                 </div>
                 <div class="flow-step">
-                    <div class="flow-step-number">5</div>
-                    <div class="flow-step-content">
-                        <h3>Drive Sync設定</h3>
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Drive Sync設定</h4>
                         <p>既存のReport Summary Agent / Quality Check Agentに添付ファイル保存アクションを追加。Driveフォルダ構成を設定</p>
                     </div>
                 </div>
                 <div class="flow-step">
-                    <div class="flow-step-number">6</div>
-                    <div class="flow-step-content">
-                        <h3>テスト・調整</h3>
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h4>テスト・調整</h4>
                         <p>各エージェントをRun Testで動作確認。データの流れ、集計の正確性、通知の内容を確認して調整</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Metrics -->
-        <section>
-            <div class="section-label">Metrics</div>
-            <h2 class="section-title">効果測定の指標</h2>
-            <table class="metrics-table">
-                <tr>
-                    <th>指標</th>
-                    <th>Before</th>
-                    <th>After</th>
-                    <th>改善率</th>
-                </tr>
-                <tr>
-                    <td>進捗確認時間</td>
-                    <td>30分/日</td>
-                    <td>2分/日</td>
-                    <td class="improvement">93%削減</td>
-                </tr>
-                <tr>
-                    <td>未提出者検知時間</td>
-                    <td>翌朝</td>
-                    <td>当日20:00</td>
-                    <td class="improvement">即日化</td>
-                </tr>
-                <tr>
-                    <td>週次レポート作成</td>
-                    <td>60分</td>
-                    <td>自動</td>
-                    <td class="improvement">100%削減</td>
-                </tr>
-                <tr>
-                    <td>ファイル検索時間</td>
-                    <td>10分/件</td>
-                    <td>30秒/件</td>
-                    <td class="improvement">95%削減</td>
-                </tr>
-            </table>
-        </section>
-
-        <!-- Checklist -->
-        <section>
-            <div class="section-label">Test Checklist</div>
-            <h2 class="section-title">テスト確認ポイント</h2>
-            <div class="checklist">
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>未提出者が正しく検知されているか（メンバーマスタとの照合）</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>遅延提出（17:00以降）が正しく判定されているか</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>ダッシュボードの集計値が正確か（提出数、提出率、未提出者数）</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>Chat DMアラートが自分に送信されているか</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>週次サマリーのランキング・提出率が正確か</span>
-                </div>
-                <div class="checklist-item">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>添付ファイルがDriveの正しいフォルダに保存されているか</span>
-                </div>
+    <section class="section" id="metrics" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Metrics</div>
+                <h2 class="section-title">効果測定の指標</h2>
             </div>
-        </section>
 
-        <!-- Summary -->
-        <section>
-            <div class="section-label">Summary</div>
-            <h2 class="section-title">今日のポイント</h2>
+            <table class="metrics-table">
+                <thead>
+                    <tr>
+                        <th>指標</th>
+                        <th>Before</th>
+                        <th>After</th>
+                        <th>改善率</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>進捗確認時間</td>
+                        <td>30分/日</td>
+                        <td>2分/日</td>
+                        <td class="improvement">93%削減</td>
+                    </tr>
+                    <tr>
+                        <td>未提出者検知時間</td>
+                        <td>翌朝</td>
+                        <td>当日20:00</td>
+                        <td class="improvement">即日化</td>
+                    </tr>
+                    <tr>
+                        <td>週次レポート作成</td>
+                        <td>60分</td>
+                        <td>自動</td>
+                        <td class="improvement">100%削減</td>
+                    </tr>
+                    <tr>
+                        <td>ファイル検索時間</td>
+                        <td>10分/件</td>
+                        <td>30秒/件</td>
+                        <td class="improvement">95%削減</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section" id="test">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Test</div>
+                <h2 class="section-title">テスト確認ポイント</h2>
+            </div>
+
+            <div class="checklist">
+                <h3>動作確認チェックリスト</h3>
+                <ul>
+                    <li>未提出者が正しく検知されているか（メンバーマスタとの照合）</li>
+                    <li>遅延提出（17:00以降）が正しく判定されているか</li>
+                    <li>ダッシュボードの集計値が正確か（提出数、提出率、未提出者数）</li>
+                    <li>Chat DMアラートが自分に送信されているか</li>
+                    <li>週次サマリーのランキング・提出率が正確か</li>
+                    <li>添付ファイルがDriveの正しいフォルダに保存されているか</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="summary" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Summary</div>
+                <h2 class="section-title">今日のポイント</h2>
+            </div>
+
             <div class="highlight-box">
-                <h3>まとめ</h3>
+                <h4>まとめ</h4>
                 <ul>
                     <li>提出ログ・メンバーマスタ・ダッシュボードの3シートでデータを一元管理</li>
                     <li>Submission Check Agentが毎日20:00に未提出者を自動検知・アラート</li>
@@ -1466,45 +1518,40 @@ Keep it concise but informative.</div>
                     <li>管理者はダッシュボードを見るだけでチーム状況を即座に把握可能</li>
                 </ul>
             </div>
-        </section>
-
-        <!-- Next Preview -->
-        <div class="next-preview">
-            <div class="next-preview-label">Next Lesson</div>
-            <h3>誰に何をいつ伝えるかを整理し遅延ゼロを実現する！承認プロセスを自動化するワークフロー</h3>
         </div>
+    </section>
 
-        <!-- Lesson Navigation -->
-        <nav class="lesson-nav">
-            <a href="lesson3.html" class="nav-prev">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-                前のレッスン
-            </a>
-            <a href="lesson5.html" class="nav-next">
-                次のレッスン（最終回）
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-            </a>
-        </nav>
-    </main>
+    <section class="next-preview">
+        <div class="next-preview-container">
+            <div class="section-label">Next</div>
+            <h2>次回予告</h2>
+            <h3>誰に何をいつ伝えるかを整理し遅延ゼロを実現する！承認プロセスを自動化するワークフロー</h3>
+            <p>
+                稟議・経費・休暇申請の承認フローを自動化し、申請内容の自動分類、適切な承認者への自動ルーティング、承認待ち監視とリマインド、結果に応じた自動処理を実装します。
+            </p>
+        </div>
+    </section>
 
-    <!-- Toast Notification -->
-    <div class="toast" id="toast">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-        コピーしました
-    </div>
+    <nav class="lesson-nav">
+        <a href="lesson3.html" class="nav-btn nav-prev">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            前のレッスン
+        </a>
+        <a href="lesson5.html" class="nav-btn nav-next">
+            次のレッスン（最終回）
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </nav>
+
+    <div class="toast" id="toast">コピーしました</div>
 
     <script>
-        function copyCode(button) {
-            const codeBlock = button.closest('.code-block-wrapper').querySelector('.code-block');
-            const text = codeBlock.textContent;
-
+        function copyToClipboard(element) {
+            const text = element.innerText;
             navigator.clipboard.writeText(text).then(() => {
                 const toast = document.getElementById('toast');
                 toast.classList.add('show');
