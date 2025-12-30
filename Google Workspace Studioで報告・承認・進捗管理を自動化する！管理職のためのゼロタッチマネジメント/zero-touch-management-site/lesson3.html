@@ -576,19 +576,20 @@
                 <div class="code-block" onclick="copyToClipboard(this)">品質チェックエージェントを作成してください。
 
 【エージェント名】
-品質チェック
+週報品質チェック
 
 【説明】
-メールに添付されたドキュメント（週報・月報など）の品質を自動チェックし、適切なアクションにルーティング
+週報専用スペースに投稿された週報の品質を自動チェックし、適切なアクションにルーティング
 
 【スターター】
-Gmail - Email received
-フィルター: 件名に「週報」「月報」「報告書」を含む
-※添付ファイル（Google Docs）があるメールを対象
+Chat - チャットメッセージを受け取ったとき
+会話の種類: スペースと名前付きグループDM
+スペース: 週報専用スペース（事前に作成しておく）
+※メッセージに「週報」というキーワードが含まれる投稿を対象
 
 【処理フロー】
-1. Geminiステップ（添付ドキュメントの品質チェック）:
-   添付されたドキュメントの内容を以下のチェックリストで評価:
+1. Geminiステップ（週報の品質チェック）:
+   投稿された週報の内容を以下のチェックリストで評価:
    - 業務内容: 具体的な作業が記載されているか（必須）
    - 進捗状況: 数値や達成率が含まれているか（必須）
    - 課題: 課題がある場合に記載されているか（任意）
@@ -623,9 +624,13 @@ Gmail - Email received
 - Sheets（品質チェックログ）
 
 【事前準備】
-1. Googleスプレッドシートで品質チェックログシートを作成
+1. Google Chatで「週報提出」などの名前でスペースを作成し、チームメンバーを招待
+2. Googleスプレッドシートで品質チェックログシートを作成
    （列: 日付, 提出者, 判定, 業務内容, 進捗状況, 課題, 次週予定, 文字数, フィードバック）
-2. テスト用の週報ドキュメントを作成（サンプルは下記参照）
+
+【Lesson 2との違い】
+- Lesson 2（日報要約）: 日報専用スペース → 短文の日報を要約して重要ポイントを抽出
+- Lesson 3（週報品質チェック）: 週報専用スペース → 週報の品質をチェックリストで評価・判定
 
 このエージェントを作成してください。</div>
             </div>
@@ -670,9 +675,7 @@ Gmail - Email received
             </div>
 
             <div class="flow-diagram">
-                <div class="flow-item">Gmail受信</div>
-                <span class="flow-arrow">→</span>
-                <div class="flow-item">添付Docs読取</div>
+                <div class="flow-item">Chatスペース受信</div>
                 <span class="flow-arrow">→</span>
                 <div class="flow-item">Gemini判定</div>
                 <span class="flow-arrow">→</span>
@@ -710,22 +713,18 @@ Gmail - Email received
                     </tr>
                     <tr>
                         <td>スターター</td>
-                        <td>Gmail - Email received（添付ファイルあり）</td>
+                        <td>Chat - チャットメッセージを受け取ったとき</td>
                     </tr>
                     <tr>
                         <td>フィルター</td>
-                        <td>件名に「週報」「月報」「報告書」を含む</td>
+                        <td>週報専用スペースへの投稿（「週報」キーワード含む）</td>
                     </tr>
                     <tr>
                         <td>処理ステップ1</td>
-                        <td>添付ドキュメント（Google Docs）の内容を取得</td>
-                    </tr>
-                    <tr>
-                        <td>処理ステップ2</td>
                         <td>Geminiによるチェックリスト評価</td>
                     </tr>
                     <tr>
-                        <td>処理ステップ3</td>
+                        <td>処理ステップ2</td>
                         <td>抽出ステップで判定結果を変数化</td>
                     </tr>
                     <tr>
@@ -800,7 +799,7 @@ Gmail - Email received
             </table>
 
             <div class="info-box">
-                <p><strong>Lesson 2との違い:</strong> Lesson 2はチャットで受け取った日報（短文）を要約、Lesson 3はメール添付のドキュメント（週報・月報）を品質チェックします。ドキュメントは詳細な記載が求められるため、文字数基準も高く設定しています。</p>
+                <p><strong>Lesson 2との違い:</strong> Lesson 2は日報専用スペースで短文の日報を要約、Lesson 3は週報専用スペースで週報の品質をチェックリストで評価・判定します。週報は詳細な記載が求められるため、文字数基準も高く設定しています。</p>
             </div>
         </div>
     </section>
@@ -817,21 +816,21 @@ Gmail - Email received
                     <div class="step-number">1</div>
                     <div class="step-content">
                         <h4>新規エージェント作成</h4>
-                        <p>studio.workspace.google.com → 「新規作成」→ エージェント名「品質チェック」を入力</p>
+                        <p>studio.workspace.google.com → 「新規作成」→ エージェント名「週報品質チェック」を入力</p>
                     </div>
                 </div>
                 <div class="flow-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h4>Gmailスターター設定</h4>
-                        <p>スターター: Gmail - Email received → フィルター: 件名に「週報」「月報」「報告書」を含む → 添付ファイルありを条件に設定</p>
+                        <h4>Chatスターター設定</h4>
+                        <p>スターター: Chat - チャットメッセージを受け取ったとき → 会話の種類: スペースと名前付きグループDM → スペース: 週報専用スペースを選択</p>
                     </div>
                 </div>
                 <div class="flow-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
                         <h4>Geminiステップで品質チェック</h4>
-                        <p>ステップを追加 → 「Gemini」を選択 → 添付ドキュメントの内容を入力として、下記のチェックリスト評価プロンプトを設定</p>
+                        <p>ステップを追加 → 「Gemini」を選択 → チャットメッセージの内容を入力として、下記のチェックリスト評価プロンプトを設定</p>
                     </div>
                 </div>
                 <div class="flow-step">
@@ -866,7 +865,7 @@ Gmail - Email received
                     <div class="step-number">8</div>
                     <div class="step-content">
                         <h4>テスト実行と有効化</h4>
-                        <p>テスト用の週報ドキュメントを添付してメール送信 → 品質チェック結果とSheets記録を確認 → 「有効化」で本番稼働</p>
+                        <p>テスト用の週報を週報専用スペースに投稿 → 品質チェック結果とSheets記録を確認 → 「有効化」で本番稼働</p>
                     </div>
                 </div>
             </div>
@@ -882,11 +881,11 @@ Gmail - Email received
 
             <div class="code-block-wrapper">
                 <div class="copy-hint">クリックでコピー</div>
-                <div class="code-block" onclick="copyToClipboard(this)">You are a quality control assistant checking weekly/monthly report documents.
+                <div class="code-block" onclick="copyToClipboard(this)">You are a quality control assistant checking weekly reports posted in chat.
 
-Document content (from attached Google Docs):
+Weekly report content (from chat message):
 ---
-{attached_document_content}
+{chat_message_content}
 ---
 
 Checklist for weekly/monthly reports:
@@ -926,7 +925,7 @@ FEEDBACK: [提出者向けの具体的なフィードバック（日本語）]
             <div class="section-header">
                 <div class="section-label">Test Sample</div>
                 <h2 class="section-title">テスト用週報サンプル</h2>
-                <p class="section-description">以下の内容をGoogle Docsに貼り付けてテスト用の週報ドキュメントを作成し、メールに添付して送信してください。<br>サンプルファイルは <a href="samples/" style="color: var(--accent-primary); text-decoration: underline;">samples/フォルダ</a> からもダウンロードできます。</p>
+                <p class="section-description">以下のサンプルをコピーして週報専用スペースに投稿し、エージェントの動作をテストしてください。<br>サンプルファイルは <a href="samples/" style="color: var(--accent-primary); text-decoration: underline;">samples/フォルダ</a> からもダウンロードできます。</p>
             </div>
 
             <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--green);">サンプル1: APPROVED（承認）パターン</h3>
