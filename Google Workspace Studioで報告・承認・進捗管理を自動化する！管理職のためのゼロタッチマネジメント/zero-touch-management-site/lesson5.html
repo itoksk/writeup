@@ -863,53 +863,244 @@
                 <h2 class="section-title">学習目標</h2>
                 <p class="section-description">以下のプロンプトをコピーして、<a href="https://studio.workspace.google.com/" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">Google Workspace Studio</a> で実行すると、このレッスンのエージェントを自動生成できます。</p>
             </div>
+            <div class="highlight-box" style="margin-bottom: 2rem;">
+                <p><strong>デモ推奨:</strong> 2つのエージェントのうち「承認監視エージェント」がデモに最適です。理由：<br>
+                1. <strong>スケジュールトリガー + Sheets読み込み + Gemini判定</strong> - Lesson 4と似た構成だが、承認フローという異なるユースケース<br>
+                2. <strong>条件分岐（リマインド/エスカレーション）</strong> - 経過時間による分岐判定は新しい学び<br>
+                3. <strong>シンプルで再現しやすい</strong> - 承認待ちシートを用意すればすぐテスト可能</p>
+            </div>
+
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--accent-primary);">エージェント1: 承認依頼エージェント</h3>
             <div class="code-block-wrapper">
                 <div class="copy-hint">クリックでコピー</div>
-                <div class="code-block" onclick="copyToClipboard(this)">承認ワークフロー用の2つのエージェントを作成してください。
+                <div class="code-block" onclick="copyToClipboard(this)">承認依頼エージェントを作成してください。
+すべての出力は日本語でお願いします。
 
-【エージェント1: Approval Request Agent】
-- 名前: 承認依頼
-- スターター: Gmail（件名に「申請」「稟議」を含む）または Forms
-- 処理フロー:
-  1. 条件分岐ステップ: 添付ファイルがある場合 → Driveステップへ
-  2. Driveステップ（添付がある場合）:
-     - 添付ファイルをDriveに保存
-     - {Drive links}変数を取得
-  3. Geminiステップで申請を分類:
-     メール本文と添付ファイルを分析してください。
+【エージェント名】
+承認依頼エージェント
 
-     メール本文: {body}
-     添付ファイル: {Drive links}を開いて内容を確認してください
+【説明】
+申請メールを受信したら、内容を自動分類し、適切な承認者を決定して自分にChat DMで通知します
 
-     以下を判定:
-     - 種類: 経費申請/稟議/休暇申請
-     - 金額（該当する場合）
-     - 緊急度: 通常/急ぎ/緊急
+【スターター】
+Gmail - 新しいメールを受信したとき
+条件: 件名に「申請」「稟議」「経費」「休暇」のいずれかを含む
 
-     ※「開いて」キーワードと{Drive links}変数で添付ファイルの中身を読み取り
-  4. 条件分岐で承認者を決定:
-     - 経費 < 50,000円 → 直属上長
-     - 経費 >= 50,000円 → 部門長
-     - 稟議 < 500,000円 → 部門長
-     - 稟議 >= 500,000円 → 部門長 → 経営層
-     - 休暇 → 直属上長
-  5. Chat DMで自分に承認依頼内容を通知
-  6. Sheetsに承認管理レコードを追加
+【処理フロー】
+1. 条件分岐:
+   - 添付ファイルがある場合 → Googleドライブに保存へ
+   - 添付ファイルがない場合 → 直接Geminiへ
 
-【エージェント2: Approval Monitor Agent】
-- 名前: 承認監視
-- スターター: Scheduled（毎日10:00、15:00）
-- 処理フロー:
-  1. Sheetsから承認待ちリストを読み込み
-  2. Geminiで経過時間と緊急度を判定:
-     - リマインド閾値超過（24h/48h）→ リマインド対象
-     - エスカレーション閾値超過（48h/72h）→ エスカレーション対象
-  3. Chat DMでリマインド/エスカレーション対象を自分に通知
+2. Googleドライブに保存（添付がある場合）:
+   - 保存先フォルダ: 申請書フォルダ/{年}/{月}/
+   - ファイル名: {日付}_{送信者名}_{元のファイル名}
+   - ※このステップで{Drive links}変数が生成されます
 
-これらのエージェントを作成してください。</div>
+3. スプレッドシート読み込み（承認者マスタ）:
+   - 対象シート: 承認管理シート > 承認者マスタ
+   - 操作: すべての行を取得
+   - 取得する列: 申請者名, 部署, 直属上長, 直属上長メール, 部門長, 部門長メール
+
+4. Geminiに聞く（申請内容の分類）:
+   あなたは承認ワークフローのアシスタントです。
+   申請メールの内容を分析し、適切な承認者を決定してください。
+
+   【メール情報】
+   件名: {件名}
+   送信者: {送信者}
+   本文: {本文}
+
+   【添付ファイル（ある場合）】
+   {Drive links}を開いて、申請書の内容（金額、申請内容など）を確認してください。
+   ※添付ファイルがない場合はメール本文のみで判定
+
+   【承認者マスタ】
+   申請者名: {申請者名}
+   部署: {部署}
+   直属上長: {直属上長}
+   部門長: {部門長}
+
+   【やること】
+   1. 申請の種類を判定してください（経費申請/稟議/休暇申請/その他）
+   2. 金額がある場合は金額を抽出してください
+   3. 緊急度を判定してください（通常/急ぎ/緊急）
+   4. 以下のルールで承認者を決定してください:
+      - 経費申請で5万円未満 → 直属上長
+      - 経費申請で5万円以上 → 部門長
+      - 稟議で50万円未満 → 部門長
+      - 稟議で50万円以上 → 部門長 → 経営層（2段階承認）
+      - 休暇申請 → 直属上長
+
+   【出力形式例】（必ず日本語で出力してください）
+   ■ 申請種類
+   経費申請 / 稟議 / 休暇申請 / その他
+
+   ■ 申請者
+   氏名（部署）
+
+   ■ 金額
+   ○○円（または「該当なし」）
+
+   ■ 緊急度
+   通常 / 急ぎ / 緊急
+
+   ■ 申請内容の要約
+   （2-3行で要約）
+
+   ■ 承認者
+   第1承認者: 氏名（役職）
+   第2承認者: 氏名（役職）または「なし」
+
+   ■ リマインド期限
+   ○○時間後
+
+   ■ エスカレーション期限
+   ○○時間後
+
+5. スプレッドシート書き込み（承認管理シートに記録）:
+   - 対象シート: 承認管理シート > 承認待ちリスト
+   - 操作: 行を追加
+   - 追加データ: 申請日時, 申請者, 種類, 金額, 承認者, ステータス（承認待ち）, リマインド期限
+
+6. Chat DM送信（自分宛て）:
+   【承認依頼が届きました】
+
+   以下の申請を受け付けました。
+   承認者へ手動で転送してください。
+
+   {Geminiの出力結果}
+
+   --- 承認者への転送用メッセージ ---
+   件名：【承認依頼】{申請種類} - {申請者名}
+   （転送用のテンプレートをここに記載）
+   --- 転送用メッセージここまで ---
+
+【出力先】
+- 自分へのChat DM
+- スプレッドシート（承認管理シート）
+- Googleドライブ（添付ファイル保存）
+
+【事前準備が必要なもの】
+1. 「承認管理シート」という名前のスプレッドシートを作成
+2. その中に「承認者マスタ」シートを作成
+   - A列: 申請者名
+   - B列: 部署
+   - C列: 直属上長
+   - D列: 直属上長メール
+   - E列: 部門長
+   - F列: 部門長メール
+3. その中に「承認待ちリスト」シートを作成
+   - A列: 申請日時
+   - B列: 申請者
+   - C列: 種類
+   - D列: 金額
+   - E列: 承認者
+   - F列: ステータス
+   - G列: リマインド期限
+   - H列: エスカレーション期限
+
+このエージェントを日本語で作成してください。</div>
             </div>
-            <div class="warning-box" style="margin-top: 1rem;">
-                <p><strong>ポイント:</strong> 上記プロンプトをコピーして <a href="https://studio.workspace.google.com/" target="_blank" style="color: #78350f; text-decoration: underline;">Google Workspace Studio</a> に貼り付けると、エージェントのベースが自動生成されます。</p>
+
+            <h3 style="font-size: 1.1rem; margin: 2rem 0 1rem; color: var(--accent-primary);">エージェント2: 承認監視エージェント（デモ推奨）</h3>
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">承認監視エージェントを作成してください。
+すべての出力は日本語でお願いします。
+
+【エージェント名】
+承認監視エージェント
+
+【説明】
+毎日10時と15時に承認待ち案件をチェックし、リマインドやエスカレーションが必要な案件を自分にChat DMで通知します
+
+【スターター】
+スケジュール - 毎日10:00、15:00
+
+【処理フロー】
+1. スプレッドシート読み込み（承認待ちリスト）:
+   - 対象シート: 承認管理シート > 承認待ちリスト
+   - 操作: すべての行を取得
+   - 取得する列: 申請日時, 申請者, 種類, 金額, 承認者, ステータス, リマインド期限, エスカレーション期限
+
+2. Geminiに聞く（経過時間と対応判定）:
+   あなたは承認待ち案件を監視するアシスタントです。
+   承認待ちリストを確認し、リマインドやエスカレーションが必要な案件を特定してください。
+
+   【やること】
+   1. まず現在の日時を確認してください
+   2. 承認待ちリストから、ステータスが「承認待ち」の案件だけを抽出してください
+   3. 各案件について、申請日時からの経過時間を計算してください
+   4. 以下のルールでリマインド・エスカレーション対象を判定:
+      - リマインド期限を超過 → リマインド対象
+      - エスカレーション期限を超過 → エスカレーション対象
+
+   【承認待ちリスト】
+   申請日時: {申請日時}
+   申請者: {申請者}
+   種類: {種類}
+   金額: {金額}
+   承認者: {承認者}
+   ステータス: {ステータス}
+   リマインド期限: {リマインド期限}
+   エスカレーション期限: {エスカレーション期限}
+
+   【出力形式例】（必ず日本語で出力してください）
+   ■ 現在日時
+   （現在の日時）
+
+   ■ リマインド対象（○件）
+   ・申請種類 - 申請者名 → 承認者名（経過○時間）
+   ※該当なしの場合は「なし」と記載
+
+   ■ エスカレーション対象（○件）
+   ・申請種類 - 申請者名 → 承認者名（経過○時間）→ エスカレーション先
+   ※該当なしの場合は「なし」と記載
+
+   ■ 承認待ち案件サマリー
+   ・承認待ち総数: ○件
+   ・リマインド対象: ○件
+   ・エスカレーション対象: ○件
+
+   ■ 対応が必要か
+   「対応必要」または「対応不要（すべて期限内）」
+
+3. 条件分岐:
+   - 判定結果が「対応必要」の場合 → Chat DM通知へ
+   - 判定結果が「対応不要」の場合 → 終了
+
+4. Chat DM送信（自分宛て）:
+   【承認監視アラート】
+
+   承認待ち案件の状況をお知らせします。
+
+   {Geminiの出力結果}
+
+   --- リマインド用メッセージ（参考）---
+   件名：【リマインド】承認待ち案件があります
+   ○○さん、以下の承認依頼が○時間以上未処理です。
+   ご確認・ご対応をお願いいたします。
+   --- リマインドここまで ---
+
+   --- エスカレーション用メッセージ（参考）---
+   件名：【エスカレーション】承認遅延案件のご確認
+   ○○さん、以下の承認依頼が長時間未処理です。
+   フォローをお願いいたします。
+   --- エスカレーションここまで ---
+
+【出力先】
+- 自分へのChat DM
+
+【事前準備が必要なもの】
+「承認管理シート」の「承認待ちリスト」シートにテスト用データを登録:
+- 申請日時を2日前に設定 → リマインド対象になる
+- 申請日時を3日前に設定 → エスカレーション対象になる
+
+このエージェントを日本語で作成してください。</div>
+            </div>
+
+            <div class="warning-box" style="margin-top: 2rem;">
+                <p><strong>ポイント:</strong> 各プロンプトを個別にコピーして <a href="https://studio.workspace.google.com/" target="_blank" style="color: #78350f; text-decoration: underline;">Google Workspace Studio</a> に貼り付けてください。1つのプロンプトで1つのエージェントが作成されます。</p>
             </div>
 
             <div class="highlight-box" style="margin-top: 2rem; background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);">
@@ -1181,52 +1372,49 @@
 
             <div class="code-block-wrapper">
                 <div class="copy-hint">クリックでコピー</div>
-                <div class="code-block" onclick="copyToClipboard(this)">You are an approval workflow assistant.
+                <div class="code-block" onclick="copyToClipboard(this)">あなたは承認ワークフローのアシスタントです。
+申請メールの内容を分析し、適切な承認者を決定してください。
 
-Request content (email body):
+【メール本文】
 ---
-{request_content}
+{本文}
 ---
 
-Attached files (if any):
+【添付ファイル（ある場合）】
 {Drive links}を開いて、内容を確認してください。
 
 ※「開いて」キーワードと{Drive links}変数で添付ファイル（稟議書PDF、見積書Excel等）の中身を読み取り、金額や詳細を抽出します。
 
-Approver directory:
-{approver_directory}
+【承認者マスタ】
+申請者名: {申請者名}
+部署: {部署}
+直属上長: {直属上長}
+部門長: {部門長}
 
-Analyze and extract:
-1. Request type: 経費申請 / 稟議 / 休暇申請 / その他
-2. Amount (from email body or attached file): {amount} JPY
-3. Requester: {name}
-4. Department: {department}
-5. Direct manager: {manager_name} ({manager_email})
-6. Summary: (one sentence description)
-7. Urgency: 通常 / 急ぎ / 緊急
+【やること】
+1. 申請の種類を判定: 経費申請 / 稟議 / 休暇申請 / その他
+2. 金額を抽出（メール本文または添付ファイルから）
+3. 緊急度を判定: 通常 / 急ぎ / 緊急
+4. 以下のルールで承認者を決定:
+   - 経費 < 5万円: 直属上長
+   - 経費 >= 5万円: 部門長
+   - 稟議 < 50万円: 部門長
+   - 稟議 >= 50万円: 部門長 → 経営層（2段階承認）
+   - 休暇: 直属上長
 
-Determine approver based on rules:
-- 経費 < 50,000: Direct manager
-- 経費 >= 50,000: Department head
-- 稟議 < 500,000: Department head
-- 稟議 >= 500,000: Department head → Executive
-- 休暇: Direct manager
-
-Output format:
+【出力形式例】（必ず日本語で出力してください）
 ---
-REQUEST_TYPE: {type}
-AMOUNT: {amount}
-REQUESTER: {name}
-DEPARTMENT: {department}
-SUMMARY: {summary}
-URGENCY: {urgency}
-APPROVER_1: {approver1_name} ({approver1_email})
-APPROVER_2: {approver2_name} ({approver2_email}) or "NONE"
-REMINDER_HOURS: {24 or 48}
-ESCALATION_HOURS: {48 or 72}
-ATTACHMENT_SUMMARY: {添付ファイルの要約（あれば）}
----
-Output in Japanese where applicable.</div>
+■ 申請種類: 経費申請 / 稟議 / 休暇申請 / その他
+■ 金額: ○○円（または「該当なし」）
+■ 申請者: 氏名（部署）
+■ 要約: （1行で内容を要約）
+■ 緊急度: 通常 / 急ぎ / 緊急
+■ 第1承認者: 氏名
+■ 第2承認者: 氏名（または「なし」）
+■ リマインド期限: ○○時間後
+■ エスカレーション期限: ○○時間後
+■ 添付ファイルの要約: （あれば記載）
+---</div>
             </div>
         </div>
     </section>
@@ -1240,40 +1428,48 @@ Output in Japanese where applicable.</div>
 
             <div class="code-block-wrapper">
                 <div class="copy-hint">クリックでコピー</div>
-                <div class="code-block" onclick="copyToClipboard(this)">You are monitoring pending approval requests.
+                <div class="code-block" onclick="copyToClipboard(this)">あなたは承認待ち案件を監視するアシスタントです。
+承認待ちリストを確認し、リマインドやエスカレーションが必要な案件を特定してください。
 
-Current time: {current_time}
+【やること】
+1. まず現在の日時を確認してください
+2. 承認待ちリストから、ステータスが「承認待ち」の案件を抽出してください
+3. 各案件について、申請日時からの経過時間を計算してください
+4. 以下のルールで対応を判定:
+   - リマインド期限を超過 → リマインド対象
+   - エスカレーション期限を超過 → エスカレーション対象
 
-Pending approvals from Sheets:
-{pending_list}
+【承認待ちリスト】
+申請日時: {申請日時}
+申請者: {申請者}
+種類: {種類}
+金額: {金額}
+承認者: {承認者}
+ステータス: {ステータス}
+リマインド期限: {リマインド期限}
+エスカレーション期限: {エスカレーション期限}
 
-For each pending item, check:
-1. Hours since request submitted
-2. Urgency level (通常/急ぎ/緊急)
-3. Reminder threshold (24h or 48h)
-4. Escalation threshold (48h or 72h)
-
-Generate actions:
-- If pending > reminder_threshold AND NOT reminded_today:
-    → Send reminder to approver
-- If pending > escalation_threshold:
-    → Escalate to approver's manager
-    → Flag as "要エスカレーション" in Sheets
-
-Output format:
+【出力形式例】（必ず日本語で出力してください）
 ---
-REMINDERS_TO_SEND:
-- {approver_name} ({approver_email}): {request_summary} - pending {hours}h
+■ 現在日時
+（現在の日時）
 
-ESCALATIONS:
-- {manager_name}: {request_summary} from {requester} - approver: {approver}, pending {hours}h
+■ リマインド対象（○件）
+・申請種類 - 申請者名 → 承認者名（経過○時間）
+※該当なしの場合は「なし」と記載
 
-SUMMARY:
-- Total pending: {count}
-- Requires reminder: {count}
-- Requires escalation: {count}
----
-Output messages in Japanese.</div>
+■ エスカレーション対象（○件）
+・申請種類 - 申請者名 → 承認者名（経過○時間）
+※該当なしの場合は「なし」と記載
+
+■ サマリー
+・承認待ち総数: ○件
+・リマインド対象: ○件
+・エスカレーション対象: ○件
+
+■ 対応が必要か
+「対応必要」または「対応不要」
+---</div>
             </div>
         </div>
     </section>
