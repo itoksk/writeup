@@ -890,9 +890,39 @@
             <div class="section-header">
                 <div class="section-label">Goal</div>
                 <h2 class="section-title">学習目標</h2>
+                <p class="section-description">以下のプロンプトをコピーして、<a href="https://studio.workspace.google.com/" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">Google Workspace Studio</a> で実行すると、このレッスンのエージェントを自動生成できます。</p>
             </div>
-            <div class="goal-card">
-                提出ログ・メンバーマスタ・ダッシュボードの3シートでデータを一元管理し、4つのエージェントで未提出検知・ダッシュボード更新・週次サマリー生成・添付ファイル管理を自動化する
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">進捗ダッシュボード用の4つのエージェントを作成してください。
+
+【エージェント1: 未提出チェック】
+- 名前: 未提出チェック
+- スターター: Scheduled（毎日20:00）
+- 処理: Sheetsから提出ログとメンバーマスタを読み込み、Geminiで未提出者を検知
+- 出力: 未提出者がいる場合、Chat DMで自分に通知
+
+【エージェント2: ダッシュボード更新】
+- 名前: ダッシュボード更新
+- スターター: Scheduled（毎日21:00）
+- 処理: 提出ログシートから本日のデータを集計
+- 出力: ダッシュボードシートを更新（提出数、提出率、未提出者数）
+
+【エージェント3: 週次サマリー】
+- 名前: 週次サマリー
+- スターター: Scheduled（金曜18:00）
+- 処理: Geminiで今週の提出データを分析、提出率ランキング・改善提案を生成
+- 出力: Chat DMで自分に週次レポートを通知
+
+【エージェント4: Drive Sync】
+- 説明: 既存のReport Summary/Quality Check Agentに添付ファイル保存アクションを追加
+- 処理: 添付ファイルをDriveの「日報週報/年/月」フォルダに自動保存
+- 出力: 提出ログシートにDriveリンクを記録
+
+これらのエージェントを作成してください。</div>
+            </div>
+            <div class="warning-box" style="margin-top: 1rem;">
+                <p><strong>ポイント:</strong> 上記プロンプトをコピーして <a href="https://studio.workspace.google.com/" target="_blank" style="color: #78350f; text-decoration: underline;">Google Workspace Studio</a> に貼り付けると、エージェントのベースが自動生成されます。</p>
             </div>
         </div>
     </section>

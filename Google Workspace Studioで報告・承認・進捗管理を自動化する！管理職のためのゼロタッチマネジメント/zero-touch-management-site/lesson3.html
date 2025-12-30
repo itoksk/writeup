@@ -569,10 +569,51 @@
             <div class="section-header">
                 <div class="section-label">Goal</div>
                 <h2 class="section-title">学習目標</h2>
+                <p class="section-description">以下のプロンプトをコピーして、<a href="https://studio.workspace.google.com/" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">Google Workspace Studio</a> で実行すると、このレッスンのエージェントを自動生成できます。</p>
             </div>
-            <div class="goal-card">
-                日報・週報の品質をチェックリストで自動判定し、APPROVED（合格）/ NEEDS_REVISION（要修正）/ RESUBMIT（再提出）の3段階で条件分岐処理を実装。
-                提出者への即時フィードバックと管理者への通知を自動化するQuality Check Agentを構築する
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">品質チェックエージェントを作成してください。
+
+【エージェント名】
+品質チェック
+
+【説明】
+提出物の品質を自動チェックし、適切なアクションにルーティング
+
+【スターター】
+Gmail - Email received または Forms - Form submitted
+フィルター: 件名に「提出」「報告」を含む
+
+【処理フロー】
+1. Geminiステップで以下のチェックリストを評価:
+   - 業務内容: 具体的な作業が記載されているか（必須）
+   - 進捗状況: 数値や達成率が含まれているか（必須）
+   - 課題: 課題がある場合に記載されているか（任意）
+   - 翌日予定: 翌日の計画が記載されているか（必須）
+   - 文字数: 最低100文字以上か（必須）
+
+   判定基準:
+   - APPROVED: 全必須項目OK、軽微な指摘0〜1件
+   - NEEDS_REVISION: 必須項目OK、軽微な指摘2件以上
+   - RESUBMIT: 必須項目に不備あり
+
+2. 条件分岐ステップ:
+   - APPROVED → 承認通知をChat DMで自分に送信
+   - NEEDS_REVISION → 修正依頼をChat DMで自分に送信
+   - RESUBMIT → 再提出依頼をChat DMで自分に送信
+
+3. Sheetsステップ:
+   - ステータス列を更新
+
+【出力先】
+- Chat DM（自分へ通知、手動で転送）
+- Sheets（ステータス更新）
+
+このエージェントを作成してください。</div>
+            </div>
+            <div class="warning-box" style="margin-top: 1rem;">
+                <p><strong>ポイント:</strong> 上記プロンプトをコピーして <a href="https://studio.workspace.google.com/" target="_blank" style="color: #78350f; text-decoration: underline;">Google Workspace Studio</a> に貼り付けると、エージェントのベースが自動生成されます。</p>
             </div>
         </div>
     </section>

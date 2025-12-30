@@ -778,10 +778,41 @@
             <div class="section-header">
                 <div class="section-label">Goal</div>
                 <h2 class="section-title">学習目標</h2>
+                <p class="section-description">以下のプロンプトをコピーして、<a href="https://studio.workspace.google.com/" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">Google Workspace Studio</a> で実行すると、このレッスンのエージェントを自動生成できます。</p>
             </div>
-            <div class="goal-card">
-                管理業務の課題を整理し、Google Workspace Studioで曜日判定による条件分岐を実装。
-                日報・週報提出依頼の自動化エージェントを作成して、属人管理から卒業するための基礎を構築する
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">日報・週報提出依頼エージェントを作成してください。
+
+【エージェント名】
+日報週報提出依頼
+
+【説明】
+曜日に応じて日報/週報の提出依頼を自動送信
+
+【スターター】
+Scheduled（スケジュール）- 毎日17:00
+
+【処理フロー】
+1. Geminiステップで曜日を判定し、以下の条件で出力:
+   - 月〜木: 日報提出依頼メッセージ（本日23:59期限）
+   - 金曜日: 週報提出依頼メッセージ（今週のサマリーと来週の計画を含む）
+   - 土日: "NO_SEND" を出力
+
+2. 条件分岐ステップ:
+   - Gemini出力が "NO_SEND" 以外の場合 → 次のステップへ
+   - "NO_SEND" の場合 → 処理終了
+
+3. Chat DMステップ:
+   - 自分へ通知を送信
+
+【出力先】
+Chat DM（自分へのダイレクトメッセージ）
+
+このエージェントを作成してください。</div>
+            </div>
+            <div class="warning-box" style="margin-top: 1rem;">
+                <p><strong>ポイント:</strong> 上記プロンプトをコピーして <a href="https://studio.workspace.google.com/" target="_blank" style="color: #78350f; text-decoration: underline;">Google Workspace Studio</a> に貼り付けると、エージェントのベースが自動生成されます。</p>
             </div>
         </div>
     </section>

@@ -900,10 +900,45 @@
             <div class="section-header">
                 <div class="section-label">Goal</div>
                 <h2 class="section-title">学習目標</h2>
+                <p class="section-description">以下のプロンプトをコピーして、<a href="https://studio.workspace.google.com/" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">Google Workspace Studio</a> で実行すると、このレッスンのエージェントを自動生成できます。</p>
             </div>
-            <div class="goal-card">
-                日報・週報メールをGeminiで自動要約し、業務サマリー・課題・依頼事項を構造化して抽出。
-                管理職の確認時間を60分から12分に短縮し、重要情報の見落としをゼロにするReport Summary Agentを構築する
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">日報・週報要約エージェントを作成してください。
+
+【エージェント名】
+日報週報要約
+
+【説明】
+日報・週報を自動要約し、重要ポイントをハイライト
+
+【スターター】
+Gmail - Email received（メール受信時）
+フィルター: 件名に「日報」または「週報」を含む
+
+【処理フロー】
+1. Geminiステップで以下を抽出:
+   - 業務サマリー（3項目まで）
+   - 達成した成果
+   - 課題・懸念事項（重要な場合はALERTマーク）
+   - 相談・依頼事項（対応が必要な場合はREQUESTマーク）
+   - 明日/来週の予定
+   - 評価: 順調 / 注意 / 要フォロー
+
+2. Chat DMステップ:
+   - 要約結果を自分へ通知
+
+3. Sheetsステップ（オプション）:
+   - 日付、送信者、評価、要約を記録
+
+【出力先】
+- Chat DM（自分へ通知）
+- Sheets（ログ記録用）
+
+このエージェントを作成してください。</div>
+            </div>
+            <div class="warning-box" style="margin-top: 1rem;">
+                <p><strong>ポイント:</strong> 上記プロンプトをコピーして <a href="https://studio.workspace.google.com/" target="_blank" style="color: #78350f; text-decoration: underline;">Google Workspace Studio</a> に貼り付けると、エージェントのベースが自動生成されます。</p>
             </div>
         </div>
     </section>
