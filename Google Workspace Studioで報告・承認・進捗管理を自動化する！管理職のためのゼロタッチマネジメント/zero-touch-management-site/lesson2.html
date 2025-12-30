@@ -913,8 +913,9 @@
 日報・週報を自動要約し、重要ポイントをハイライト
 
 【スターター】
-Gmail - Email received（メール受信時）
-フィルター: 件名に「日報」または「週報」を含む
+Chat - チャットメッセージを受け取ったとき
+会話の種類: スペースと名前付きグループDM
+スペース: 日報専用スペース（事前に作成しておく）
 
 【処理フロー】
 1. Geminiステップで以下を抽出:
@@ -934,6 +935,9 @@ Gmail - Email received（メール受信時）
 【出力先】
 - Chat DM（自分へ通知）
 - Sheets（ログ記録用）
+
+【事前準備】
+Google Chatで「日報提出」などの名前でスペースを作成し、チームメンバーを招待してください。
 
 このエージェントを作成してください。</div>
             </div>
@@ -983,7 +987,7 @@ Gmail - Email received（メール受信時）
             </div>
 
             <div class="flow-diagram">
-                <div class="flow-item">Gmail受信</div>
+                <div class="flow-item">Chatスペース受信</div>
                 <span class="flow-arrow">→</span>
                 <div class="flow-item">Gemini要約</div>
                 <span class="flow-arrow">→</span>
@@ -995,11 +999,11 @@ Gmail - Email received（メール受信時）
             <div class="condition-grid">
                 <div class="condition-card">
                     <h4>日報検知</h4>
-                    <p>件名に「日報」を含むメール</p>
+                    <p>日報専用スペースへの投稿</p>
                 </div>
                 <div class="condition-card">
                     <h4>週報検知</h4>
-                    <p>件名に「週報」を含むメール</p>
+                    <p>週報専用スペースへの投稿</p>
                 </div>
                 <div class="condition-card">
                     <h4>構造化出力</h4>
@@ -1034,11 +1038,11 @@ Gmail - Email received（メール受信時）
                     </tr>
                     <tr>
                         <td>スターター</td>
-                        <td>Gmail - Email received（メール受信時）</td>
+                        <td>Chat - チャットメッセージを受け取ったとき</td>
                     </tr>
                     <tr>
                         <td>フィルター条件</td>
-                        <td>件名に「日報」または「週報」を含む</td>
+                        <td>日報専用スペースへの投稿</td>
                     </tr>
                     <tr>
                         <td>処理ステップ</td>
@@ -1075,8 +1079,8 @@ Gmail - Email received（メール受信時）
                 <div class="flow-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h4>Gmailスターター設定</h4>
-                        <p>スターター: Gmail - Email received（メール受信時）→ フィルター: 件名に「日報」または「週報」→ 送信元: @yourcompany.com</p>
+                        <h4>Chatスターター設定</h4>
+                        <p>スターター: Chat - チャットメッセージを受け取ったとき → 会話の種類: スペースと名前付きグループDM → スペース: 日報専用スペースを選択</p>
                     </div>
                 </div>
                 <div class="flow-step">
@@ -1104,7 +1108,7 @@ Gmail - Email received（メール受信時）
                     <div class="step-number">6</div>
                     <div class="step-content">
                         <h4>テスト実行と有効化</h4>
-                        <p>「テスト」でテスト日報メールを送り要約生成を確認 → Chat DM通知とSheets記録の動作確認 → 「有効化」で本番稼働</p>
+                        <p>「テスト」でテスト日報をスペースに投稿し要約生成を確認 → Chat DM通知とSheets記録の動作確認 → 「有効化」で本番稼働</p>
                     </div>
                 </div>
             </div>
