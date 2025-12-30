@@ -871,18 +871,30 @@
 - 名前: 承認依頼
 - スターター: Gmail（件名に「申請」「稟議」を含む）または Forms
 - 処理フロー:
-  1. Geminiステップで申請を分類:
+  1. 条件分岐ステップ: 添付ファイルがある場合 → Driveステップへ
+  2. Driveステップ（添付がある場合）:
+     - 添付ファイルをDriveに保存
+     - {Drive links}変数を取得
+  3. Geminiステップで申請を分類:
+     メール本文と添付ファイルを分析してください。
+
+     メール本文: {body}
+     添付ファイル: {Drive links}を開いて内容を確認してください
+
+     以下を判定:
      - 種類: 経費申請/稟議/休暇申請
      - 金額（該当する場合）
      - 緊急度: 通常/急ぎ/緊急
-  2. 条件分岐で承認者を決定:
+
+     ※「開いて」キーワードと{Drive links}変数で添付ファイルの中身を読み取り
+  4. 条件分岐で承認者を決定:
      - 経費 < 50,000円 → 直属上長
      - 経費 >= 50,000円 → 部門長
      - 稟議 < 500,000円 → 部門長
      - 稟議 >= 500,000円 → 部門長 → 経営層
      - 休暇 → 直属上長
-  3. Chat DMで自分に承認依頼内容を通知
-  4. Sheetsに承認管理レコードを追加
+  5. Chat DMで自分に承認依頼内容を通知
+  6. Sheetsに承認管理レコードを追加
 
 【エージェント2: Approval Monitor Agent】
 - 名前: 承認監視
@@ -898,6 +910,17 @@
             </div>
             <div class="warning-box" style="margin-top: 1rem;">
                 <p><strong>ポイント:</strong> 上記プロンプトをコピーして <a href="https://studio.workspace.google.com/" target="_blank" style="color: #78350f; text-decoration: underline;">Google Workspace Studio</a> に貼り付けると、エージェントのベースが自動生成されます。</p>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 2rem; background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);">
+                <h4>Tips: Geminiで添付ファイル（稟議書・見積書など）の内容を読み取る方法</h4>
+                <p style="margin-bottom: 1rem;">Gmailで受信した稟議書PDF・見積書Excelなどの添付ファイルをGeminiに分析させたい場合:</p>
+                <ul>
+                    <li><strong>Step 1:</strong> まずDriveステップでファイルを保存 → <code style="background: rgba(255,255,255,0.2); padding: 0.2rem 0.4rem; border-radius: 4px;">{Drive links}</code> 変数が生成される</li>
+                    <li><strong>Step 2:</strong> Geminiステップで「<strong>開いて</strong>」キーワードと共に {Drive links} 変数を使用</li>
+                    <li><strong>例:</strong> 「{Drive links}を<strong>開いて</strong>、金額・申請内容・承認者を抽出してください」</li>
+                </ul>
+                <p style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.9;">※ 添付ファイルを直接Geminiに渡すことはできません。必ずDriveに保存してからDrive links経由で読み取ります。</p>
             </div>
         </div>
     </section>
@@ -945,7 +968,7 @@
                     </tr>
                     <tr>
                         <td>説明</td>
-                        <td>申請を処理し、適切な承認者にルーティング</td>
+                        <td>申請を処理し、添付ファイルを読み取って適切な承認者にルーティング</td>
                     </tr>
                     <tr>
                         <td>スターター</td>
@@ -953,7 +976,7 @@
                     </tr>
                     <tr>
                         <td>処理ステップ</td>
-                        <td><code>Gemini</code>（申請分類）→ <code>条件分岐</code>（承認者決定）</td>
+                        <td><code>条件分岐</code>（添付有無）→ <code>Drive</code>（ファイル保存）→ <code>Gemini</code>（申請分類 + 「開いて」でファイル読み取り）→ <code>条件分岐</code>（承認者決定）</td>
                     </tr>
                     <tr>
                         <td>出力（自分へ）</td>
@@ -965,6 +988,10 @@
                     </tr>
                 </tbody>
             </table>
+
+            <div class="warning-box">
+                <p><strong>添付ファイルの読み取り:</strong> 稟議書PDFや見積書Excelが添付されている場合、まずDriveステップで保存し、Geminiステップで「{Drive links}を開いて金額を確認」のようにプロンプトを設定すると、ファイルの中身を分析できます。</p>
+            </div>
         </div>
     </section>
 
@@ -1156,17 +1183,22 @@
                 <div class="copy-hint">クリックでコピー</div>
                 <div class="code-block" onclick="copyToClipboard(this)">You are an approval workflow assistant.
 
-Request content:
+Request content (email body):
 ---
 {request_content}
 ---
+
+Attached files (if any):
+{Drive links}を開いて、内容を確認してください。
+
+※「開いて」キーワードと{Drive links}変数で添付ファイル（稟議書PDF、見積書Excel等）の中身を読み取り、金額や詳細を抽出します。
 
 Approver directory:
 {approver_directory}
 
 Analyze and extract:
 1. Request type: 経費申請 / 稟議 / 休暇申請 / その他
-2. Amount (if applicable): {amount} JPY
+2. Amount (from email body or attached file): {amount} JPY
 3. Requester: {name}
 4. Department: {department}
 5. Direct manager: {manager_name} ({manager_email})
@@ -1192,6 +1224,7 @@ APPROVER_1: {approver1_name} ({approver1_email})
 APPROVER_2: {approver2_name} ({approver2_email}) or "NONE"
 REMINDER_HOURS: {24 or 48}
 ESCALATION_HOURS: {48 or 72}
+ATTACHMENT_SUMMARY: {添付ファイルの要約（あれば）}
 ---
 Output in Japanese where applicable.</div>
             </div>

@@ -1066,22 +1066,20 @@ Scheduled（スケジュール）- 毎週金曜日 18:00
 このエージェントを作成してください。</div>
             </div>
 
-            <h3 style="font-size: 1.1rem; margin: 2rem 0 1rem; color: var(--text-secondary);">エージェント4: Drive Sync（参考）</h3>
+            <h3 style="font-size: 1.1rem; margin: 2rem 0 1rem; color: var(--text-secondary);">エージェント4: Drive Sync + ファイル内容読み取り（参考）</h3>
             <div class="code-block-wrapper">
                 <div class="copy-hint">クリックでコピー</div>
-                <div class="code-block" onclick="copyToClipboard(this)">Drive同期エージェントを作成してください。
+                <div class="code-block" onclick="copyToClipboard(this)">Drive同期＆ファイル内容読み取りエージェントを作成してください。
 
 【エージェント名】
-Drive同期
+Drive同期＆内容確認
 
 【説明】
-日報・週報に添付されたファイルをDriveに自動保存し、提出ログにリンクを記録
+メールに添付されたファイルをDriveに自動保存し、Geminiでファイル内容を読み取って要約
 
 【スターター】
-Chat - チャットメッセージを受け取ったとき
-会話の種類: スペースと名前付きグループDM
-スペース: 日報専用スペースまたは週報専用スペース
-※添付ファイルがあるメッセージを対象
+Gmail - 新しいメールを受信したとき
+フィルター: 添付ファイルがあるメール
 
 【処理フロー】
 1. 条件分岐ステップ:
@@ -1091,25 +1089,58 @@ Chat - チャットメッセージを受け取ったとき
 2. Driveステップ（ファイル保存）:
    - 保存先: 日報週報フォルダ/{年}/{月}/
    - ファイル名: {日付}_{送信者名}_{元のファイル名}
+   - ※このステップで{Drive links}変数が生成されます
 
-3. Sheetsステップ（リンク記録）:
+3. Geminiステップ（ファイル内容の読み取り）:
+   以下のファイルを開いて、内容を要約してください。
+
+   ファイル: {Drive links}
+
+   要約項目:
+   - ファイルの種類（報告書/資料/その他）
+   - 主な内容（3行以内）
+   - 重要なポイント
+   - 対応が必要な事項があれば記載
+
+   ※「開いて」というキーワードと{Drive links}変数を組み合わせることで、
+   Geminiがファイルの中身を読み取って分析できます。
+
+4. Sheetsステップ（リンク・要約記録）:
    - スプレッドシート: 日報管理シート
    - シート: 提出ログ
-   - 操作: 該当行のDriveリンク列を更新
+   - 操作: 行を追加
+   - データ: 日付, 送信者, Driveリンク, ファイル要約
+
+5. Chat DMステップ（通知）:
+   - 自分へファイル保存完了と要約を通知
 
 【出力先】
 - Drive（ファイル保存）
-- Sheets（リンク記録）
+- Sheets（リンク・要約記録）
+- Chat DM（通知）
 
-【注意】
-このエージェントは既存の日報要約/週報品質チェックエージェントと併用するか、
-それらのエージェントにDrive保存ステップを追加する形で実装することも可能です。
+【重要なTips】
+添付ファイルの内容をGeminiに読み取らせるには:
+1. まずDriveステップでファイルを保存し{Drive links}変数を取得
+2. Geminiステップで「開いて」キーワードと共に{Drive links}を使用
+3. これによりGeminiがファイルを開いて内容を分析可能
 
 このエージェントを作成してください。</div>
             </div>
 
             <div class="warning-box" style="margin-top: 2rem;">
                 <p><strong>ポイント:</strong> 各プロンプトを個別にコピーして <a href="https://studio.workspace.google.com/" target="_blank" style="color: #78350f; text-decoration: underline;">Google Workspace Studio</a> に貼り付けてください。1つのプロンプトで1つのエージェントが作成されます。</p>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 2rem; background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);">
+                <h4>Tips: Geminiで添付ファイルの内容を読み取る方法</h4>
+                <p style="margin-bottom: 1rem;">Gmailスターターで受信した添付ファイルの中身をGeminiに分析させたい場合:</p>
+                <ul>
+                    <li><strong>Step 1:</strong> まずDriveステップでファイルを保存 → <code style="background: rgba(255,255,255,0.2); padding: 0.2rem 0.4rem; border-radius: 4px;">{Drive links}</code> 変数が生成される</li>
+                    <li><strong>Step 2:</strong> Geminiステップで「<strong>開いて</strong>」キーワードと共に {Drive links} 変数を使用</li>
+                    <li><strong>例:</strong> 「以下のファイルを<strong>開いて</strong>、内容を要約してください。ファイル: {Drive links}」</li>
+                </ul>
+                <p style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.9;">※ 添付ファイルを直接Geminiに渡すことはできません。必ずDriveに保存してからDrive links経由で読み取ります。</p>
             </div>
         </div>
     </section>
