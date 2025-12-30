@@ -918,7 +918,7 @@ Chat - チャットメッセージを受け取ったとき
 スペース: 日報専用スペース（事前に作成しておく）
 
 【処理フロー】
-1. Geminiステップで以下を抽出:
+1. Geminiステップ（要約生成）:
    - 業務サマリー（3項目まで）
    - 達成した成果
    - 課題・懸念事項（重要な場合はALERTマーク）
@@ -926,18 +926,28 @@ Chat - チャットメッセージを受け取ったとき
    - 明日/来週の予定
    - 評価: 順調 / 注意 / 要フォロー
 
-2. Chat DMステップ:
+2. 抽出ステップ（Sheets記録用データ抽出）:
+   Geminiの出力から以下を個別変数として抽出:
+   - report_type: 日報 または 週報
+   - assessment: 順調 / 注意 / 要フォロー
+   - has_issues: あり / なし
+   - has_requests: あり / なし
+   - summary_short: 要約（200文字以内）
+
+3. Chat DMステップ:
    - 要約結果を自分へ通知
 
-3. Sheetsステップ（オプション）:
-   - 日付、送信者、評価、要約を記録
+4. Sheetsステップ:
+   - 抽出した変数を使って行を追加
+   - 列: 日付, 送信者, レポートタイプ, 評価, 課題有無, 相談有無, 要約
 
 【出力先】
 - Chat DM（自分へ通知）
 - Sheets（ログ記録用）
 
 【事前準備】
-Google Chatで「日報提出」などの名前でスペースを作成し、チームメンバーを招待してください。
+1. Google Chatで「日報提出」などの名前でスペースを作成し、チームメンバーを招待
+2. Googleスプレッドシートで日報管理シートを作成（列: 日付, 送信者, レポートタイプ, 評価, 課題有無, 相談有無, 要約）
 
 このエージェントを作成してください。</div>
             </div>
@@ -990,6 +1000,8 @@ Google Chatで「日報提出」などの名前でスペースを作成し、チ
                 <div class="flow-item">Chatスペース受信</div>
                 <span class="flow-arrow">→</span>
                 <div class="flow-item">Gemini要約</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">抽出</div>
                 <span class="flow-arrow">→</span>
                 <div class="flow-item">Chat DM通知</div>
                 <span class="flow-arrow">→</span>
@@ -1093,19 +1105,26 @@ Google Chatで「日報提出」などの名前でスペースを作成し、チ
                 <div class="flow-step">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h4>Chat DMステップ設定</h4>
-                        <p>ステップを追加 → Chat DM送信を選択 → 自分へ通知を送信。※スペースへの投稿・外部送信は未対応のため、必要に応じて手動転送</p>
+                        <h4>抽出ステップでデータを変数化</h4>
+                        <p>ステップを追加 → 「抽出」を選択 → Gemini出力から report_type, assessment, has_issues, has_requests, summary_short を個別変数として抽出</p>
                     </div>
                 </div>
                 <div class="flow-step">
                     <div class="step-number">5</div>
                     <div class="step-content">
-                        <h4>Sheetsステップ設定（オプション）</h4>
-                        <p>ステップを追加 → Sheets「行を追加」→ スプレッドシート: 日報管理シート → 日付・送信者・評価・要約を自動記録</p>
+                        <h4>Chat DMステップ設定</h4>
+                        <p>ステップを追加 → Chat DM送信を選択 → 自分へ通知を送信。※スペースへの投稿・外部送信は未対応のため、必要に応じて手動転送</p>
                     </div>
                 </div>
                 <div class="flow-step">
                     <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h4>Sheetsステップ設定</h4>
+                        <p>ステップを追加 → Sheets「行を追加」→ 日報管理シートを選択 → 抽出した変数（日付, 送信者, report_type, assessment, has_issues, has_requests, summary_short）をマッピング</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">7</div>
                     <div class="step-content">
                         <h4>テスト実行と有効化</h4>
                         <p>「テスト」でテスト日報をスペースに投稿し要約生成を確認 → Chat DM通知とSheets記録の動作確認 → 「有効化」で本番稼働</p>
@@ -1152,7 +1171,101 @@ Output in Japanese. Be concise.</div>
         </div>
     </section>
 
-    <section class="section" id="assessment">
+    <section class="section" id="test-sample">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Test Sample</div>
+                <h2 class="section-title">テスト用日報サンプル</h2>
+                <p class="section-description">以下のサンプルをコピーして日報専用スペースに投稿し、エージェントの動作をテストしてください。</p>
+            </div>
+
+            <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--accent-primary);">サンプル1: 順調パターン</h3>
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">【日報】山田太郎 2024/01/15
+
+■ 本日の業務
+・A社向け提案資料の作成（完了）
+・B社との定例MTG参加（14:00-15:00）
+・新規リード5件のフォローアップ電話
+
+■ 成果
+・A社提案資料を予定通り完成、明日16時の商談に向けて準備完了
+・B社から追加要件をヒアリング、見積もり修正依頼を受領
+
+■ 課題・懸念
+特になし
+
+■ 明日の予定
+・A社商談（16:00-17:00）
+・C社向け企画書のドラフト作成
+・週次営業会議の資料準備</div>
+            </div>
+
+            <h3 style="font-size: 1rem; margin: 2rem 0 1rem; color: var(--accent-primary);">サンプル2: 注意パターン（課題あり）</h3>
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">【日報】佐藤花子 2024/01/15
+
+■ 本日の業務
+・D社システム開発の進捗確認
+・E社からの問い合わせ対応（3件）
+・月次レポートの作成（50%完了）
+
+■ 成果
+・E社の問い合わせを即日解決、顧客満足度向上に貢献
+
+■ 課題・懸念
+・D社プロジェクトで技術的な問題が発生し、当初予定より2日遅延の見込み
+・外部ベンダーとの調整が必要だが、先方の担当者が今週不在
+
+■ 相談事項
+・D社案件の遅延について、クライアントへの報告タイミングをご相談したいです
+・来週水曜の午前中、30分ほどお時間いただけますか？
+
+■ 明日の予定
+・D社案件の代替案検討
+・月次レポート完成（目標）
+・F社との初回打ち合わせ（10:00）</div>
+            </div>
+
+            <h3 style="font-size: 1rem; margin: 2rem 0 1rem; color: var(--accent-primary);">サンプル3: 要フォローパターン（緊急）</h3>
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">【日報】鈴木一郎 2024/01/15
+
+■ 本日の業務
+・G社クレーム対応（午前中すべて費やす）
+・H社納品準備（延期）
+・社内調整業務
+
+■ 成果
+・G社への初期対応完了、明日改めて訪問アポを取得
+
+■ 課題・懸念【緊急】
+・G社から製品不具合に関する重大クレームが発生
+・納品した製品100台のうち、15台で同様の不具合報告
+・原因調査中だが、製造ロット全体に影響の可能性あり
+・返品・交換対応の場合、約500万円の損失見込み
+
+■ 依頼事項【至急】
+・明日のG社訪問に同行いただけないでしょうか
+・品質管理部門との緊急会議の設定をお願いしたいです
+・本件について、本日中にご連絡いただけると助かります
+
+■ 明日の予定
+・G社訪問（時間調整中）
+・品質管理部門との原因究明会議
+・H社への納期延期連絡</div>
+            </div>
+
+            <div class="info-box" style="margin-top: 2rem;">
+                <p><strong>テストのポイント:</strong> 3パターンすべてをテストし、「順調」「注意」「要フォロー」の評価が正しく判定されること、ALERTやREQUESTマークが適切に付与されることを確認してください。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="assessment" style="background: var(--bg-secondary);">
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">Assessment</div>
@@ -1212,7 +1325,7 @@ Output in Japanese. Be concise.</div>
 
 ---
 評価: {assessment}
-元メール: {email_link}</div>
+投稿元: 日報専用スペース</div>
             </div>
 
             <div class="warning-box" style="margin-top: 2rem;">
@@ -1233,6 +1346,7 @@ Output in Japanese. Be concise.</div>
                     <tr>
                         <th>列</th>
                         <th>内容</th>
+                        <th>抽出変数</th>
                         <th>形式</th>
                     </tr>
                 </thead>
@@ -1240,42 +1354,44 @@ Output in Japanese. Be concise.</div>
                     <tr>
                         <td>A</td>
                         <td>日付</td>
+                        <td>（自動: 現在日時）</td>
                         <td>YYYY-MM-DD</td>
                     </tr>
                     <tr>
                         <td>B</td>
                         <td>送信者</td>
+                        <td>（自動: メッセージ送信者）</td>
                         <td>氏名</td>
                     </tr>
                     <tr>
                         <td>C</td>
                         <td>レポートタイプ</td>
+                        <td><code>report_type</code></td>
                         <td>日報 / 週報</td>
                     </tr>
                     <tr>
                         <td>D</td>
                         <td>評価</td>
-                        <td>順調 / 注意 / 要フォロー / 要支援</td>
+                        <td><code>assessment</code></td>
+                        <td>順調 / 注意 / 要フォロー</td>
                     </tr>
                     <tr>
                         <td>E</td>
                         <td>課題有無</td>
+                        <td><code>has_issues</code></td>
                         <td>あり / なし</td>
                     </tr>
                     <tr>
                         <td>F</td>
                         <td>相談有無</td>
+                        <td><code>has_requests</code></td>
                         <td>あり / なし</td>
                     </tr>
                     <tr>
                         <td>G</td>
                         <td>要約（短縮版）</td>
+                        <td><code>summary_short</code></td>
                         <td>テキスト（200文字以内）</td>
-                    </tr>
-                    <tr>
-                        <td>H</td>
-                        <td>元メールリンク</td>
-                        <td>URL</td>
                     </tr>
                 </tbody>
             </table>
