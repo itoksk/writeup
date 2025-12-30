@@ -579,36 +579,53 @@
 品質チェック
 
 【説明】
-提出物の品質を自動チェックし、適切なアクションにルーティング
+メールに添付されたドキュメント（週報・月報など）の品質を自動チェックし、適切なアクションにルーティング
 
 【スターター】
-Gmail - Email received または Forms - Form submitted
-フィルター: 件名に「提出」「報告」を含む
+Gmail - Email received
+フィルター: 件名に「週報」「月報」「報告書」を含む
+※添付ファイル（Google Docs）があるメールを対象
 
 【処理フロー】
-1. Geminiステップで以下のチェックリストを評価:
+1. Geminiステップ（添付ドキュメントの品質チェック）:
+   添付されたドキュメントの内容を以下のチェックリストで評価:
    - 業務内容: 具体的な作業が記載されているか（必須）
    - 進捗状況: 数値や達成率が含まれているか（必須）
    - 課題: 課題がある場合に記載されているか（任意）
-   - 翌日予定: 翌日の計画が記載されているか（必須）
-   - 文字数: 最低100文字以上か（必須）
+   - 次週予定: 次週の計画が記載されているか（必須）
+   - 文字数: 最低300文字以上か（必須）
 
    判定基準:
    - APPROVED: 全必須項目OK、軽微な指摘0〜1件
    - NEEDS_REVISION: 必須項目OK、軽微な指摘2件以上
    - RESUBMIT: 必須項目に不備あり
 
-2. 条件分岐ステップ:
+2. 抽出ステップ（Sheets記録用データ抽出）:
+   Geminiの出力から以下を個別変数として抽出:
+   - judgment: APPROVED / NEEDS_REVISION / RESUBMIT
+   - feedback: 提出者向けフィードバック
+   - checklist_業務内容: OK / NG
+   - checklist_進捗状況: OK / NG
+   - checklist_課題: OK / NG / N/A
+   - checklist_次週予定: OK / NG
+   - checklist_文字数: OK / NG
+
+3. 条件分岐ステップ:
    - APPROVED → 承認通知をChat DMで自分に送信
    - NEEDS_REVISION → 修正依頼をChat DMで自分に送信
    - RESUBMIT → 再提出依頼をChat DMで自分に送信
 
-3. Sheetsステップ:
-   - ステータス列を更新
+4. Sheetsステップ:
+   - 抽出した変数を使って品質チェックログシートに記録
 
 【出力先】
 - Chat DM（自分へ通知、手動で転送）
-- Sheets（ステータス更新）
+- Sheets（品質チェックログ）
+
+【事前準備】
+1. Googleスプレッドシートで品質チェックログシートを作成
+   （列: 日付, 提出者, 判定, 業務内容, 進捗状況, 課題, 次週予定, 文字数, フィードバック）
+2. テスト用の週報ドキュメントを作成（サンプルは下記参照）
 
 このエージェントを作成してください。</div>
             </div>
@@ -653,13 +670,17 @@ Gmail - Email received または Forms - Form submitted
             </div>
 
             <div class="flow-diagram">
-                <div class="flow-item">提出物受信</div>
+                <div class="flow-item">Gmail受信</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">添付Docs読取</div>
                 <span class="flow-arrow">→</span>
                 <div class="flow-item">Gemini判定</div>
                 <span class="flow-arrow">→</span>
+                <div class="flow-item">抽出</div>
+                <span class="flow-arrow">→</span>
                 <div class="flow-item">条件分岐</div>
                 <span class="flow-arrow">→</span>
-                <div class="flow-item">Chat DM通知</div>
+                <div class="flow-item">Chat DM / Sheets</div>
             </div>
         </div>
     </section>
@@ -689,11 +710,23 @@ Gmail - Email received または Forms - Form submitted
                     </tr>
                     <tr>
                         <td>スターター</td>
-                        <td>Gmail - Email received または Forms - Form submitted</td>
+                        <td>Gmail - Email received（添付ファイルあり）</td>
                     </tr>
                     <tr>
-                        <td>処理ステップ</td>
+                        <td>フィルター</td>
+                        <td>件名に「週報」「月報」「報告書」を含む</td>
+                    </tr>
+                    <tr>
+                        <td>処理ステップ1</td>
+                        <td>添付ドキュメント（Google Docs）の内容を取得</td>
+                    </tr>
+                    <tr>
+                        <td>処理ステップ2</td>
                         <td>Geminiによるチェックリスト評価</td>
+                    </tr>
+                    <tr>
+                        <td>処理ステップ3</td>
+                        <td>抽出ステップで判定結果を変数化</td>
                     </tr>
                     <tr>
                         <td>条件分岐</td>
@@ -720,7 +753,7 @@ Gmail - Email received または Forms - Form submitted
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">Checklist</div>
-                <h2 class="section-title">日報チェックリスト項目</h2>
+                <h2 class="section-title">週報・月報チェックリスト項目</h2>
             </div>
 
             <table class="config-table">
@@ -752,22 +785,22 @@ Gmail - Email received または Forms - Form submitted
                         <td>課題あるのに未記載</td>
                     </tr>
                     <tr>
-                        <td>翌日予定</td>
+                        <td>次週予定</td>
                         <td><span class="badge required">必須</span></td>
-                        <td>翌日の計画が記載されているか</td>
+                        <td>次週の計画が記載されているか</td>
                         <td>「引き続き」のみ</td>
                     </tr>
                     <tr>
                         <td>文字数</td>
                         <td><span class="badge required">必須</span></td>
-                        <td>最低100文字以上か</td>
-                        <td>50文字未満</td>
+                        <td>最低300文字以上か（週報・月報は詳細が必要）</td>
+                        <td>200文字未満</td>
                     </tr>
                 </tbody>
             </table>
 
             <div class="info-box">
-                <p><strong>ポイント:</strong> チェックリストは業務に合わせてカスタマイズ可能。週報の場合は「今週の成果」「来週の計画」などを追加します。</p>
+                <p><strong>Lesson 2との違い:</strong> Lesson 2はチャットで受け取った日報（短文）を要約、Lesson 3はメール添付のドキュメント（週報・月報）を品質チェックします。ドキュメントは詳細な記載が求められるため、文字数基準も高く設定しています。</p>
             </div>
         </div>
     </section>
@@ -790,36 +823,50 @@ Gmail - Email received または Forms - Form submitted
                 <div class="flow-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h4>スターター設定</h4>
-                        <p>スターター: Gmail - Email received または Forms - Form submitted → フィルター: 件名に「提出」「報告」を含む</p>
+                        <h4>Gmailスターター設定</h4>
+                        <p>スターター: Gmail - Email received → フィルター: 件名に「週報」「月報」「報告書」を含む → 添付ファイルありを条件に設定</p>
                     </div>
                 </div>
                 <div class="flow-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h4>Geminiステップでチェック</h4>
-                        <p>ステップを追加 → 「Gemini」を選択 → 下記のチェックリスト評価プロンプトを設定。各項目をOK/NGで判定</p>
+                        <h4>Geminiステップで品質チェック</h4>
+                        <p>ステップを追加 → 「Gemini」を選択 → 添付ドキュメントの内容を入力として、下記のチェックリスト評価プロンプトを設定</p>
                     </div>
                 </div>
                 <div class="flow-step">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h4>条件分岐ステップ設定</h4>
-                        <p>ステップを追加 → 「条件分岐」→ Gemini出力のJUDGMENTフィールドでAPPROVED / NEEDS_REVISION / RESUBMIT に分岐</p>
+                        <h4>抽出ステップでデータを変数化</h4>
+                        <p>ステップを追加 → 「抽出」を選択 → Gemini出力から judgment, feedback, checklist_* を個別変数として抽出</p>
                     </div>
                 </div>
                 <div class="flow-step">
                     <div class="step-number">5</div>
                     <div class="step-content">
-                        <h4>Chat DMステップ設定</h4>
-                        <p>各分岐にChat DM送信ステップを追加。自分宛に通知を受け取り、承認・修正依頼・再提出依頼の結果を確認後、手動で提出者へ転送 ※外部送信は未対応</p>
+                        <h4>条件分岐ステップ設定</h4>
+                        <p>ステップを追加 → 「条件分岐」→ 抽出した judgment 変数で APPROVED / NEEDS_REVISION / RESUBMIT に分岐</p>
                     </div>
                 </div>
                 <div class="flow-step">
                     <div class="step-number">6</div>
                     <div class="step-content">
-                        <h4>Sheets・Chat DMステップ設定</h4>
-                        <p>Sheetsステップでステータス列を更新。RESSUBMITの場合のみChat DMで管理職に通知（※スペースへの投稿は削除済み）</p>
+                        <h4>Chat DMステップ設定</h4>
+                        <p>各分岐にChat DM送信ステップを追加。自分宛に通知を受け取り、承認・修正依頼・再提出依頼の結果を確認後、手動で提出者へ転送</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h4>Sheetsステップ設定</h4>
+                        <p>ステップを追加 → Sheets「行を追加」→ 品質チェックログシートを選択 → 抽出した変数（日付, 提出者, judgment, checklist_*, feedback）をマッピング</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">8</div>
+                    <div class="step-content">
+                        <h4>テスト実行と有効化</h4>
+                        <p>テスト用の週報ドキュメントを添付してメール送信 → 品質チェック結果とSheets記録を確認 → 「有効化」で本番稼働</p>
                     </div>
                 </div>
             </div>
@@ -835,19 +882,19 @@ Gmail - Email received または Forms - Form submitted
 
             <div class="code-block-wrapper">
                 <div class="copy-hint">クリックでコピー</div>
-                <div class="code-block" onclick="copyToClipboard(this)">You are a quality control assistant checking submissions against a checklist.
+                <div class="code-block" onclick="copyToClipboard(this)">You are a quality control assistant checking weekly/monthly report documents.
 
-Submission content:
+Document content (from attached Google Docs):
 ---
-{submission_content}
+{attached_document_content}
 ---
 
-Checklist:
+Checklist for weekly/monthly reports:
 1. 業務内容: 具体的な作業が記載されているか (Required)
 2. 進捗状況: 数値や達成率が含まれているか (Required)
 3. 課題: 課題がある場合に記載されているか (Optional)
-4. 翌日予定: 翌日の計画が記載されているか (Required)
-5. 文字数: 最低100文字以上か (Required)
+4. 次週予定: 次週の計画が記載されているか (Required)
+5. 文字数: 最低300文字以上か (Required - 週報・月報は詳細が必要)
 
 For each item, evaluate:
 - Status: OK / NG / N/A
@@ -864,7 +911,7 @@ CHECKLIST_RESULT:
 1. 業務内容: [OK/NG] - [具体的なコメント]
 2. 進捗状況: [OK/NG] - [具体的なコメント]
 3. 課題: [OK/NG/N/A] - [具体的なコメント]
-4. 翌日予定: [OK/NG] - [具体的なコメント]
+4. 次週予定: [OK/NG] - [具体的なコメント]
 5. 文字数: [OK/NG] - [現在の文字数]
 
 JUDGMENT: [APPROVED/NEEDS_REVISION/RESUBMIT]
@@ -874,7 +921,104 @@ FEEDBACK: [提出者向けの具体的なフィードバック（日本語）]
         </div>
     </section>
 
-    <section class="section" id="logic" style="background: var(--bg-secondary);">
+    <section class="section" id="test-sample" style="background: var(--bg-secondary);">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Test Sample</div>
+                <h2 class="section-title">テスト用週報サンプル</h2>
+                <p class="section-description">以下の内容をGoogle Docsに貼り付けてテスト用の週報ドキュメントを作成し、メールに添付して送信してください。<br>サンプルファイルは <a href="samples/" style="color: var(--accent-primary); text-decoration: underline;">samples/フォルダ</a> からもダウンロードできます。</p>
+            </div>
+
+            <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--green);">サンプル1: APPROVED（承認）パターン</h3>
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">週報 - 山田太郎
+2024年1月15日〜1月19日
+
+■ 今週の業務内容
+
+1. A社向け提案資料の作成と商談実施
+   - 1/15: 提案資料のドラフト作成（8時間）
+   - 1/16: 上司レビューを受けて修正（3時間）
+   - 1/17: A社訪問、提案プレゼンテーション実施（2時間）
+   - 結果: 概ね好評、来週に見積もり提出予定
+
+2. B社システム開発プロジェクトの進捗管理
+   - 要件定義フェーズ完了、設計フェーズに移行
+   - 週次進捗会議を2回実施（1/16, 1/18）
+   - 課題管理表の更新と共有
+
+3. 新規リードへのフォローアップ
+   - 展示会で獲得したリード15件に対してフォロー電話
+   - うち5件でアポイント獲得、来週訪問予定
+
+■ 進捗状況
+
+- A社案件: 80%完了（提案完了、見積もり作成中）
+- B社プロジェクト: 予定通り進行中（設計フェーズ25%）
+- 新規開拓: 今月目標10件に対して5件獲得（達成率50%）
+
+■ 課題・懸念事項
+
+特になし。順調に進行中。
+
+■ 次週の予定
+
+- 1/22: A社見積もり提出、価格交渉
+- 1/23-24: B社設計レビュー会議
+- 1/25: 新規リード5件への訪問（C社、D社、E社、F社、G社）
+- 1/26: 週次営業会議、月次レポート作成</div>
+            </div>
+
+            <h3 style="font-size: 1rem; margin: 2rem 0 1rem; color: var(--orange);">サンプル2: NEEDS_REVISION（要修正）パターン</h3>
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">週報 - 佐藤花子
+2024年1月15日〜1月19日
+
+■ 今週の業務内容
+
+1. H社のシステム保守対応
+   - 問い合わせ対応を実施
+   - 障害対応あり
+
+2. 社内ミーティング参加
+   - 定例会議に参加
+
+3. ドキュメント作成
+   - マニュアル更新作業
+
+■ 進捗状況
+
+順調に進んでいます。
+
+■ 課題・懸念事項
+
+H社の障害対応に時間がかかり、他の業務に影響が出ています。
+原因調査に時間を要しており、根本対策の検討が必要です。
+
+■ 次週の予定
+
+- H社対応の継続
+- その他業務</div>
+            </div>
+
+            <h3 style="font-size: 1rem; margin: 2rem 0 1rem; color: var(--coral);">サンプル3: RESUBMIT（再提出）パターン</h3>
+            <div class="code-block-wrapper">
+                <div class="copy-hint">クリックでコピー</div>
+                <div class="code-block" onclick="copyToClipboard(this)">週報 - 鈴木一郎
+
+今週も頑張りました。
+来週も頑張ります。</div>
+            </div>
+
+            <div class="info-box" style="margin-top: 2rem;">
+                <p><strong>テストのポイント:</strong> 3パターンすべてをテストし、APPROVED/NEEDS_REVISION/RESUBMITの判定が正しく行われること、チェックリスト各項目の評価が適切であることを確認してください。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="logic">
         <div class="section-container">
             <div class="section-header">
                 <div class="section-label">Logic</div>
