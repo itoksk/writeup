@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：商談を取りこぼさない！ステージ別に自動フォローが飛ぶ進捗管理システム | セールスオペレーション効率化講座</title>
+    <meta name="description" content="Google Workspace Studioで商談・見積・フォローを自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 2/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">02</div>
+            <h1 class="lesson-title">商談を取りこぼさない！ステージ別に自動フォローが飛ぶ進捗管理システム</h1>
+            <p class="lesson-subtitle">商談ステージ監視→フォロー判定→リマインド送信→エスカレーション</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>商談ステージに応じた自動フォローアップと、停滞商談のエスカレーションを実装します。ステージごとにフォロー期限を自動計算し、期限前リマインド、停滞検知、マネージャーへのエスカレーションまでを完全自動化します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before - 手作業の商談管理</div>
+                    <ul>
+                        <li>各営業担当者が個別に商談を管理</li>
+                        <li>フォローアップのタイミングを忘れがち</li>
+                        <li>停滞商談の把握が遅れる</li>
+                        <li>マネージャーが週次MTGまで状況を把握できない</li>
+                        <li>月5件以上のフォロー漏れによる失注</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After - 自動化された商談管理</div>
+                    <ul>
+                        <li>商談ステージの一元管理</li>
+                        <li>ステージ別にフォロー期限を自動設定</li>
+                        <li>期限3日前・当日に自動リマインド</li>
+                        <li>7日以上停滞した商談を自動検知</li>
+                        <li>フォロー漏れゼロ、失注削減</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">商談ステージと自動アクション</h2>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ステージ</th>
+                            <th>フォロー期限</th>
+                            <th>自動アクション</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>初回アプローチ</td>
+                            <td>3日以内</td>
+                            <td>翌日リマインド、3日後に未対応アラート</td>
+                        </tr>
+                        <tr>
+                            <td>ヒアリング済</td>
+                            <td>5日以内</td>
+                            <td>提案書作成リマインド、期限前日アラート</td>
+                        </tr>
+                        <tr>
+                            <td>提案済</td>
+                            <td>7日以内</td>
+                            <td>顧客反応確認リマインド、停滞時エスカレ</td>
+                        </tr>
+                        <tr>
+                            <td>見積提出</td>
+                            <td>10日以内</td>
+                            <td>検討状況確認、値引き交渉アラート</td>
+                        </tr>
+                        <tr>
+                            <td>クロージング</td>
+                            <td>5日以内</td>
+                            <td>契約締結リマインド、最終プッシュ提案</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動化の全体フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>商談ステータス監視</h3>
+                        <p>スケジュールスターターで毎朝9時に商談管理シートをチェック。各商談の現在ステージ、最終更新日、次アクション日を確認します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>フォロー期限チェック</h3>
+                        <p>ステージごとに設定されたフォロー期限と現在日を比較。期限3日前、当日、期限超過の商談を抽出します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>リマインド・アラート送信</h3>
+                        <p>期限状況に応じて担当者へリマインドを送信。期限3日前は穏やかに、当日は緊急アラート、期限超過は赤アラートで通知します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>停滞商談のエスカレーション</h3>
+                        <p>7日以上更新のない商談を自動検知。マネージャーへエスカレーション通知を送り、フォロー状況の確認を促します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エージェント構成</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">Starter</div>
+                    <h3>スケジュールスターター</h3>
+                    <p>毎朝9時に定期実行。商談管理スプレッドシートを読み込み、フォロー対象の商談を抽出します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 1</div>
+                    <h3>商談データ取得</h3>
+                    <p>商談管理シートから全アクティブ商談を取得。ステージ、担当者、最終更新日、次アクション日を読み込みます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 2</div>
+                    <h3>期限判定ロジック</h3>
+                    <p>各商談のステージに応じたフォロー期限を計算。現在日との差分で「期限3日前」「当日」「超過」「停滞」を判定します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 3</div>
+                    <h3>条件分岐</h3>
+                    <p>判定結果に応じて処理を分岐。リマインド送信、アラート送信、エスカレーションなどの適切なアクションを選択します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 4</div>
+                    <h3>担当者へ通知</h3>
+                    <p>Chat DMまたはメールで担当者へ通知。商談名、顧客名、現在ステージ、推奨アクションを送信します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 5</div>
+                    <h3>次アクション提案（Gemini）</h3>
+                    <p>停滞商談に対して、Geminiが過去の成功事例から次のアクションを提案。「価格交渉」「デモ実施」など具体的な施策を提示します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">商談管理スプレッドシート設計</h2>
+
+            <div class="note-card">
+                <h4>シートの構成</h4>
+                <p>商談の進捗を一元管理し、自動フォローの基盤となるシートです。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>列名</th>
+                            <th>説明</th>
+                            <th>例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>商談ID</code></td>
+                            <td>一意の識別子</td>
+                            <td>DEAL-2026-0001</td>
+                        </tr>
+                        <tr>
+                            <td><code>顧客名</code></td>
+                            <td>商談先の会社名</td>
+                            <td>株式会社ABC</td>
+                        </tr>
+                        <tr>
+                            <td><code>担当者</code></td>
+                            <td>営業担当者</td>
+                            <td>山田一郎</td>
+                        </tr>
+                        <tr>
+                            <td><code>ステージ</code></td>
+                            <td>現在の商談ステージ</td>
+                            <td>提案済</td>
+                        </tr>
+                        <tr>
+                            <td><code>金額</code></td>
+                            <td>見込み金額</td>
+                            <td>500,000</td>
+                        </tr>
+                        <tr>
+                            <td><code>最終更新日</code></td>
+                            <td>ステージが更新された日</td>
+                            <td>2026-01-10</td>
+                        </tr>
+                        <tr>
+                            <td><code>次アクション日</code></td>
+                            <td>次のフォロー予定日</td>
+                            <td>2026-01-15</td>
+                        </tr>
+                        <tr>
+                            <td><code>フォロー期限</code></td>
+                            <td>自動計算された期限</td>
+                            <td>2026-01-17</td>
+                        </tr>
+                        <tr>
+                            <td><code>停滞日数</code></td>
+                            <td>最終更新からの経過日数</td>
+                            <td>5</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">通知テンプレート</h2>
+
+            <div class="note-card">
+                <h4>期限3日前リマインド</h4>
+                <p>穏やかなトーンで次のアクションを促します。</p>
+            </div>
+
+            <div class="code-block">【商談フォローリマインド】
+
+{{担当者名}}さん
+
+以下の商談のフォロー期限が3日後に迫っています。
+
+■ 商談情報
+・顧客名：{{顧客名}}
+・ステージ：{{ステージ}}
+・金額：{{金額}}円
+・フォロー期限：{{フォロー期限}}
+
+■ 推奨アクション
+{{推奨アクション}}
+
+商談管理シート：{{シートURL}}</div>
+
+            <div class="warning-card">
+                <h4>期限当日アラート</h4>
+                <p>緊急性を強調し、即座の対応を促します。</p>
+            </div>
+
+            <div class="code-block">【緊急】本日フォロー期限の商談があります
+
+{{担当者名}}さん
+
+以下の商談が本日フォロー期限です。
+早急なアクションをお願いします。
+
+■ 商談情報
+・顧客名：{{顧客名}}
+・ステージ：{{ステージ}}
+・金額：{{金額}}円
+
+■ 今すぐ実施すべきこと
+1. 顧客へ電話/メールでコンタクト
+2. 商談ステータスを更新
+3. 次アクションを設定
+
+商談管理シート：{{シートURL}}</div>
+
+            <div class="success-card">
+                <h4>マネージャーエスカレーション</h4>
+                <p>7日以上停滞した商談をマネージャーに報告します。</p>
+            </div>
+
+            <div class="code-block">【要確認】停滞商談レポート
+
+{{マネージャー名}}さん
+
+以下の商談が7日以上停滞しています。
+担当者へのフォローをお願いします。
+
+■ 停滞商談一覧
+{{#停滞商談}}
+・{{顧客名}}（担当：{{担当者名}}）
+  ステージ：{{ステージ}} / 停滞日数：{{停滞日数}}日
+  金額：{{金額}}円
+{{/停滞商談}}
+
+■ 推奨アクション
+- 担当者との1on1でボトルネック確認
+- 必要に応じて同行訪問を検討
+- 案件継続/撤退の判断
+
+商談管理シート：{{シートURL}}</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Geminiプロンプト：次アクション提案</h2>
+            <div class="code-block">以下の停滞商談に対して、次に取るべきアクションを提案してください。
+
+【商談情報】
+顧客名: {{顧客名}}
+業種: {{業種}}
+現在ステージ: {{ステージ}}
+停滞日数: {{停滞日数}}日
+商談履歴: {{商談履歴}}
+顧客の反応: {{最後の反応}}
+競合状況: {{競合情報}}
+
+【提案してほしい内容】
+1. 停滞の想定原因（2-3個）
+2. 次に取るべき具体的アクション
+3. 顧客への連絡文例（100文字以内）
+4. このまま放置した場合のリスク
+
+【出力形式】
+JSON形式で以下を出力：
+{
+  "stagnation_reasons": ["原因1", "原因2"],
+  "recommended_actions": ["アクション1", "アクション2"],
+  "contact_message": "顧客への連絡文例",
+  "risk_if_ignored": "放置した場合のリスク"
+}</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実装のポイント</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">期限計算</div>
+                    <div>
+                        <h3>ステージ別に期限を自動設定</h3>
+                        <p>ステージが変わった日を基準に、ステージごとの標準フォロー期限を自動計算。スプレッドシートの数式で実装します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">停滞検知</div>
+                    <div>
+                        <h3>最終更新日からの経過日数を監視</h3>
+                        <p>商談の最終更新日と現在日の差分を計算。7日以上経過した商談を「停滞」としてフラグ立てします。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">段階的通知</div>
+                    <div>
+                        <h3>緊急度に応じたトーンで通知</h3>
+                        <p>期限3日前→穏やかリマインド、当日→緊急アラート、超過→赤アラートと、段階的に緊急度を高めた通知を送信します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">エスカレーション</div>
+                    <div>
+                        <h3>マネージャーへの自動報告</h3>
+                        <p>週次または停滞検知時に、マネージャーへ停滞商談のサマリーを自動送信。チームの商談健全性を可視化します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>商談ステージごとにフォロー期限を自動計算</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>期限3日前・当日に自動リマインドを送信</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>7日以上停滞した商談を自動検知</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>停滞商談はマネージャーへ自動エスカレーション</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Geminiが次アクションを自動提案</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson1.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson3.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

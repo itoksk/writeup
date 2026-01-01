@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：失注から学ぶ！AIが原因を分析して次の提案に活かすフィードバックループ | セールスオペレーション効率化講座</title>
+    <meta name="description" content="Google Workspace Studioで商談・見積・フォローを自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 5/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">05</div>
+            <h1 class="lesson-title">失注から学ぶ！AIが原因を分析して次の提案に活かすフィードバックループ</h1>
+            <p class="lesson-subtitle">失注検知→原因分析→パターン抽出→改善提案→ナレッジ蓄積</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>失注を単なる敗北で終わらせず、次の受注につなげる「学習システム」を構築。失注ステータス検知から原因ヒアリング、AIによるパターン分析、類似案件への改善提案まで、営業チームの勝率を継続的に高めるフィードバックループを自動化します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before - 失注情報が活かされない</div>
+                    <ul>
+                        <li>失注理由をヒアリングしていない</li>
+                        <li>同じ失敗パターンを繰り返す</li>
+                        <li>競合情報が共有されない</li>
+                        <li>価格負けの傾向が見えない</li>
+                        <li>営業ノウハウが属人化したまま</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After - 失注が次の受注を生む</div>
+                    <ul>
+                        <li>失注検知で即座に原因ヒアリング</li>
+                        <li>AIがパターン分析して傾向を可視化</li>
+                        <li>競合情報がナレッジベースに蓄積</li>
+                        <li>価格・提案・タイミングの課題を特定</li>
+                        <li>類似案件に改善提案を自動配信</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動化の全体フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>失注ステータスの検知</h3>
+                        <p>商談管理シートのステータスが「失注」に変更されたことを日次チェックで検知。担当営業へ失注理由ヒアリングフォームを自動送信します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>原因のヒアリングと記録</h3>
+                        <p>担当営業がフォームで失注理由を回答。競合情報、価格差、決め手となった要因などを構造化データとして収集します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>AIによる原因分析とパターン抽出</h3>
+                        <p>Geminiが失注データを分析。競合負け・価格負け・タイミング・提案内容などのカテゴリに分類し、傾向パターンを抽出します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>類似案件への改善提案</h3>
+                        <p>進行中の類似案件を検索し、失注パターンを踏まえた改善アドバイスを担当者へ自動配信。同じ失敗を繰り返さない仕組みを実現します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>ナレッジベースへの蓄積</h3>
+                        <p>失注データと分析結果をナレッジベースに蓄積。月次レポートで全体傾向を可視化し、営業戦略の改善に活用します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エージェント構成</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">Starter</div>
+                    <h3>スケジュールスターター</h3>
+                    <p>毎日9:00に起動し、商談管理シートをチェック。前日に「失注」ステータスに変更された案件を抽出します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Starter</div>
+                    <h3>フォームスターター</h3>
+                    <p>失注理由ヒアリングフォームの送信をトリガーに起動。回答内容を分析フローに渡します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 1</div>
+                    <h3>失注検知ステップ</h3>
+                    <p>スプレッドシートから失注案件を読み込み。案件ID、顧客名、担当者、商品、金額などの情報を取得します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 2</div>
+                    <h3>ヒアリング依頼ステップ</h3>
+                    <p>担当営業へ失注理由ヒアリングフォームをメール送信。回答期限と重要性を伝えます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 3</div>
+                    <h3>Gemini分析ステップ</h3>
+                    <p>回答内容をGeminiで分析。失注原因の分類、競合情報の整理、改善ポイントの抽出を行います。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 4</div>
+                    <h3>類似案件検索ステップ</h3>
+                    <p>失注案件と同じ業界・商品・金額帯の進行中案件を検索。改善提案の配信対象を特定します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 5</div>
+                    <h3>改善提案配信ステップ</h3>
+                    <p>類似案件の担当者へ、失注から学んだ改善ポイントをメールで配信。具体的なアクションを提案します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 6</div>
+                    <h3>ナレッジ蓄積ステップ</h3>
+                    <p>分析結果をナレッジベースシートに記録。競合情報、価格感、成功パターンなどを蓄積します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">失注理由ヒアリングフォーム</h2>
+
+            <div class="note-card">
+                <h4>Google Form構成</h4>
+                <p>失注の背景を詳しく把握するためのフォーム。選択式と自由記述を組み合わせて、構造化データを収集します。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>カテゴリ</th>
+                            <th>質問項目</th>
+                            <th>形式</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>基本情報</td>
+                            <td>案件ID、顧客名（自動入力）</td>
+                            <td>テキスト（読み取り専用）</td>
+                        </tr>
+                        <tr>
+                            <td>失注原因</td>
+                            <td>主な失注理由</td>
+                            <td>選択肢（競合負け/価格/タイミング/予算凍結/要件不一致/その他）</td>
+                        </tr>
+                        <tr>
+                            <td>競合情報</td>
+                            <td>競合他社名、競合の強み</td>
+                            <td>テキスト</td>
+                        </tr>
+                        <tr>
+                            <td>価格情報</td>
+                            <td>価格差の程度、値引き交渉の有無</td>
+                            <td>選択肢 + テキスト</td>
+                        </tr>
+                        <tr>
+                            <td>顧客の声</td>
+                            <td>顧客からのフィードバック</td>
+                            <td>テキスト（長文）</td>
+                        </tr>
+                        <tr>
+                            <td>振り返り</td>
+                            <td>今後の改善点（自由記述）</td>
+                            <td>テキスト（長文）</td>
+                        </tr>
+                        <tr>
+                            <td>再アプローチ</td>
+                            <td>再提案の可能性</td>
+                            <td>選択肢（あり/なし/不明）+ 時期</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">スプレッドシート設計</h2>
+
+            <div class="note-card">
+                <h4>失注分析シート</h4>
+                <p>失注データと分析結果を一元管理。パターン分析やレポート作成の基盤となります。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>列</th>
+                            <th>内容</th>
+                            <th>例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A: 案件ID</td>
+                            <td>商談管理シートのID</td>
+                            <td>DEAL-2024-0156</td>
+                        </tr>
+                        <tr>
+                            <td>B: 顧客名</td>
+                            <td>失注した顧客</td>
+                            <td>株式会社テクノソリューション</td>
+                        </tr>
+                        <tr>
+                            <td>C: 商品</td>
+                            <td>提案した商品・サービス</td>
+                            <td>エンタープライズプラン</td>
+                        </tr>
+                        <tr>
+                            <td>D: 金額</td>
+                            <td>見積金額</td>
+                            <td>3,500,000</td>
+                        </tr>
+                        <tr>
+                            <td>E: 担当者</td>
+                            <td>営業担当</td>
+                            <td>山田太郎</td>
+                        </tr>
+                        <tr>
+                            <td>F: 失注日</td>
+                            <td>失注確定日</td>
+                            <td>2024/12/15</td>
+                        </tr>
+                        <tr>
+                            <td>G: 失注理由</td>
+                            <td>主な原因カテゴリ</td>
+                            <td>競合負け</td>
+                        </tr>
+                        <tr>
+                            <td>H: 競合他社</td>
+                            <td>勝った競合の名前</td>
+                            <td>B社</td>
+                        </tr>
+                        <tr>
+                            <td>I: 競合の強み</td>
+                            <td>競合が選ばれた理由</td>
+                            <td>導入実績が豊富</td>
+                        </tr>
+                        <tr>
+                            <td>J: 価格差</td>
+                            <td>競合との価格差</td>
+                            <td>当社が20%高い</td>
+                        </tr>
+                        <tr>
+                            <td>K: 顧客の声</td>
+                            <td>フィードバック原文</td>
+                            <td>機能は良いが実績が不安</td>
+                        </tr>
+                        <tr>
+                            <td>L: AI分析結果</td>
+                            <td>Geminiによる分析</td>
+                            <td>（次セクション参照）</td>
+                        </tr>
+                        <tr>
+                            <td>M: 改善提案</td>
+                            <td>抽出された改善ポイント</td>
+                            <td>導入事例の提示を早期に</td>
+                        </tr>
+                        <tr>
+                            <td>N: 業界</td>
+                            <td>顧客の業界（類似案件検索用）</td>
+                            <td>製造業</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Geminiプロンプト：失注原因分析</h2>
+
+            <div class="note-card">
+                <h4>失注データの分析と改善提案の生成</h4>
+                <p>ヒアリングデータをGeminiで分析し、原因の分類と具体的な改善アクションを抽出します。</p>
+            </div>
+
+            <div class="code-block">あなたは営業戦略コンサルタントです。以下の失注データを分析し、原因の特定と改善提案を行ってください。
+
+【失注案件データ】
+- 案件ID: {{案件ID}}
+- 顧客名: {{顧客名}}
+- 業界: {{業界}}
+- 商品: {{商品名}}
+- 見積金額: {{金額}}円
+- 担当営業の失注理由: {{失注理由}}
+- 競合他社: {{競合他社名}}
+- 競合の強み: {{競合の強み}}
+- 価格差: {{価格差}}
+- 顧客からのフィードバック: {{顧客の声}}
+- 担当者の振り返り: {{振り返りコメント}}
+
+【分析してほしい内容】
+1. **失注原因の分類**
+   以下から最も該当するものを1つ選択：
+   - PRICE: 価格が主因
+   - COMPETITOR: 競合の機能・実績が主因
+   - TIMING: 検討タイミングが主因
+   - REQUIREMENTS: 要件不一致が主因
+   - RELATIONSHIP: 関係構築不足が主因
+   - OTHER: その他
+
+2. **根本原因の特定**
+   表面的な理由の背景にある本質的な課題を50文字以内で記述
+
+3. **競合分析サマリー**
+   競合に負けたポイントを箇条書きで2-3点
+
+4. **改善アクション**
+   同様の案件で実施すべき具体的なアクションを3つ提案
+
+5. **類似案件へのアドバイス**
+   同じ業界・商品の進行中案件担当者へ伝えるべきポイントを100文字以内で
+
+【出力形式】
+JSON形式で出力してください：
+{
+  "category": "PRICE | COMPETITOR | TIMING | REQUIREMENTS | RELATIONSHIP | OTHER",
+  "root_cause": "根本原因（50文字以内）",
+  "competitor_analysis": ["ポイント1", "ポイント2", "ポイント3"],
+  "improvement_actions": ["アクション1", "アクション2", "アクション3"],
+  "advice_for_similar": "類似案件へのアドバイス（100文字以内）"
+}</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">メールテンプレート</h2>
+
+            <div class="note-card">
+                <h4>失注理由ヒアリング依頼メール</h4>
+                <p>失注検知後、担当営業へ送信。回答の重要性を伝えつつ、負担を最小限に抑えます。</p>
+            </div>
+
+            <div class="code-block">件名: 【5分で完了】{{顧客名}}様 失注振り返りのお願い
+
+{{担当者名}} さん
+
+お疲れ様です。
+
+{{顧客名}}様の案件が失注となりましたが、
+この経験を次の受注に活かすため、振り返りにご協力ください。
+
+【ヒアリングフォーム】
+{{フォームURL}}
+※所要時間：約5分
+
+【回答期限】{{回答期限}}
+
+いただいた情報は、以下に活用させていただきます：
+・類似案件への改善アドバイス配信
+・営業戦略の見直し
+・競合対策の強化
+
+失注は次の受注へのステップです。
+率直なご回答をお待ちしています。
+
+営業企画チーム</div>
+
+            <div class="success-card">
+                <h4>類似案件担当者への改善提案メール</h4>
+                <p>失注分析から得られた知見を、同様の案件を担当する営業へ配信します。</p>
+            </div>
+
+            <div class="code-block">件名: 【重要】{{業界}}案件で注意すべきポイント
+
+{{担当者名}} さん
+
+お疲れ様です。
+
+{{担当者名}}さんが担当されている {{顧客名}}様 の案件について、
+直近の類似案件から得られた重要な知見を共有します。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 類似案件の失注分析から
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【失注した類似案件】
+・業界：{{失注案件の業界}}
+・商品：{{失注案件の商品}}
+・失注理由：{{失注理由カテゴリ}}
+
+【主な敗因】
+{{競合分析サマリー}}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 推奨アクション
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{{改善アクション1}}
+{{改善アクション2}}
+{{改善アクション3}}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 今回の案件で意識すべきこと
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{{類似案件へのアドバイス}}
+
+この情報が少しでもお役に立てば幸いです。
+ご不明点があればいつでもご連絡ください。
+
+営業企画チーム</div>
+
+            <div class="warning-card">
+                <h4>月次失注分析レポート</h4>
+                <p>マネージャー向けに、月間の失注傾向をまとめたレポートを自動生成・配信します。</p>
+            </div>
+
+            <div class="code-block">件名: 【月次レポート】{{年月}} 失注分析サマリー
+
+営業マネージャー各位
+
+{{年月}}の失注分析レポートをお送りします。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📈 今月の概況
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+・失注件数：{{失注件数}}件
+・失注金額：{{失注金額合計}}円
+・主要失注理由：{{最多失注理由}}（{{割合}}%）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏢 競合分析
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{{競合別失注件数リスト}}
+
+最も多く競合したのは【{{最多競合}}】で、
+主な敗因は「{{競合の主な強み}}」でした。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 価格分析
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+・価格が主因の失注：{{価格失注件数}}件（{{価格失注割合}}%）
+・平均価格差：当社が{{平均価格差}}%高い
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 AIによる改善提言
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{{Geminiによる月次サマリーと提言}}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+詳細データ：{{失注分析ダッシュボードURL}}
+
+営業企画チーム</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">失注パターン分類表</h2>
+
+            <div class="note-card">
+                <h4>失注原因カテゴリと対策</h4>
+                <p>Geminiによる分類結果に基づき、カテゴリごとの対策を体系化します。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>カテゴリ</th>
+                            <th>主な原因</th>
+                            <th>基本対策</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PRICE<br>（価格）</td>
+                            <td>
+                                ・競合より価格が高い<br>
+                                ・予算オーバー<br>
+                                ・コスト削減要求
+                            </td>
+                            <td>
+                                ・早期の予算確認<br>
+                                ・ROI訴求の強化<br>
+                                ・段階導入プランの提案
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>COMPETITOR<br>（競合）</td>
+                            <td>
+                                ・競合の機能優位<br>
+                                ・競合の実績・信頼<br>
+                                ・既存取引関係
+                            </td>
+                            <td>
+                                ・差別化ポイントの明確化<br>
+                                ・導入事例の早期提示<br>
+                                ・PoC・トライアルの提案
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TIMING<br>（タイミング）</td>
+                            <td>
+                                ・検討時期が先<br>
+                                ・他案件を優先<br>
+                                ・年度予算の問題
+                            </td>
+                            <td>
+                                ・検討時期の定期確認<br>
+                                ・次年度予算への組み込み<br>
+                                ・継続的な情報提供
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>REQUIREMENTS<br>（要件）</td>
+                            <td>
+                                ・機能が要件に合わない<br>
+                                ・カスタマイズ不可<br>
+                                ・既存システムとの連携不可
+                            </td>
+                            <td>
+                                ・要件の早期詳細ヒアリング<br>
+                                ・開発ロードマップの共有<br>
+                                ・代替ソリューションの提案
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>RELATIONSHIP<br>（関係構築）</td>
+                            <td>
+                                ・意思決定者と接触できず<br>
+                                ・信頼関係が構築できず<br>
+                                ・競合が先行して関係構築
+                            </td>
+                            <td>
+                                ・キーパーソンの早期特定<br>
+                                ・複数ルートでのアプローチ<br>
+                                ・業界イベントでの接点作り
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">類似案件検索の条件設計</h2>
+
+            <div class="note-card">
+                <h4>改善提案の配信対象を特定</h4>
+                <p>失注案件と類似性が高い進行中案件を検索し、改善アドバイスを配信します。</p>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">条件1</div>
+                    <div>
+                        <h3>業界一致</h3>
+                        <p>失注案件と同じ業界の進行中案件を抽出。業界特有の課題や競合状況が類似するため、最も重要なマッチング条件です。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">条件2</div>
+                    <div>
+                        <h3>商品・サービス一致</h3>
+                        <p>同じ商品・サービスを提案中の案件を抽出。価格帯や競合が類似するため、失注パターンが参考になります。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">条件3</div>
+                    <div>
+                        <h3>金額帯の類似</h3>
+                        <p>失注案件の金額±30%の案件を対象に。同規模の案件は意思決定プロセスや競合状況が似ています。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">条件4</div>
+                    <div>
+                        <h3>商談ステージのフィルタ</h3>
+                        <p>「提案中」「見積提出」「クロージング」のステージにある案件のみを対象に。初期段階の案件には配信しません。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">ナレッジベースの構築</h2>
+
+            <div class="note-card">
+                <h4>失注データの蓄積と活用</h4>
+                <p>個別の失注データを集約し、組織の営業ナレッジとして活用できる形に整理します。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ナレッジ項目</th>
+                            <th>内容</th>
+                            <th>活用シーン</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>競合情報データベース</td>
+                            <td>
+                                ・競合ごとの強み・弱み<br>
+                                ・価格帯の傾向<br>
+                                ・よく競合する商品
+                            </td>
+                            <td>競合が出てきた際の対策立案</td>
+                        </tr>
+                        <tr>
+                            <td>業界別失注パターン</td>
+                            <td>
+                                ・業界ごとの失注理由傾向<br>
+                                ・決め手となるポイント<br>
+                                ・平均商談期間
+                            </td>
+                            <td>新規業界開拓時の戦略立案</td>
+                        </tr>
+                        <tr>
+                            <td>価格感データ</td>
+                            <td>
+                                ・業界別の価格許容度<br>
+                                ・値引き交渉の傾向<br>
+                                ・予算時期のパターン
+                            </td>
+                            <td>見積作成時の価格設定</td>
+                        </tr>
+                        <tr>
+                            <td>成功/失敗パターン集</td>
+                            <td>
+                                ・成功した提案の共通点<br>
+                                ・失敗した提案の共通点<br>
+                                ・効果的なアプローチ手法
+                            </td>
+                            <td>新人営業の教育・研修</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実装のポイント</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">回答率向上</div>
+                    <div>
+                        <h3>ヒアリングの負担を最小化</h3>
+                        <p>フォームは5分以内で完了できる設計に。選択式を中心にし、自由記述は任意に。回答期限は3営業日以内とし、未回答者には1日後にリマインド送信。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">タイミング</div>
+                    <div>
+                        <h3>失注直後のヒアリング</h3>
+                        <p>記憶が新鮮なうちに振り返りを実施。失注から時間が経つと詳細を忘れてしまうため、検知後24時間以内にフォーム送信。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">配信制御</div>
+                    <div>
+                        <h3>改善提案の重複防止</h3>
+                        <p>同じ担当者に同じ内容の改善提案を複数回送らないよう、配信履歴を管理。週に2通以上の配信は控えるルールを設定。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">匿名化</div>
+                    <div>
+                        <h3>失注担当者への配慮</h3>
+                        <p>類似案件への改善提案では、失注した担当者名は記載しない。「直近の類似案件」として匿名で共有し、心理的な負担を軽減。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">応用：再アプローチの自動化</h2>
+
+            <div class="success-card">
+                <h4>再提案タイミングの自動通知</h4>
+                <p>ヒアリングで「再アプローチ可能」と回答された案件は、指定時期に自動リマインド。「来年度なら検討可能」という回答に対し、翌年1月にアラートを送信します。</p>
+            </div>
+
+            <div class="note-card">
+                <h4>競合の契約更新タイミング</h4>
+                <p>競合に負けた案件でも、競合の契約期間（通常1-2年）を記録しておけば、契約更新前に再アプローチのチャンスを通知できます。</p>
+            </div>
+
+            <div class="warning-card">
+                <h4>Win-Back施策との連携</h4>
+                <p>失注顧客を「Win-Backリスト」として管理し、製品アップデートやキャンペーン時に優先的にアプローチ。CRMと連携すれば、マーケティング施策にも活用可能です。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>失注ステータスを検知して担当者へヒアリングフォームを自動送信</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Geminiで失注原因を分類し、競合分析・改善ポイントを抽出</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>類似の進行中案件を検索し、改善提案を自動配信</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>失注データをナレッジベースに蓄積し、月次レポートで傾向を可視化</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>失注を「学び」に変え、営業チームの勝率を継続的に向上</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">コース完了おめでとうございます！</h2>
+
+            <div class="feature-highlight">
+                <h3>セールスオペレーションの自動化が完成しました</h3>
+                <p>5つのレッスンを通じて、リード獲得から失注分析まで、営業活動の全プロセスを自動化する方法を学びました。これらの仕組みを組み合わせることで、営業チームは「売る」ことに集中できるようになります。</p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">従来の営業業務</div>
+                    <ul>
+                        <li>リード対応に平均6時間</li>
+                        <li>見積作成に30分以上</li>
+                        <li>フォロー漏れで商談消滅</li>
+                        <li>数字の集計に半日以上</li>
+                        <li>失注理由が不明のまま放置</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">自動化後</div>
+                    <ul>
+                        <li>リード対応を1時間以内に</li>
+                        <li>見積作成を1分で完了</li>
+                        <li>ステージ別に自動フォロー</li>
+                        <li>リアルタイムで数字を把握</li>
+                        <li>失注から学び、勝率向上</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="success-card">
+                <h4>次のステップ</h4>
+                <p>学んだ自動化の仕組みを実際の営業業務に適用してみましょう。まずは1つのエージェント（リードスコアリングがおすすめ）から始めて、効果を実感したら徐々に範囲を広げていくことをお勧めします。</p>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson4.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="index.html" class="nav-next">
+                コース一覧へ
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

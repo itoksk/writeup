@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：問い合わせ即対応！AIがリードを自動スコアリングして優先順位をつける仕組み | セールスオペレーション効率化講座</title>
+    <meta name="description" content="Google Workspace Studioで商談・見積・フォローを自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 1/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">01</div>
+            <h1 class="lesson-title">問い合わせ即対応！AIがリードを自動スコアリングして優先順位をつける仕組み</h1>
+            <p class="lesson-subtitle">フォーム受信→リード分析→スコアリング→担当者通知までのフロー自動化</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>Webフォームからのリード情報をGeminiで自動分析し、優先度をスコアリングして担当者に通知する仕組みを構築します。問い合わせから初回対応までの時間を24時間から1時間以内に短縮します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before - 手作業でのリード対応</div>
+                    <ul>
+                        <li>問い合わせメールを1件ずつ確認・分類</li>
+                        <li>企業情報を調べて優先度を判断</li>
+                        <li>担当者への割り当てをメールで依頼</li>
+                        <li>初回対応まで24時間以上かかることも</li>
+                        <li>重要なリードを見逃すリスク</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After - 自動化されたリード管理</div>
+                    <ul>
+                        <li>フォーム送信で自動受付確認メール</li>
+                        <li>Geminiが企業規模・予算・緊急度を自動分析</li>
+                        <li>スコアに基づいて担当者へ自動アサイン</li>
+                        <li>高スコアリードは即時Chatアラート</li>
+                        <li>1時間以内に初回対応を実現</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動化の全体フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>問い合わせフォーム受信</h3>
+                        <p>Google Formで問い合わせを受け付けます。会社名、担当者名、メールアドレス、問い合わせ内容、予算規模、希望納期などを収集。フォーム送信をトリガーにエージェントが起動します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Geminiによるリード分析</h3>
+                        <p>問い合わせ内容をGeminiが解析。企業規模、予算レベル、緊急度、案件の具体性などを評価し、10点満点のスコアを算出します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>スコアに基づく振り分け</h3>
+                        <p>スコアに応じて対応を分岐。高スコア（8点以上）は即時アラート、中スコア（5-7点）は通常対応、低スコア（4点以下）は資料送付のみなど、対応レベルを自動判定します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>担当者への通知とアサイン</h3>
+                        <p>リード情報とスコア、推奨アクションを担当者へChat/メールで通知。スプレッドシートに自動記録し、商談管理につなげます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エージェント構成</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">Starter</div>
+                    <h3>Formsスターター</h3>
+                    <p>Google Formの「新しい回答」をトリガーに設定。問い合わせがあると即座にエージェントが起動します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 1</div>
+                    <h3>受付確認メール送信</h3>
+                    <p>問い合わせ者へ自動で受付確認メールを送信。「担当者より1営業日以内にご連絡します」と案内します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 2</div>
+                    <h3>リード分析（Geminiステップ）</h3>
+                    <p>問い合わせ内容をGeminiで解析。企業規模・予算・緊急度・具体性を評価し、総合スコアを算出します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 3</div>
+                    <h3>リードシートへ記録</h3>
+                    <p>リード情報、スコア、分析結果をスプレッドシートに自動記録。担当者、対応ステータスも管理します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 4</div>
+                    <h3>スコア別条件分岐</h3>
+                    <p>スコアに応じて処理を分岐。8点以上→即時アラート、5-7点→通常通知、4点以下→資料送付へ。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 5</div>
+                    <h3>担当者への通知</h3>
+                    <p>Google ChatまたはSlackで担当者に通知。リード概要、スコア、推奨アクションを送信します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Geminiプロンプト：リードスコアリング</h2>
+            <div class="code-block">以下の問い合わせ情報から、営業リードとしての優先度を評価してください。
+
+【問い合わせ情報】
+会社名: {{会社名}}
+担当者名: {{担当者名}}
+役職: {{役職}}
+問い合わせ内容: {{問い合わせ内容}}
+予算規模: {{予算規模}}
+希望納期: {{希望納期}}
+従業員数: {{従業員数}}
+
+【評価基準】
+各項目を1-10点で評価し、総合スコアを算出してください。
+
+1. 企業規模（1-10点）
+   - 従業員1000名以上: 10点
+   - 従業員100-999名: 7点
+   - 従業員10-99名: 5点
+   - 従業員10名未満: 3点
+
+2. 予算レベル（1-10点）
+   - 1000万円以上: 10点
+   - 100-999万円: 7点
+   - 50-99万円: 5点
+   - 50万円未満/未定: 3点
+
+3. 緊急度（1-10点）
+   - 1ヶ月以内: 10点
+   - 3ヶ月以内: 7点
+   - 半年以内: 5点
+   - 未定/情報収集: 3点
+
+4. 案件の具体性（1-10点）
+   - 具体的な要件記載あり: 10点
+   - ある程度具体的: 7点
+   - 漠然とした相談: 5点
+   - 資料請求のみ: 3点
+
+【出力形式】
+JSON形式で以下を出力してください：
+{
+  "company_score": X,
+  "budget_score": X,
+  "urgency_score": X,
+  "specificity_score": X,
+  "total_score": X,
+  "priority": "high/medium/low",
+  "recommended_action": "推奨アクション",
+  "summary": "リード概要（100文字以内）"
+}</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">メールテンプレート設定</h2>
+
+            <div class="note-card">
+                <h4>受付確認メール</h4>
+                <p>問い合わせ直後に自動送信。迅速な対応をアピールします。</p>
+            </div>
+
+            <div class="code-block">件名: 【{{会社名}}】お問い合わせありがとうございます
+
+{{担当者名}} 様
+
+この度は {{自社名}} へお問い合わせいただき、
+誠にありがとうございます。
+
+お問い合わせ内容を確認させていただきました。
+担当者より1営業日以内にご連絡させていただきます。
+
+【お問い合わせ内容】
+{{問い合わせ内容}}
+
+お急ぎの場合は、下記までお電話ください。
+TEL: {{電話番号}}
+
+引き続きよろしくお願いいたします。
+
+{{自社名}} 営業部</div>
+
+            <div class="success-card">
+                <h4>高スコアリード向け優先対応メール</h4>
+                <p>スコア8点以上のリードには、より具体的なアクションを提案します。</p>
+            </div>
+
+            <div class="code-block">件名: 【{{会社名}}】お問い合わせありがとうございます（優先対応）
+
+{{担当者名}} 様
+
+この度は {{自社名}} へお問い合わせいただき、
+誠にありがとうございます。
+
+ご要望の内容を拝見し、ぜひ詳しくお話を伺いたいと考えております。
+
+つきましては、下記より打ち合わせの日程をお選びください。
+{{カレンダーリンク}}
+
+お忙しいところ恐縮ですが、ご検討のほどよろしくお願いいたします。
+
+{{自社名}} 営業部 {{担当者名}}</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">スプレッドシート設計</h2>
+
+            <div class="note-card">
+                <h4>リード管理シートの構成</h4>
+                <p>リード情報とスコア、対応状況を一元管理します。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>列名</th>
+                            <th>説明</th>
+                            <th>例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>リードID</code></td>
+                            <td>一意の識別子</td>
+                            <td>LEAD-2026-0001</td>
+                        </tr>
+                        <tr>
+                            <td><code>受付日時</code></td>
+                            <td>問い合わせ日時</td>
+                            <td>2026-01-15 10:30</td>
+                        </tr>
+                        <tr>
+                            <td><code>会社名</code></td>
+                            <td>問い合わせ企業名</td>
+                            <td>株式会社ABC</td>
+                        </tr>
+                        <tr>
+                            <td><code>担当者名</code></td>
+                            <td>問い合わせ者の氏名</td>
+                            <td>田中太郎</td>
+                        </tr>
+                        <tr>
+                            <td><code>メールアドレス</code></td>
+                            <td>連絡先メール</td>
+                            <td>tanaka@abc.co.jp</td>
+                        </tr>
+                        <tr>
+                            <td><code>総合スコア</code></td>
+                            <td>Geminiによる評価スコア</td>
+                            <td>8.5</td>
+                        </tr>
+                        <tr>
+                            <td><code>優先度</code></td>
+                            <td>High/Medium/Low</td>
+                            <td>High</td>
+                        </tr>
+                        <tr>
+                            <td><code>担当営業</code></td>
+                            <td>アサインされた営業担当</td>
+                            <td>山田一郎</td>
+                        </tr>
+                        <tr>
+                            <td><code>ステータス</code></td>
+                            <td>対応状況</td>
+                            <td>初回連絡済</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実装のポイント</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">フォーム設計</div>
+                    <div>
+                        <h3>スコアリングに必要な情報を収集</h3>
+                        <p>予算規模、希望納期、従業員数など、スコアリングに必要な項目を選択肢形式で収集。入力ハードルを下げつつ、定量評価を可能にします。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">スコア基準</div>
+                    <div>
+                        <h3>自社の営業戦略に合わせてカスタマイズ</h3>
+                        <p>重視する要素（企業規模/予算/緊急度）に応じて配点を調整。業界や商材に合わせたスコアリング基準を設定します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">通知設定</div>
+                    <div>
+                        <h3>高スコアは即時通知</h3>
+                        <p>スコア8点以上の重要リードはGoogle Chatで即時通知。営業担当者のスマホにも届くよう設定し、迅速な対応を実現します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">担当アサイン</div>
+                    <div>
+                        <h3>ラウンドロビンまたはエリア別</h3>
+                        <p>営業担当者への割り当てロジックを設定。順番に割り当てるラウンドロビン方式、エリア別、商材別など、組織に合わせた方式を選択できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>問い合わせフォーム送信で自動受付確認メールを送信</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Geminiがリード情報を分析し、10点満点でスコアリング</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>スコアに応じて対応レベルを自動振り分け</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>高スコアリードは即時アラートで担当者に通知</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>リード情報をスプレッドシートで一元管理</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="index.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <a href="lesson2.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

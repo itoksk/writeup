@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：見積作成を10分から1分に！テンプレート×自動計算で即レスポンス | セールスオペレーション効率化講座</title>
+    <meta name="description" content="Google Workspace Studioで商談・見積・フォローを自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 3/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">03</div>
+            <h1 class="lesson-title">見積作成を10分から1分に！テンプレート×自動計算で即レスポンス</h1>
+            <p class="lesson-subtitle">見積依頼→商品選択→金額計算→PDF生成→送付</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>見積依頼から見積書作成・送付までを自動化し、顧客への即レスポンスを実現します。商品マスタから価格を自動取得し、数量・割引を計算、PDF形式で見積書を生成して顧客へ自動送付します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before - 手作業での見積作成</div>
+                    <ul>
+                        <li>見積依頼を受けてから価格表を確認</li>
+                        <li>Excelで見積書テンプレートを開いて入力</li>
+                        <li>割引計算を手作業で実施</li>
+                        <li>PDF変換してメール添付で送信</li>
+                        <li>1件あたり10分以上かかる</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After - 自動化された見積作成</div>
+                    <ul>
+                        <li>フォームで商品・数量・割引率を選択</li>
+                        <li>商品マスタから単価を自動取得</li>
+                        <li>金額計算を自動実行</li>
+                        <li>見積書PDFを自動生成</li>
+                        <li>1分以内に顧客へ送付完了</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動化の全体フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>見積依頼フォーム受付</h3>
+                        <p>Google Formで見積依頼を受け付けます。顧客情報、商品、数量、希望割引率などを入力。フォーム送信でエージェントが起動します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>商品マスタから価格取得</h3>
+                        <p>商品マスタスプレッドシートから該当商品の単価を自動取得。複数商品の場合も一括で価格を参照します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>金額計算</h3>
+                        <p>単価×数量で小計を計算。割引率を適用し、税込金額まで自動計算します。割引上限チェックも実行。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>見積書PDF生成・送付</h3>
+                        <p>見積書テンプレート（Googleドキュメント）に情報を反映し、PDF形式で出力。顧客へメール送付し、担当者にも控えを送信します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エージェント構成</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">Starter</div>
+                    <h3>Formsスターター</h3>
+                    <p>見積依頼フォームの送信をトリガーに設定。商品情報、数量、割引率などの入力内容を受け取ります。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 1</div>
+                    <h3>商品マスタ参照</h3>
+                    <p>商品マスタスプレッドシートから商品コードをキーに単価、商品名、説明を取得します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 2</div>
+                    <h3>金額計算</h3>
+                    <p>単価×数量で小計を算出。割引率を適用し、消費税（10%）を加えて税込金額を計算します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 3</div>
+                    <h3>割引上限チェック</h3>
+                    <p>割引率が上限（例：20%）を超える場合は承認フローへ。上限内であれば自動発行に進みます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 4</div>
+                    <h3>見積書生成</h3>
+                    <p>Googleドキュメントの見積書テンプレートをコピーし、プレースホルダーに情報を差し込み。PDF形式で保存します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 5</div>
+                    <h3>メール送付</h3>
+                    <p>顧客へ見積書PDFを添付したメールを送信。同時に担当営業にも控えを送付します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">商品マスタ設計</h2>
+
+            <div class="note-card">
+                <h4>商品マスタスプレッドシート</h4>
+                <p>全商品の価格情報を一元管理。見積作成時に参照します。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>列名</th>
+                            <th>説明</th>
+                            <th>例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>商品コード</code></td>
+                            <td>一意の商品識別子</td>
+                            <td>PROD-001</td>
+                        </tr>
+                        <tr>
+                            <td><code>商品名</code></td>
+                            <td>正式な商品名称</td>
+                            <td>スタンダードプラン</td>
+                        </tr>
+                        <tr>
+                            <td><code>単価</code></td>
+                            <td>税抜き単価</td>
+                            <td>100,000</td>
+                        </tr>
+                        <tr>
+                            <td><code>単位</code></td>
+                            <td>計量単位</td>
+                            <td>月 / 個 / ライセンス</td>
+                        </tr>
+                        <tr>
+                            <td><code>カテゴリ</code></td>
+                            <td>商品分類</td>
+                            <td>サブスクリプション</td>
+                        </tr>
+                        <tr>
+                            <td><code>説明</code></td>
+                            <td>商品の概要説明</td>
+                            <td>基本機能を含むプラン</td>
+                        </tr>
+                        <tr>
+                            <td><code>割引上限</code></td>
+                            <td>最大割引率</td>
+                            <td>20%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">見積書テンプレート設計</h2>
+
+            <div class="note-card">
+                <h4>Googleドキュメントテンプレート</h4>
+                <p>プレースホルダーを使って動的に情報を差し込みます。</p>
+            </div>
+
+            <div class="code-block">御見積書
+────────────────────────────────────
+見積番号: {{見積番号}}
+発行日: {{発行日}}
+有効期限: {{有効期限}}
+
+■ 宛先
+{{顧客会社名}} 御中
+{{顧客担当者名}} 様
+
+■ 件名
+{{件名}}
+
+■ 見積金額
+{{税込合計金額}} 円（税込）
+
+────────────────────────────────────
+■ 明細
+────────────────────────────────────
+| 商品名 | 数量 | 単価 | 小計 |
+|--------|------|------|------|
+{{#明細行}}
+| {{商品名}} | {{数量}} | ¥{{単価}} | ¥{{小計}} |
+{{/明細行}}
+────────────────────────────────────
+                    小計: ¥{{税抜合計}}
+                    割引 ({{割引率}}%): -¥{{割引額}}
+                    割引後小計: ¥{{割引後小計}}
+                    消費税 (10%): ¥{{消費税}}
+                    ────────────────
+                    合計: ¥{{税込合計金額}}
+
+■ 備考
+{{備考}}
+
+────────────────────────────────────
+{{自社名}}
+{{自社住所}}
+TEL: {{自社電話}} / FAX: {{自社FAX}}
+担当: {{営業担当名}}</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">メールテンプレート</h2>
+
+            <div class="success-card">
+                <h4>見積書送付メール</h4>
+                <p>見積書PDFを添付して顧客へ送信します。</p>
+            </div>
+
+            <div class="code-block">件名: 【{{自社名}}】御見積書のご送付（見積番号：{{見積番号}}）
+
+{{顧客担当者名}} 様
+
+平素より大変お世話になっております。
+{{自社名}} の {{営業担当名}} です。
+
+このたびはお見積りのご依頼をいただき、誠にありがとうございます。
+ご要望の内容に基づき、添付の通り御見積書をお送りいたします。
+
+【見積概要】
+・件名：{{件名}}
+・見積金額：{{税込合計金額}}円（税込）
+・有効期限：{{有効期限}}
+
+ご不明な点やご質問がございましたら、
+お気軽にお問い合わせください。
+
+何卒ご検討のほど、よろしくお願い申し上げます。
+
+──────────────────
+{{自社名}}
+{{営業担当名}}
+TEL: {{自社電話}}
+Email: {{営業担当メール}}
+──────────────────</div>
+
+            <div class="note-card">
+                <h4>担当者への控え</h4>
+                <p>発行した見積書の控えを担当営業に送信します。</p>
+            </div>
+
+            <div class="code-block">件名: 【見積発行完了】{{顧客会社名}} 様宛（{{見積番号}}）
+
+{{営業担当名}}さん
+
+以下の見積書を発行し、顧客へ送付しました。
+
+■ 見積情報
+・見積番号：{{見積番号}}
+・顧客名：{{顧客会社名}}
+・件名：{{件名}}
+・金額：{{税込合計金額}}円（税込）
+・割引率：{{割引率}}%
+・有効期限：{{有効期限}}
+
+■ 次のアクション
+・3日後に検討状況を確認
+・商談管理シートのステージを「見積提出」に更新
+
+見積書控え：{{見積書URL}}
+商談管理シート：{{シートURL}}</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">割引承認フロー</h2>
+
+            <div class="warning-card">
+                <h4>上限超過時の処理</h4>
+                <p>割引率が上限を超える場合は、マネージャー承認を経てから発行します。</p>
+            </div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>割引上限チェック</h3>
+                        <p>商品マスタの割引上限と依頼された割引率を比較。超過している場合は承認フローへ分岐します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>承認依頼送信</h3>
+                        <p>マネージャーへ承認依頼メールを送信。顧客情報、商品、通常価格、依頼割引率、割引理由を記載します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>承認/却下の処理</h3>
+                        <p>承認フォームでマネージャーが判断。承認→見積発行へ、却下→担当者に通知して再検討を促します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実装のポイント</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">マスタ管理</div>
+                    <div>
+                        <h3>価格改定に即対応</h3>
+                        <p>商品マスタを一元管理することで、価格改定時もマスタを更新するだけで全ての見積に反映されます。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">テンプレート</div>
+                    <div>
+                        <h3>ブランド統一</h3>
+                        <p>見積書テンプレートをGoogleドキュメントで管理。デザインの統一性を保ちながら、柔軟なカスタマイズが可能です。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">承認フロー</div>
+                    <div>
+                        <h3>ガバナンスと機動性の両立</h3>
+                        <p>通常の割引は自動発行でスピード対応。上限超過時のみ承認フローを適用し、収益管理とスピードを両立します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">履歴管理</div>
+                    <div>
+                        <h3>全見積をGoogle Driveで保管</h3>
+                        <p>発行した見積書PDFは専用フォルダに自動保存。顧客別・日付別で整理し、過去の見積をすぐに参照できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>見積依頼フォームで商品・数量・割引率を受付</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>商品マスタから単価を自動取得して金額計算</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>見積書テンプレートに自動反映してPDF生成</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>顧客へメール自動送付、担当者に控えを送信</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>割引上限超過時は承認フローへ自動分岐</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson2.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson4.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>
