@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：スクショ撮影からマニュアル作成まで！ | バイブコーディング応用講座</title>
+    <meta name="description" content="Walkthroughで操作説明書を自動生成する方法を学ぶ">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 3/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">03</div>
+            <h1 class="lesson-title">スクショ撮影からマニュアル作成まで！Walkthroughで操作説明書を自動生成</h1>
+            <p class="lesson-subtitle">ドキュメント作成の自動化</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>Google AntigravityのWalkthrough機能を使って、スクリーンショット付きの操作マニュアルを自動生成できるようになります。開発中の操作をそのまま記録し、ドキュメントとして出力する効率的なワークフローを習得しましょう。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Walkthroughとは？</h2>
+
+            <div class="note-card">
+                <h4>操作の記録＋自動ドキュメント生成</h4>
+                <p>Walkthroughは、Antigravityでのタスク実行時に「何をしたか」を自動的に記録し、スクリーンショット付きの操作説明書として出力する機能です。変更サマリーと検証ステップが含まれた、チーム共有可能なドキュメントが自動生成されます。</p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">従来のマニュアル作成</div>
+                    <ul>
+                        <li>操作しながら手動でスクショを撮影</li>
+                        <li>Word/Notionに一枚ずつ貼り付け</li>
+                        <li>説明文を手書きで追加</li>
+                        <li>更新があれば全てやり直し</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">Walkthrough</div>
+                    <ul>
+                        <li>操作するだけでスクショが自動取得</li>
+                        <li>説明文もAIが自動生成</li>
+                        <li>Markdown形式で即座に出力</li>
+                        <li>更新も再実行で自動反映</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Walkthroughの仕組み</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">構成要素1</div>
+                    <div>
+                        <h3>変更サマリー</h3>
+                        <p>タスク完了後に「何が変わったか」を自動でまとめます。ファイルの追加・変更・削除、主要な変更点などが一覧化されます。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">構成要素2</div>
+                    <div>
+                        <h3>検証ステップ</h3>
+                        <p>「正しく動作するか確認するための手順」が自動生成されます。スクリーンショットと説明文がセットで出力。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">構成要素3</div>
+                    <div>
+                        <h3>Artifacts</h3>
+                        <p>生成された成果物（画像、コード、ドキュメント）が一覧で表示され、ダウンロードや共有が可能。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Walkthroughの使い方</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>通常通りタスクを実行</h3>
+                        <p>Playgroundで普通にタスクを依頼します。Walkthroughは自動的に操作を記録しています。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>タスク完了を確認</h3>
+                        <p>AIがタスクを完了すると、Playground下部に「Walkthrough」セクションが表示されます。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>ドキュメントを確認・エクスポート</h3>
+                        <p>自動生成されたドキュメントを確認し、「Export」ボタンでMarkdown/HTML/PDFとして出力。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">// Walkthrough付きでタスクを実行
+
+「お問い合わせフォームを作成して。
+完了したらWalkthroughドキュメントを生成して」
+
+// または明示的に依頼
+
+「今実行した操作のWalkthroughを出力して」</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動生成されるドキュメントの内容</h2>
+
+            <div class="code-block">// 自動生成されるWalkthroughの例（Markdown形式）
+
+# お問い合わせフォーム作成 - Walkthrough
+
+## 概要
+シンプルなお問い合わせフォームを作成しました。名前、メールアドレス、
+お問い合わせ内容の入力フィールドと送信ボタンで構成されています。
+
+## 変更サマリー
+- 新規作成: `contact.html`
+- 新規作成: `styles.css`
+- 追加されたコード行: 145行
+
+## 検証ステップ
+
+### ステップ1: ページを開く
+ブラウザで `contact.html` を開きます。
+
+![ステップ1](screenshots/step1.png)
+
+フォームが正しく表示されていることを確認してください。
+
+### ステップ2: 入力テスト
+各フィールドにテストデータを入力します。
+- 名前: テスト太郎
+- メールアドレス: test@example.com
+- お問い合わせ内容: テストメッセージ
+
+![ステップ2](screenshots/step2.png)
+
+### ステップ3: 送信確認
+送信ボタンをクリックし、成功メッセージが表示されることを確認。
+
+![ステップ3](screenshots/step3.png)</div>
+
+            <div class="success-card">
+                <h4>そのまま引き継ぎドキュメントに</h4>
+                <p>生成されたWalkthroughは、そのままチームメンバーへの引き継ぎ資料や、QAチームへのテスト手順書として使えます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実践：操作マニュアルの自動生成</h2>
+
+            <div class="note-card">
+                <h4>ToDoアプリの操作マニュアルを作成</h4>
+                <p>シンプルなToDoアプリを作成し、その使い方マニュアルをWalkthroughで自動生成してみましょう。</p>
+            </div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>ToDoアプリを作成</h3>
+                        <p>まずベースとなるアプリを生成します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「シンプルなToDoアプリを作成して。
+- タスクの追加
+- タスクの完了チェック
+- タスクの削除
+ローカルストレージに保存する仕様で」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>操作をブラウザで実演</h3>
+                        <p>ブラウザエージェントで実際の操作を実行させます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「ブラウザでこのアプリを開いて、以下の操作を実行して。
+各ステップでスクリーンショットを撮影しながら進めて。
+
+1. 「牛乳を買う」というタスクを追加
+2. 「レポートを提出する」というタスクを追加
+3. 「牛乳を買う」を完了チェック
+4. 「レポートを提出する」を削除」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Walkthroughドキュメントを生成</h3>
+                        <p>操作が完了したら、マニュアルを出力します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「今実行した操作をもとに、このToDoアプリの使い方マニュアルをWalkthroughとして出力して。
+スクリーンショット付きで、Markdown形式で保存して」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>HTMLマニュアルに変換</h3>
+                        <p>必要に応じてHTMLページとしても出力できます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「このWalkthroughを見やすいHTMLページに変換して。
+CSSも適用して、印刷にも対応したレイアウトで」</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Artifactsの種類と活用</h2>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">種類1</div>
+                    <h3>スクリーンショット</h3>
+                    <p>操作中に取得した画面キャプチャ。PNG形式で保存され、マニュアルに自動埋め込み。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">種類2</div>
+                    <h3>コードスニペット</h3>
+                    <p>生成・変更されたコードの抜粋。技術ドキュメントに埋め込み可能。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">種類3</div>
+                    <h3>動画録画</h3>
+                    <p>ブラウザエージェントの操作を動画として記録。GIF/MP4形式で出力可能。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">種類4</div>
+                    <h3>差分レポート</h3>
+                    <p>変更前後のコード差分。コードレビューやデバッグに活用。</p>
+                </div>
+            </div>
+
+            <div class="code-block">// Artifactsの取得
+
+「今回の変更の差分レポートを表示して」
+
+「ブラウザ操作を動画で記録して」
+
+「生成した全てのArtifactsを /docs フォルダに保存して」</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エクスポート形式と活用シーン</h2>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>形式</th>
+                            <th>特徴</th>
+                            <th>活用シーン</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Markdown</td>
+                            <td>テキストベース、バージョン管理しやすい</td>
+                            <td>GitHub README、Notion、技術ドキュメント</td>
+                        </tr>
+                        <tr>
+                            <td>HTML</td>
+                            <td>そのままブラウザで表示可能</td>
+                            <td>社内ポータル、ヘルプページ</td>
+                        </tr>
+                        <tr>
+                            <td>PDF</td>
+                            <td>印刷・配布に最適</td>
+                            <td>クライアント納品、印刷マニュアル</td>
+                        </tr>
+                        <tr>
+                            <td>Notion</td>
+                            <td>Notionページとして直接出力</td>
+                            <td>チームのナレッジベース</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="code-block">// エクスポート指示の例
+
+「WalkthroughをPDF形式で出力して」
+
+「このドキュメントをNotionに直接エクスポートして」
+
+「GitHubのREADME.mdとして保存して」</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">チームへの共有方法</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">方法1</div>
+                    <div>
+                        <h3>GitHubにプッシュ</h3>
+                        <p>Markdownファイルとスクリーンショットをリポジトリにプッシュ。README.mdとして公開。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">方法2</div>
+                    <div>
+                        <h3>Notionに同期</h3>
+                        <p>MCP連携を使えば、Notionのページとして直接出力可能（次のレッスンで詳しく解説）。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">方法3</div>
+                    <div>
+                        <h3>Slackで共有</h3>
+                        <p>PDFに変換してSlackのチャンネルに投稿。または要約だけをメッセージとして送信。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">課題：アプリの操作マニュアルを作成</h2>
+
+            <div class="warning-card">
+                <h4>今回の課題</h4>
+                <p>Walkthroughを使って、以下のドキュメントを自動生成してみましょう：</p>
+            </div>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">課題1</div>
+                    <h3>簡単なアプリを作成</h3>
+                    <p>メモアプリ、カウンター、計算機など、シンプルなアプリを1つ作成</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題2</div>
+                    <h3>操作を実演</h3>
+                    <p>ブラウザエージェントで主要な操作を実行させ、スクショを取得</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題3</div>
+                    <h3>Walkthroughを出力</h3>
+                    <p>操作マニュアルをMarkdown形式で自動生成</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題4</div>
+                    <h3>HTMLに変換</h3>
+                    <p>見やすいHTMLドキュメントに変換して完成</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Walkthrough＝操作を記録してドキュメントを自動生成する機能</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>変更サマリー＋検証ステップ＋スクリーンショットが含まれる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Markdown/HTML/PDF/Notionなど様々な形式でエクスポート可能</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>ブラウザエージェントと組み合わせてテスト手順書の自動作成</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>チームへの共有もGitHub/Notion/Slack経由で簡単</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson2.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson4.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

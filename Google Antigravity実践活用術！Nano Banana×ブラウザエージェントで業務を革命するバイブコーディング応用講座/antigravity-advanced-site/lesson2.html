@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：AIがブラウザを勝手に動かす！ | バイブコーディング応用講座</title>
+    <meta name="description" content="ブラウザエージェントで動作確認を完全自動化する方法を学ぶ">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 2/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">02</div>
+            <h1 class="lesson-title">AIがブラウザを勝手に動かす！ブラウザエージェントで動作確認を完全自動化</h1>
+            <p class="lesson-subtitle">Chrome連携で開発・テストを革命する</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>Google AntigravityのブラウザエージェントとChrome拡張機能を連携させ、作成したWebアプリのUI検証を自動化できるようになります。「ブラウザでテストして」の一言で、クリック・入力・スクロールが自動実行される驚きの開発体験を習得しましょう。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">ブラウザエージェントとは？</h2>
+
+            <div class="note-card">
+                <h4>AIがChromeを自律操作する仕組み</h4>
+                <p>ブラウザエージェントは、AntigravityのAIがChromeブラウザを直接操作できる機能です。マウスカーソルの移動、クリック、テキスト入力、スクロールなど、人間がブラウザで行う操作をAIが自動で実行します。</p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">従来の動作確認</div>
+                    <ul>
+                        <li>コードを書く→ブラウザを開く→手動で確認</li>
+                        <li>エラー発見→コードに戻る→修正→再確認</li>
+                        <li>フォーム入力を何度も手動で繰り返す</li>
+                        <li>スクリーンショットを手動で撮影</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">ブラウザエージェント</div>
+                    <ul>
+                        <li>「ブラウザで開いて確認して」と指示するだけ</li>
+                        <li>エラー検知→自動で修正→再確認まで全自動</li>
+                        <li>フォーム入力もAIが自動で実行</li>
+                        <li>必要なスクリーンショットを自動取得</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">ブラウザエージェントのセットアップ</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Chrome拡張機能をインストール</h3>
+                        <p>Chrome ウェブストアで「Google Antigravity Connector」を検索してインストールします。または、Antigravity内の設定画面からインストールリンクにアクセスできます。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>拡張機能を有効化</h3>
+                        <p>インストール後、Chromeのツールバーに表示されるAntigravityアイコンをクリックし、「Antigravityと接続」を選択。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>接続を確認</h3>
+                        <p>Antigravityの設定画面で「ブラウザエージェント: 接続済み」と表示されていればOK。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-card">
+                <h4>セキュリティについて</h4>
+                <p>ブラウザエージェントはローカル環境でのみ動作します。外部サイトへのログイン情報などはAntigravityに送信されません。ただし、開発中のサイト以外での使用は推奨されません。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">基本的な使い方</h2>
+
+            <div class="code-block">// Playgroundでの指示例
+
+「作成したindex.htmlをブラウザで開いて」
+→ Chromeが起動し、ファイルが表示される
+
+「ページが正しく表示されているか確認して」
+→ AIがページを見て、問題がないかチェック
+
+「フォームに名前を入力して送信ボタンを押して」
+→ AIがフォームに自動入力して送信
+
+「ページを下までスクロールして」
+→ AIがスクロール操作を実行</div>
+
+            <div class="success-card">
+                <h4>自然言語で操作できる</h4>
+                <p>「クリック」「入力」「スクロール」といった操作を、普通の日本語で指示するだけ。プログラミング的な記述は一切不要です。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動操作できること</h2>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">操作1</div>
+                    <h3>クリック</h3>
+                    <p>ボタン、リンク、メニューなど任意の要素をクリック。「送信ボタンをクリックして」のように指示。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作2</div>
+                    <h3>テキスト入力</h3>
+                    <p>フォームフィールドへのテキスト入力。「メールアドレス欄に test@example.com と入力して」など。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作3</div>
+                    <h3>スクロール</h3>
+                    <p>ページ全体や特定領域のスクロール。「ページ下部までスクロール」「商品一覧を右にスクロール」など。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作4</div>
+                    <h3>ホバー</h3>
+                    <p>マウスオーバー動作。「メニューにマウスを合わせて」でドロップダウン表示を確認。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作5</div>
+                    <h3>ページ遷移</h3>
+                    <p>リンクをたどって別ページへ移動。「お問い合わせページに移動して」など。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作6</div>
+                    <h3>スクリーンショット</h3>
+                    <p>現在の画面をキャプチャ。「今の画面のスクリーンショットを撮って」と指示。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実践：フォーム入力の自動テスト</h2>
+
+            <div class="note-card">
+                <h4>お問い合わせフォームの動作確認を自動化</h4>
+                <p>シンプルなお問い合わせフォームを作成し、ブラウザエージェントで入力・送信のテストを自動化してみましょう。</p>
+            </div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>フォームを作成</h3>
+                        <p>まずAntigravityでシンプルなフォームを生成します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">// Playgroundへの指示
+
+「お問い合わせフォームを作成して。
+- 名前（必須）
+- メールアドレス（必須）
+- お問い合わせ内容（テキストエリア）
+- 送信ボタン
+バリデーション付きで、送信成功時はアラートを表示」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>ブラウザで開く</h3>
+                        <p>作成したフォームをブラウザエージェントで表示します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「作成したフォームをChromeで開いて」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>自動入力テスト</h3>
+                        <p>フォームに自動でデータを入力させます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「以下のテストデータでフォームに入力して：
+- 名前: テスト太郎
+- メールアドレス: test@example.com
+- お問い合わせ内容: これはテスト送信です。
+
+入力後、送信ボタンをクリックして」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>バリデーションテスト</h3>
+                        <p>エラーケースも自動でテストできます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「次は、名前を空欄にしたまま送信ボタンを押して。
+バリデーションエラーが表示されるか確認して」</div>
+
+            <div class="success-card">
+                <h4>結果報告</h4>
+                <p>ブラウザエージェントは操作を実行した後、「アラートが表示されました」「エラーメッセージ『名前は必須です』が表示されています」のように結果を報告してくれます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エラー検知と自動修正ループ</h2>
+
+            <div class="note-card">
+                <h4>AIが問題を発見したら自動で修正</h4>
+                <p>ブラウザエージェントは単に操作するだけでなく、問題を検知したら自動でコードを修正し、再度テストする「自動修正ループ」機能を持っています。</p>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Step 1</div>
+                    <div>
+                        <h3>問題検知</h3>
+                        <p>ブラウザエージェントがページを確認し、レイアウト崩れ、エラーメッセージ、動作不良などを発見。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Step 2</div>
+                    <div>
+                        <h3>原因分析</h3>
+                        <p>AIがコードを分析し、問題の原因を特定。「CSSのflexboxの設定が間違っている」など。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Step 3</div>
+                    <div>
+                        <h3>自動修正</h3>
+                        <p>コードを自動で修正し、ファイルを保存。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Step 4</div>
+                    <div>
+                        <h3>再確認</h3>
+                        <p>修正後のページを再度読み込み、問題が解決したか確認。必要に応じて再修正。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">// 自動修正を依頼する指示
+
+「このページをブラウザで開いて、何か問題があれば自動で修正して」
+
+「フォームをテストして、バグがあれば直して」
+
+「ページの見た目を確認して、レイアウトが崩れていたら修正して」</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Gemini 2.5 UI Checkpointの役割</h2>
+
+            <div class="note-card">
+                <h4>AIがUIを「見て」判断する</h4>
+                <p>ブラウザエージェントには「Gemini 2.5 UI Checkpoint」というマルチモーダルモデルが搭載されています。これはスクリーンショットを「見て」理解し、UIの問題を検知できる技術です。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>検知できること</th>
+                            <th>例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>レイアウト崩れ</td>
+                            <td>「ボタンがはみ出している」「テキストが重なっている」</td>
+                        </tr>
+                        <tr>
+                            <td>デザインの不整合</td>
+                            <td>「フォントサイズが不統一」「色が見づらい」</td>
+                        </tr>
+                        <tr>
+                            <td>アクセシビリティ問題</td>
+                            <td>「コントラスト比が低い」「クリック領域が小さい」</td>
+                        </tr>
+                        <tr>
+                            <td>エラー表示</td>
+                            <td>「404エラーが表示されている」「JavaScript例外」</td>
+                        </tr>
+                        <tr>
+                            <td>動作不良</td>
+                            <td>「ボタンを押しても反応がない」「ローディングが終わらない」</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">複数ページにまたがるテスト</h2>
+
+            <div class="code-block">// ページ遷移を含む自動テスト
+
+「以下の操作を順番に実行して：
+1. index.htmlをブラウザで開く
+2. 『お問い合わせ』リンクをクリック
+3. contact.htmlに遷移したことを確認
+4. フォームにテストデータを入力して送信
+5. 送信完了ページが表示されることを確認
+6. 各ステップのスクリーンショットを保存」</div>
+
+            <div class="success-card">
+                <h4>E2Eテストの自動化</h4>
+                <p>従来はSeleniumやPlaywrightといったテストツールを使って書いていたE2E（エンドツーエンド）テストが、自然言語の指示だけで実行できます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">課題：フォームの自動テストを実装</h2>
+
+            <div class="warning-card">
+                <h4>今回の課題</h4>
+                <p>ブラウザエージェントを使って、以下のテストを自動化してみましょう：</p>
+            </div>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">課題1</div>
+                    <h3>ログインフォームの作成</h3>
+                    <p>メールアドレスとパスワードのログインフォームをAntigravityで作成</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題2</div>
+                    <h3>正常系テスト</h3>
+                    <p>正しいデータを入力してログイン成功を確認</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題3</div>
+                    <h3>異常系テスト</h3>
+                    <p>空欄や不正なメールアドレスでエラーが出ることを確認</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題4</div>
+                    <h3>自動修正</h3>
+                    <p>問題があれば自動修正を依頼し、修正結果を確認</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>ブラウザエージェント＝AIがChromeを自律操作する機能</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Chrome拡張機能「Antigravity Connector」でセットアップ</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>クリック・入力・スクロール・スクリーンショットを自動化</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>エラー検知→自動修正→再確認のループで品質向上</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Gemini 2.5 UI CheckpointがUIを「見て」問題を検知</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson1.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson3.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

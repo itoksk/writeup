@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：GitHubもNotionも思いのまま！ | バイブコーディング応用講座</title>
+    <meta name="description" content="MCP連携で開発ワークフローを革命する方法を学ぶ">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 4/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">04</div>
+            <h1 class="lesson-title">GitHubもNotionも思いのまま！MCP連携で開発ワークフローを革命する</h1>
+            <p class="lesson-subtitle">外部ツールとの連携で生産性を最大化</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>MCP（Model Context Protocol）を使って、Google AntigravityからGitHub、Notion、Slackなどの外部サービスを操作できるようになります。Issue管理、ドキュメント作成、通知送信など、開発ワークフロー全体をチャットで完結させる方法を習得しましょう。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">MCPとは？</h2>
+
+            <div class="note-card">
+                <h4>Model Context Protocol</h4>
+                <p>MCPは、AIモデルと外部ツールを接続するためのオープンプロトコルです。Anthropicが2024年11月に発表し、Claude、Gemini、GPTなど主要なAIが対応を進めています。AntigravityもMCPに標準対応しており、GitHub、Notion、Slackなどの「MCPサーバー」を追加することで機能を拡張できます。</p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">従来の開発フロー</div>
+                    <ul>
+                        <li>コードを書く→GitHubを開く→コミット</li>
+                        <li>PRを作成→Slackで通知→Notionに記録</li>
+                        <li>ツール間を行き来する手間</li>
+                        <li>コンテキストスイッチでロスが発生</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">MCP連携後</div>
+                    <ul>
+                        <li>「GitHubにコミットして」で完了</li>
+                        <li>「PRを作成してSlackに通知」で自動実行</li>
+                        <li>全てAntigravityのチャットで完結</li>
+                        <li>コーディングに集中できる</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">MCPサーバーのインストール</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>設定ファイルを開く</h3>
+                        <p>Antigravityの設定（Command + ,）から「Extensions」→「MCP Servers」を選択。または、直接 <code>mcp_config.json</code> ファイルを編集します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>MCPサーバーを追加</h3>
+                        <p>使用したいサービスのMCPサーバーを追加します。公式リポジトリから取得するか、コミュニティ製を使用。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>認証情報を設定</h3>
+                        <p>各サービスのAPIトークンやアクセスキーを設定します。GitHub Personal Access Token、Notion API Key など。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">// mcp_config.json の例
+
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxxxxxxxxxxx"
+      }
+    },
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@notionhq/mcp-server"],
+      "env": {
+        "NOTION_API_KEY": "secret_xxxxxxxxxxxx"
+      }
+    },
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-slack"],
+      "env": {
+        "SLACK_BOT_TOKEN": "xoxb-xxxxxxxxxxxx"
+      }
+    }
+  }
+}</div>
+
+            <div class="warning-card">
+                <h4>APIトークンの取得方法</h4>
+                <p>各サービスの開発者設定からトークンを発行します。GitHubは Settings → Developer Settings → Personal Access Tokens から取得。Notionは Integrations ページから作成。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">GitHub連携でできること</h2>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">操作1</div>
+                    <h3>リポジトリ操作</h3>
+                    <p>リポジトリの作成、クローン、ブランチ作成などの基本操作。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作2</div>
+                    <h3>コミット・プッシュ</h3>
+                    <p>変更をステージング、コミット、リモートにプッシュ。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作3</div>
+                    <h3>Issue管理</h3>
+                    <p>Issueの作成、一覧取得、コメント追加、クローズ。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作4</div>
+                    <h3>PR作成・レビュー</h3>
+                    <p>Pull Requestの作成、差分確認、マージ。</p>
+                </div>
+            </div>
+
+            <div class="code-block">// GitHub操作の指示例
+
+「このプロジェクトをGitHubにプッシュして」
+
+「feature/login-form ブランチを作成して、現在の変更をコミット」
+
+「main ブランチにPRを作成。タイトルは『ログインフォームの追加』」
+
+「リポジトリのIssue一覧を表示して」
+
+「Issue #3 に『修正完了しました』とコメントして」</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実践：GitHub連携プロジェクト</h2>
+
+            <div class="note-card">
+                <h4>新規プロジェクトをGitHubで管理</h4>
+                <p>新しいWebアプリを作成し、GitHubリポジトリの作成からPRマージまでをAntigravityだけで完結させてみましょう。</p>
+            </div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>プロジェクトとリポジトリを作成</h3>
+                        <p>新規プロジェクトを作成し、GitHubリポジトリも同時に作成します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「新しいフォルダ my-todo-app を作成して、シンプルなToDoアプリを作って。
+GitHubにもリポジトリを作成して、初期コミットをプッシュして」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>機能追加ブランチを作成</h3>
+                        <p>新機能の開発はブランチを分けて行います。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「feature/dark-mode ブランチを作成して、ダークモード機能を追加して。
+完了したらコミットして」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>PRを作成</h3>
+                        <p>変更をプッシュしてPull Requestを作成します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「変更をプッシュして、main ブランチに対してPRを作成。
+タイトル: ダークモード機能の追加
+説明: ユーザーがダークモードを切り替えられる機能を追加しました」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>PRをマージ</h3>
+                        <p>問題なければマージします。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「PRをマージして、feature/dark-mode ブランチを削除して」</div>
+
+            <div class="success-card">
+                <h4>全てチャットで完結</h4>
+                <p>ブラウザでGitHubを開くことなく、リポジトリ作成からPRマージまで全てAntigravityのPlaygroundで完了しました！</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Notion連携でできること</h2>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">操作1</div>
+                    <h3>ページ作成</h3>
+                    <p>新しいNotionページを作成し、内容を書き込む。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作2</div>
+                    <h3>ページ更新</h3>
+                    <p>既存ページの内容を取得・更新。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作3</div>
+                    <h3>データベース操作</h3>
+                    <p>Notionデータベースへのレコード追加・更新。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作4</div>
+                    <h3>検索</h3>
+                    <p>ワークスペース内のページを検索。</p>
+                </div>
+            </div>
+
+            <div class="code-block">// Notion操作の指示例
+
+「今日の開発ログをNotionに記録して。
+- 実装した機能: ダークモード
+- 使用技術: CSS変数
+- 所要時間: 2時間」
+
+「Notionの『開発ドキュメント』ページに、今回のAPI仕様を追記して」
+
+「Notionの議事録データベースに新しいレコードを追加。
+日付: 今日、参加者: 田中、佐藤、内容: 新機能の仕様決定」</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Slack連携でできること</h2>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">操作1</div>
+                    <h3>メッセージ送信</h3>
+                    <p>指定チャンネルにメッセージを投稿。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作2</div>
+                    <h3>通知送信</h3>
+                    <p>タスク完了時の通知、アラートの送信。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">操作3</div>
+                    <h3>ファイル共有</h3>
+                    <p>生成したファイルをSlackにアップロード。</p>
+                </div>
+            </div>
+
+            <div class="code-block">// Slack操作の指示例
+
+「#development チャンネルに『新機能のPRを作成しました。レビューお願いします』と送信」
+
+「デプロイが完了したことを #releases チャンネルに通知して」
+
+「生成したスクリーンショットを #design チャンネルにアップロード」</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">その他の連携サービス</h2>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>サービス</th>
+                            <th>主な操作</th>
+                            <th>活用例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Jira</td>
+                            <td>チケット作成・更新・ステータス変更</td>
+                            <td>開発タスクの自動管理</td>
+                        </tr>
+                        <tr>
+                            <td>Firebase</td>
+                            <td>デプロイ・データベース操作</td>
+                            <td>Webアプリの公開</td>
+                        </tr>
+                        <tr>
+                            <td>Linear</td>
+                            <td>Issue管理</td>
+                            <td>モダンなプロジェクト管理</td>
+                        </tr>
+                        <tr>
+                            <td>Supabase</td>
+                            <td>データベース操作・認証管理</td>
+                            <td>バックエンド連携</td>
+                        </tr>
+                        <tr>
+                            <td>Vercel</td>
+                            <td>デプロイ・環境変数設定</td>
+                            <td>フロントエンドの公開</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="note-card">
+                <h4>MCPサーバーは増え続けている</h4>
+                <p>MCPはオープンプロトコルなので、コミュニティによって新しいサーバーが日々追加されています。<a href="https://github.com/modelcontextprotocol/servers" target="_blank">公式リポジトリ</a>で最新のリストを確認できます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">カスタムMCPサーバーの作成</h2>
+
+            <div class="note-card">
+                <h4>自分だけのツール連携</h4>
+                <p>公式にMCPサーバーが存在しないサービスでも、自分でMCPサーバーを作成することで連携できます。Node.jsやPythonで簡単に作成可能。</p>
+            </div>
+
+            <div class="code-block">// カスタムMCPサーバーの基本構造（Node.js）
+
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+const server = new McpServer({
+  name: "my-custom-server",
+  version: "1.0.0"
+});
+
+// ツールを定義
+server.tool("send_email", "メールを送信する", {
+  to: { type: "string", description: "送信先" },
+  subject: { type: "string", description: "件名" },
+  body: { type: "string", description: "本文" }
+}, async (args) => {
+  // メール送信ロジック
+  return { success: true, message: "メール送信完了" };
+});
+
+const transport = new StdioServerTransport();
+await server.connect(transport);</div>
+
+            <div class="success-card">
+                <h4>社内ツールとの連携も可能</h4>
+                <p>社内の独自システムやAPIとも、MCPサーバーを作成することで連携できます。「勤怠システムに出勤記録を登録して」のような操作も実現可能。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">課題：GitHub連携プロジェクト</h2>
+
+            <div class="warning-card">
+                <h4>今回の課題</h4>
+                <p>MCP連携を使って、以下のワークフローを実践してみましょう：</p>
+            </div>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">課題1</div>
+                    <h3>GitHubリポジトリ作成</h3>
+                    <p>新しいプロジェクトを作成し、GitHubリポジトリを作成・プッシュ</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題2</div>
+                    <h3>機能追加とPR</h3>
+                    <p>ブランチを作成して機能を追加し、PRを作成</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題3</div>
+                    <h3>Issueの作成</h3>
+                    <p>将来の改善点をIssueとして登録</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題4</div>
+                    <h3>通知送信（任意）</h3>
+                    <p>Slackに作業完了の通知を送信（Slack連携済みの場合）</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>MCP＝AIと外部ツールを接続するオープンプロトコル</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>mcp_config.jsonでMCPサーバーを追加・設定</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>GitHub連携でコミット・PR・Issue管理をチャットで完結</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Notion連携でドキュメント作成・更新を自動化</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Slack連携で通知送信・ファイル共有も可能</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson3.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson5.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

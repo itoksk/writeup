@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：総合実践！日本語だけで作る本格Webアプリ開発 | バイブコーディング応用講座</title>
+    <meta name="description" content="全ての技術を組み合わせた本格Webアプリ開発">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 5/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">05</div>
+            <h1 class="lesson-title">総合実践！日本語だけで作る本格Webアプリ開発</h1>
+            <p class="lesson-subtitle">全ての技術を組み合わせた実践プロジェクト</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>これまで学んだ全てのスキル（Nano Banana Pro、ブラウザエージェント、Walkthrough、MCP連携）を組み合わせて、本格的なWebアプリを開発します。企画から完成、ドキュメント作成、デプロイまでを一人で完遂できるようになりましょう。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">今回作るもの：タスク管理アプリ</h2>
+
+            <div class="note-card">
+                <h4>「TaskFlow」- チーム向けタスク管理アプリ</h4>
+                <p>シンプルながら実用的なタスク管理アプリを作成します。タスクの作成・編集・削除、ステータス管理、カテゴリ分類、ダークモード対応など、本格的な機能を盛り込みます。</p>
+            </div>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">機能1</div>
+                    <h3>タスクCRUD</h3>
+                    <p>タスクの作成・表示・編集・削除の基本機能</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">機能2</div>
+                    <h3>ステータス管理</h3>
+                    <p>未着手・進行中・完了の3段階ステータス</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">機能3</div>
+                    <h3>カテゴリ分類</h3>
+                    <p>仕事・プライベート・学習などのカテゴリ</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">機能4</div>
+                    <h3>フィルタ・検索</h3>
+                    <p>ステータス・カテゴリでのフィルタリング</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">機能5</div>
+                    <h3>ダークモード</h3>
+                    <p>ライト/ダークモードの切り替え</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">機能6</div>
+                    <h3>データ永続化</h3>
+                    <p>LocalStorageでデータを保存</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">開発の流れ</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Phase 1</div>
+                    <div>
+                        <h3>企画・設計</h3>
+                        <p>要件整理とUI設計。Nano Banana Proでワイヤーフレームを作成。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Phase 2</div>
+                    <div>
+                        <h3>ビジュアル素材作成</h3>
+                        <p>Nano Banana Proでアイコン、ロゴ、ヒーロー画像を生成。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Phase 3</div>
+                    <div>
+                        <h3>基本機能実装</h3>
+                        <p>HTML/CSS/JSでタスク管理の基本機能を実装。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Phase 4</div>
+                    <div>
+                        <h3>動作検証</h3>
+                        <p>ブラウザエージェントで自動テスト、問題があれば修正。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Phase 5</div>
+                    <div>
+                        <h3>ドキュメント作成</h3>
+                        <p>Walkthroughで操作マニュアルを自動生成。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Phase 6</div>
+                    <div>
+                        <h3>公開・共有</h3>
+                        <p>GitHubにプッシュ、Notionに開発ログを記録。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Phase 1: 企画・設計</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>要件を整理</h3>
+                        <p>まずAIに要件を伝えて整理してもらいます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「TaskFlowというタスク管理アプリを作りたいです。以下の機能を含めてください：
+
+- タスクの追加・編集・削除
+- ステータス管理（未着手/進行中/完了）
+- カテゴリ分類（仕事/プライベート/学習）
+- ステータスとカテゴリでフィルタリング
+- ダークモード対応
+- LocalStorageでデータ保存
+
+まず、この要件で設計を整理してください」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>ワイヤーフレームを作成</h3>
+                        <p>Nano Banana ProでUIイメージを生成します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「このタスク管理アプリのUIワイヤーフレームを作成してください。
+- 左サイドバー: カテゴリフィルタ、ステータスフィルタ
+- メインエリア: タスク一覧
+- ヘッダー: アプリ名、ダークモード切替ボタン、新規タスクボタン
+モダンでミニマルなデザインで」</div>
+
+            <div class="success-card">
+                <h4>ビジュアルで認識合わせ</h4>
+                <p>いきなりコーディングせず、まずワイヤーフレームを作ることで「思っていたのと違う」を防げます。生成されたイメージを見て、必要に応じて調整を依頼しましょう。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Phase 2: ビジュアル素材作成</h2>
+
+            <div class="code-block">// アイコンセットを生成
+
+「TaskFlowアプリ用のアイコンセットを作成してください。
+スタイル: フラットデザイン、オレンジ基調（#F97316）
+サイズ: 24x24px
+
+以下のアイコンを順番に作成：
+1. 新規追加（+）アイコン
+2. 編集（鉛筆）アイコン
+3. 削除（ゴミ箱）アイコン
+4. フィルタ（漏斗）アイコン
+5. ダークモード（月）アイコン
+6. ライトモード（太陽）アイコン」</div>
+
+            <div class="code-block">// ロゴを生成
+
+「TaskFlowのロゴを作成してください。
+- チェックマークとフローを組み合わせたシンボル
+- オレンジ（#F97316）のグラデーション
+- モダンでプロフェッショナルな印象
+- 透過背景」</div>
+
+            <div class="code-block">// 生成した画像を保存
+
+「生成した全てのアイコンとロゴを /assets/images フォルダに保存してください」</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Phase 3: 基本機能実装</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>プロジェクト作成</h3>
+                        <p>フォルダ構造を作成し、基本ファイルを生成します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「taskflow-app フォルダを作成して、以下の構造でプロジェクトを初期化してください：
+
+taskflow-app/
+├── index.html
+├── css/
+│   └── style.css
+├── js/
+│   └── app.js
+└── assets/
+    └── images/
+        （先ほど生成したアイコン）
+
+まずはHTMLとCSSを作成してください」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>機能を段階的に実装</h3>
+                        <p>一度に全てではなく、機能ごとに分けて実装を依頼します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">// タスク追加機能
+
+「まず、タスクの追加機能を実装してください。
+- 新規タスクボタンをクリックするとモーダルが開く
+- タイトル（必須）、説明（任意）、カテゴリ（選択）を入力
+- 保存ボタンでタスクがリストに追加される
+- LocalStorageにも保存」</div>
+
+            <div class="code-block">// タスク表示・編集・削除
+
+「次に、以下の機能を追加してください：
+- タスク一覧の表示
+- タスクをクリックすると編集モーダルが開く
+- 削除ボタンで確認後にタスクを削除
+- ステータス変更（未着手→進行中→完了）」</div>
+
+            <div class="code-block">// フィルタ機能
+
+「サイドバーにフィルタ機能を追加してください：
+- ステータスで絞り込み（全て/未着手/進行中/完了）
+- カテゴリで絞り込み（全て/仕事/プライベート/学習）
+- フィルタをクリックするとリストが即座に更新」</div>
+
+            <div class="code-block">// ダークモード
+
+「ダークモード機能を追加してください：
+- ヘッダーの切り替えボタンでトグル
+- CSS変数を使ったテーマ切り替え
+- 選択をLocalStorageに保存して次回も維持」</div>
+
+            <div class="warning-card">
+                <h4>段階的に実装するメリット</h4>
+                <p>一度に全機能を依頼すると、AIが混乱したり、意図と異なる実装になることがあります。機能ごとに分けて依頼し、都度確認しながら進めるのがポイントです。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Phase 4: 動作検証</h2>
+
+            <div class="code-block">// ブラウザエージェントで自動テスト
+
+「ブラウザでTaskFlowアプリを開いて、以下のテストを実行してください：
+
+【正常系テスト】
+1. 新規タスク「買い物リスト作成」をカテゴリ「プライベート」で追加
+2. タスクがリストに表示されることを確認
+3. タスクのステータスを「進行中」に変更
+4. 「仕事」カテゴリでフィルタリング
+5. リストに「買い物リスト作成」が表示されないことを確認
+6. フィルタを「全て」に戻す
+
+【ダークモードテスト】
+7. ダークモードに切り替え
+8. 画面が暗くなることを確認
+9. ページをリロードしてもダークモードが維持されることを確認
+
+各ステップでスクリーンショットを撮影してください」</div>
+
+            <div class="code-block">// 問題があれば自動修正
+
+「テスト中に問題を発見した場合は、自動で修正してから再テストしてください」</div>
+
+            <div class="success-card">
+                <h4>テストの自動化</h4>
+                <p>従来なら手動で行っていたUIテストが、自然言語で指示するだけで自動実行されます。問題があれば修正も自動。開発効率が劇的に向上します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Phase 5: ドキュメント作成</h2>
+
+            <div class="code-block">// Walkthroughでマニュアル生成
+
+「TaskFlowアプリの使い方マニュアルをWalkthroughで作成してください。
+
+以下の操作を実演しながらスクリーンショット付きで記録：
+1. アプリの起動方法
+2. 新規タスクの追加手順
+3. タスクの編集方法
+4. ステータス変更の仕方
+5. フィルタリング機能の使い方
+6. ダークモードの切り替え
+
+完了したらMarkdown形式で docs/MANUAL.md に保存」</div>
+
+            <div class="code-block">// READMEも生成
+
+「GitHub用のREADME.mdを作成してください。
+- プロジェクト概要
+- 機能一覧
+- スクリーンショット（ライトモード/ダークモード）
+- 使い方
+- 技術スタック
+- ライセンス」</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Phase 6: 公開・共有</h2>
+
+            <div class="code-block">// GitHubにプッシュ
+
+「このプロジェクトをGitHubにプッシュしてください。
+リポジトリ名: taskflow-app
+説明: シンプルなタスク管理アプリ - Antigravityで開発
+
+初回コミットメッセージ: Initial commit - TaskFlow v1.0」</div>
+
+            <div class="code-block">// Notionに開発ログを記録
+
+「今回の開発内容をNotionの開発ログに記録してください：
+
+プロジェクト: TaskFlow
+開発期間: 本日
+使用技術: HTML, CSS, JavaScript
+主な機能:
+- タスクCRUD
+- ステータス管理
+- カテゴリフィルタ
+- ダークモード
+- LocalStorage保存
+
+学んだこと:
+- Nano Banana Proでの画像生成
+- ブラウザエージェントでの自動テスト
+- Walkthroughでのドキュメント自動生成」</div>
+
+            <div class="code-block">// GitHub Pages でデプロイ（任意）
+
+「GitHub Pagesを有効化して、このアプリを公開してください」</div>
+
+            <div class="success-card">
+                <h4>完成！</h4>
+                <p>おめでとうございます！日本語の指示だけで、本格的なタスク管理アプリの開発からデプロイまで完了しました。全てAntigravityのPlaygroundで完結しています。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">他のアプリアイデア</h2>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>アプリ例</th>
+                            <th>主な機能</th>
+                            <th>活用する技術</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>予約管理システム</td>
+                            <td>予約登録・カレンダー表示・リマインダー</td>
+                            <td>全技術</td>
+                        </tr>
+                        <tr>
+                            <td>ポートフォリオサイト</td>
+                            <td>プロフィール・作品一覧・コンタクトフォーム</td>
+                            <td>Nano Banana, GitHub連携</td>
+                        </tr>
+                        <tr>
+                            <td>議事録管理ツール</td>
+                            <td>議事録作成・検索・Notion連携</td>
+                            <td>MCP連携, Walkthrough</td>
+                        </tr>
+                        <tr>
+                            <td>経費精算アプリ</td>
+                            <td>経費入力・カテゴリ集計・CSV出力</td>
+                            <td>ブラウザエージェント</td>
+                        </tr>
+                        <tr>
+                            <td>読書記録アプリ</td>
+                            <td>書籍登録・レビュー・読了リスト</td>
+                            <td>全技術</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">コース全体のまとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Nano Banana Proで画像素材を無料で大量生成</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>ブラウザエージェントでUI検証を完全自動化</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Walkthroughで操作マニュアルを自動生成</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>MCPでGitHub・Notion・Slackと連携</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>日本語の指示だけで本格アプリを開発・デプロイ可能</span>
+                </div>
+            </div>
+
+            <div class="success-card">
+                <h4>バイブコーディングマスターへ</h4>
+                <p>基礎講座で学んだAntigravityの基本操作に加え、応用講座で画像生成、自動テスト、ドキュメント生成、外部ツール連携をマスターしました。これであなたも、日本語だけで本格的なアプリを開発できるバイブコーディングの達人です！</p>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson4.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="index.html" class="nav-next">
+                コース一覧へ
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>
