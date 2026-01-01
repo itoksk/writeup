@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：100名分の面談調整が一瞬で完了！カレンダー連携スケジューリング | 人事業務ゼロタッチ講座</title>
+    <meta name="description" content="Google Workspace Studioで採用・オンボーディング・評価を自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 4/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">04</div>
+            <h1 class="lesson-title">100名分の面談調整が一瞬で完了！カレンダー連携スケジューリング</h1>
+            <p class="lesson-subtitle">評価期開始→日程調整→事前資料準備→リマインド送信</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>評価期における上司と部下の面談を完全自動化。組織構造から面談ペアを自動抽出し、カレンダー連携で空き時間を検索、事前資料の配布、リマインド送信までを自動化します。1人あたり30分かかっていた調整業務をゼロに。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before - 手作業の面談調整</div>
+                    <ul>
+                        <li>評価シートをメールで個別配布</li>
+                        <li>上司と部下の空き時間を往復メールで調整</li>
+                        <li>1人あたり30分×100名＝50時間の調整工数</li>
+                        <li>面談直前に慌てて評価シート記入</li>
+                        <li>面談忘れ・評価未提出が発生</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After - 自動化された評価プロセス</div>
+                    <ul>
+                        <li>評価期開始と同時に全員へ評価シート自動配布</li>
+                        <li>空き時間を自動検索して候補日程を提案</li>
+                        <li>日程調整工数をほぼゼロに</li>
+                        <li>面談1週間前に事前準備リマインド</li>
+                        <li>未完了者へ自動督促、100%完了を実現</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動化の全体フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>評価期開始トリガー</h3>
+                        <p>評価期開始日（例：4/1、10/1）をトリガーに設定。組織マスタから上司-部下の関係を抽出し、面談ペアリストを自動生成します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>評価シート配布</h3>
+                        <p>全社員へ自己評価シート、上司へ部下評価シートを自動配布。記入期限とともに通知メールを送信します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>面談日程自動調整</h3>
+                        <p>上司と部下のGoogleカレンダーを照合。双方の空き時間を自動検索し、候補日程（60分枠）を3つ提案します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>事前資料準備とリマインド</h3>
+                        <p>面談1週間前に、評価シート記入状況を確認。未記入者へリマインド送信。面談前日には双方へ事前確認メールを送信します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エージェント構成</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">Starter</div>
+                    <h3>評価期開始日トリガー</h3>
+                    <p>日次スケジュール実行で、評価期開始日（4/1、10/1など）を検知。該当日にエージェントを起動します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 1</div>
+                    <h3>組織マスタから面談ペア抽出</h3>
+                    <p>組織マスタスプレッドシートから「上司-部下」の関係を抽出。面談が必要なペアのリストを生成します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 2</div>
+                    <h3>評価シート配布</h3>
+                    <p>Google Formで作成した評価シートURLを、自己評価用・部下評価用に分けて対象者へメール送信します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 3</div>
+                    <h3>空き時間検索</h3>
+                    <p>Google Calendar APIで上司と部下の空き時間を検索。60分の連続した空き時間を3つ抽出します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 4</div>
+                    <h3>日程調整メール送信</h3>
+                    <p>候補日程を含む日程調整メールを送信。部下が希望日時を選択すると、自動でカレンダー登録します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 5</div>
+                    <h3>事前準備リマインド</h3>
+                    <p>面談1週間前・前日にリマインドメール送信。評価シート記入状況も通知し、準備を促します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">組織マスタの設計</h2>
+
+            <div class="note-card">
+                <h4>スプレッドシート構成</h4>
+                <p>組織構造を管理するマスタシート。上司-部下の関係を明確にします。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>列名</th>
+                            <th>説明</th>
+                            <th>例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>社員ID</code></td>
+                            <td>一意の社員識別子</td>
+                            <td>EMP001</td>
+                        </tr>
+                        <tr>
+                            <td><code>氏名</code></td>
+                            <td>社員の氏名</td>
+                            <td>山田太郎</td>
+                        </tr>
+                        <tr>
+                            <td><code>メールアドレス</code></td>
+                            <td>連絡先メールアドレス</td>
+                            <td>yamada@example.com</td>
+                        </tr>
+                        <tr>
+                            <td><code>部門</code></td>
+                            <td>所属部門</td>
+                            <td>営業部</td>
+                        </tr>
+                        <tr>
+                            <td><code>役職</code></td>
+                            <td>役職名</td>
+                            <td>一般社員/マネージャー</td>
+                        </tr>
+                        <tr>
+                            <td><code>上司ID</code></td>
+                            <td>直属の上司の社員ID</td>
+                            <td>EMP010</td>
+                        </tr>
+                        <tr>
+                            <td><code>上司メール</code></td>
+                            <td>上司のメールアドレス</td>
+                            <td>manager@example.com</td>
+                        </tr>
+                        <tr>
+                            <td><code>評価対象</code></td>
+                            <td>評価の対象か（TRUE/FALSE）</td>
+                            <td>TRUE</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">メールテンプレート</h2>
+
+            <div class="note-card">
+                <h4>評価シート配布メール（自己評価）</h4>
+                <p>評価期開始と同時に全社員へ送信。自己評価の記入を促します。</p>
+            </div>
+
+            <div class="code-block">件名: 【{{評価期}}】自己評価シートのご記入をお願いします
+
+{{氏名}} 様
+
+お疲れ様です。{{評価期}}の評価期が開始しました。
+つきましては、下記より自己評価シートのご記入をお願いいたします。
+
+【自己評価シートURL】
+{{自己評価フォームURL}}
+
+【記入期限】{{記入期限日}}
+【記入内容】
+- 今期の目標達成度
+- 主な成果・貢献
+- 課題・今後の改善点
+- 次期の目標
+
+記入後、上司との評価面談の日程調整をさせていただきます。
+
+ご不明点があれば、人事部までお問い合わせください。
+
+人事部</div>
+
+            <div class="note-card">
+                <h4>評価シート配布メール（部下評価）</h4>
+                <p>マネージャーへ部下評価シートを送信。部下ごとにフォームURLを分けて配信します。</p>
+            </div>
+
+            <div class="code-block">件名: 【{{評価期}}】部下評価シートのご記入をお願いします
+
+{{上司名}} 様
+
+お疲れ様です。{{評価期}}の評価期が開始しました。
+つきましては、下記の部下の評価シート記入をお願いいたします。
+
+【担当部下】
+{{#部下リスト}}
+- {{部下名}}：{{評価フォームURL}}
+{{/部下リスト}}
+
+【記入期限】{{記入期限日}}
+【評価項目】
+- 業績評価（目標達成度、成果）
+- 行動評価（行動規範への適合）
+- 能力評価（スキル、成長度）
+- 総合評価とコメント
+
+評価面談は{{面談期間}}に実施予定です。
+日程調整のご連絡を別途させていただきます。
+
+人事部</div>
+
+            <div class="success-card">
+                <h4>日程調整メール</h4>
+                <p>空き時間を検索した候補日程を提案。部下が選択できる形式で送信します。</p>
+            </div>
+
+            <div class="code-block">件名: 【評価面談】日程調整のお願い（{{上司名}}様との面談）
+
+{{部下名}} 様
+
+お疲れ様です。{{評価期}}の評価面談の日程調整をさせていただきます。
+
+{{上司名}}様との面談日程について、
+下記の候補日時からご希望の日時を選択してください。
+
+【候補日程】
+1. {{候補日時1}}
+2. {{候補日時2}}
+3. {{候補日時3}}
+
+【日程選択フォーム】
+{{日程選択URL}}
+
+【面談時間】60分
+【場所】{{会議室}} または オンライン（Zoom）
+
+上記でご都合がつかない場合は、
+お手数ですが人事部までご連絡ください。
+
+なお、面談までに自己評価シートの記入を完了してください。
+{{自己評価シートURL}}
+
+人事部</div>
+
+            <div class="warning-card">
+                <h4>面談前日リマインド</h4>
+                <p>面談前日に双方へ送信。評価シートの最終確認を促します。</p>
+            </div>
+
+            <div class="code-block">件名: 【明日】評価面談のリマインド
+
+{{氏名}} 様
+
+明日の評価面談についてリマインドいたします。
+
+【日時】{{面談日時}}
+【場所】{{会議室}}
+【面談相手】{{相手名}}
+【所要時間】60分
+
+【事前確認事項】
+☐ 自己評価シートの記入完了
+☐ 今期の成果資料の準備
+☐ 次期の目標案の検討
+
+有意義な面談となるよう、事前準備をお願いいたします。
+
+人事部</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">カレンダー連携：空き時間検索</h2>
+
+            <div class="note-card">
+                <h4>Google Calendar API活用</h4>
+                <p>上司と部下のカレンダーを照合し、双方が空いている時間帯を自動抽出します。</p>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">検索条件</div>
+                    <div>
+                        <h3>60分の連続空き時間</h3>
+                        <p>評価面談に必要な60分の連続した空き時間を検索。営業時間内（9:00〜18:00）でフィルタリングします。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">候補日時</div>
+                    <div>
+                        <h3>3つの候補を提案</h3>
+                        <p>最も早い日時から3つの候補を抽出。部下が選択しやすいよう、複数の選択肢を提供します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">自動登録</div>
+                    <div>
+                        <h3>選択後に即カレンダー登録</h3>
+                        <p>部下が日程を選択すると、上司と部下の双方のカレンダーに自動で面談イベントを登録します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Geminiプロンプト：評価コメント要約</h2>
+
+            <div class="note-card">
+                <h4>面談後の活用</h4>
+                <p>面談で出た評価コメントをGeminiで要約し、人事レポートを自動生成することも可能です。</p>
+            </div>
+
+            <div class="code-block">以下の評価面談の記録から、人事レポート用のサマリーを作成してください。
+
+【面談記録】
+- 社員名：{{社員名}}
+- 上司：{{上司名}}
+- 面談日：{{面談日}}
+- 自己評価：{{自己評価内容}}
+- 上司評価：{{上司評価内容}}
+- 面談メモ：{{面談メモ}}
+
+【サマリー作成内容】
+1. **主な成果**（100文字以内）
+   今期の主要な成果を簡潔にまとめる
+
+2. **課題・改善点**（100文字以内）
+   今後の成長に向けた課題を整理
+
+3. **次期目標**（100文字以内）
+   次期に取り組む目標を要約
+
+4. **育成方針**（100文字以内）
+   上司が考える育成の方向性
+
+【出力形式】
+箇条書きで簡潔にまとめてください。</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実装のポイント</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">組織マスタ</div>
+                    <div>
+                        <h3>上司-部下関係の自動抽出</h3>
+                        <p>組織マスタから上司IDを参照し、面談ペアを自動生成。組織変更があってもマスタ更新のみで対応できます。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">段階的実行</div>
+                    <div>
+                        <h3>評価シート→日程調整→リマインド</h3>
+                        <p>評価期開始、シート記入期限、面談1週間前、面談前日など、段階的にエージェントを起動してタスクを実行します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">進捗管理</div>
+                    <div>
+                        <h3>評価シート記入状況の可視化</h3>
+                        <p>スプレッドシートで全社員の評価シート記入状況、面談実施状況を一元管理。未完了者を一目で把握できます。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">エスカレーション</div>
+                    <div>
+                        <h3>未完了者への自動督促</h3>
+                        <p>期限を過ぎても未記入・未実施の場合、人事担当者へ通知。必要に応じて個別フォローを促します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>評価期開始と同時に全社員へ評価シート自動配布</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>組織マスタから上司-部下ペアを自動抽出</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>カレンダー連携で空き時間を自動検索・日程提案</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>面談1週間前・前日に自動リマインド送信</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>評価面談調整の工数を1人30分→ゼロに削減</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson3.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson5.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

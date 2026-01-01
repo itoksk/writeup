@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：期限切れゼロを実現！3日前・前日・当日の段階リマインド自動化 | バックオフィス業務ゼロ化講座</title>
+    <meta name="description" content="Google Workspace Studioで経費・勤怠・タスクを完全自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+    <style>
+        :root {
+            --accent-primary: #f59e0b;
+            --accent-secondary: #d97706;
+            --accent-tertiary: #b45309;
+            --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+            --bg-secondary: #fef3c7;
+            --bg-tertiary: #fde68a;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 4 / 5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">04</div>
+            <h1 class="lesson-title">期限切れゼロを実現！3日前・前日・当日の段階リマインド自動化</h1>
+            <p class="lesson-subtitle">タスク割り当て→進捗追跡→自動リマインド</p>
+        </header>
+
+        <section class="lesson-section" id="goal">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>タスクの期限を自動監視し、期限3日前・前日・当日にリマインドを送信。未完了タスクは自動エスカレーション。承認待ち経費や勤怠異常にも自動リマインドを適用します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="overview">
+            <h2 class="section-title">このレッスンで作成するもの</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">従来のタスク管理</div>
+                    <ul>
+                        <li>手動でリマインドを送信</li>
+                        <li>期限切れに気づかない</li>
+                        <li>進捗確認に毎日30分</li>
+                        <li>未完了タスクの放置</li>
+                        <li>エスカレーションのタイミングが不明確</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">自動化後のタスク管理</div>
+                    <ul>
+                        <li>期限前に自動リマインド</li>
+                        <li>期限切れを即座に検知</li>
+                        <li>進捗を自動追跡</li>
+                        <li>未完了は自動エスカレーション</li>
+                        <li>管理工数をゼロに</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="flow">
+            <h2 class="section-title">エージェントフロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>スケジュール実行（Scheduled Starter）</h3>
+                        <p>毎日09:00に実行し、タスク管理シートから全タスクを取得。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>期限チェック（Gemini）</h3>
+                        <p>各タスクの期限を確認し、リマインドが必要なタスクを抽出（3日前、前日、当日、期限超過）。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>優先度判定（Gemini）</h3>
+                        <p>タスクの重要度、期限までの残り日数、進捗状況から優先度を自動算出。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>リマインド送信（Chat DM）</h3>
+                        <p>担当者に期限と優先度を含むリマインドを送信。期限超過の場合は上長にもCC。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>エスカレーション判定（条件分岐）</h3>
+                        <p>期限超過3日以上の場合、自動エスカレーション。上長と部門長に通知。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>ステータス更新（Sheets連携）</h3>
+                        <p>リマインド送信履歴をスプレッドシートに記録。次回の重複送信を防止。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="config">
+            <h2 class="section-title">エージェント設定</h2>
+            <div class="agent-list">
+                <div class="agent-item">
+                    <span class="agent-badge">エージェント名</span>
+                    <h3>タスクリマインド＆エスカレーションエージェント</h3>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">説明</span>
+                    <p>タスクの期限を自動監視し、期限前リマインド・期限超過エスカレーションを実施</p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">スターター</span>
+                    <p>Scheduled（毎日09:00）</p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">ステップ</span>
+                    <p>Sheets（タスク取得）→ Gemini（期限チェック）→ Gemini（優先度判定）→ 条件分岐 → Chat DM（リマインド）→ Sheets（履歴記録）</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="sheets-setup">
+            <h2 class="section-title">タスク管理シートの準備</h2>
+            <div class="note-card">
+                <h4>シート設定</h4>
+                <p>「タスク管理」という名前のスプレッドシートを作成し、以下のヘッダーを設定してください。</p>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>A列</th>
+                            <th>B列</th>
+                            <th>C列</th>
+                            <th>D列</th>
+                            <th>E列</th>
+                            <th>F列</th>
+                            <th>G列</th>
+                            <th>H列</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>タスクID</td>
+                            <td>タスク名</td>
+                            <td>担当者</td>
+                            <td>期限</td>
+                            <td>ステータス</td>
+                            <td>優先度</td>
+                            <td>進捗率</td>
+                            <td>最終リマインド</td>
+                        </tr>
+                        <tr>
+                            <td><code>T001</code></td>
+                            <td><code>経費精算</code></td>
+                            <td><code>山田太郎</code></td>
+                            <td><code>2025-01-20</code></td>
+                            <td><code>進行中</code></td>
+                            <td><code>高</code></td>
+                            <td><code>50%</code></td>
+                            <td><code>-</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="prompt1">
+            <h2 class="section-title">期限チェックプロンプト</h2>
+            <div class="code-block">Check task deadlines and identify tasks requiring reminders.
+
+Today's date: {current_date}
+
+Tasks:
+{task_list}
+
+For each task, calculate:
+1. Days until deadline (deadline - today)
+2. Days overdue (if deadline has passed)
+3. Reminder status:
+   - "3DAY_REMINDER" if deadline is in 3 days
+   - "1DAY_REMINDER" if deadline is tomorrow
+   - "TODAY_REMINDER" if deadline is today
+   - "OVERDUE_1" if 1 day overdue
+   - "OVERDUE_3+" if 3+ days overdue
+   - "NO_REMINDER" if no action needed
+
+Only output tasks that need reminders.
+
+Output format for each task:
+タスクID: {task_id}
+タスク名: {task_name}
+担当者: {assignee}
+期限: {deadline}
+残り日数: {days_remaining}日
+リマインド種別: {reminder_type}
+優先度: {priority}</div>
+        </section>
+
+        <section class="lesson-section" id="prompt2">
+            <h2 class="section-title">優先度判定プロンプト</h2>
+            <div class="code-block">Determine task priority based on deadline, progress, and importance.
+
+Task data:
+- Task name: {task_name}
+- Days remaining: {days_remaining}
+- Current progress: {progress}%
+- Status: {status}
+- Original priority: {priority}
+
+Scoring:
+1. Deadline urgency:
+   - 0 days (today): 10 points
+   - 1 day: 8 points
+   - 2-3 days: 6 points
+   - Overdue: 15 points
+
+2. Progress score:
+   - 0-25%: 8 points
+   - 26-50%: 6 points
+   - 51-75%: 4 points
+   - 76-100%: 2 points
+
+3. Original priority:
+   - 高: 10 points
+   - 中: 5 points
+   - 低: 2 points
+
+Total priority score = urgency + progress + original priority
+
+Final priority level:
+- CRITICAL: 25+ points
+- HIGH: 18-24 points
+- MEDIUM: 10-17 points
+- LOW: < 10 points
+
+Output:
+優先度レベル: [CRITICAL/HIGH/MEDIUM/LOW]
+スコア: {score}点
+推奨アクション: [Japanese action recommendation]</div>
+        </section>
+
+        <section class="lesson-section" id="reminder-3day">
+            <h2 class="section-title">3日前リマインド</h2>
+            <div class="code-block">【リマインド】タスク期限が近づいています
+
+{assignee}さん
+
+以下のタスクの期限が3日後に迫っています。
+
+【タスク情報】
+タスクID: {task_id}
+タスク名: {task_name}
+期限: {deadline}
+残り: 3日
+現在の進捗: {progress}%
+優先度: {priority_level}
+
+【推奨アクション】
+{recommended_action}
+
+計画的に進めてください。
+
+タスク管理Bot</div>
+        </section>
+
+        <section class="lesson-section" id="reminder-1day">
+            <h2 class="section-title">前日リマインド</h2>
+            <div class="code-block">【重要】タスク期限は明日です
+
+{assignee}さん
+
+以下のタスクの期限は明日です。
+
+【タスク情報】
+タスクID: {task_id}
+タスク名: {task_name}
+期限: {deadline}（明日）
+現在の進捗: {progress}%
+優先度: {priority_level}
+
+【状況確認】
+進捗が{progress}%です。
+期限までに完了できる見込みですか?
+
+完了が難しい場合は、早めに上長に相談してください。
+
+タスク管理Bot</div>
+        </section>
+
+        <section class="lesson-section" id="reminder-today">
+            <h2 class="section-title">当日リマインド</h2>
+            <div class="code-block">【緊急】タスク期限は本日です
+
+{assignee}さん
+
+以下のタスクの期限は本日です。
+最優先で対応してください。
+
+【タスク情報】
+タスクID: {task_id}
+タスク名: {task_name}
+期限: {deadline}（本日）
+現在の進捗: {progress}%
+優先度: {priority_level}
+
+【緊急対応】
+他の業務を後回しにして、このタスクを最優先で完了させてください。
+
+完了したら、ステータスを「完了」に更新してください。
+
+タスク管理Bot</div>
+        </section>
+
+        <section class="lesson-section" id="escalation">
+            <h2 class="section-title">エスカレーション通知</h2>
+            <div class="code-block">【エスカレーション】期限超過タスクの対応依頼
+
+{manager}さん
+CC: {assignee}さん
+
+以下のタスクが期限を{overdue_days}日超過しています。
+対応をお願いします。
+
+【タスク情報】
+タスクID: {task_id}
+タスク名: {task_name}
+担当者: {assignee}
+期限: {deadline}
+超過日数: {overdue_days}日
+現在の進捗: {progress}%
+優先度: CRITICAL
+
+【対応依頼】
+1. 担当者と状況を確認してください
+2. 完了見込みを明確にしてください
+3. 必要に応じてタスクの再割り当てを検討してください
+4. 本日中に対応方針を報告してください
+
+このタスクが他の業務に影響を与える可能性があります。
+速やかな対応をお願いします。
+
+タスク管理Bot</div>
+        </section>
+
+        <section class="lesson-section" id="integration">
+            <h2 class="section-title">他システムとの連携</h2>
+            <div class="note-card">
+                <h4>経費・勤怠との統合</h4>
+                <p>このリマインドエージェントは、Lesson 2の経費承認待ちやLesson 3の勤怠異常にも適用できます。</p>
+            </div>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">応用 1</div>
+                    <h3>経費承認リマインド</h3>
+                    <p>承認待ちが48時間を超えた経費申請を、承認者に自動リマインド。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">応用 2</div>
+                    <h3>勤怠報告リマインド</h3>
+                    <p>月末3日前に勤怠データの確認・修正を促すリマインドを送信。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">応用 3</div>
+                    <h3>定期タスクの自動生成</h3>
+                    <p>月次・週次の定期タスクを自動生成し、担当者に割り当て。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="tips">
+            <h2 class="section-title">実装のポイント</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Point 1</div>
+                    <div>
+                        <h3>リマインド頻度の調整</h3>
+                        <p>重要度の高いタスクは毎日リマインド、低いタスクは3日前のみなど、頻度を調整可能。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Point 2</div>
+                    <div>
+                        <h3>通知の重複防止</h3>
+                        <p>「最終リマインド」列に送信日時を記録し、同日に複数回送信しないよう制御。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Point 3</div>
+                    <div>
+                        <h3>完了タスクの自動アーカイブ</h3>
+                        <p>ステータスが「完了」のタスクは別シートに移動し、管理シートをスッキリ保つ。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="summary">
+            <h2 class="section-title">レッスンまとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>タスク期限の自動監視を実装</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>3日前・前日・当日の段階的リマインド</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>優先度の自動判定と推奨アクション提示</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>期限超過タスクの自動エスカレーション</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>経費・勤怠システムとの統合応用</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson3.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson5.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

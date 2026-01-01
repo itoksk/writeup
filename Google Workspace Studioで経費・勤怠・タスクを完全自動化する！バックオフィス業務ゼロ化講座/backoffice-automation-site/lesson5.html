@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：経営層への報告を完全自動化！AIが作る月次インサイトレポート | バックオフィス業務ゼロ化講座</title>
+    <meta name="description" content="Google Workspace Studioで経費・勤怠・タスクを完全自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+    <style>
+        :root {
+            --accent-primary: #f59e0b;
+            --accent-secondary: #d97706;
+            --accent-tertiary: #b45309;
+            --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+            --bg-secondary: #fef3c7;
+            --bg-tertiary: #fde68a;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 5 / 5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">05</div>
+            <h1 class="lesson-title">経営層への報告を完全自動化！AIが作る月次インサイトレポート</h1>
+            <p class="lesson-subtitle">データ集約→レポート生成→自動配信</p>
+        </header>
+
+        <section class="lesson-section" id="goal">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>経費・勤怠・タスクの全データを自動集約し、Geminiで傾向分析とインサイトを生成。月次サマリーレポートを作成して経営層・管理職に自動配信します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="overview">
+            <h2 class="section-title">このレッスンで作成するもの</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">従来のレポート作成</div>
+                    <ul>
+                        <li>各システムから手動でデータ抽出</li>
+                        <li>Excelで集計・グラフ作成</li>
+                        <li>PowerPointでレポート作成</li>
+                        <li>メールで個別送信</li>
+                        <li>作成に丸1日かかる</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">自動化後のレポート</div>
+                    <ul>
+                        <li>全データを自動集約</li>
+                        <li>Geminiが傾向分析・インサイト生成</li>
+                        <li>レポートを自動フォーマット</li>
+                        <li>関係者に自動配信</li>
+                        <li>作成時間ゼロ</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="flow">
+            <h2 class="section-title">エージェントフロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>スケジュール実行（Scheduled Starter）</h3>
+                        <p>毎月1日の10:00に実行。先月分のデータを集計対象とする。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>経費データ集約（Sheets連携）</h3>
+                        <p>経費申請データシートから先月分のデータを取得。合計金額、科目別内訳、承認ステータスを集計。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>勤怠データ集約（Sheets連携）</h3>
+                        <p>勤怠データシートから先月分を取得。総労働時間、残業時間、有給取得率を集計。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>タスクデータ集約（Sheets連携）</h3>
+                        <p>タスク管理シートから完了率、期限超過件数、平均完了日数を集計。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>傾向分析（Gemini）</h3>
+                        <p>前月比較、異常値検出、改善提案をGeminiが自動生成。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>レポート生成（Gemini）</h3>
+                        <p>エグゼクティブサマリー、詳細データ、アクションアイテムを含む月次レポートを作成。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h3>配信（Chat DM / Gmail）</h3>
+                        <p>経営層・管理職・人事担当者に自動送信。ダッシュボードURLも添付。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="config">
+            <h2 class="section-title">エージェント設定</h2>
+            <div class="agent-list">
+                <div class="agent-item">
+                    <span class="agent-badge">エージェント名</span>
+                    <h3>月次レポート自動生成エージェント</h3>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">説明</span>
+                    <p>経費・勤怠・タスクの全データを自動集約し、Geminiで分析して月次レポートを生成・配信</p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">スターター</span>
+                    <p>Scheduled（毎月1日 10:00）</p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">ステップ</span>
+                    <p>Sheets（経費取得）→ Sheets（勤怠取得）→ Sheets（タスク取得）→ Gemini（傾向分析）→ Gemini（レポート生成）→ Chat DM（配信）</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="prompt1">
+            <h2 class="section-title">ステップ1：データ集約と前処理</h2>
+            <div class="code-block">Aggregate and summarize monthly data from all sources.
+
+Target period: {previous_month} (YYYY-MM)
+
+【経費データ】
+Total applications: {expense_count}件
+Total amount: ¥{expense_total}
+By category:
+{expense_breakdown}
+Approval status:
+- 承認済: {approved}件
+- 承認待ち: {pending}件
+- 差し戻し: {rejected}件
+
+【勤怠データ】
+Total employees: {employee_count}名
+Total working hours: {total_hours}時間
+Total overtime: {overtime_total}時間
+Average overtime per person: {avg_overtime}時間
+36協定違反: {violation_count}件
+有給取得率: {paid_leave_rate}%
+
+【タスクデータ】
+Total tasks: {task_count}件
+Completed on time: {ontime_count}件 ({ontime_rate}%)
+Overdue: {overdue_count}件 ({overdue_rate}%)
+Average completion time: {avg_completion}日
+
+Prepare this data for trend analysis.</div>
+        </section>
+
+        <section class="lesson-section" id="prompt2">
+            <h2 class="section-title">ステップ2：傾向分析プロンプト</h2>
+            <div class="code-block">Analyze trends and generate insights from monthly data.
+
+Current month data:
+{current_month_data}
+
+Previous month data (for comparison):
+{previous_month_data}
+
+Analysis tasks:
+1. Compare current vs previous month
+2. Identify significant changes (>10% difference)
+3. Detect anomalies or concerning patterns
+4. Generate improvement recommendations
+
+Output format in Japanese:
+
+【経費分析】
+前月比: {expense_change}% ({increase/decrease})
+主な変動要因: [analysis]
+注目ポイント: [insights]
+
+【勤怠分析】
+残業時間前月比: {overtime_change}% ({increase/decrease})
+36協定リスク: {risk_level} (HIGH/MEDIUM/LOW)
+改善推奨: [recommendations]
+
+【タスク分析】
+完了率前月比: {completion_change}% ({increase/decrease})
+期限遵守率: {ontime_rate}%
+ボトルネック: [identified bottlenecks]
+
+【総合評価】
+全体スコア: {overall_score}/100点
+トレンド: {trend} (改善/悪化/横ばい)
+重点アクション: [top 3 action items]</div>
+        </section>
+
+        <section class="lesson-section" id="prompt3">
+            <h2 class="section-title">ステップ3：レポート生成プロンプト</h2>
+            <div class="code-block">Generate executive monthly report in Japanese.
+
+Data summary:
+{data_summary}
+
+Trend analysis:
+{trend_analysis}
+
+Create a comprehensive report with the following sections:
+
+---
+# {YYYY年MM月} バックオフィス月次レポート
+
+## エグゼクティブサマリー
+[3-4 sentences highlighting key findings and overall status]
+
+## 1. 経費管理
+### 月間サマリー
+- 申請件数: {expense_count}件
+- 総額: ¥{expense_total}
+- 前月比: {expense_change}%
+
+### 科目別内訳
+{expense_breakdown_table}
+
+### インサイト
+{expense_insights}
+
+## 2. 勤怠管理
+### 月間サマリー
+- 総労働時間: {total_hours}時間
+- 総残業時間: {overtime_total}時間
+- 一人あたり平均残業: {avg_overtime}時間
+- 36協定違反: {violation_count}件
+
+### トレンド
+{attendance_trends}
+
+### アラート
+{attendance_alerts}
+
+## 3. タスク管理
+### 月間サマリー
+- 完了タスク: {completed_count}件
+- 期限内完了率: {ontime_rate}%
+- 平均完了日数: {avg_completion}日
+
+### パフォーマンス分析
+{task_performance}
+
+## 4. アクションアイテム
+### 今月対応すべき課題
+1. [High priority action]
+2. [Medium priority action]
+3. [Medium priority action]
+
+### 改善提案
+{improvement_suggestions}
+
+## 5. 次月の注目ポイント
+{next_month_focus}
+
+---
+レポート生成日時: {current_datetime}
+自動生成: Google Workspace Studio
+---</div>
+        </section>
+
+        <section class="lesson-section" id="distribution">
+            <h2 class="section-title">レポート配信メッセージ</h2>
+            <div class="code-block">{YYYY年MM月} バックオフィス月次レポート
+
+経営層・管理職各位
+
+先月のバックオフィス業務に関する月次レポートをお送りします。
+
+【サマリー】
+経費: ¥{expense_total} (前月比{expense_change}%)
+残業: {overtime_total}時間 (前月比{overtime_change}%)
+タスク完了率: {completion_rate}% (期限内完了{ontime_rate}%)
+
+【重点アクション】
+1. {action_1}
+2. {action_2}
+3. {action_3}
+
+詳細は以下のレポート全文をご確認ください。
+
+{report_full_text}
+
+【参考資料】
+・経費ダッシュボード: {expense_dashboard_url}
+・勤怠ダッシュボード: {attendance_dashboard_url}
+・タスクダッシュボード: {task_dashboard_url}
+
+ご不明点がございましたら、お気軽にお問い合わせください。
+
+バックオフィス自動化システム</div>
+        </section>
+
+        <section class="lesson-section" id="dashboard">
+            <h2 class="section-title">ダッシュボード連携</h2>
+            <div class="note-card">
+                <h4>Google Data Studioでの可視化</h4>
+                <p>スプレッドシートのデータをGoogle Data Studio（Looker Studio）と連携し、リアルタイムダッシュボードを作成できます。</p>
+            </div>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">Dashboard 1</div>
+                    <h3>経費ダッシュボード</h3>
+                    <p>科目別推移グラフ、承認ステータス、月次トレンドを可視化。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Dashboard 2</div>
+                    <h3>勤怠ダッシュボード</h3>
+                    <p>残業時間推移、36協定アラート、メンバー別勤務状況。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Dashboard 3</div>
+                    <h3>タスクダッシュボード</h3>
+                    <p>完了率推移、期限超過状況、優先度別タスク分布。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="customization">
+            <h2 class="section-title">レポートのカスタマイズ</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Custom 1</div>
+                    <div>
+                        <h3>部門別レポート</h3>
+                        <p>全社レポートに加えて、部門ごとの詳細レポートを自動生成。各部門長に配信。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Custom 2</div>
+                    <div>
+                        <h3>週次サマリー</h3>
+                        <p>月次レポートに加えて、週次の簡易サマリーを毎週金曜に配信。速報性を向上。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Custom 3</div>
+                    <div>
+                        <h3>四半期レポート</h3>
+                        <p>3ヶ月分のデータを統合し、四半期レビュー用の詳細レポートを作成。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="tips">
+            <h2 class="section-title">実装のポイント</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Point 1</div>
+                    <div>
+                        <h3>データ品質の確保</h3>
+                        <p>レポート生成前にデータの整合性をチェック。欠損値や異常値があれば事前に通知。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Point 2</div>
+                    <div>
+                        <h3>レポートのアーカイブ</h3>
+                        <p>生成したレポートはGoogle Driveの専用フォルダに自動保存。過去レポートの参照が容易に。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Point 3</div>
+                    <div>
+                        <h3>配信リストの管理</h3>
+                        <p>配信先リストをスプレッドシートで管理。役職変更時も柔軟に対応可能。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="integration-review">
+            <h2 class="section-title">全5レッスンの統合</h2>
+            <div class="success-card">
+                <h4>バックオフィス業務の完全自動化を実現</h4>
+                <p>Lesson 1〜5で構築したエージェントにより、経費申請の受付から月次レポート配信まで、全てのバックオフィス業務が自動化されました。</p>
+            </div>
+            <div class="element-grid" style="margin-top: 2rem;">
+                <div class="element-card">
+                    <div class="element-number">Lesson 1</div>
+                    <h3>経費受付自動化</h3>
+                    <p>フォーム受付→レシート解析→自動仕分け</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Lesson 2</div>
+                    <h3>承認フロー自動化</h3>
+                    <p>金額判定→承認ルーティング→自動承認</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Lesson 3</div>
+                    <h3>勤怠自動集計</h3>
+                    <p>カレンダー連携→勤怠集計→異常検知</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Lesson 4</div>
+                    <h3>タスク自動管理</h3>
+                    <p>タスク割り当て→進捗追跡→自動リマインド</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Lesson 5</div>
+                    <h3>レポート自動生成</h3>
+                    <p>データ集約→レポート生成→自動配信</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="summary">
+            <h2 class="section-title">コース完了おめでとうございます</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>経費・勤怠・タスクのデータ自動集約を実装</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Geminiによる傾向分析とインサイト生成</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>月次レポートの自動フォーマット化</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>経営層への自動配信の実現</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>バックオフィス業務の90%効率化を達成</span>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 3rem;">
+                <h4>次のステップ</h4>
+                <ul>
+                    <li>構築したエージェントを実際の業務で運用開始</li>
+                    <li>チームメンバーへの利用方法の共有と教育</li>
+                    <li>運用データを収集し、さらなる改善ポイントを特定</li>
+                    <li>他の業務プロセスへの自動化の展開</li>
+                    <li>Google Workspace Studioの新機能を継続的にキャッチアップ</li>
+                </ul>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson4.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="index.html" class="nav-next">
+                コース一覧に戻る
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

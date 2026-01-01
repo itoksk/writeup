@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：経営判断を加速する！全KPIをリアルタイム可視化するCSダッシュボード | カスタマーサクセス完全自動化講座</title>
+    <meta name="description" content="データ集約→KPI計算→ダッシュボード更新→週次レポート配信。CSの全体状況を可視化。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 05/05</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">05</div>
+            <h1 class="lesson-title">経営判断を加速する！全KPIをリアルタイム可視化するCSダッシュボード</h1>
+            <p class="lesson-subtitle">データ集約→KPI計算→ダッシュボード更新→週次レポート配信</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>
+                    問い合わせ対応時間、NPS推移、チャーンスコア、契約更新率など、カスタマーサクセスの主要KPIを自動集計し、
+                    Googleデータポータルのダッシュボードにリアルタイム反映します。週次で経営層向けレポートも自動生成・配信します。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before：手動集計</div>
+                    <ul class="comparison-list">
+                        <li>各システムから手動でデータ抽出</li>
+                        <li>Excelで集計・グラフ作成</li>
+                        <li>週次レポート作成に半日</li>
+                        <li>データの鮮度が低い（週次更新）</li>
+                        <li>過去データとの比較が困難</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After：自動更新</div>
+                    <ul class="comparison-list">
+                        <li>全データを自動集約</li>
+                        <li>ダッシュボードが常に最新</li>
+                        <li>レポート作成は完全自動（0分）</li>
+                        <li>リアルタイムでKPI確認可能</li>
+                        <li>AIが自動でトレンド分析</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">主要KPI一覧</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">KPI 01</div>
+                    <h3>問い合わせ対応時間</h3>
+                    <p>一次対応時間の平均と、問い合わせカテゴリ別の内訳。目標：3分以内。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">KPI 02</div>
+                    <h3>NPS推移</h3>
+                    <p>月次NPSスコアの推移と、推奨者/中立者/批判者の割合。目標：NPS 50以上。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">KPI 03</div>
+                    <h3>契約更新率</h3>
+                    <p>月次の契約更新率とフォローアップ実施率。目標：更新率90%以上。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">KPI 04</div>
+                    <h3>チャーンリスク顧客数</h3>
+                    <p>高リスク・中リスク・低リスク顧客の分布と、フォローアップ完了率。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">KPI 05</div>
+                    <h3>顧客エンゲージメント</h3>
+                    <p>平均ログイン頻度、アクティブユーザー率、機能利用率の推移。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">KPI 06</div>
+                    <h3>CSM生産性</h3>
+                    <p>担当顧客数、フォローアップ実施数、解約防止成功率。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動化フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>日次トリガー：データ集約</h3>
+                        <p>毎朝6時に、各レッスンで構築したスプレッドシートからデータを自動収集します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>KPIの自動計算</h3>
+                        <p>問い合わせ件数、平均対応時間、NPS平均、更新率など、主要KPIを自動計算します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>ダッシュボード用シートに出力</h3>
+                        <p>計算結果を専用のスプレッドシートに書き込み、データポータルと連携します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>週次レポート生成（月曜9時）</h3>
+                        <p>Geminiが過去1週間のKPI推移を分析し、インサイトと推奨アクションを含むレポートを生成します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>経営層・CSチームに配信</h3>
+                        <p>生成されたレポートをGmailで自動送信し、Slackにもサマリーを投稿します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">ダッシュボード用スプレッドシート構造</h2>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>シート名</th>
+                            <th>内容</th>
+                            <th>更新頻度</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>daily_metrics</code></td>
+                            <td>日次KPI（問い合わせ件数、対応時間など）</td>
+                            <td>毎日6:00</td>
+                        </tr>
+                        <tr>
+                            <td><code>weekly_nps</code></td>
+                            <td>週次NPSスコアと回答数</td>
+                            <td>毎週月曜</td>
+                        </tr>
+                        <tr>
+                            <td><code>monthly_renewal</code></td>
+                            <td>月次契約更新率とフォローアップ実施率</td>
+                            <td>月初</td>
+                        </tr>
+                        <tr>
+                            <td><code>churn_risk</code></td>
+                            <td>チャーンリスク顧客の分布と推移</td>
+                            <td>毎週月曜</td>
+                        </tr>
+                        <tr>
+                            <td><code>engagement</code></td>
+                            <td>顧客エンゲージメント指標</td>
+                            <td>毎日6:00</td>
+                        </tr>
+                        <tr>
+                            <td><code>csm_performance</code></td>
+                            <td>CSM別の生産性指標</td>
+                            <td>毎週月曜</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Agent設定</h2>
+
+            <div class="agent-list">
+                <div class="agent-item">
+                    <div class="agent-badge">Starter（日次）</div>
+                    <h3>スケジュールトリガー：毎日6:00</h3>
+                    <p>トリガー条件：毎朝6時にKPI集計を実行</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 1: 各データソースから情報収集</h3>
+            <div class="code-block">以下のスプレッドシートからデータを収集し、日次KPIを計算してください。
+
+【データソース】
+問い合わせ対応: {{sheets.inquiry_responses}}
+NPS調査回答: {{sheets.nps_responses}}
+契約情報: {{sheets.contracts}}
+チャーンスコア: {{sheets.churn_scores}}
+顧客行動ログ: {{sheets.customer_activities}}
+
+【計算期間】
+昨日（{{date.yesterday}}）のデータ
+
+【計算するKPI】
+1. 問い合わせ件数と平均対応時間
+2. 新規NPS回答数と平均スコア
+3. 契約更新対象数とフォローアップ実施数
+4. 高リスク顧客数と中リスク顧客数
+5. アクティブユーザー数とログイン総数
+
+以下の形式でJSON出力：
+{
+  "date": "YYYY-MM-DD",
+  "inquiries": {
+    "total_count": 数値,
+    "avg_response_time_minutes": 数値,
+    "by_category": {"質問": 数値, "クレーム": 数値, "要望": 数値}
+  },
+  "nps": {
+    "response_count": 数値,
+    "avg_score": 数値,
+    "promoters": 数値,
+    "passives": 数値,
+    "detractors": 数値
+  },
+  "renewals": {
+    "due_count": 数値,
+    "followed_up_count": 数値,
+    "follow_up_rate": "%"
+  },
+  "churn_risk": {
+    "high_risk": 数値,
+    "medium_risk": 数値,
+    "low_risk": 数値
+  },
+  "engagement": {
+    "active_users": 数値,
+    "total_logins": 数値,
+    "avg_login_per_user": 数値
+  }
+}</div>
+
+            <div class="note-card" style="margin-top: 1rem;">
+                <h4>データ書き込み先</h4>
+                <p>計算結果を「CSダッシュボード」スプレッドシートの各シートに追記します。</p>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">週次レポート生成Agent</h3>
+            <div class="agent-list" style="margin-top: 1rem;">
+                <div class="agent-item">
+                    <div class="agent-badge">Starter（週次）</div>
+                    <h3>スケジュールトリガー：毎週月曜9:00</h3>
+                    <p>トリガー条件：毎週月曜日9時にレポート生成を実行</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 2: 週次データの集計と分析</h3>
+            <div class="code-block">過去1週間（{{date.last_week_start}} 〜 {{date.last_week_end}}）のKPIを集計し、トレンドを分析してください。
+
+【週次データ】
+日次メトリクス: {{sheets.daily_metrics}}（過去7日分）
+前週データ: {{sheets.previous_week_summary}}
+
+【分析指示】
+1. 各KPIの週次合計・平均を計算
+2. 前週比での増減率を計算
+3. トレンド（改善/悪化/横ばい）を判定
+4. 注目すべき変化を3つ抽出
+
+以下の形式でJSON出力：
+{
+  "week": "YYYY年MM月第N週",
+  "summary": {
+    "total_inquiries": 数値,
+    "avg_response_time": 数値,
+    "weekly_nps": 数値,
+    "renewal_rate": "%",
+    "high_risk_customers": 数値
+  },
+  "vs_previous_week": {
+    "inquiries_change": "+X% | -X%",
+    "response_time_change": "+X% | -X%",
+    "nps_change": "+X点 | -X点",
+    "renewal_rate_change": "+X% | -X%"
+  },
+  "trends": {
+    "inquiries": "改善 | 悪化 | 横ばい",
+    "response_time": "改善 | 悪化 | 横ばい",
+    "nps": "改善 | 悪化 | 横ばい",
+    "renewals": "改善 | 悪化 | 横ばい"
+  },
+  "key_insights": [
+    "インサイト1",
+    "インサイト2",
+    "インサイト3"
+  ]
+}</div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 3: レポート文章の生成</h3>
+            <div class="code-block">以下のデータをもとに、経営層向けの週次CSレポートを生成してください。
+
+【週次サマリー】
+{{step2.summary}}
+
+【前週比】
+{{step2.vs_previous_week}}
+
+【トレンド】
+{{step2.trends}}
+
+【主要インサイト】
+{{step2.key_insights}}
+
+【レポート作成の指示】
+1. エグゼクティブサマリー（3行程度）
+2. 主要KPIのハイライト（箇条書き）
+3. 前週比での改善点と悪化点
+4. 今週の推奨アクション（3つ）
+5. 来週の注目ポイント
+
+以下の形式で出力：
+
+【件名】
+週次CSレポート - YYYY年MM月第N週
+
+【本文】
+（ここにレポート本文）</div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 4: レポート配信</h3>
+            <div class="note-card">
+                <h4>Gmail送信設定</h4>
+                <p>宛先：経営層・CSチームリーダー、件名：{{step3.subject}}、本文：{{step3.body}}</p>
+            </div>
+
+            <div class="code-block">【週次CSレポート】YYYY年MM月第N週
+
+{{step3.executive_summary}}
+
+【主要KPI】
+• 問い合わせ件数: {{step2.summary.total_inquiries}}件 (前週比{{step2.vs_previous_week.inquiries_change}})
+• 平均対応時間: {{step2.summary.avg_response_time}}分 (前週比{{step2.vs_previous_week.response_time_change}})
+• NPS: {{step2.summary.weekly_nps}}点 (前週比{{step2.vs_previous_week.nps_change}})
+• 契約更新率: {{step2.summary.renewal_rate}} (前週比{{step2.vs_previous_week.renewal_rate_change}})
+• 高リスク顧客: {{step2.summary.high_risk_customers}}社
+
+【今週の推奨アクション】
+{{step3.recommended_actions}}
+
+【来週の注目ポイント】
+{{step3.next_week_focus}}
+
+詳細ダッシュボード: {{dashboard.url}}
+
+#週次レポート #カスタマーサクセス</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Googleデータポータルとの連携</h2>
+            <div class="feature-highlight">
+                <h3>ダッシュボード作成手順</h3>
+                <ul style="list-style: decimal; padding-left: 1.5rem; margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li>Googleデータポータル（https://datastudio.google.com）にアクセス</li>
+                    <li>「作成」→「レポート」を選択</li>
+                    <li>データソースとして「CSダッシュボード」スプレッドシートを接続</li>
+                    <li>各シート（daily_metrics、weekly_npsなど）をデータソースとして追加</li>
+                    <li>グラフを配置（折れ線グラフ、棒グラフ、円グラフ、スコアカード）</li>
+                    <li>日付範囲フィルタを追加して、期間を動的に変更可能にする</li>
+                    <li>CSチームとレポートを共有（閲覧権限）</li>
+                </ul>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">推奨グラフ構成</h3>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">グラフ 01</div>
+                    <h3>KPIスコアカード</h3>
+                    <p>主要KPIの現在値と前週比を大きく表示。一目で状況を把握できます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">グラフ 02</div>
+                    <h3>問い合わせ推移</h3>
+                    <p>日次問い合わせ件数の折れ線グラフ。カテゴリ別の積み上げグラフも効果的。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">グラフ 03</div>
+                    <h3>NPS推移</h3>
+                    <p>週次NPSスコアの折れ線グラフ。推奨者/中立者/批判者の割合も併記。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">グラフ 04</div>
+                    <h3>契約更新率</h3>
+                    <p>月次更新率の棒グラフ。目標ライン（90%）を引いて達成状況を可視化。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">グラフ 05</div>
+                    <h3>チャーンリスク分布</h3>
+                    <p>高/中/低リスク顧客の割合を円グラフで表示。週次推移も確認。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">グラフ 06</div>
+                    <h3>CSM生産性</h3>
+                    <p>担当CSM別の顧客数、フォローアップ実施数、解約防止成功数。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実装のポイント</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">データ品質</div>
+                    <div>
+                        <h3>データの正確性と一貫性</h3>
+                        <p>各レッスンで構築したスプレッドシートのデータ形式を統一し、欠損値や異常値を自動チェックすることで、KPI計算の精度を保ちます。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">リアルタイム性</div>
+                    <div>
+                        <h3>更新頻度の最適化</h3>
+                        <p>問い合わせ件数など頻繁に変わるKPIは日次更新、NPSなど変化が少ないKPIは週次更新とすることで、パフォーマンスを最適化します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">アクショナブル</div>
+                    <div>
+                        <h3>インサイトから行動へ</h3>
+                        <p>単なる数値の羅列ではなく、「NPS低下の原因は機能利用率の低下」など、原因分析と具体的な対策をレポートに含めることが重要です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">コース全体のまとめ</h2>
+            <div class="success-card">
+                <h4>カスタマーサクセス完全自動化の達成</h4>
+                <p>
+                    このコースで学んだ5つの自動化を組み合わせることで、問い合わせ対応からチャーン防止、レポーティングまで、
+                    カスタマーサクセス業務の大部分を自動化できます。CSチームは戦略的な顧客対応に集中でき、顧客満足度と契約更新率が大幅に向上します。
+                </p>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">コース全体で達成した自動化</h3>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">Lesson 1</div>
+                    <h3>問い合わせ自動対応</h3>
+                    <p>一次対応時間を30分→3分に短縮。24時間365日対応可能に。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Lesson 2</div>
+                    <h3>契約更新フォロー</h3>
+                    <p>フォローアップ漏れをゼロにし、契約更新率を70%→90%に向上。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Lesson 3</div>
+                    <h3>NPS自動調査</h3>
+                    <p>調査回収率を30%→60%に改善。低評価への即時フォロー実現。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Lesson 4</div>
+                    <h3>チャーンリスク検知</h3>
+                    <p>解約30日前にリスクを検知し、月間解約率を5%→2%に削減。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Lesson 5</div>
+                    <h3>ダッシュボード自動化</h3>
+                    <p>レポート作成時間を半日→0分に。リアルタイムでKPI確認可能。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめチェックリスト</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>カスタマーサクセスの主要KPI（6つ）を理解した</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>複数のデータソースから自動的にKPIを集計できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Googleデータポータルでダッシュボードを作成し、リアルタイム更新できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Geminiで週次レポートを自動生成し、インサイトと推奨アクションを提示できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Lesson 1〜5の全自動化を統合し、カスタマーサクセス業務を包括的に自動化できる</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">次のステップ</h2>
+            <div class="feature-highlight">
+                <h3>学習を終えたあなたへ</h3>
+                <p style="margin-bottom: 1rem;">
+                    おめでとうございます！カスタマーサクセス完全自動化講座を修了しました。
+                    学んだ知識を実際のビジネスに適用し、顧客満足度の向上とチームの生産性向上を実現してください。
+                </p>
+                <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li><strong>実践：</strong>まずは1つのレッスンから実装を始めましょう</li>
+                    <li><strong>測定：</strong>自動化の効果を数値で測定し、継続的に改善しましょう</li>
+                    <li><strong>共有：</strong>成功事例をチームや組織で共有し、横展開しましょう</li>
+                    <li><strong>発展：</strong>学んだ技術を他の業務プロセスにも応用しましょう</li>
+                </ul>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson4.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="index.html" class="nav-next">
+                コース一覧へ
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

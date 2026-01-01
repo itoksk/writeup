@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：36協定違反を未然に防ぐ！残業時間をリアルタイム監視するアラートシステム | バックオフィス業務ゼロ化講座</title>
+    <meta name="description" content="Google Workspace Studioで経費・勤怠・タスクを完全自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+    <style>
+        :root {
+            --accent-primary: #f59e0b;
+            --accent-secondary: #d97706;
+            --accent-tertiary: #b45309;
+            --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+            --bg-secondary: #fef3c7;
+            --bg-tertiary: #fde68a;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 3 / 5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">03</div>
+            <h1 class="lesson-title">36協定違反を未然に防ぐ！残業時間をリアルタイム監視するアラートシステム</h1>
+            <p class="lesson-subtitle">カレンダー連携→勤怠集計→アラート発報</p>
+        </header>
+
+        <section class="lesson-section" id="goal">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>Google Calendarの予定から勤務時間を自動集計し、月間残業時間や有給取得率を計算。36協定違反リスクや長時間労働を自動検知してアラートを発報するエージェントを作成します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="overview">
+            <h2 class="section-title">このレッスンで作成するもの</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">従来の勤怠管理</div>
+                    <ul>
+                        <li>タイムカードを手動集計</li>
+                        <li>Excelで残業時間を計算</li>
+                        <li>36協定チェックは月末に実施</li>
+                        <li>長時間労働の発見が遅れる</li>
+                        <li>集計に毎月3〜4時間かかる</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">自動化後の勤怠管理</div>
+                    <ul>
+                        <li>カレンダーから自動集計</li>
+                        <li>残業時間をリアルタイム計算</li>
+                        <li>36協定を毎日自動チェック</li>
+                        <li>異常を即座に検知・通知</li>
+                        <li>集計作業が完全自動化</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="flow">
+            <h2 class="section-title">エージェントフロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>スケジュール実行（Scheduled Starter）</h3>
+                        <p>毎日19:00に実行し、その日のカレンダーイベントを取得。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>勤務時間計算（Gemini）</h3>
+                        <p>カレンダーイベントから勤務時間を抽出。始業・終業時刻、休憩時間を識別して実労働時間を算出。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>月間残業時間集計（Sheets連携）</h3>
+                        <p>スプレッドシートから当月の累積残業時間を取得。今日の残業時間を加算。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>異常検知（Gemini）</h3>
+                        <p>36協定の上限（月45時間）と比較。80%超過でイエローアラート、100%超過でレッドアラートを判定。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>アラート通知（Chat DM）</h3>
+                        <p>異常を検知した場合、本人と人事担当者に即座に通知。対策を促す。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>データ記録（Sheets連携）</h3>
+                        <p>勤怠データ（日付、勤務時間、残業時間、累積残業時間）をスプレッドシートに記録。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="config">
+            <h2 class="section-title">エージェント設定</h2>
+            <div class="agent-list">
+                <div class="agent-item">
+                    <span class="agent-badge">エージェント名</span>
+                    <h3>勤怠自動集計＆異常検知エージェント</h3>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">説明</span>
+                    <p>Google Calendarから勤務時間を自動集計し、36協定違反リスクや長時間労働を検知してアラート発報</p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">スターター</span>
+                    <p>Scheduled（毎日19:00）</p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">ステップ</span>
+                    <p>Calendar（イベント取得）→ Gemini（勤務時間計算）→ Sheets（月間集計取得）→ Gemini（異常検知）→ 条件分岐 → Chat DM（アラート）→ Sheets（データ記録）</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="calendar">
+            <h2 class="section-title">カレンダー設定</h2>
+            <div class="note-card">
+                <h4>勤務予定の記録方法</h4>
+                <p>Google Calendarに以下の形式で予定を記録してください。エージェントがこれらのイベントを解析します。</p>
+            </div>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">タイプ 1</div>
+                    <h3>通常勤務</h3>
+                    <p>タイトル: 「勤務」<br>時間: 09:00-18:00（休憩1時間含む）</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">タイプ 2</div>
+                    <h3>残業</h3>
+                    <p>タイトル: 「勤務（残業）」<br>時間: 09:00-21:00</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">タイプ 3</div>
+                    <h3>有給休暇</h3>
+                    <p>タイトル: 「有給」<br>終日イベント</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="prompt1">
+            <h2 class="section-title">勤務時間計算プロンプト</h2>
+            <div class="code-block">Analyze today's calendar events and calculate working hours.
+
+Calendar events:
+{calendar_events}
+
+Calculation rules:
+1. Standard working hours: 8 hours (09:00-18:00 with 1 hour break)
+2. If event title contains "勤務", calculate actual working hours
+3. Subtract 1 hour break for shifts longer than 6 hours
+4. Overtime = Total hours - 8 hours
+5. If event title is "有給", mark as paid leave (8 hours credited)
+
+Output format in Japanese:
+日付: {date}
+勤務開始: [start_time]
+勤務終了: [end_time]
+休憩時間: [break_hours]時間
+実労働時間: [work_hours]時間
+残業時間: [overtime_hours]時間
+有給: [Yes/No]
+
+If no work event found, output:
+日付: {date}
+勤務開始: -
+勤務終了: -
+休憩時間: -
+実労働時間: 0時間
+残業時間: 0時間
+有給: No</div>
+        </section>
+
+        <section class="lesson-section" id="prompt2">
+            <h2 class="section-title">異常検知プロンプト</h2>
+            <div class="code-block">Check for overtime violations and health risks.
+
+Data:
+- Today's overtime: {today_overtime}時間
+- Monthly cumulative overtime: {monthly_overtime}時間
+- 36協定上限: 45時間/月
+- Current month progress: {days_elapsed}日/{month_days}日
+
+Analysis:
+1. Calculate overtime percentage: (monthly_overtime / 45) × 100
+2. Project end-of-month overtime if current pace continues
+3. Determine alert level:
+   - GREEN: < 36時間 (80%未満)
+   - YELLOW: 36-45時間 (80-100%)
+   - RED: > 45時間 (100%超過)
+
+Output format:
+ステータス: [GREEN/YELLOW/RED]
+月間残業時間: {monthly_overtime}時間
+上限までの残り: {remaining}時間
+使用率: {percentage}%
+月末予測: {projected}時間
+警告: [Japanese warning message if YELLOW or RED]
+
+Example for RED:
+ステータス: RED
+月間残業時間: 48時間
+上限までの残り: -3時間
+使用率: 107%
+月末予測: 55時間
+警告: 36協定の上限を超過しています。直ちに労働時間の調整が必要です。</div>
+        </section>
+
+        <section class="lesson-section" id="sheets">
+            <h2 class="section-title">スプレッドシート設定</h2>
+            <div class="note-card">
+                <h4>勤怠データシートの作成</h4>
+                <p>「勤怠データ」という名前のスプレッドシートを作成し、以下のヘッダーを設定してください。</p>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>A列</th>
+                            <th>B列</th>
+                            <th>C列</th>
+                            <th>D列</th>
+                            <th>E列</th>
+                            <th>F列</th>
+                            <th>G列</th>
+                            <th>H列</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>日付</td>
+                            <td>氏名</td>
+                            <td>勤務開始</td>
+                            <td>勤務終了</td>
+                            <td>実労働時間</td>
+                            <td>残業時間</td>
+                            <td>月間累積残業</td>
+                            <td>アラート</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="alert-yellow">
+            <h2 class="section-title">イエローアラート通知</h2>
+            <div class="code-block">【注意】残業時間が上限に近づいています
+
+{name}さん
+
+今月の残業時間が36協定の上限に近づいています。
+
+【勤怠状況】
+今月の累積残業時間: {monthly_overtime}時間
+36協定上限: 45時間
+残り時間: {remaining}時間
+使用率: {percentage}%
+
+【月末予測】
+現在のペースで推移すると、月末には{projected}時間の残業が見込まれます。
+
+【推奨アクション】
+・業務の優先順位を見直してください
+・可能な業務は翌月に延期してください
+・必要に応じて上長に相談してください
+
+人事部</div>
+        </section>
+
+        <section class="lesson-section" id="alert-red">
+            <h2 class="section-title">レッドアラート通知</h2>
+            <div class="code-block">【緊急】36協定上限を超過しています
+
+{name}さん
+CC: 人事部、直属上長
+
+今月の残業時間が36協定の上限を超過しました。
+直ちに対策が必要です。
+
+【勤怠状況】
+今月の累積残業時間: {monthly_overtime}時間
+36協定上限: 45時間
+超過時間: {excess}時間
+使用率: {percentage}%
+
+【緊急対応】
+1. 本日以降の残業を禁止します
+2. 緊急でない業務は全て停止してください
+3. 業務の引き継ぎ・延期について上長と協議してください
+4. 人事部に状況報告を提出してください（期限：明日17:00）
+
+このまま放置すると、労働基準法違反となる可能性があります。
+速やかに対応をお願いします。
+
+人事部</div>
+        </section>
+
+        <section class="lesson-section" id="tips">
+            <h2 class="section-title">実装のポイント</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Point 1</div>
+                    <div>
+                        <h3>カレンダー運用ルールの統一</h3>
+                        <p>チーム全体で勤務予定の記録方法を統一。テンプレートを作成して共有。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Point 2</div>
+                    <div>
+                        <h3>複数メンバーへの展開</h3>
+                        <p>チーム全員のカレンダーを監視する場合、メンバーごとにエージェントを作成するか、Calendar APIで全員分を一括取得。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Point 3</div>
+                    <div>
+                        <h3>有給取得率の追跡</h3>
+                        <p>有給イベントもカウントし、年間取得率をダッシュボードで可視化。取得促進に活用。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="summary">
+            <h2 class="section-title">レッスンまとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Google Calendarから勤務時間を自動集計</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>残業時間のリアルタイム計算を実装</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>36協定違反リスクの自動検知</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>イエロー・レッドアラートの発報</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>勤怠データの自動記録と可視化</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson2.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson4.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

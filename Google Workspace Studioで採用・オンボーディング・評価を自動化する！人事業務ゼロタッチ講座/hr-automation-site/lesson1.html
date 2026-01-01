@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：採用連絡を80%削減！履歴書AI要約から結果通知まで一気通貫フロー | 人事業務ゼロタッチ講座</title>
+    <meta name="description content="Google Workspace Studioで採用・オンボーディング・評価を自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 1/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">01</div>
+            <h1 class="lesson-title">採用連絡を80%削減！履歴書AI要約から結果通知まで一気通貫フロー</h1>
+            <p class="lesson-subtitle">応募受付→書類選考→面接調整→結果連絡までのフロー自動化</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>採用候補者との連絡業務を80%削減。応募受付から書類選考、面接日程調整、結果連絡までの一連のフローを自動化し、Geminiによる履歴書要約で選考の質を向上させます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before - 手作業での採用連絡</div>
+                    <ul>
+                        <li>応募者への受付確認メールを1件ずつ作成</li>
+                        <li>履歴書を読み込んで手作業で評価シート作成</li>
+                        <li>面接官と候補者の空き時間を往復メールで調整</li>
+                        <li>選考結果を個別にメール作成・送信</li>
+                        <li>1名の採用に20時間以上のメール対応</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After - 自動化された採用フロー</div>
+                    <ul>
+                        <li>フォーム送信で自動受付確認メール</li>
+                        <li>Geminiが履歴書を解析・要約して評価シート生成</li>
+                        <li>空き時間を自動検索して日程調整リンク送信</li>
+                        <li>選考結果に応じて自動でメールテンプレート選択</li>
+                        <li>メール対応時間を80%削減</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動化の全体フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>応募フォーム受付</h3>
+                        <p>Google Formで応募情報を受付。フォーム送信をトリガーにエージェントが起動し、候補者へ自動で受付確認メールを送信します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>履歴書自動要約</h3>
+                        <p>添付された履歴書・職務経歴書をGeminiが解析。スキル、経験年数、強みを抽出し、面接官向けサマリーをスプレッドシートに自動記録します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>書類選考結果連絡</h3>
+                        <p>人事担当者がスプレッドシートで選考結果を入力すると、自動でメール送信。合格者には面接日程調整、不合格者には丁寧なお断りメールを配信。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>面接日程自動調整</h3>
+                        <p>面接官のカレンダーと候補者の希望日時を照合。空き時間を自動検索し、候補日程をメールで提案。候補者の選択で自動カレンダー登録。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エージェント構成</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">Starter</div>
+                    <h3>応募フォーム送信トリガー</h3>
+                    <p>Google Formの「新しい回答」をトリガーに設定。応募があると即座にエージェントが起動します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 1</div>
+                    <h3>受付確認メール送信</h3>
+                    <p>応募者のメールアドレスに自動で受付確認メールを送信。応募内容を確認した旨を通知します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 2</div>
+                    <h3>履歴書解析（Gemini）</h3>
+                    <p>添付ファイルからPDFを読み込み、Geminiで解析。職歴、スキル、経験年数、強みを抽出します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 3</div>
+                    <h3>候補者管理シート更新</h3>
+                    <p>抽出した情報をスプレッドシートに記録。氏名、連絡先、要約情報、選考ステータスを一元管理します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 4</div>
+                    <h3>選考結果監視</h3>
+                    <p>スプレッドシートの「選考結果」列を監視。値が変更されると次のステップに進みます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 5</div>
+                    <h3>結果に応じたメール送信</h3>
+                    <p>合格/不合格に応じてメールテンプレートを選択。合格者には面接日程調整リンクも含めて送信します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Geminiプロンプト：履歴書要約</h2>
+            <div class="code-block">以下の履歴書・職務経歴書から、採用選考に必要な情報を抽出してください。
+
+【抽出項目】
+1. 職務経歴の要約（150文字以内）
+2. 主なスキル・技術（箇条書き、最大5つ）
+3. 関連業務の経験年数
+4. 強み・特筆事項（100文字以内）
+5. 懸念点があれば記載
+
+【出力形式】
+JSON形式で以下のキーを使用してください：
+{
+  "summary": "職務経歴の要約",
+  "skills": ["スキル1", "スキル2", ...],
+  "experience_years": "X年",
+  "strengths": "強み・特筆事項",
+  "concerns": "懸念点（なければ空文字）"
+}
+
+【注意事項】
+- 事実のみを記載し、推測は含めない
+- ポジティブな表現を心がける
+- 応募ポジションとの関連性を意識する</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">メールテンプレート設定</h2>
+
+            <div class="note-card">
+                <h4>受付確認メール</h4>
+                <p>応募直後に送信。丁寧な文面で企業イメージを向上させます。</p>
+            </div>
+
+            <div class="code-block">件名: 【{{会社名}}】ご応募ありがとうございます
+
+{{氏名}} 様
+
+この度は {{会社名}} の {{募集職種}} にご応募いただき、誠にありがとうございます。
+
+応募内容を確認させていただき、書類選考の結果を
+{{選考期限}}までにメールにてご連絡いたします。
+
+何卒よろしくお願い申し上げます。
+
+{{会社名}} 人事部</div>
+
+            <div class="success-card">
+                <h4>合格通知メール（面接案内）</h4>
+                <p>面接日程調整リンクを含めた合格通知を送信します。</p>
+            </div>
+
+            <div class="code-block">件名: 【{{会社名}}】書類選考通過のご連絡
+
+{{氏名}} 様
+
+この度は {{会社名}} の {{募集職種}} にご応募いただき、
+誠にありがとうございます。
+
+書類選考の結果、次の面接選考にお進みいただくこととなりました。
+
+つきましては、下記より面接のご都合をお聞かせください。
+{{日程調整リンク}}
+
+ご多忙のところ恐縮ですが、何卒よろしくお願い申し上げます。
+
+{{会社名}} 人事部</div>
+
+            <div class="warning-card">
+                <h4>不合格通知メール</h4>
+                <p>丁寧な文面で今後の関係性も考慮したメッセージを送信します。</p>
+            </div>
+
+            <div class="code-block">件名: 【{{会社名}}】選考結果のご連絡
+
+{{氏名}} 様
+
+この度は {{会社名}} の {{募集職種}} にご応募いただき、
+誠にありがとうございます。
+
+慎重に選考を進めさせていただきました結果、
+誠に残念ながら、今回は見送らせていただくこととなりました。
+
+ご期待に沿えず大変申し訳ございませんが、
+何卒ご理解いただけますようお願い申し上げます。
+
+またの機会がございましたら、ぜひご応募をお待ちしております。
+
+{{会社名}} 人事部</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実装のポイント</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">フォーム設計</div>
+                    <div>
+                        <h3>必須項目を最小限に</h3>
+                        <p>氏名、メールアドレス、電話番号、履歴書添付のみを必須に。応募のハードルを下げつつ、必要情報は確保します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Gemini活用</div>
+                    <div>
+                        <h3>構造化データで抽出</h3>
+                        <p>JSON形式で出力させることで、スプレッドシートへの自動転記が容易になります。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">日程調整</div>
+                    <div>
+                        <h3>カレンダー連携</h3>
+                        <p>面接官のGoogleカレンダーと連携し、空き時間を自動検索。候補日程を3つ提案します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">エラー対策</div>
+                    <div>
+                        <h3>PDF読み込み失敗時の処理</h3>
+                        <p>履歴書が読み込めない場合は、人事担当者に通知メールを送信し、手作業でのフォローを促します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>応募フォーム送信で自動受付確認メールを送信</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Geminiで履歴書を解析し、評価シートを自動生成</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>選考結果に応じて合格/不合格メールを自動送信</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>面接官のカレンダーと連携して日程自動調整</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>候補者情報をスプレッドシートで一元管理</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="index.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <a href="lesson2.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

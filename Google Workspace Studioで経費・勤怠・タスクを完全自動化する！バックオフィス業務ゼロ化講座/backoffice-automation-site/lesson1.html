@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：レシート撮影だけで経理完了！AIが金額・科目を自動抽出する経費申請フロー | バックオフィス業務ゼロ化講座</title>
+    <meta name="description" content="Google Workspace Studioで経費・勤怠・タスクを完全自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+    <style>
+        :root {
+            --accent-primary: #f59e0b;
+            --accent-secondary: #d97706;
+            --accent-tertiary: #b45309;
+            --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+            --bg-secondary: #fef3c7;
+            --bg-tertiary: #fde68a;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 1 / 5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">01</div>
+            <h1 class="lesson-title">レシート撮影だけで経理完了！AIが金額・科目を自動抽出する経費申請フロー</h1>
+            <p class="lesson-subtitle">フォーム受付→レシート解析→自動仕分け</p>
+        </header>
+
+        <section class="lesson-section" id="goal">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>Google Formsで経費申請を受け付け、Geminiでレシート画像を自動解析して金額・日付・店舗名・経費科目を自動抽出し、スプレッドシートに記録するエージェントを作成します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="overview">
+            <h2 class="section-title">このレッスンで作成するもの</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">従来の経費申請</div>
+                    <ul>
+                        <li>紙のレシートを保管</li>
+                        <li>Excelに手入力</li>
+                        <li>経理担当者が目視確認</li>
+                        <li>不備があれば差し戻し</li>
+                        <li>1件あたり5〜10分かかる</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">自動化後の経費申請</div>
+                    <ul>
+                        <li>レシート写真をフォームに添付</li>
+                        <li>Geminiが自動で内容を解析</li>
+                        <li>金額・日付・科目を自動抽出</li>
+                        <li>スプレッドシートに自動記録</li>
+                        <li>1件あたり30秒で完了</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="flow">
+            <h2 class="section-title">エージェントフロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>フォーム受付（Forms Starter）</h3>
+                        <p>従業員がGoogle Formsで経費申請を送信。申請者名、用途、レシート画像を受け取る。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>レシート画像解析（Gemini）</h3>
+                        <p>添付されたレシート画像をGeminiが解析し、金額・日付・店舗名・推奨経費科目を抽出。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>データ整形（Gemini）</h3>
+                        <p>抽出したデータをスプレッドシート用に構造化。JSON形式で整理。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>シート記録（Sheets連携）</h3>
+                        <p>整形されたデータをスプレッドシートに1行追加。申請日時も自動記録。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>申請者へ通知（Chat DM）</h3>
+                        <p>申請完了を申請者に自動通知。抽出された内容を確認できるよう送信。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="config">
+            <h2 class="section-title">エージェント設定</h2>
+            <div class="agent-list">
+                <div class="agent-item">
+                    <span class="agent-badge">エージェント名</span>
+                    <h3>経費申請受付エージェント</h3>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">説明</span>
+                    <p>Google Formsで受け付けた経費申請のレシート画像をGeminiで解析し、データをスプレッドシートに自動記録</p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">スターター</span>
+                    <p>Forms（Google Forms経費申請フォーム）</p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">ステップ</span>
+                    <p>Gemini（レシート解析）→ Gemini（データ整形）→ Sheets（行追加）→ Chat DM（通知）</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="setup">
+            <h2 class="section-title">事前準備：Google Formsの作成</h2>
+            <div class="note-card">
+                <h4>フォーム設定</h4>
+                <p>以下の質問項目を持つGoogle Formsを作成してください：</p>
+            </div>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">質問 1</div>
+                    <h3>申請者名</h3>
+                    <p>記述式（必須）</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">質問 2</div>
+                    <h3>経費の用途</h3>
+                    <p>記述式（必須）</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">質問 3</div>
+                    <h3>レシート画像</h3>
+                    <p>ファイルアップロード（必須）</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="prompt1">
+            <h2 class="section-title">ステップ1：レシート解析プロンプト</h2>
+            <div class="code-block">Analyze the receipt image and extract the following information:
+
+1. Total amount (数値のみ、カンマなし)
+2. Date (YYYY-MM-DD形式)
+3. Store name (店舗名)
+4. Category (以下から選択)
+   - 交通費
+   - 接待交際費
+   - 消耗品費
+   - 通信費
+   - その他
+
+Output in Japanese as follows:
+金額: [amount]
+日付: [date]
+店舗: [store]
+科目: [category]
+
+If information cannot be extracted, output "不明" for that field.</div>
+        </section>
+
+        <section class="lesson-section" id="prompt2">
+            <h2 class="section-title">ステップ2：データ整形プロンプト</h2>
+            <div class="code-block">Convert the following expense data into a structured format for spreadsheet entry.
+
+Input data:
+申請者: {form_submitter}
+用途: {form_purpose}
+レシート解析結果: {receipt_analysis}
+
+Output format (comma-separated values):
+{current_datetime}, {submitter}, {purpose}, {amount}, {date}, {store}, {category}
+
+Example:
+2025-01-15 14:30:00, 山田太郎, クライアント打ち合わせ, 3500, 2025-01-14, スターバックス, 接待交際費
+
+Output only the comma-separated line, no explanations.</div>
+        </section>
+
+        <section class="lesson-section" id="sheets">
+            <h2 class="section-title">ステップ3：スプレッドシート設定</h2>
+            <div class="note-card">
+                <h4>シート準備</h4>
+                <p>「経費申請データ」という名前のスプレッドシートを作成し、1行目に以下のヘッダーを設定してください。</p>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>A列</th>
+                            <th>B列</th>
+                            <th>C列</th>
+                            <th>D列</th>
+                            <th>E列</th>
+                            <th>F列</th>
+                            <th>G列</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>申請日時</td>
+                            <td>申請者</td>
+                            <td>用途</td>
+                            <td>金額</td>
+                            <td>日付</td>
+                            <td>店舗</td>
+                            <td>科目</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="warning-card" style="margin-top: 1rem;">
+                <h4>Sheetsステップ設定</h4>
+                <p>Workspace Studioのステップで「Sheets > 行を追加」を選択し、上記で作成したスプレッドシートを指定。データ整形プロンプトの出力をそのまま追加します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="notification">
+            <h2 class="section-title">ステップ4：申請完了通知</h2>
+            <div class="code-block">経費申請を受け付けました。
+
+申請者: {submitter}
+用途: {purpose}
+金額: ¥{amount}
+日付: {date}
+店舗: {store}
+科目: {category}
+
+承認プロセスが開始されます。
+進捗は経費管理シートで確認できます。</div>
+        </section>
+
+        <section class="lesson-section" id="tips">
+            <h2 class="section-title">実装のポイント</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Point 1</div>
+                    <div>
+                        <h3>画像品質の向上</h3>
+                        <p>レシート画像は明るい場所で撮影するよう案内。フォームの説明文に撮影のコツを記載。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Point 2</div>
+                    <div>
+                        <h3>経費科目の統一</h3>
+                        <p>Geminiに選択肢を明示することで、分類の一貫性を確保。必要に応じて科目を追加。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Point 3</div>
+                    <div>
+                        <h3>エラーハンドリング</h3>
+                        <p>読み取り不可の場合は「不明」と出力し、後で人間が確認できるようにする。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="summary">
+            <h2 class="section-title">レッスンまとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Google Formsで経費申請を受け付ける仕組みを構築</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Geminiでレシート画像から金額・日付・店舗名を自動抽出</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>経費科目の自動分類を実装</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>スプレッドシートへのデータ自動記録を実現</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>申請者への自動通知を設定</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="index.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <a href="lesson2.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

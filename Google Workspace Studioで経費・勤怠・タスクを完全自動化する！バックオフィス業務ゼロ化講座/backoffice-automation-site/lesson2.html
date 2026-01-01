@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：5,000円未満は即承認！金額で振り分けるスマート承認フロー | バックオフィス業務ゼロ化講座</title>
+    <meta name="description" content="Google Workspace Studioで経費・勤怠・タスクを完全自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+    <style>
+        :root {
+            --accent-primary: #f59e0b;
+            --accent-secondary: #d97706;
+            --accent-tertiary: #b45309;
+            --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+            --bg-secondary: #fef3c7;
+            --bg-tertiary: #fde68a;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <div class="nav-lesson">LESSON 2 / 5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">02</div>
+            <h1 class="lesson-title">5,000円未満は即承認！金額で振り分けるスマート承認フロー</h1>
+            <p class="lesson-subtitle">金額判定→承認ルーティング→自動承認</p>
+        </header>
+
+        <section class="lesson-section" id="goal">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>経費申請の金額に応じて承認者を自動振り分けし、少額経費（5,000円未満）は自動承認、高額経費は部長・役員へエスカレーションする承認フローを実装します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="overview">
+            <h2 class="section-title">このレッスンで作成するもの</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">従来の承認フロー</div>
+                    <ul>
+                        <li>全ての申請を上司が確認</li>
+                        <li>高額案件も同じフロー</li>
+                        <li>承認者が不在で遅延</li>
+                        <li>承認待ちが積み上がる</li>
+                        <li>処理に2〜3日かかる</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">自動化後の承認フロー</div>
+                    <ul>
+                        <li>5,000円未満は即時自動承認</li>
+                        <li>金額で承認者を自動振り分け</li>
+                        <li>承認者に即座に通知</li>
+                        <li>承認期限を自動監視</li>
+                        <li>処理が即日〜1日で完了</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="flow">
+            <h2 class="section-title">エージェントフロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>スケジュール実行（Scheduled Starter）</h3>
+                        <p>1時間ごとに実行し、スプレッドシートから承認待ちの経費申請を取得。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>金額判定（Gemini）</h3>
+                        <p>申請金額を確認し、承認ルールに基づいて処理方法を決定（自動承認 / 上長承認 / 部長承認 / 役員承認）。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>条件分岐（If/Else）</h3>
+                        <p>金額に応じて次のステップを分岐。5,000円未満は自動承認パス、それ以上は承認依頼パスへ。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>承認者へ通知（Chat DM）</h3>
+                        <p>承認が必要な案件は、該当する承認者に申請内容と承認リンクを自動送信。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>ステータス更新（Sheets連携）</h3>
+                        <p>承認ステータス（自動承認済 / 承認依頼中 / 承認完了）をスプレッドシートに記録。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="config">
+            <h2 class="section-title">エージェント設定</h2>
+            <div class="agent-list">
+                <div class="agent-item">
+                    <span class="agent-badge">エージェント名</span>
+                    <h3>経費承認フローエージェント</h3>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">説明</span>
+                    <p>経費申請の金額に応じて承認者を自動振り分けし、少額経費は自動承認、高額経費は承認依頼を送信</p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">スターター</span>
+                    <p>Scheduled（1時間ごと）</p>
+                </div>
+                <div class="agent-item">
+                    <span class="agent-badge">ステップ</span>
+                    <p>Sheets（承認待ち取得）→ Gemini（金額判定）→ 条件分岐 → Chat DM（通知）→ Sheets（ステータス更新）</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="rules">
+            <h2 class="section-title">承認ルール設定</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">Level 1</div>
+                    <h3>5,000円未満</h3>
+                    <p>自動承認（即時処理）</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Level 2</div>
+                    <h3>5,000円〜30,000円</h3>
+                    <p>直属上長の承認が必要</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Level 3</div>
+                    <h3>30,000円〜100,000円</h3>
+                    <p>部長の承認が必要</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Level 4</div>
+                    <h3>100,000円以上</h3>
+                    <p>役員の承認が必要</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="prompt1">
+            <h2 class="section-title">金額判定プロンプト</h2>
+            <div class="code-block">Analyze the expense application and determine approval routing.
+
+Expense data:
+- Amount: {amount}円
+- Applicant: {applicant}
+- Purpose: {purpose}
+- Category: {category}
+
+Approval rules:
+- Less than 5,000円: AUTO_APPROVE
+- 5,000円 to 29,999円: MANAGER_APPROVE
+- 30,000円 to 99,999円: DIRECTOR_APPROVE
+- 100,000円 or more: EXECUTIVE_APPROVE
+
+Output format:
+APPROVAL_LEVEL: [level]
+APPROVER: [role/name]
+MESSAGE: [brief Japanese explanation]
+
+Example:
+APPROVAL_LEVEL: AUTO_APPROVE
+APPROVER: システム
+MESSAGE: 5,000円未満のため自動承認されました</div>
+        </section>
+
+        <section class="lesson-section" id="prompt2">
+            <h2 class="section-title">承認依頼メッセージ生成</h2>
+            <div class="code-block">経費申請の承認依頼
+
+【申請者】{applicant}
+【申請日時】{application_date}
+【金額】¥{amount}
+【用途】{purpose}
+【経費科目】{category}
+【店舗】{store}
+【支払日】{payment_date}
+
+この申請は承認が必要です。
+承認する場合は「承認」、差し戻す場合は「差し戻し」と返信してください。
+
+※承認期限: 申請から48時間以内</div>
+        </section>
+
+        <section class="lesson-section" id="sheets">
+            <h2 class="section-title">スプレッドシート設定</h2>
+            <div class="note-card">
+                <h4>ステータス列の追加</h4>
+                <p>Lesson 1で作成した「経費申請データ」シートに以下の列を追加してください。</p>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>H列</th>
+                            <th>I列</th>
+                            <th>J列</th>
+                            <th>K列</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>承認ステータス</td>
+                            <td>承認者</td>
+                            <td>承認日時</td>
+                            <td>備考</td>
+                        </tr>
+                        <tr>
+                            <td><code>承認待ち</code></td>
+                            <td><code>-</code></td>
+                            <td><code>-</code></td>
+                            <td><code>-</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="condition">
+            <h2 class="section-title">条件分岐の設定</h2>
+            <div class="code-block">IF APPROVAL_LEVEL == "AUTO_APPROVE":
+    ステータスを「自動承認済」に更新
+    申請者に承認完了通知を送信
+
+ELSE IF APPROVAL_LEVEL == "MANAGER_APPROVE":
+    上長に承認依頼を送信
+    ステータスを「上長承認待ち」に更新
+
+ELSE IF APPROVAL_LEVEL == "DIRECTOR_APPROVE":
+    部長に承認依頼を送信
+    ステータスを「部長承認待ち」に更新
+
+ELSE IF APPROVAL_LEVEL == "EXECUTIVE_APPROVE":
+    役員に承認依頼を送信
+    ステータスを「役員承認待ち」に更新</div>
+        </section>
+
+        <section class="lesson-section" id="auto-approve">
+            <h2 class="section-title">自動承認メッセージ</h2>
+            <div class="code-block">経費申請が自動承認されました
+
+【申請者】{applicant}
+【金額】¥{amount}
+【用途】{purpose}
+【経費科目】{category}
+
+5,000円未満のため、自動承認されました。
+経理処理が完了次第、払い戻しが行われます。
+
+承認日時: {approval_datetime}
+承認者: システム（自動承認）</div>
+        </section>
+
+        <section class="lesson-section" id="tips">
+            <h2 class="section-title">実装のポイント</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Point 1</div>
+                    <div>
+                        <h3>承認ルールのカスタマイズ</h3>
+                        <p>組織の規程に合わせて金額閾値と承認者を調整。経費科目ごとに異なるルールも設定可能。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Point 2</div>
+                    <div>
+                        <h3>承認期限の監視</h3>
+                        <p>Lesson 4で、承認待ちが48時間を超えた場合の自動リマインドを実装します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Point 3</div>
+                    <div>
+                        <h3>差し戻し対応</h3>
+                        <p>承認者から「差し戻し」の返信があった場合、申請者に通知し、再申請を促す仕組みも追加可能。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section" id="summary">
+            <h2 class="section-title">レッスンまとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>金額に応じた承認ルールを設定</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>5,000円未満の経費を自動承認する仕組みを構築</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>条件分岐で承認者を自動振り分け</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>承認者への自動通知を実装</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>承認ステータスの自動更新を実現</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson1.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson3.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

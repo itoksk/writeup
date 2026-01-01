@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：入社日から自動スタート！関係者全員にタスクが飛ぶオンボーディング自動化 | 人事業務ゼロタッチ講座</title>
+    <meta name="description" content="Google Workspace Studioで採用・オンボーディング・評価を自動化する">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 3/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">03</div>
+            <h1 class="lesson-title">入社日から自動スタート！関係者全員にタスクが飛ぶオンボーディング自動化</h1>
+            <p class="lesson-subtitle">入社日トリガー→タスク配信→進捗追跡→完了確認</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>新入社員の入社日を起点に、オンボーディングタスクを自動配信。本人・上司・人事・ITなど関係者へのタスク割り当て、進捗追跡、リマインド送信までを自動化し、スムーズな立ち上がりを支援します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before - 手作業のオンボーディング</div>
+                    <ul>
+                        <li>入社前日にバタバタと準備チェックリスト作成</li>
+                        <li>各部門へメールで個別にタスク依頼</li>
+                        <li>進捗を都度メールで確認、漏れが発生</li>
+                        <li>新入社員本人へのタスクも口頭で説明</li>
+                        <li>1ヶ月後の振り返りまで管理できない</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After - 自動化されたオンボーディング</div>
+                    <ul>
+                        <li>入社日の1週間前から自動でタスク配信開始</li>
+                        <li>関係部門へ自動でタスク割り当て・通知</li>
+                        <li>スプレッドシートで進捗を一元管理</li>
+                        <li>新入社員にDay1/Week1/Month1タスクを自動送信</li>
+                        <li>未完了タスクは自動リマインド</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動化の全体フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>入社日トリガー設定</h3>
+                        <p>社員マスタの「入社日」列を監視。入社日の7日前になったらエージェントが起動し、オンボーディングプロセスを開始します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>タスク自動配信（入社前）</h3>
+                        <p>IT部門へPCセットアップ依頼、総務へ座席準備依頼、上司へウェルカムメッセージ作成依頼など、入社前タスクを自動配信します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>入社日タスク配信</h3>
+                        <p>入社日当日、新入社員本人に初日のチェックリストをメール送信。システムログイン、書類提出、オリエンテーション参加などを案内します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>段階的タスク配信と進捗管理</h3>
+                        <p>1週間後、1ヶ月後のタイミングで追加タスクを配信。進捗をスプレッドシートで追跡し、未完了は自動リマインドします。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">オンボーディングタスク設計</h2>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>フェーズ</th>
+                            <th>タイミング</th>
+                            <th>対象者</th>
+                            <th>主なタスク</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>入社準備</td>
+                            <td>入社7日前</td>
+                            <td>IT・総務・上司</td>
+                            <td>PCセットアップ、座席準備、ウェルカムメッセージ作成</td>
+                        </tr>
+                        <tr>
+                            <td>Day 1</td>
+                            <td>入社当日</td>
+                            <td>新入社員</td>
+                            <td>ログイン確認、書類提出、オリエンテーション参加</td>
+                        </tr>
+                        <tr>
+                            <td>Week 1</td>
+                            <td>入社1週間後</td>
+                            <td>新入社員・上司</td>
+                            <td>業務理解度確認、1on1実施、初期タスク完了確認</td>
+                        </tr>
+                        <tr>
+                            <td>Month 1</td>
+                            <td>入社1ヶ月後</td>
+                            <td>新入社員・人事</td>
+                            <td>振り返り面談、フィードバック収集、今後の目標設定</td>
+                        </tr>
+                        <tr>
+                            <td>Month 3</td>
+                            <td>入社3ヶ月後</td>
+                            <td>新入社員・上司・人事</td>
+                            <td>試用期間評価、正式配属確認、育成計画策定</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エージェント構成</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">Starter</div>
+                    <h3>日次スケジュールトリガー</h3>
+                    <p>毎朝9時に起動し、社員マスタの入社日をチェック。「入社日-7日」「入社日」「入社日+7日」などの条件に合致する社員を抽出します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 1</div>
+                    <h3>フェーズ判定</h3>
+                    <p>現在日と入社日の差分から、どのフェーズのタスクを配信すべきかを判定します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 2</div>
+                    <div class="step-content">
+                        <h3>タスクテンプレート取得</h3>
+                        <p>フェーズに応じたタスクリストをスプレッドシートから取得。対象者、タスク内容、期限を読み込みます。</p>
+                    </div>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 3</div>
+                    <h3>タスク割り当てメール送信</h3>
+                    <p>各対象者にパーソナライズされたタスクリストをメール送信。Google Tasksと連携することも可能です。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 4</div>
+                    <h3>進捗管理シート更新</h3>
+                    <p>配信したタスクを進捗管理シートに記録。担当者、期限、ステータスを一元管理します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">Step 5</div>
+                    <h3>リマインド送信</h3>
+                    <p>期限2日前・当日に未完了タスクをチェックし、担当者へリマインドメールを自動送信します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">メールテンプレート</h2>
+
+            <div class="note-card">
+                <h4>入社準備タスク（IT部門宛）</h4>
+                <p>入社7日前にIT部門へ送信。PCセットアップとアカウント発行を依頼します。</p>
+            </div>
+
+            <div class="code-block">件名: 【入社準備】{{新入社員名}}様のPCセットアップ依頼
+
+IT部門 御中
+
+お疲れ様です。{{入社日}}に{{新入社員名}}様が入社されます。
+つきましては、下記の準備をお願いいたします。
+
+【準備タスク】
+☐ PCセットアップ（OS、ソフトウェアインストール）
+☐ メールアカウント発行（{{メールアドレス}}）
+☐ 各種システムアカウント作成
+☐ セキュリティ設定
+
+【期限】{{入社日の前日}}まで
+【進捗報告】下記シートに完了チェックをお願いします
+{{進捗管理シートURL}}
+
+よろしくお願いいたします。
+人事部</div>
+
+            <div class="success-card">
+                <h4>新入社員向けDay1タスク</h4>
+                <p>入社当日の朝に送信。初日のスケジュールとやるべきことを明確に伝えます。</p>
+            </div>
+
+            <div class="code-block">件名: 【{{会社名}}】ようこそ！初日のスケジュールとタスク
+
+{{新入社員名}} 様
+
+{{会社名}}へようこそ！本日から一緒に働けることを楽しみにしています。
+初日のスケジュールとタスクをご案内します。
+
+【本日のスケジュール】
+09:00 - 人事オリエンテーション（{{場所}}）
+10:30 - 部門紹介・メンバー挨拶
+12:00 - ランチ（上司・チームメンバーと）
+14:00 - システムログイン・環境セットアップ
+16:00 - 1on1ミーティング（上司）
+
+【初日のタスクチェックリスト】
+☐ 入社書類の提出（人事部へ）
+☐ 社員証の受け取り
+☐ メール・Slackへのログイン確認
+☐ 自己紹介スライド作成（明日の朝礼用）
+
+困ったことがあれば、いつでも人事部またはメンターにご連絡ください。
+
+{{会社名}} 人事部</div>
+
+            <div class="note-card">
+                <h4>Week1振り返りタスク（上司宛）</h4>
+                <p>入社1週間後に上司へ送信。初期立ち上がりの確認を促します。</p>
+            </div>
+
+            <div class="code-block">件名: 【確認依頼】{{新入社員名}}様の1週間振り返り
+
+{{上司名}} 様
+
+お疲れ様です。{{新入社員名}}様の入社から1週間が経過しました。
+つきましては、下記について確認をお願いいたします。
+
+【確認事項】
+☐ 業務の理解度（環境セットアップ、ツール使い方など）
+☐ チームへの馴染み具合
+☐ 困っていること・サポートが必要なこと
+☐ 次週以降のタスク設定
+
+【1on1実施のお願い】
+30分程度の1on1ミーティングを実施し、
+上記について確認・フォローアップをお願いします。
+
+実施後、下記フォームより報告をお願いいたします。
+{{振り返りフォームURL}}
+
+よろしくお願いいたします。
+人事部</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">進捗管理スプレッドシート設計</h2>
+
+            <div class="note-card">
+                <h4>スプレッドシートの構成</h4>
+                <p>新入社員ごとにタスクを管理し、進捗を可視化します。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>列名</th>
+                            <th>説明</th>
+                            <th>例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>新入社員名</code></td>
+                            <td>対象者の氏名</td>
+                            <td>山田太郎</td>
+                        </tr>
+                        <tr>
+                            <td><code>入社日</code></td>
+                            <td>入社日（日付形式）</td>
+                            <td>2026-01-15</td>
+                        </tr>
+                        <tr>
+                            <td><code>フェーズ</code></td>
+                            <td>タスクのフェーズ</td>
+                            <td>Day1 / Week1 / Month1</td>
+                        </tr>
+                        <tr>
+                            <td><code>タスク名</code></td>
+                            <td>具体的なタスク内容</td>
+                            <td>PCセットアップ</td>
+                        </tr>
+                        <tr>
+                            <td><code>担当者</code></td>
+                            <td>タスクの担当部門・担当者</td>
+                            <td>IT部門</td>
+                        </tr>
+                        <tr>
+                            <td><code>期限</code></td>
+                            <td>完了期限</td>
+                            <td>2026-01-14</td>
+                        </tr>
+                        <tr>
+                            <td><code>ステータス</code></td>
+                            <td>未着手/進行中/完了</td>
+                            <td>完了</td>
+                        </tr>
+                        <tr>
+                            <td><code>完了日</code></td>
+                            <td>タスク完了日時</td>
+                            <td>2026-01-13 15:30</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="success-card">
+                <h4>ダッシュボード機能</h4>
+                <p>別シートで新入社員ごとの進捗率を可視化。未完了タスクが一目でわかるダッシュボードを作成します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実装のポイント</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">日付計算</div>
+                    <div>
+                        <h3>相対日付での自動判定</h3>
+                        <p>「入社日-7日」「入社日+7日」など、相対的な日付計算でタスク配信タイミングを自動判定。新入社員ごとにカスタマイズされたスケジュールを実現します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">テンプレート管理</div>
+                    <div>
+                        <h3>タスクマスタシート</h3>
+                        <p>タスクテンプレートを別シートで管理。フェーズごとのタスクを一元管理し、追加・変更が容易になります。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Google Tasks連携</div>
+                    <div>
+                        <h3>タスク管理ツールと統合</h3>
+                        <p>Google Tasks APIを活用し、メールだけでなくタスク管理ツールにも自動でタスクを追加。担当者の日常ワークフローに組み込めます。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">進捗可視化</div>
+                    <div>
+                        <h3>リアルタイムダッシュボード</h3>
+                        <p>スプレッドシートのグラフ機能で、新入社員ごとの進捗率を可視化。人事担当者が一目でボトルネックを把握できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>入社日の7日前から自動でタスク配信開始</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>関係部門へ自動でタスク割り当て・通知</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Day1/Week1/Month1の段階的タスク配信</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>進捗をスプレッドシートで一元管理・可視化</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>未完了タスクへ自動リマインド送信</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson2.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson4.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

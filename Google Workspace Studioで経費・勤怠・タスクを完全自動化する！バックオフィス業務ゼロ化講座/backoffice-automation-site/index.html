@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>バックオフィス業務ゼロ化講座 | Google Workspace Studio</title>
+    <meta name="description" content="Google Workspace Studioで経費・勤怠・タスクを完全自動化する！バックオフィス業務ゼロ化講座">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #fef3c7;
+            --bg-tertiary: #fde68a;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent-primary: #f59e0b;
+            --accent-secondary: #d97706;
+            --accent-tertiary: #b45309;
+            --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --transition-fast: 0.15s ease;
+            --transition-base: 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        ::selection { background: var(--accent-primary); color: white; }
+
+        .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1rem 2rem; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); transition: var(--transition-base); }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { font-size: 0.875rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.02em; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: var(--transition-fast); }
+        .nav-links a:hover { color: var(--accent-primary); }
+
+        .hero { min-height: 100vh; display: flex; align-items: center; padding: 8rem 2rem 6rem; background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%); position: relative; overflow: hidden; }
+        .hero-pattern { position: absolute; inset: 0; background-image: radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0); background-size: 40px 40px; opacity: 0.5; }
+        .hero-content { max-width: 900px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 100px; font-size: 0.75rem; font-weight: 600; color: var(--accent-primary); margin-bottom: 2rem; box-shadow: var(--shadow-sm); }
+        .hero-title { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 1.5rem; color: var(--text-primary); }
+        .hero-title-accent { background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero-description { font-size: 1.125rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 2.5rem; line-height: 1.8; }
+        .hero-cta { display: inline-flex; align-items: center; gap: 0.75rem; padding: 1rem 2rem; background: var(--accent-gradient); color: white; text-decoration: none; font-size: 0.9375rem; font-weight: 600; border-radius: var(--radius-md); box-shadow: var(--shadow-md); transition: var(--transition-base); }
+        .hero-cta:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .hero-stats { display: flex; justify-content: center; gap: 4rem; margin-top: 4rem; padding-top: 3rem; border-top: 1px solid var(--border-color); }
+        .hero-stat { text-align: center; }
+        .hero-stat-value { font-size: 2.5rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero-stat-label { font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        .section { padding: 6rem 2rem; }
+        .section-container { max-width: 1200px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 4rem; }
+        .section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-primary); margin-bottom: 1rem; }
+        .section-title { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 1rem; }
+        .section-description { font-size: 1.125rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
+
+        .problem { background: var(--bg-secondary); }
+        .problem-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+        .problem-card { padding: 2rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); transition: var(--transition-base); }
+        .problem-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+        .problem-card.before { border-top: 4px solid #ef4444; }
+        .problem-card.after { border-top: 4px solid #22c55e; }
+        .problem-card-header { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.5rem; }
+        .problem-card.before .problem-card-header { color: #ef4444; }
+        .problem-card.after .problem-card-header { color: #22c55e; }
+        .problem-card-list { list-style: none; display: flex; flex-direction: column; gap: 0.875rem; }
+        .problem-card-list li { display: flex; align-items: flex-start; gap: 0.75rem; color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.6; }
+        .problem-card-list li::before { content: ''; flex-shrink: 0; width: 6px; height: 6px; margin-top: 0.5rem; border-radius: 50%; }
+        .problem-card.before .problem-card-list li::before { background: #ef4444; }
+        .problem-card.after .problem-card-list li::before { background: #22c55e; }
+
+        .advantage { background: var(--bg-primary); }
+        .advantage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .advantage-card { padding: 2rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); transition: var(--transition-base); }
+        .advantage-card:hover { border-color: var(--accent-primary); box-shadow: var(--shadow-md); }
+        .advantage-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: var(--radius-md); margin-bottom: 1.25rem; font-size: 1.5rem; }
+        .advantage-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .advantage-description { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+
+        .curriculum-list { display: flex; flex-direction: column; gap: 1rem; }
+        .curriculum-item { display: flex; align-items: flex-start; gap: 1.5rem; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); text-decoration: none; color: inherit; transition: var(--transition-base); }
+        .curriculum-item:hover { border-color: var(--accent-primary); box-shadow: var(--shadow-md); transform: translateX(8px); }
+        .curriculum-number { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: var(--radius-md); font-size: 1.25rem; font-weight: 700; color: var(--text-muted); flex-shrink: 0; transition: var(--transition-base); }
+        .curriculum-item:hover .curriculum-number { background: var(--accent-gradient); color: white; }
+        .curriculum-content { flex: 1; }
+        .curriculum-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); }
+        .curriculum-description { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+        .curriculum-arrow { color: var(--text-muted); transition: var(--transition-fast); }
+        .curriculum-item:hover .curriculum-arrow { color: var(--accent-primary); transform: translateX(4px); }
+
+        .features { background: var(--bg-secondary); }
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .feature-card { padding: 2rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); transition: var(--transition-base); }
+        .feature-card:hover { border-color: var(--accent-primary); box-shadow: var(--shadow-md); }
+        .feature-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: var(--radius-md); margin-bottom: 1.25rem; font-size: 1.25rem; font-weight: 700; color: var(--accent-primary); }
+        .feature-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .feature-description { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+
+        .cta { background: var(--bg-primary); text-align: center; }
+        .cta-content { max-width: 600px; margin: 0 auto; }
+        .cta-title { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; margin-bottom: 1rem; }
+        .cta-description { font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 2rem; }
+
+        .footer { padding: 3rem 2rem; border-top: 1px solid var(--border-color); background: var(--bg-secondary); }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .footer-text { font-size: 0.875rem; color: var(--text-muted); }
+        .footer-links a { font-size: 0.875rem; color: var(--text-secondary); text-decoration: none; transition: var(--transition-fast); }
+        .footer-links a:hover { color: var(--accent-primary); }
+
+        @media (max-width: 1024px) { .features-grid, .advantage-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { padding: 6rem 1.5rem 4rem; }
+            .hero-stats { flex-direction: column; gap: 1.5rem; }
+            .problem-grid, .features-grid, .advantage-grid { grid-template-columns: 1fr; }
+            .curriculum-item { flex-direction: column; gap: 1rem; }
+            .section { padding: 4rem 1.5rem; }
+            .footer-container { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+        [id] { scroll-margin-top: 80px; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-logo">Backoffice Automation</div>
+            <ul class="nav-links">
+                <li><a href="#problem">課題</a></li>
+                <li><a href="#advantage">自動化のメリット</a></li>
+                <li><a href="#curriculum">カリキュラム</a></li>
+                <li><a href="#features">習得スキル</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-pattern"></div>
+        <div class="hero-content">
+            <div class="hero-badge">Google Workspace Studio Course</div>
+            <h1 class="hero-title">
+                経費・勤怠・タスクを完全自動化<br>
+                <span class="hero-title-accent">バックオフィス業務ゼロ化</span>
+            </h1>
+            <p class="hero-description">
+                Google Workspace Studio と Gemini を活用して、経費精算・勤怠管理・タスク管理を90%効率化。
+                月次レポートまで完全自動化します。
+            </p>
+            <a href="#curriculum" class="hero-cta">
+                カリキュラムを見る
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value">90%</div>
+                    <div class="hero-stat-label">経費精算削減</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">0分</div>
+                    <div class="hero-stat-label">月次レポート作成</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">5</div>
+                    <div class="hero-stat-label">動画レッスン</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section problem" id="problem">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Problem & Solution</div>
+                <h2 class="section-title">バックオフィス業務の課題を解決</h2>
+                <p class="section-description">
+                    毎月繰り返されるルーティンワークを、AIが自動処理
+                </p>
+            </div>
+            <div class="problem-grid">
+                <div class="problem-card before">
+                    <div class="problem-card-header">Before</div>
+                    <ul class="problem-card-list">
+                        <li>経費申請のレシート確認に毎月2時間</li>
+                        <li>勤怠データの手動集計</li>
+                        <li>承認者への個別リマインド</li>
+                        <li>タスク進捗の確認に時間がかかる</li>
+                        <li>月次レポート作成に丸1日</li>
+                    </ul>
+                </div>
+                <div class="problem-card after">
+                    <div class="problem-card-header">After</div>
+                    <ul class="problem-card-list">
+                        <li>Geminiがレシートを自動解析・分類</li>
+                        <li>カレンダーから勤怠を自動収集</li>
+                        <li>承認待ち・期限切れを自動通知</li>
+                        <li>タスク期限を自動監視・リマインド</li>
+                        <li>月次レポートを自動生成・配信</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section advantage" id="advantage">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Why Automation</div>
+                <h2 class="section-title">自動化で得られるメリット</h2>
+                <p class="section-description">
+                    単純作業から解放され、本来の業務に集中
+                </p>
+            </div>
+            <div class="advantage-grid">
+                <div class="advantage-card">
+                    <div class="advantage-icon">📄</div>
+                    <h3 class="advantage-title">レシート自動読取</h3>
+                    <p class="advantage-description">Geminiがレシート画像を解析し、金額・日付・店舗名を自動抽出。科目分類も自動化。</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">⏰</div>
+                    <h3 class="advantage-title">勤怠自動集計</h3>
+                    <p class="advantage-description">カレンダーから勤務時間を自動算出。残業時間・有給取得率も自動モニタリング。</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">✅</div>
+                    <h3 class="advantage-title">承認フロー自動化</h3>
+                    <p class="advantage-description">金額に応じた承認者への自動振り分け。少額経費は自動承認で処理速度UP。</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">🔔</div>
+                    <h3 class="advantage-title">自動リマインド</h3>
+                    <p class="advantage-description">タスク期限3日前・前日に自動通知。未完了はエスカレーションまで自動化。</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">📊</div>
+                    <h3 class="advantage-title">月次レポート自動化</h3>
+                    <p class="advantage-description">経費・勤怠・タスクデータを自動集約。傾向分析付きレポートを自動配信。</p>
+                </div>
+                <div class="advantage-card">
+                    <div class="advantage-icon">🚨</div>
+                    <h3 class="advantage-title">異常検知アラート</h3>
+                    <p class="advantage-description">36協定違反リスク、経費異常パターンを自動検知してアラート発報。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="curriculum">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Curriculum</div>
+                <h2 class="section-title">5つのレッスンで完全習得</h2>
+                <p class="section-description">
+                    経費から月次レポートまで、段階的に自動化を実現
+                </p>
+            </div>
+            <div class="curriculum-list">
+                <a href="lesson1.html" class="curriculum-item">
+                    <div class="curriculum-number">01</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">レシート撮影だけで経理完了！AIが金額・科目を自動抽出する経費申請フロー</h3>
+                        <p class="curriculum-description">
+                            フォーム受付→レシート解析→自動仕分け。Geminiでレシート画像を解析し、経費科目を自動分類します。
+                        </p>
+                    </div>
+                    <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="lesson2.html" class="curriculum-item">
+                    <div class="curriculum-number">02</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">5,000円未満は即承認！金額で振り分けるスマート承認フロー</h3>
+                        <p class="curriculum-description">
+                            金額判定→承認ルーティング→自動承認。金額に応じた承認者振り分けと少額経費の自動承認を実装。
+                        </p>
+                    </div>
+                    <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="lesson3.html" class="curriculum-item">
+                    <div class="curriculum-number">03</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">36協定違反を未然に防ぐ！残業時間をリアルタイム監視するアラートシステム</h3>
+                        <p class="curriculum-description">
+                            カレンダー連携→勤怠集計→アラート発報。残業時間の自動計算と36協定チェックを実装。
+                        </p>
+                    </div>
+                    <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="lesson4.html" class="curriculum-item">
+                    <div class="curriculum-number">04</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">期限切れゼロを実現！3日前・前日・当日の段階リマインド自動化</h3>
+                        <p class="curriculum-description">
+                            タスク割り当て→進捗追跡→自動リマインド。期限前のリマインドと未完了タスクのエスカレーションを実装。
+                        </p>
+                    </div>
+                    <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="lesson5.html" class="curriculum-item">
+                    <div class="curriculum-number">05</div>
+                    <div class="curriculum-content">
+                        <h3 class="curriculum-title">経営層への報告を完全自動化！AIが作る月次インサイトレポート</h3>
+                        <p class="curriculum-description">
+                            データ集約→レポート生成→自動配信。経費・勤怠・タスクの月次サマリーを自動生成し経営層に配信。
+                        </p>
+                    </div>
+                    <svg class="curriculum-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section features" id="features">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">Skills</div>
+                <h2 class="section-title">このコースで身につくスキル</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">F</div>
+                    <h3 class="feature-title">Formsスターター活用</h3>
+                    <p class="feature-description">経費申請・各種申請をフォームで受け付け、自動処理する方法を習得。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">G</div>
+                    <h3 class="feature-title">Gemini画像解析</h3>
+                    <p class="feature-description">レシート画像から金額・日付・店舗名を自動抽出するプロンプト設計。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">C</div>
+                    <h3 class="feature-title">条件分岐ロジック</h3>
+                    <p class="feature-description">金額判定、承認ルーティング、異常検知など条件分岐を実装。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">S</div>
+                    <h3 class="feature-title">スプレッドシート連携</h3>
+                    <p class="feature-description">データの読み書き、集計、ダッシュボード連携を実装。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">R</div>
+                    <h3 class="feature-title">レポート自動生成</h3>
+                    <p class="feature-description">データ集計とGeminiによる分析コメント付きレポートを自動作成。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">N</div>
+                    <h3 class="feature-title">通知・リマインド</h3>
+                    <p class="feature-description">Chat DM、メール送信で関係者に自動通知する方法を習得。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section cta">
+        <div class="section-container">
+            <div class="cta-content">
+                <h2 class="cta-title">バックオフィス業務を<br>今すぐ自動化する</h2>
+                <p class="cta-description">5つのレッスンで、経費・勤怠・タスク管理をゼロタッチ化しましょう。</p>
+                <a href="#curriculum" class="hero-cta">
+                    カリキュラムを見る
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-text">Google Workspace Studio Course</div>
+            <div class="footer-links">
+                <a href="https://studio.workspace.google.com" target="_blank">Workspace Studio</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

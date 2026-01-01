@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：一次対応を90%削減！AIが即座に回答ドラフトを生成する問い合わせ自動処理フロー | カスタマーサクセス完全自動化講座</title>
+    <meta name="description" content="メール受信→内容分析→自動回答ドラフト作成。Geminiで問い合わせを自動分類し、回答を自動生成。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 01/05</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">01</div>
+            <h1 class="lesson-title">一次対応を90%削減！AIが即座に回答ドラフトを生成する問い合わせ自動処理フロー</h1>
+            <p class="lesson-subtitle">メール受信→内容分析→自動回答ドラフト作成</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>
+                    顧客からの問い合わせメールをGeminiが自動的に分類し、過去のFAQやナレッジベースを参照して適切な回答ドラフトを生成する仕組みを構築します。
+                    担当者は生成された回答をレビューして送信するだけで、一次対応時間を90%削減できます。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before：手動対応</div>
+                    <ul class="comparison-list">
+                        <li>全メールを手動で読んで分類</li>
+                        <li>FAQを探して回答文を作成</li>
+                        <li>担当者ごとに回答品質がバラバラ</li>
+                        <li>一次対応に平均30分</li>
+                        <li>夜間・休日は対応不可</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After：自動化</div>
+                    <ul class="comparison-list">
+                        <li>Geminiが自動で問い合わせを分類</li>
+                        <li>AIが過去FAQから回答ドラフト生成</li>
+                        <li>回答品質が常に均一</li>
+                        <li>担当者はレビューのみ（3分）</li>
+                        <li>24時間365日ドラフト生成可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動化フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>問い合わせメール受信</h3>
+                        <p>support@example.comに届いた新規メールをGmailトリガーで検知します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>内容を自動分類</h3>
+                        <p>Geminiがメール本文を解析し、「質問」「クレーム」「要望」「その他」に分類。緊急度も判定します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>FAQから回答検索</h3>
+                        <p>Googleドライブに保存されたFAQドキュメントを参照し、類似の質問と回答を抽出します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>回答ドラフト生成</h3>
+                        <p>Geminiが顧客の質問内容とFAQをもとに、丁寧で適切な回答文を自動生成します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Googleドキュメントに保存</h3>
+                        <p>生成された回答ドラフトをGoogleドキュメントに保存し、担当者にSlack通知を送信します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Agent設定</h2>
+
+            <div class="agent-list">
+                <div class="agent-item">
+                    <div class="agent-badge">Starter</div>
+                    <h3>Gmailトリガー：新規メール受信</h3>
+                    <p>トリガー条件：support@example.com宛の未読メール</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 1: メール内容を分類</h3>
+            <div class="code-block">あなたは優秀なカスタマーサポート担当者です。
+以下の問い合わせメールを分析し、カテゴリと緊急度を判定してください。
+
+【メール内容】
+件名: {{gmail.subject}}
+本文: {{gmail.body}}
+送信者: {{gmail.from}}
+
+以下の形式でJSON出力してください：
+{
+  "category": "質問 | クレーム | 要望 | その他",
+  "urgency": "高 | 中 | 低",
+  "summary": "問い合わせ内容の要約（50文字以内）",
+  "keywords": ["キーワード1", "キーワード2"]
+}</div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 2: FAQ検索と回答生成</h3>
+            <div class="code-block">以下の問い合わせに対して、FAQドキュメントを参照しながら適切な回答を生成してください。
+
+【問い合わせ情報】
+カテゴリ: {{step1.category}}
+緊急度: {{step1.urgency}}
+要約: {{step1.summary}}
+キーワード: {{step1.keywords}}
+
+【元のメール】
+件名: {{gmail.subject}}
+本文: {{gmail.body}}
+
+【FAQドキュメント】
+{{drive.faq_document}}
+
+【回答生成の指示】
+1. FAQから類似の質問を探す
+2. 顧客の状況に合わせて回答をカスタマイズ
+3. 丁寧で分かりやすい文章で作成
+4. 次のアクションがあれば明記
+5. 署名は含めない（自動挿入されるため）
+
+以下の形式で回答を生成してください：
+
+【件名】
+Re: {{gmail.subject}}
+
+【本文】
+（ここに回答本文）</div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 3: Googleドキュメント保存とSlack通知</h3>
+            <div class="note-card">
+                <h4>保存先</h4>
+                <p>「問い合わせ回答ドラフト」フォルダに、「[カテゴリ]_[送信者名]_[日時].txt」形式で保存</p>
+            </div>
+
+            <div class="code-block">【新規問い合わせ対応依頼】
+
+カテゴリ: {{step1.category}}
+緊急度: {{step1.urgency}}
+送信者: {{gmail.from}}
+件名: {{gmail.subject}}
+
+回答ドラフトを生成しました。
+確認してから送信してください。
+
+ドキュメント: {{document.url}}
+
+#カスタマーサポート #問い合わせ対応</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実装のポイント</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">分類精度</div>
+                    <div>
+                        <h3>カテゴリ定義を明確に</h3>
+                        <p>分類カテゴリはあなたのビジネスに合わせて調整してください。例：「技術的質問」「請求関連」「製品要望」など。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">FAQ管理</div>
+                    <div>
+                        <h3>FAQドキュメントの構造化</h3>
+                        <p>FAQは「質問」「回答」のペアで明確に記述し、定期的に更新することで回答品質が向上します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">緊急対応</div>
+                    <div>
+                        <h3>緊急度が高い場合の処理</h3>
+                        <p>緊急度が「高」の場合は、Slack通知に@mentionを追加するなど、即座に担当者が気づく仕組みを追加しましょう。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">期待される効果</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">効果 01</div>
+                    <h3>一次対応時間90%削減</h3>
+                    <p>平均30分かかっていた一次対応が、レビューのみの3分に短縮されます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">効果 02</div>
+                    <h3>回答品質の均一化</h3>
+                    <p>担当者による回答のバラつきがなくなり、常に高品質な対応が可能になります。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">効果 03</div>
+                    <h3>24時間対応可能</h3>
+                    <p>夜間・休日でも回答ドラフトが自動生成され、翌営業日の迅速な対応が可能です。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめチェックリスト</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Gmailトリガーで新規メールを検知する設定を理解した</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Geminiで問い合わせを自動分類するプロンプトを作成できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>FAQドキュメントを参照して回答を生成する仕組みを構築できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>生成した回答をGoogleドキュメントに保存し、Slack通知できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>緊急度に応じた処理分岐を実装できる</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="index.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <a href="lesson2.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：低評価は即フォロー！取引完了時に自動送信するNPS調査システム | カスタマーサクセス完全自動化講座</title>
+    <meta name="description" content="対象抽出→調査送信→回答集計→アラート発報。取引完了後に自動調査、低評価は即時フォロー。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 03/05</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">03</div>
+            <h1 class="lesson-title">低評価は即フォロー！取引完了時に自動送信するNPS調査システム</h1>
+            <p class="lesson-subtitle">対象抽出→調査送信→回答集計→アラート発報</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>
+                    取引完了やマイルストーン達成のタイミングで、自動的にNPS（Net Promoter Score）調査を送信し、回答を集計・分析する仕組みを構築します。
+                    低評価の場合は担当者に即座にアラートを送り、迅速なフォローアップを実現します。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before：手動調査</div>
+                    <ul class="comparison-list">
+                        <li>四半期に1回まとめて調査</li>
+                        <li>メール送信を手動で実施</li>
+                        <li>回収率が30%程度</li>
+                        <li>集計に1週間かかる</li>
+                        <li>低評価への対応が遅れる</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After：自動調査</div>
+                    <ul class="comparison-list">
+                        <li>取引完了後に即座に調査送信</li>
+                        <li>Googleフォームで自動配信</li>
+                        <li>回収率が60%に向上</li>
+                        <li>回答はリアルタイムで集計</li>
+                        <li>低評価は1時間以内にフォロー</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動化フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>トリガー：取引完了イベント</h3>
+                        <p>スプレッドシートの「ステータス」列が「完了」に変更されたことを検知します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>調査対象の判定</h3>
+                        <p>過去30日以内に調査を送信していないことを確認し、重複送信を防ぎます。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>パーソナライズド調査メール送信</h3>
+                        <p>Googleフォームのリンクを含む、顧客ごとにカスタマイズされたメールを自動送信します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>回答の自動集計と分析</h3>
+                        <p>フォーム回答をスプレッドシートに記録し、NPSスコアを自動計算します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>低評価アラートとフォローアップ</h3>
+                        <p>NPSスコアが6点以下の場合、担当者に緊急アラートを送信し、即座のフォローを促します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">NPS調査の設計</h2>
+            <div class="feature-highlight">
+                <h3>NPS（Net Promoter Score）とは</h3>
+                <p style="margin-bottom: 1rem;">「この製品/サービスを友人や同僚に薦める可能性はどのくらいですか？」という質問に0〜10点で回答してもらい、顧客ロイヤルティを測る指標です。</p>
+                <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li><strong>9〜10点：</strong>推奨者（Promoter）- 積極的に推奨してくれる顧客</li>
+                    <li><strong>7〜8点：</strong>中立者（Passive）- 満足はしているが熱狂的ではない</li>
+                    <li><strong>0〜6点：</strong>批判者（Detractor）- 不満を抱えている顧客</li>
+                </ul>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Googleフォームの質問例</h3>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">質問 1</div>
+                    <h3>NPS質問</h3>
+                    <p>当社のサービスを友人や同僚に薦める可能性はどのくらいですか？（0〜10点）</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">質問 2</div>
+                    <h3>理由（自由記述）</h3>
+                    <p>そのように評価した理由を教えてください。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">質問 3</div>
+                    <h3>改善要望（任意）</h3>
+                    <p>より良いサービスにするために改善すべき点があれば教えてください。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Agent設定</h2>
+
+            <div class="agent-list">
+                <div class="agent-item">
+                    <div class="agent-badge">Starter</div>
+                    <h3>スプレッドシートトリガー：行更新</h3>
+                    <p>トリガー条件：「ステータス」列が「完了」に変更された時</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 1: 調査対象の判定</h3>
+            <div class="code-block">以下の条件をチェックし、NPS調査を送信すべきか判定してください。
+
+【取引情報】
+顧客名: {{sheets.customer_name}}
+取引ID: {{sheets.transaction_id}}
+完了日: {{sheets.completion_date}}
+前回調査日: {{sheets.last_survey_date}}
+
+【判定条件】
+1. ステータスが「完了」である
+2. 前回調査日から30日以上経過している、または前回調査日が空欄
+3. 顧客メールアドレスが登録されている
+
+以下の形式でJSON出力してください：
+{
+  "should_send_survey": true または false,
+  "reason": "判定理由",
+  "customer_email": "顧客メールアドレス",
+  "customer_name": "顧客名"
+}</div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 2: 調査メール生成と送信</h3>
+            <div class="code-block">以下の顧客に対して、NPS調査のメールを生成してください。
+
+【顧客情報】
+顧客名: {{step1.customer_name}}
+メールアドレス: {{step1.customer_email}}
+取引内容: {{sheets.transaction_description}}
+完了日: {{sheets.completion_date}}
+
+【Googleフォームリンク】
+{{form.survey_link}}
+
+【メール生成の指示】
+1. 顧客名を含めてパーソナライズ
+2. 取引内容に触れて感謝を伝える
+3. 調査の重要性を簡潔に説明
+4. 回答時間は3分程度と明記
+5. フォームリンクを目立たせる
+
+以下の形式で出力：
+
+【件名】
+（ここに件名）
+
+【本文】
+（ここに本文）</div>
+
+            <div class="note-card">
+                <h4>Gmail送信設定</h4>
+                <p>宛先：{{step1.customer_email}}、件名：{{step2.subject}}、本文：{{step2.body}}</p>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 3: フォーム回答の監視（別Agent）</h3>
+            <div class="agent-list" style="margin-top: 1rem;">
+                <div class="agent-item">
+                    <div class="agent-badge">Starter</div>
+                    <h3>Googleフォームトリガー：新規回答</h3>
+                    <p>トリガー条件：NPS調査フォームに新規回答があった時</p>
+                </div>
+            </div>
+
+            <div class="code-block" style="margin-top: 1rem;">以下のNPS回答を分析し、フォローアップが必要か判定してください。
+
+【回答内容】
+顧客名: {{form.customer_name}}
+NPSスコア: {{form.nps_score}}
+評価理由: {{form.reason}}
+改善要望: {{form.improvement}}
+
+【分析指示】
+1. NPSスコアに基づいて顧客タイプを分類（推奨者/中立者/批判者）
+2. フォローアップの優先度を判定
+3. 担当CSMへの推奨アクションを生成
+
+以下の形式でJSON出力：
+{
+  "customer_type": "推奨者 | 中立者 | 批判者",
+  "follow_up_priority": "緊急 | 高 | 中 | 低",
+  "recommended_action": "担当CSMが取るべき具体的なアクション",
+  "sentiment_analysis": "回答のポジティブ/ネガティブ分析"
+}</div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 4: 低評価アラートとフォローアップ</h3>
+            <div class="warning-card">
+                <h4>緊急アラート条件</h4>
+                <p>NPSスコアが0〜6点（批判者）の場合、担当CSMに即座にSlack通知を送信します。</p>
+            </div>
+
+            <div class="code-block">【緊急】低評価アラート - 即座のフォローアップが必要です
+
+顧客名: {{form.customer_name}}
+NPSスコア: {{form.nps_score}}/10 (批判者)
+回答日時: {{form.timestamp}}
+
+【評価理由】
+{{form.reason}}
+
+【改善要望】
+{{form.improvement}}
+
+【感情分析】
+{{step3.sentiment_analysis}}
+
+【推奨アクション】
+{{step3.recommended_action}}
+
+担当CSM: @{{sheets.csm_name}}
+至急、顧客に連絡してフォローアップしてください。
+
+#NPS #低評価 #緊急対応</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実装のポイント</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">タイミング</div>
+                    <div>
+                        <h3>調査送信の最適タイミング</h3>
+                        <p>取引完了直後（1〜3日以内）が最も回答率が高くなります。契約更新前、サポート対応完了後など、複数のタイミングで調査を実施しましょう。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">回答率向上</div>
+                    <div>
+                        <h3>パーソナライゼーションと簡潔さ</h3>
+                        <p>顧客名や取引内容を含め、回答時間は3分以内に抑えることで回答率が大幅に向上します。インセンティブ（Amazonギフト券など）も効果的です。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">迅速なフォロー</div>
+                    <div>
+                        <h3>低評価への即時対応</h3>
+                        <p>批判者（0〜6点）には1時間以内に連絡し、問題解決に取り組むことで、解約を防ぎ、ロイヤルティを回復できる可能性があります。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">NPSデータの活用</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">活用 01</div>
+                    <h3>トレンド分析</h3>
+                    <p>月次・四半期ごとのNPS推移をグラフ化し、サービス改善の効果を測定します。Googleデータポータルで可視化できます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">活用 02</div>
+                    <h3>セグメント別分析</h3>
+                    <p>プラン別、業界別、担当CSM別にNPSを集計し、改善が必要な領域を特定します。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">活用 03</div>
+                    <h3>推奨者の活用</h3>
+                    <p>9〜10点をつけた推奨者には、事例インタビューや紹介プログラムへの参加を依頼できます。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめチェックリスト</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>NPS調査の設計とGoogleフォームの作成方法を理解した</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>取引完了トリガーで自動的に調査を送信できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>重複送信を防ぐための調査履歴管理を実装できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>フォーム回答をリアルタイムで集計・分析する仕組みを構築できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>低評価に対する緊急アラートと即座のフォローアップを自動化できる</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson2.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson4.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

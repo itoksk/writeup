@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：更新漏れゼロを実現！30日前から始める段階的リマインドシステム | カスタマーサクセス完全自動化講座</title>
+    <meta name="description" content="更新日監視→リマインド送信→担当者アサイン。30日前から段階的な自動フォローを実装。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 02/05</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">02</div>
+            <h1 class="lesson-title">更新漏れゼロを実現！30日前から始める段階的リマインドシステム</h1>
+            <p class="lesson-subtitle">更新日監視→リマインド送信→担当者アサイン</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">学習目標</h2>
+            <div class="goal-card">
+                <p>
+                    Googleスプレッドシートで管理している契約情報をもとに、更新日30日前から段階的にリマインドメールを自動送信する仕組みを構築します。
+                    フォローアップの抜け漏れをゼロにし、契約更新率を向上させます。
+                </p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">Before：手動フォロー</div>
+                    <ul class="comparison-list">
+                        <li>Excelで契約情報を管理</li>
+                        <li>担当者がカレンダーに手動登録</li>
+                        <li>フォローアップを忘れることがある</li>
+                        <li>更新直前の慌ただしい対応</li>
+                        <li>契約更新率70%</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">After：自動フォロー</div>
+                    <ul class="comparison-list">
+                        <li>Googleスプレッドシートで一元管理</li>
+                        <li>30/14/7日前に自動リマインド</li>
+                        <li>フォローアップ漏れゼロ</li>
+                        <li>余裕を持った更新交渉</li>
+                        <li>契約更新率90%</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">自動化フロー</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>日次トリガー：契約情報チェック</h3>
+                        <p>毎朝9時に、Googleスプレッドシートの契約管理シートを自動チェックします。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>更新日までの日数を計算</h3>
+                        <p>各契約の更新日と今日の日付を比較し、残り日数を計算します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>フォローアップタイミング判定</h3>
+                        <p>残り30日、14日、7日のいずれかに該当する契約を抽出します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>パーソナライズドメール生成</h3>
+                        <p>Geminiが顧客情報と契約内容をもとに、適切なリマインドメールを生成します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>メール送信と担当者通知</h3>
+                        <p>顧客にリマインドメールを送信し、担当CSMにSlackで通知します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">スプレッドシート構造</h2>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>列名</th>
+                            <th>データ型</th>
+                            <th>説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>customer_name</code></td>
+                            <td>テキスト</td>
+                            <td>顧客企業名</td>
+                        </tr>
+                        <tr>
+                            <td><code>contact_email</code></td>
+                            <td>メール</td>
+                            <td>担当者メールアドレス</td>
+                        </tr>
+                        <tr>
+                            <td><code>contract_start</code></td>
+                            <td>日付</td>
+                            <td>契約開始日</td>
+                        </tr>
+                        <tr>
+                            <td><code>contract_end</code></td>
+                            <td>日付</td>
+                            <td>契約更新日</td>
+                        </tr>
+                        <tr>
+                            <td><code>plan_name</code></td>
+                            <td>テキスト</td>
+                            <td>契約プラン名</td>
+                        </tr>
+                        <tr>
+                            <td><code>csm_name</code></td>
+                            <td>テキスト</td>
+                            <td>担当CSM名</td>
+                        </tr>
+                        <tr>
+                            <td><code>last_follow_up</code></td>
+                            <td>日付</td>
+                            <td>最終フォロー日</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Agent設定</h2>
+
+            <div class="agent-list">
+                <div class="agent-item">
+                    <div class="agent-badge">Starter</div>
+                    <h3>スケジュールトリガー：毎日9:00</h3>
+                    <p>トリガー条件：毎朝9時に実行</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 1: 契約情報取得と日数計算</h3>
+            <div class="code-block">Googleスプレッドシートから契約情報を取得し、更新日までの残り日数を計算してください。
+
+【スプレッドシート】
+{{sheets.contract_list}}
+
+【今日の日付】
+{{date.today}}
+
+以下の条件に該当する契約をJSON配列で出力してください：
+- 更新日まで残り30日（±1日）
+- 更新日まで残り14日（±1日）
+- 更新日まで残り7日（±1日）
+
+出力形式：
+[
+  {
+    "customer_name": "株式会社サンプル",
+    "contact_email": "担当者メール",
+    "contract_end": "2026-02-15",
+    "days_remaining": 30,
+    "plan_name": "エンタープライズ",
+    "csm_name": "山田太郎",
+    "follow_up_stage": "30日前 | 14日前 | 7日前"
+  }
+]</div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 2: リマインドメール生成</h3>
+            <div class="code-block">以下の契約に対して、適切なリマインドメールを生成してください。
+
+【契約情報】
+顧客名: {{step1.customer_name}}
+プラン: {{step1.plan_name}}
+更新日: {{step1.contract_end}}
+残り日数: {{step1.days_remaining}}日
+フォロー段階: {{step1.follow_up_stage}}
+
+【メール生成の指示】
+1. 30日前：更新案内と早期更新特典の提案
+2. 14日前：更新手続きの具体的な説明
+3. 7日前：最終リマインドと更新期限の強調
+
+顧客名とプラン名を含めてパーソナライズし、丁寧で親しみやすいトーンで作成してください。
+
+以下の形式で出力：
+
+【件名】
+（ここに件名）
+
+【本文】
+（ここに本文）
+
+【推奨アクション】
+担当CSMが次に取るべき行動を簡潔に記載</div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Step 3: メール送信とSlack通知</h3>
+            <div class="note-card">
+                <h4>Gmail送信設定</h4>
+                <p>宛先：{{step1.contact_email}}、件名：{{step2.subject}}、本文：{{step2.body}}</p>
+            </div>
+
+            <div class="code-block">【契約更新フォロー実施】
+
+顧客: {{step1.customer_name}}
+更新日: {{step1.contract_end}} (残り{{step1.days_remaining}}日)
+フォロー段階: {{step1.follow_up_stage}}
+
+リマインドメールを送信しました。
+
+【推奨アクション】
+{{step2.recommended_action}}
+
+担当CSM: @{{step1.csm_name}}
+
+#契約更新 #フォローアップ</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実装のポイント</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">段階的アプローチ</div>
+                    <div>
+                        <h3>3段階のフォローアップ</h3>
+                        <p>30日前は「早期更新特典」、14日前は「手続き案内」、7日前は「最終リマインド」と、段階ごとにメッセージを変えることで効果が高まります。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">パーソナライゼーション</div>
+                    <div>
+                        <h3>顧客ごとにカスタマイズ</h3>
+                        <p>顧客名、プラン名、契約期間などを含めることで、テンプレート感を減らし、開封率・返信率が向上します。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">重複防止</div>
+                    <div>
+                        <h3>フォロー履歴の記録</h3>
+                        <p>メール送信後は、スプレッドシートの「last_follow_up」列を更新し、同じ顧客に重複してメールを送らないようにします。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">応用パターン</h2>
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">応用 01</div>
+                    <h3>利用状況に応じた提案</h3>
+                    <p>過去3ヶ月のログイン頻度や機能利用状況をもとに、アップグレード提案や追加機能の紹介を含めることができます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">応用 02</div>
+                    <h3>早期更新インセンティブ</h3>
+                    <p>更新日の30日前までに更新手続きを完了した顧客には、割引や追加サービスを自動提案できます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">応用 03</div>
+                    <h3>解約リスクの検知</h3>
+                    <p>14日前のメールに反応がない場合、解約リスクありと判定し、担当CSMに緊急アラートを送信できます。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめチェックリスト</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>契約管理用のスプレッドシート構造を設計できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>日次トリガーで契約情報をチェックする仕組みを理解した</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>更新日までの残り日数を計算し、フォロータイミングを判定できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>段階に応じたパーソナライズドメールをGeminiで生成できる</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>重複送信を防ぐフォロー履歴の記録方法を実装できる</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson1.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson3.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>
