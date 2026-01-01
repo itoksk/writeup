@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3回：「こんなの作って」で本当にできる！初めてのバイブコーディング体験 | バイブコーディング基礎講座</title>
+    <meta name="description" content="チャットで指示するだけでコードが生成される体験">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 3/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">03</div>
+            <h1 class="lesson-title">「こんなの作って」で本当にできる！初めてのバイブコーディング体験</h1>
+            <p class="lesson-subtitle">チャットで指示するだけでコードが生成される体験</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>日本語で指示を出し、AIがコードを生成する基本フローを実際に体験します。シンプルな自己紹介Webページを作成し、「本当に言葉だけでWebページが作れる」ことを実感しましょう。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">バイブコーディングの基本フロー</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>作りたいものを日本語で伝える</h3>
+                        <p>Playgroundのチャット欄に、作りたいものを日本語で入力します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>AIが計画を立てる</h3>
+                        <p>AIがタスクを分析し、どうやって実現するか計画を立てます（Implementation Plan）。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>コードを自動生成</h3>
+                        <p>計画に基づいて、HTML/CSS/JavaScriptなどのコードを自動で生成・保存します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>結果を確認</h3>
+                        <p>生成されたファイルをブラウザで開いて動作確認。問題があれば追加指示。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実践：自己紹介ページを作る</h2>
+
+            <div class="note-card">
+                <h4>今回作るもの</h4>
+                <p>シンプルな自己紹介Webページ。名前、職業、趣味、連絡先などを掲載した1ページのサイトです。</p>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Step 1</div>
+                    <div>
+                        <h3>新しいフォルダを作成</h3>
+                        <p>デスクトップなど分かりやすい場所に「my-profile」という名前のフォルダを作成し、Antigravityで開きます。（File → Open Folder）</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Step 2</div>
+                    <div>
+                        <h3>Playgroundで指示を入力</h3>
+                        <p>左サイドバーからPlaygroundを開き、以下のように入力してみましょう：</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">シンプルな自己紹介ページを作ってください。
+
+- 名前：山田花子
+- 職業：マーケティング担当
+- 趣味：読書、旅行、カフェ巡り
+- ひとこと：新しいことに挑戦するのが好きです
+
+デザインは明るく親しみやすい雰囲気で、
+モバイルでも見やすいレスポンシブ対応にしてください。</div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Step 3</div>
+                    <div>
+                        <h3>AIの処理を見守る</h3>
+                        <p>Enterを押すと、AIが処理を開始します。以下のような流れで進みます：</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">処理1</div>
+                    <h3>タスクの分析</h3>
+                    <p>「自己紹介ページを作る」というタスクを理解</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">処理2</div>
+                    <h3>計画の作成</h3>
+                    <p>HTML構造、CSSスタイル、レスポンシブ対応の計画</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">処理3</div>
+                    <h3>ファイル生成</h3>
+                    <p>index.html や style.css を自動作成</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">処理4</div>
+                    <h3>完了報告</h3>
+                    <p>「完成しました」と報告し、確認方法を案内</p>
+                </div>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Step 4</div>
+                    <div>
+                        <h3>ブラウザで確認</h3>
+                        <p>生成された index.html を右クリック → 「ブラウザで開く」または、ファイルをブラウザにドラッグ＆ドロップして表示を確認します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-card">
+                <h4>できましたか？</h4>
+                <p>たった数行の日本語を入力しただけで、きれいなWebページが完成したはずです。これがバイブコーディングの威力です！</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">修正を依頼してみる</h2>
+
+            <div class="note-card">
+                <h4>完璧じゃなくても大丈夫</h4>
+                <p>最初の出力が100%思い通りでなくても問題ありません。追加の指示で簡単に修正できます。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>修正したいこと</th>
+                            <th>入力する指示</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>背景色を変えたい</td>
+                            <td>「背景色を薄いブルーに変更して」</td>
+                        </tr>
+                        <tr>
+                            <td>フォントを大きくしたい</td>
+                            <td>「名前のフォントサイズをもっと大きくして」</td>
+                        </tr>
+                        <tr>
+                            <td>写真を追加したい</td>
+                            <td>「プロフィール写真を表示する場所を追加して」</td>
+                        </tr>
+                        <tr>
+                            <td>SNSリンクを追加したい</td>
+                            <td>「TwitterとInstagramへのリンクボタンを追加して」</td>
+                        </tr>
+                        <tr>
+                            <td>全体的に作り直したい</td>
+                            <td>「デザインをもっとシンプルにして、白黒ベースで作り直して」</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warning-card">
+                <h4>ポイント</h4>
+                <p>AIは会話の文脈を覚えています。「さっき作ったページの〇〇を変えて」のように、前の作業を参照して指示できます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">生成されたコードを見てみよう</h2>
+
+            <div class="note-card">
+                <h4>コードを理解する必要はない</h4>
+                <p>バイブコーディングではコードを書く必要はありませんが、生成されたコードを「見る」ことで、どんな仕組みか少し理解できます。</p>
+            </div>
+
+            <div class="code-block">&lt;!-- AIが生成したHTMLの例 --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;山田花子 | プロフィール&lt;/title&gt;
+    &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="profile-card"&gt;
+        &lt;h1&gt;山田花子&lt;/h1&gt;
+        &lt;p class="job"&gt;マーケティング担当&lt;/p&gt;
+        &lt;div class="hobbies"&gt;
+            &lt;h2&gt;趣味&lt;/h2&gt;
+            &lt;p&gt;読書、旅行、カフェ巡り&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;p class="message"&gt;新しいことに挑戦するのが好きです&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">HTML</div>
+                    <h3>構造を定義</h3>
+                    <p>ページの骨格。名前、職業、趣味などの「何を表示するか」を記述。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">CSS</div>
+                    <h3>見た目を定義</h3>
+                    <p>色、フォント、レイアウトなど「どう見せるか」を記述。style.cssに保存。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">JS</div>
+                    <h3>動きを定義</h3>
+                    <p>ボタンを押したら動くなど「どう動作するか」を記述。今回は使っていないかも。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">うまくいかないときは</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">対処法1</div>
+                    <div>
+                        <h3>「うまくいかない」と伝える</h3>
+                        <p>具体的に何がうまくいかないか伝えましょう。「表示されない」「レイアウトが崩れる」など。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">対処法2</div>
+                    <div>
+                        <h3>最初からやり直す</h3>
+                        <p>「最初から作り直して」と伝えれば、新しくファイルを生成し直してくれます。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">対処法3</div>
+                    <div>
+                        <h3>モデルを変えてみる</h3>
+                        <p>右上のモデル選択から、Gemini 3 Flash や Claude Sonnet 4.5 など別のAIに切り替えてみる。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">対処法4</div>
+                    <div>
+                        <h3>指示を具体的にする</h3>
+                        <p>「シンプルに」ではなく「白背景、黒文字、中央揃え」のように具体的に伝える。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">ファイルの保存と管理</h2>
+
+            <div class="note-card">
+                <h4>AIが自動で保存</h4>
+                <p>生成されたファイルは、開いているフォルダに自動で保存されます。特別な操作は不要です。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ファイル</th>
+                            <th>内容</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>index.html</td>
+                            <td>メインのHTMLファイル。ブラウザで開くとページが表示される</td>
+                        </tr>
+                        <tr>
+                            <td>style.css</td>
+                            <td>スタイルシート。色やレイアウトを定義</td>
+                        </tr>
+                        <tr>
+                            <td>script.js</td>
+                            <td>JavaScript。動的な機能がある場合に生成される</td>
+                        </tr>
+                        <tr>
+                            <td>images/</td>
+                            <td>画像フォルダ。必要に応じて生成される</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="success-card">
+                <h4>作ったものは自分のもの</h4>
+                <p>生成されたファイルは完全にあなたのものです。コピーしたり、別の場所に移動したり、自由に使えます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Playgroundに日本語で指示を入力するだけでコードが生成される</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>AIがタスクを分析→計画→実行→報告まで自動で行う</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>修正は「〇〇に変えて」と追加指示するだけ</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>生成されたファイルは自動保存され、自由に使える</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>自己紹介ページを実際に作成できた！</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson2.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson4.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

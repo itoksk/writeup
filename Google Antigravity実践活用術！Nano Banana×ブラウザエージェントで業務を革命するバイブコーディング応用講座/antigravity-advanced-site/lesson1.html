@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回：無料で画像生成し放題！Nano Banana Pro | バイブコーディング応用講座</title>
+    <meta name="description" content="Nano Banana Proで開発素材を量産する方法を学ぶ">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 1/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">01</div>
+            <h1 class="lesson-title">無料で画像生成し放題！Nano Banana Proで開発素材を量産する方法</h1>
+            <p class="lesson-subtitle">内蔵画像生成AIでビジュアル制作を効率化</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>Google Antigravityに内蔵されている画像生成AI「Nano Banana Pro」を使って、開発に必要なアイコン、イラスト、UIモックアップを無料で生成できるようになります。API不要・追加料金なしで、高品質な画像素材を量産する方法を習得しましょう。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Nano Banana Proとは？</h2>
+
+            <div class="note-card">
+                <h4>Gemini 3 Pro Imageベースの画像生成AI</h4>
+                <p>Nano Banana Proは、Googleの最新画像生成モデル「Gemini 3 Pro Image」をベースにした内蔵AIです。2025年3月のGoogleブログで発表された「日本語テキスト描画精度95%」を実現する驚異の画像生成技術を、Antigravity内で無料で利用できます。</p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">従来の画像制作</div>
+                    <ul>
+                        <li>Photoshop/Illustrator等のスキルが必要</li>
+                        <li>素材サイトで有料ダウンロード</li>
+                        <li>画像生成AIは別サービスで課金</li>
+                        <li>日本語テキストは文字化けしがち</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">Nano Banana Pro</div>
+                    <ul>
+                        <li>チャットで「〇〇の画像を作って」と指示するだけ</li>
+                        <li>Antigravity内で完結、追加料金なし</li>
+                        <li>プレビュー期間中は無料で使い放題</li>
+                        <li>日本語テキストも95%の精度で正確描画</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Nano Banana Proの起動方法</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Playgroundを開く</h3>
+                        <p>Antigravityの画面右側にあるPlayground（チャット画面）を表示します。まだ開いていない場合は、メニューから「View > Playground」を選択。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>モデルを確認</h3>
+                        <p>Playground上部のモデル選択が「Gemini 3 Pro」または「Gemini 3 Pro Image」になっていることを確認。これがNano Banana Proのベースです。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>画像生成を依頼</h3>
+                        <p>チャットに「〇〇のアイコンを作成して」「〇〇のイラストを生成して」と入力するだけ。AIが自動で画像を生成します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">// 画像生成の基本的な指示例
+
+「青いグラデーションの丸いアイコンを作成して」
+
+「シンプルなフラットデザインのユーザーアイコンを作って」
+
+「このアプリのロゴを作成して。モダンでミニマルなデザインで」</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">開発で使える4つの画像生成パターン</h2>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">パターン1</div>
+                    <h3>アイコン生成</h3>
+                    <p>アプリ用のカスタムアイコンを作成。フラットデザイン、グラデーション、アウトラインなど様々なスタイルに対応。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">パターン2</div>
+                    <h3>UIモックアップ</h3>
+                    <p>ワイヤーフレームやデザイン案を画像として生成。「ログイン画面のモックアップを作って」のように指示。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">パターン3</div>
+                    <h3>イラスト・ヒーロー画像</h3>
+                    <p>ランディングページ用のヒーロー画像や説明用イラストを生成。「SaaS紹介用のビジネスイラスト」など。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">パターン4</div>
+                    <h3>日本語テキスト入り画像</h3>
+                    <p>看板、ポスター、バナーなど日本語テキストが入った画像も高精度で生成。「『新規登録はこちら』と書かれたボタン画像」など。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実践：アイコンセットを作成する</h2>
+
+            <div class="note-card">
+                <h4>一貫したデザインのアイコンを量産</h4>
+                <p>ここでは、Webアプリ用のアイコンセットを作成してみましょう。スタイルを統一することで、プロ品質のUIを実現できます。</p>
+            </div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>スタイルを指定</h3>
+                        <p>まず、アイコン全体のスタイルを決めます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">// Playgroundへの指示
+
+「これから複数のアイコンを作成します。以下のスタイルで統一してください：
+- フラットデザイン
+- 青のグラデーション（#3B82F6 → #1D4ED8）
+- 角丸の正方形ベース（128x128px）
+- 白いシンボル
+
+まず、ホームアイコンを作成してください」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>順番に生成</h3>
+                        <p>スタイルが確定したら、必要なアイコンを順番に依頼します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「同じスタイルで設定アイコンを作成して」
+
+「同じスタイルでユーザープロフィールアイコンを作成して」
+
+「同じスタイルで通知ベルのアイコンを作成して」
+
+「同じスタイルで検索虫眼鏡のアイコンを作成して」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>画像を保存</h3>
+                        <p>生成された画像はPlayground内に表示されます。右クリック→「名前を付けて画像を保存」、またはプロジェクトフォルダに自動保存するよう依頼できます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「生成した全てのアイコンを /images/icons フォルダに保存して」</div>
+
+            <div class="success-card">
+                <h4>ポイント</h4>
+                <p>「同じスタイルで」と指示することで、AIは前回の設定を引き継ぎます。統一感のあるアイコンセットが簡単に作れます！</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実践：ヒーロー画像付きランディングページ</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>ヒーロー画像を生成</h3>
+                        <p>まずランディングページ用のメインビジュアルを作成します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「SaaSプロダクトのランディングページ用ヒーロー画像を作成してください。
+- モダンでプロフェッショナルなビジネスイメージ
+- 青と白を基調としたグラデーション
+- 抽象的なテクノロジー感のあるデザイン
+- 16:9の横長アスペクト比
+- テキストオーバーレイ用に中央を少し暗くして」</div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>ランディングページを生成</h3>
+                        <p>ヒーロー画像ができたら、それを使ったHTMLを生成します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">「今作成したヒーロー画像を使って、シンプルなランディングページを作成して。
+- ヒーロー画像を背景に配置
+- 中央に白文字で「AI時代の業務効率化」というタイトル
+- その下に「今すぐ始める」ボタン
+- モダンなデザインで」</div>
+
+            <div class="success-card">
+                <h4>画像生成からコード生成まで一気通貫</h4>
+                <p>Nano Banana Proで画像を作り、そのままAntigravityでHTMLに組み込む。従来なら複数のツールを行き来する作業が、全てチャット1つで完結します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">日本語テキスト画像の生成</h2>
+
+            <div class="note-card">
+                <h4>他の画像生成AIとの大きな違い</h4>
+                <p>多くの画像生成AIは日本語テキストが文字化けしますが、Nano Banana Pro（Gemini 3 Pro Image）は95%の精度で日本語を正確に描画できます。これは2025年3月のGoogleブログで発表された大きな進化です。</p>
+            </div>
+
+            <div class="code-block">// 日本語テキスト入り画像の指示例
+
+「『無料相談受付中』と書かれた赤いバナー画像を作成して」
+
+「『田中商店』と書かれた和風の看板画像を作成して」
+
+「『SALE 50% OFF 期間限定』と書かれたセールバナーを作成して」</div>
+
+            <div class="warning-card">
+                <h4>注意点</h4>
+                <p>100%ではないため、生成結果は必ず確認しましょう。複雑な漢字や特殊なフォントの場合は、何度か再生成が必要になることもあります。「もう一度生成して」と言えばOK。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">効果的なプロンプトのコツ</h2>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>要素</th>
+                            <th>指定例</th>
+                            <th>効果</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>スタイル</td>
+                            <td>フラットデザイン、リアル、イラスト調</td>
+                            <td>画像のテイストを決定</td>
+                        </tr>
+                        <tr>
+                            <td>カラー</td>
+                            <td>#3B82F6、青と白、パステルカラー</td>
+                            <td>色味を統一</td>
+                        </tr>
+                        <tr>
+                            <td>サイズ</td>
+                            <td>128x128px、16:9、正方形</td>
+                            <td>用途に合わせた比率</td>
+                        </tr>
+                        <tr>
+                            <td>背景</td>
+                            <td>透明、白背景、グラデーション</td>
+                            <td>使いやすさ向上</td>
+                        </tr>
+                        <tr>
+                            <td>雰囲気</td>
+                            <td>モダン、プロフェッショナル、カジュアル</td>
+                            <td>ブランドイメージに合わせる</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">悪い例</div>
+                    <ul>
+                        <li>「アイコン作って」（何のアイコンか不明）</li>
+                        <li>「きれいな画像」（曖昧すぎる）</li>
+                        <li>「いい感じで」（スタイル不明）</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">良い例</div>
+                    <ul>
+                        <li>「128x128の青いフラットデザインのホームアイコン」</li>
+                        <li>「SaaS用の16:9モダンなヒーロー画像」</li>
+                        <li>「角丸・白背景・パステルブルーの設定アイコン」</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">生成画像の活用方法</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">方法1</div>
+                    <div>
+                        <h3>直接HTMLに組み込み</h3>
+                        <p>「この画像をプロジェクトに保存して、HTMLに埋め込んで」と依頼すれば、画像保存からimg要素の追加まで自動で行われます。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">方法2</div>
+                    <div>
+                        <h3>CSSの背景画像として</h3>
+                        <p>「この画像をヒーローセクションの背景に設定して」と言えば、CSSのbackground-imageプロパティとして適用されます。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">方法3</div>
+                    <div>
+                        <h3>外部書き出し</h3>
+                        <p>右クリックで画像を保存し、他のツール（Figma、Canvaなど）で加工することも可能です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">課題：カスタムアイコンセット＆ランディングページ</h2>
+
+            <div class="warning-card">
+                <h4>今回の課題</h4>
+                <p>Nano Banana Proを使って、以下を作成してみましょう：</p>
+            </div>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">課題1</div>
+                    <h3>アイコンセット（5個）</h3>
+                    <p>統一されたスタイルで、ホーム・設定・ユーザー・通知・検索の5つのアイコンを作成</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題2</div>
+                    <h3>ヒーロー画像</h3>
+                    <p>自分のサービス（架空でOK）のランディングページ用メインビジュアルを作成</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題3</div>
+                    <h3>日本語バナー</h3>
+                    <p>日本語テキストが入ったプロモーション用バナー画像を作成</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">課題4</div>
+                    <h3>HTMLに組み込み</h3>
+                    <p>作成した画像を使ったシンプルなランディングページをAntigravityで生成</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Nano Banana Pro＝Antigravity内蔵の無料画像生成AI</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>アイコン、UIモックアップ、イラスト、日本語テキスト画像が生成可能</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>日本語テキストも95%の精度で正確に描画</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>「同じスタイルで」と指示すれば統一されたデザインを量産</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>画像生成からHTML組み込みまで全てAntigravity内で完結</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="index.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧
+            </a>
+            <a href="lesson2.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

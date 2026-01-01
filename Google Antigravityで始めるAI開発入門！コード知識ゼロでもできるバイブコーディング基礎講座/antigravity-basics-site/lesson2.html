@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2回：5分で完了！Antigravityインストールから日本語化まで | バイブコーディング基礎講座</title>
+    <meta name="description" content="Antigravityのセットアップと基本画面の理解">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 2/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">02</div>
+            <h1 class="lesson-title">5分で完了！Antigravityインストールから日本語化まで完全ガイド</h1>
+            <p class="lesson-subtitle">セットアップと基本画面の理解</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>Google Antigravityをダウンロード・インストールし、日本語化して使える状態にします。基本画面の構成を理解し、最初の「Hello World」を表示させるところまで到達しましょう。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">動作環境の確認</h2>
+
+            <div class="warning-card">
+                <h4>事前に確認してください</h4>
+                <p>Antigravityを使うには、いくつかの条件があります。特にMacユーザーはApple Silicon（M1/M2/M3/M4）が必須です。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>要件</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mac</td>
+                            <td>Apple Silicon（M1/M2/M3/M4）必須。Intel Macは非対応</td>
+                        </tr>
+                        <tr>
+                            <td>Windows</td>
+                            <td>Windows 10以降、64bit</td>
+                        </tr>
+                        <tr>
+                            <td>Linux</td>
+                            <td>Ubuntu 20.04以降、Debian系</td>
+                        </tr>
+                        <tr>
+                            <td>Googleアカウント</td>
+                            <td>個人用（@gmail.com）のみ対応。Workspaceアカウントは未対応</td>
+                        </tr>
+                        <tr>
+                            <td>インターネット</td>
+                            <td>常時接続が必要（AIモデルはクラウドで動作）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="note-card">
+                <h4>Macのチップ確認方法</h4>
+                <p>メニューバーの「」→「このMacについて」で「チップ」の項目を確認。「Apple M1」「Apple M2」などと表示されていればOK。「Intel」と表示されている場合は非対応です。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">ダウンロードとインストール</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>公式サイトにアクセス</h3>
+                        <p>ブラウザで <code>https://antigravity.google/download</code> にアクセスします。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>OSを選択してダウンロード</h3>
+                        <p>Mac / Windows / Linux から自分の環境を選択し、「Download」ボタンをクリック。ダウンロードが開始されます。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>インストール（Mac）</h3>
+                        <p>ダウンロードした .dmg ファイルを開き、Antigravityアイコンを「Applications」フォルダにドラッグ＆ドロップ。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>インストール（Windows）</h3>
+                        <p>ダウンロードした .exe ファイルをダブルクリックし、インストーラーの指示に従って進めます。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>初回起動</h3>
+                        <p>アプリケーションからAntigravityを起動。初回はセキュリティの確認が出る場合があります。「開く」を選択してください。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Googleアカウントでサインイン</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>サインイン画面が表示される</h3>
+                        <p>初回起動時、Googleアカウントでのサインインを求められます。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>ブラウザでログイン</h3>
+                        <p>ブラウザが開き、Googleアカウントの選択画面が表示されます。個人用のGmailアカウントを選択。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>認証を完了</h3>
+                        <p>必要な権限を許可し、認証を完了します。成功すると自動的にAntigravityに戻ります。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-card">
+                <h4>Workspaceアカウントは未対応</h4>
+                <p>会社や学校で使用しているGoogle Workspace（@会社名.com など）のアカウントでは現在ログインできません。個人用の@gmail.comアカウントを使用してください。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">日本語化の設定</h2>
+
+            <div class="note-card">
+                <h4>デフォルトは英語表示</h4>
+                <p>Antigravityは初期状態では英語表示です。日本語パックをインストールして日本語化しましょう。</p>
+            </div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>コマンドパレットを開く</h3>
+                        <p><strong>Mac:</strong> Cmd + Shift + P<br><strong>Windows:</strong> Ctrl + Shift + P</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>言語設定を検索</h3>
+                        <p>「Configure Display Language」と入力し、表示されたコマンドを選択します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>日本語を選択</h3>
+                        <p>言語一覧から「日本語 (ja)」を選択します。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>再起動</h3>
+                        <p>「Restart」をクリックしてAntigravityを再起動。メニューが日本語になっていれば成功！</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-card">
+                <h4>別の方法：拡張機能から</h4>
+                <p>左サイドバーの「拡張機能」アイコンをクリック → 「Japanese Language Pack for Visual Studio Code」を検索 → インストール → 再起動でも日本語化できます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">基本画面の構成</h2>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">画面1</div>
+                    <h3>Agent Manager</h3>
+                    <p>起動時に表示されるダッシュボード。複数のエージェントを管理・監視。タスクの進捗状況が一覧で確認できます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">画面2</div>
+                    <h3>Editor</h3>
+                    <p>VSCodeと同じエディタ画面。ファイルツリー、コードエディタ、ターミナルなど。AIが生成したコードを確認・編集。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">画面3</div>
+                    <h3>Playground</h3>
+                    <p>AIとチャット形式で対話する画面。ここに日本語で指示を入力すると、AIがタスクを実行します。</p>
+                </div>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Tips</div>
+                    <div>
+                        <h3>画面の切り替え方</h3>
+                        <p>左サイドバーのアイコンで画面を切り替えられます。一番上がAgent Manager、その下がExplorer（ファイル）、さらに下がPlayground用のチャットアイコンです。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">無料枠と利用制限</h2>
+
+            <div class="note-card">
+                <h4>プレビュー期間は無料</h4>
+                <p>現在、Antigravityはパブリックプレビューとして無料で提供されています。ただし、利用制限があります。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>内容</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>利用制限</td>
+                            <td>一定量の利用後、約5時間のクールタイムが発生</td>
+                        </tr>
+                        <tr>
+                            <td>モデル別制限</td>
+                            <td>Gemini 3 Pro、Claude、GPT-OSSはそれぞれ個別に制限</td>
+                        </tr>
+                        <tr>
+                            <td>制限の回避</td>
+                            <td>複数のモデルを切り替えて使うことで継続利用可能</td>
+                        </tr>
+                        <tr>
+                            <td>有料プラン</td>
+                            <td>Google One経由で月額約3,000円のProプランあり（制限緩和）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warning-card">
+                <h4>制限に達したら</h4>
+                <p>「Rate limit exceeded」と表示されたら、別のAIモデルに切り替えるか、約5時間待つとリセットされます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">初めてのHello World</h2>
+
+            <div class="note-card">
+                <h4>動作確認をしてみよう</h4>
+                <p>正しくセットアップできたか、簡単なテストをしてみましょう。</p>
+            </div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Playgroundを開く</h3>
+                        <p>左サイドバーからチャットアイコンをクリック、またはメニューから「Playground」を選択。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>指示を入力</h3>
+                        <p>チャット欄に以下のように入力してEnter：<br><br><code>「Hello World」と表示するだけのシンプルなHTMLページを作って</code></p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>AIの処理を見守る</h3>
+                        <p>AIがタスクを分析し、コードを生成していく様子が表示されます。数秒〜数十秒で完了。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>結果を確認</h3>
+                        <p>生成されたHTMLファイルをブラウザで開き、「Hello World」が表示されれば成功！</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-card">
+                <h4>おめでとうございます！</h4>
+                <p>これであなたも「コードを書かずにWebページを作れた」ことになります。これがバイブコーディングの第一歩です。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>動作環境を確認（Mac: M1以降必須、個人Googleアカウント必要）</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>公式サイトからダウンロード・インストール完了</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Googleアカウントでサインイン完了</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>日本語パックで日本語化完了</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Hello Worldを表示して動作確認完了</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson1.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson3.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

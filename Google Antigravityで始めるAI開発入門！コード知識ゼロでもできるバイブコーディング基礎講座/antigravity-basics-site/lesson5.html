@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回：実践！日本語だけで作る「自分専用Webツール」 | バイブコーディング基礎講座</title>
+    <meta name="description" content="完成度の高いツールを一人で作り上げる">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 5/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">05</div>
+            <h1 class="lesson-title">実践！日本語だけで作る「自分専用Webツール」</h1>
+            <p class="lesson-subtitle">完成度の高いツールを一人で作り上げる</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>これまで学んだ知識を総動員して、実用的な「自分専用Webツール」を完成させます。要件整理から段階的な実装、動作確認まで、一連の開発フローを体験し、バイブコーディングをマスターしましょう。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">作れるツールのアイデア集</h2>
+
+            <div class="note-card">
+                <h4>自分が使いたいものを作ろう</h4>
+                <p>以下はアイデアの例です。自分の仕事や生活で「あったら便利」と思うものを選んでください。</p>
+            </div>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">業務系</div>
+                    <h3>経費メモ</h3>
+                    <p>日付、金額、用途を入力して記録。合計金額も自動計算。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">業務系</div>
+                    <h3>議事録テンプレート</h3>
+                    <p>日時、参加者、議題、決定事項を入力するフォーム。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">趣味系</div>
+                    <h3>読書記録</h3>
+                    <p>本のタイトル、著者、感想、評価を記録。一覧表示も。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">趣味系</div>
+                    <h3>映画鑑賞ログ</h3>
+                    <p>映画名、鑑賞日、評価、メモを保存。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">生活系</div>
+                    <h3>買い物リスト</h3>
+                    <p>買うものを追加、買ったらチェック、不要なら削除。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">生活系</div>
+                    <h3>習慣トラッカー</h3>
+                    <p>毎日の習慣（運動、読書など）をチェック。達成率も表示。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">便利系</div>
+                    <h3>単位変換ツール</h3>
+                    <p>長さ、重さ、温度などの単位を変換。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">便利系</div>
+                    <h3>タイマー/ストップウォッチ</h3>
+                    <p>ポモドーロタイマーやカウントダウン機能。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">開発の進め方（5ステップ）</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>要件を整理する</h3>
+                        <p>何を作るか、どんな機能が必要か、誰が使うか、どんな見た目がいいかをメモに書き出す。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>優先順位をつける</h3>
+                        <p>全ての機能を一度に作らない。「絶対必要」「あると便利」「できれば」に分類。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>基本機能を実装する</h3>
+                        <p>「絶対必要」な機能から順番に実装。動作確認しながら進める。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>追加機能を実装する</h3>
+                        <p>基本が動いたら「あると便利」な機能を追加。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>デザインを調整する</h3>
+                        <p>最後に見た目を整える。色、フォント、余白など。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実践例：経費メモツールを作る</h2>
+
+            <div class="note-card">
+                <h4>今回作るもの</h4>
+                <p>日々の経費を記録し、合計金額を自動計算するシンプルなツール。ブラウザのローカルストレージに保存し、ページを閉じてもデータが残ります。</p>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Step 1</div>
+                    <div>
+                        <h3>要件を整理</h3>
+                        <p>紙やメモ帳に以下を書き出してみましょう：</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">【経費メモツール 要件】
+
+■ 絶対必要な機能
+- 日付を入力できる
+- 金額を入力できる
+- 用途（何に使ったか）を入力できる
+- 「追加」ボタンで一覧に追加
+- 合計金額を表示
+
+■ あると便利な機能
+- 各項目を削除できる
+- データがブラウザに保存される
+- カテゴリ（食費、交通費など）で分類
+
+■ デザイン
+- シンプルで見やすい
+- 金額は右寄せで見やすく
+- スマホでも使えるサイズ</div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Step 2</div>
+                    <div>
+                        <h3>基本機能を実装</h3>
+                        <p>Antigravityで以下のように指示を入力：</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">経費メモツールを作ってください。
+
+【基本機能】
+- 日付入力欄（デフォルトは今日）
+- 金額入力欄（数値のみ）
+- 用途入力欄（テキスト）
+- 「追加」ボタン
+
+ボタンを押すと、入力した内容が一覧として表示されます。
+一覧の下に、合計金額を「合計: ¥10,000」のように表示してください。
+
+まずはこの基本機能だけで作ってください。</div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Step 3</div>
+                    <div>
+                        <h3>動作確認</h3>
+                        <p>生成されたファイルをブラウザで開き、以下を確認：</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>日付、金額、用途を入力できるか？</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>追加ボタンを押すとリストに追加されるか？</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>合計金額が正しく計算されているか？</span>
+                </div>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Step 4</div>
+                    <div>
+                        <h3>追加機能を実装</h3>
+                        <p>基本が動いたら、追加機能を依頼：</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">以下の機能を追加してください：
+
+1. 各項目の右に「削除」ボタンを追加。押すとその項目が消える。
+
+2. データをブラウザのlocalStorageに保存して、
+   ページを閉じても次回開いた時にデータが残るようにして。
+
+3. カテゴリ選択を追加（食費、交通費、備品、その他）。
+   一覧にもカテゴリを表示。</div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Step 5</div>
+                    <div>
+                        <h3>デザインを調整</h3>
+                        <p>最後に見た目を整えます：</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">デザインを整えてください：
+
+- 背景: 薄いグレー（#f5f5f5）
+- カード部分: 白背景、薄い影
+- メインカラー: 緑（#22c55e）で金額関連に使用
+- 金額は右寄せ、太字で表示
+- 合計金額は目立つように大きく
+- カテゴリはラベル形式（色分け）で表示
+- スマホでも使いやすいようにボタンを大きめに</div>
+
+            <div class="success-card">
+                <h4>完成おめでとうございます！</h4>
+                <p>これで実用的な経費メモツールが完成しました。実際に使ってみて、改善点があればどんどん追加指示を出してカスタマイズしましょう。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">エラーが出たときの対処法</h2>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>状況</th>
+                            <th>対処法</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ページが真っ白</td>
+                            <td>「ページが表示されません。エラーを確認して修正してください」</td>
+                        </tr>
+                        <tr>
+                            <td>ボタンが動かない</td>
+                            <td>「追加ボタンを押しても何も起きません。JavaScriptを確認して」</td>
+                        </tr>
+                        <tr>
+                            <td>レイアウトが崩れる</td>
+                            <td>「スマホで表示するとレイアウトが崩れます。レスポンシブ対応して」</td>
+                        </tr>
+                        <tr>
+                            <td>計算が間違っている</td>
+                            <td>「合計金額の計算が間違っています。数値の合計ロジックを確認して」</td>
+                        </tr>
+                        <tr>
+                            <td>データが保存されない</td>
+                            <td>「ページを再読み込みするとデータが消えます。localStorageに保存して」</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warning-card">
+                <h4>困ったらスクリーンショットを見せる</h4>
+                <p>「こんな状態になっています」とスクリーンショットの説明を加えると、AIが問題を特定しやすくなります。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">完成したツールの活用方法</h2>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">方法1</div>
+                    <h3>ローカルで使う</h3>
+                    <p>index.htmlをダブルクリックしてブラウザで開くだけ。ブックマークしておくと便利。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">方法2</div>
+                    <h3>フォルダを共有</h3>
+                    <p>フォルダごとZIP圧縮して、同僚や友人に送れば同じツールが使えます。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">方法3</div>
+                    <h3>クラウドに保存</h3>
+                    <p>Google DriveやDropboxにフォルダを置けば、複数デバイスからアクセス可能。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">方法4</div>
+                    <h3>Webに公開</h3>
+                    <p>GitHub Pagesなど無料ホスティングで公開すれば、URLでアクセス可能に。（応用講座で解説）</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">次のステップ</h2>
+
+            <div class="feature-highlight">
+                <h3>応用講座でさらにパワーアップ</h3>
+                <p>基礎講座お疲れ様でした！さらに高度なテクニックを学びたい方は、応用講座へお進みください。</p>
+            </div>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">応用1</div>
+                    <h3>Nano Banana Pro</h3>
+                    <p>内蔵の画像生成AIで、アイコンやイラストを無料で生成。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">応用2</div>
+                    <h3>ブラウザエージェント</h3>
+                    <p>AIがブラウザを自動操作してテスト。マニュアル作成も自動化。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">応用3</div>
+                    <h3>MCP連携</h3>
+                    <p>GitHub、Notion、Slackなど外部ツールと連携。</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">応用4</div>
+                    <h3>本格Webアプリ</h3>
+                    <p>全ての技術を組み合わせた本格的なアプリ開発。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">コース完了おめでとうございます！</h2>
+
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">受講前</div>
+                    <ul>
+                        <li>プログラミングは難しそう</li>
+                        <li>コードなんて書けない</li>
+                        <li>エンジニアに頼まないと...</li>
+                        <li>アイデアはあるけど形にできない</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">受講後</div>
+                    <ul>
+                        <li>日本語で指示するだけでOK</li>
+                        <li>AIがコードを書いてくれる</li>
+                        <li>自分でツールが作れる</li>
+                        <li>思いついたアイデアをすぐ形に</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>バイブコーディングの概念を理解した</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Antigravityをインストール・日本語化できた</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>日本語の指示でWebページを作成できた</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>効果的な指示の出し方を習得した</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>実用的な自分専用ツールを完成させた</span>
+                </div>
+            </div>
+
+            <div class="success-card">
+                <h4>あなたはもう「バイブコーダー」です！</h4>
+                <p>コードを書かずにアプリを作れるスキルを身につけました。これからは「こんなツールがあったらいいな」と思ったら、自分で作れます。どんどん挑戦していきましょう！</p>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson4.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="index.html" class="nav-next">
+                コース一覧へ
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>

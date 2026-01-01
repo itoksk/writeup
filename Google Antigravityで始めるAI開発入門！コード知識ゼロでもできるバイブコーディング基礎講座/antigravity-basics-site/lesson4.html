@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4回：AIエージェントを使いこなせ！思い通りの結果を引き出す指示の出し方 | バイブコーディング基礎講座</title>
+    <meta name="description" content="プロンプトエンジニアリングの基礎">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="lesson-style.css">
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                コース一覧に戻る
+            </a>
+            <div class="nav-lesson">Lesson 4/5</div>
+        </div>
+    </nav>
+
+    <main class="lesson">
+        <header class="lesson-header">
+            <div class="lesson-number">04</div>
+            <h1 class="lesson-title">AIエージェントを使いこなせ！思い通りの結果を引き出す指示の出し方</h1>
+            <p class="lesson-subtitle">プロンプトエンジニアリングの基礎</p>
+        </header>
+
+        <section class="lesson-section">
+            <h2 class="section-title">このレッスンのゴール</h2>
+            <div class="goal-card">
+                <p>より精度の高い結果を得るための「良い指示の出し方」を習得します。曖昧な指示と具体的な指示の違い、PlanningモードとFastモードの使い分け、段階的に指示を出すテクニックを学びましょう。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">良い指示と悪い指示の違い</h2>
+
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-header">悪い指示の例</div>
+                    <ul>
+                        <li>「いい感じのサイト作って」</li>
+                        <li>「ToDoアプリ」</li>
+                        <li>「かっこよくして」</li>
+                        <li>「ちゃんと動くやつ」</li>
+                        <li>「前のやつをもっと良くして」</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <div class="comparison-header">良い指示の例</div>
+                    <ul>
+                        <li>「白背景でシンプルな会社紹介サイト」</li>
+                        <li>「タスクを追加・削除・完了マークできるToDoアプリ」</li>
+                        <li>「青と白のカラーで、角丸のボタン」</li>
+                        <li>「追加ボタンを押したらリストに表示される」</li>
+                        <li>「ヘッダーの文字サイズを24pxに変更」</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="note-card">
+                <h4>ポイント：5W1Hで考える</h4>
+                <p>What（何を）、Who（誰向け）、Where（どこで使う）、When（いつ表示）、Why（なぜ必要）、How（どう動く）を意識すると、具体的な指示になります。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">具体的に伝えるべき5つの要素</h2>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>何を作るか（What）</h3>
+                        <p>「Webページ」「計算ツール」「ToDoアプリ」など、作りたいものの種類を明確に。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>どんなデザインか（Design）</h3>
+                        <p>色（青と白）、雰囲気（シンプル、ポップ、プロフェッショナル）、レイアウト（中央揃え、2カラム）など。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>どんな機能か（Function）</h3>
+                        <p>「追加ボタンを押すとリストに追加される」「削除ボタンで消せる」など、動作を具体的に。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>誰向けか（Target）</h3>
+                        <p>「自分用」「社内向け」「お客様向け」で、適切な複雑さや言葉遣いが変わります。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>どう動作するか（Behavior）</h3>
+                        <p>「ボタンを押したら〜」「入力したら〜」など、ユーザーのアクションと結果を説明。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">// 悪い指示
+ToDoアプリ作って
+
+// 良い指示
+シンプルなToDoアプリを作ってください。
+
+【機能】
+- テキスト入力欄にタスクを入力
+- 「追加」ボタンでリストに追加
+- 各タスクに「完了」チェックボックス
+- 完了したタスクは打ち消し線で表示
+- 「削除」ボタンでタスクを削除
+
+【デザイン】
+- 白背景、グレーのボーダー
+- 追加ボタンは青色
+- フォントはシンプルなゴシック体
+- スマホでも使いやすいサイズ</div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Planning モード vs Fast モード</h2>
+
+            <div class="note-card">
+                <h4>2つのモードを使い分ける</h4>
+                <p>Antigravityには「Planning」と「Fast」の2つの会話モードがあります。タスクの複雑さに応じて使い分けましょう。</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>Planning モード</th>
+                            <th>Fast モード</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>向いているタスク</td>
+                            <td>複雑なアプリ、複数ファイル、調査が必要</td>
+                            <td>簡単な修正、1ファイルの変更</td>
+                        </tr>
+                        <tr>
+                            <td>処理の流れ</td>
+                            <td>計画を立ててから実行</td>
+                            <td>すぐに実行</td>
+                        </tr>
+                        <tr>
+                            <td>精度</td>
+                            <td>高い（計画を確認できる）</td>
+                            <td>普通（素早さ重視）</td>
+                        </tr>
+                        <tr>
+                            <td>時間</td>
+                            <td>やや長い</td>
+                            <td>短い</td>
+                        </tr>
+                        <tr>
+                            <td>例</td>
+                            <td>「ToDoアプリを一から作って」</td>
+                            <td>「ボタンの色を青に変えて」</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Planning</div>
+                    <div>
+                        <h3>計画を確認してから実行</h3>
+                        <p>AIが「Implementation Plan」を表示。内容を確認してから「実行」を押すことで、意図と違う方向に進むのを防げます。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Fast</div>
+                    <div>
+                        <h3>すぐに実行</h3>
+                        <p>計画なしで即座に実行。色の変更やテキスト修正など、結果が明確な小さいタスクに最適。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-card">
+                <h4>モードの切り替え方</h4>
+                <p>チャット欄の上部にあるドロップダウンから「Planning」または「Fast」を選択できます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">段階的に指示を出すテクニック</h2>
+
+            <div class="note-card">
+                <h4>一度に全部伝えない</h4>
+                <p>複雑なものを作る時は、一度に全てを伝えるのではなく、段階的に指示を出すと精度が上がります。</p>
+            </div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>まず骨格を作る</h3>
+                        <p>「シンプルなToDoアプリの基本構造を作って。まずは追加機能だけ。」</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>動作を確認する</h3>
+                        <p>ブラウザで開いて、追加機能が動くか確認。</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>機能を追加する</h3>
+                        <p>「次に、削除ボタンを追加して。」</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>デザインを調整する</h3>
+                        <p>「最後に、全体のデザインを整えて。青と白ベースで。」</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-card">
+                <h4>なぜ段階的がいいのか</h4>
+                <p>一度に多くを伝えると、AIが混乱したり、一部を見落としたりすることがあります。小さく作って確認を繰り返す方が、結果的に速く正確に完成します。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">AIの提案を取捨選択する</h2>
+
+            <div class="note-card">
+                <h4>全て受け入れる必要はない</h4>
+                <p>AIは「こうしたらどうですか？」と提案してくることがあります。良いものは採用し、不要なものは断りましょう。</p>
+            </div>
+
+            <div class="element-grid">
+                <div class="element-card">
+                    <div class="element-number">返答例1</div>
+                    <h3>採用する場合</h3>
+                    <p>「いいね、その機能も追加して」「それでお願いします」</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">返答例2</div>
+                    <h3>断る場合</h3>
+                    <p>「その機能は今回は不要です」「シンプルにしたいので、提案の機能は省いて」</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">返答例3</div>
+                    <h3>一部採用する場合</h3>
+                    <p>「1つ目の提案だけ採用して、2つ目は省いてください」</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-number">返答例4</div>
+                    <h3>別のアイデアを伝える</h3>
+                    <p>「それより、こういう機能の方がいいです：〇〇」</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">Workflowsによる指示書の設定</h2>
+
+            <div class="note-card">
+                <h4>毎回同じことを伝えるのは面倒</h4>
+                <p>「日本語でコメントを書いて」「ファイル名は小文字で」など、毎回伝えるのは大変。Workflowsで事前に設定できます。</p>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-badge">Global</div>
+                    <div>
+                        <h3>全プロジェクト共通の指示</h3>
+                        <p>PC内の全てのプロジェクトに適用されるルール。設定ファイルはAntigravityの設定フォルダ内に。</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-badge">Workflows</div>
+                    <div>
+                        <h3>プロジェクト固有の指示</h3>
+                        <p>現在開いているフォルダ専用のルール。.antigravity フォルダ内に設定ファイルを配置。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">// .antigravity/workflows.md の例
+
+# プロジェクトルール
+
+## コーディング規約
+- 日本語でコメントを書く
+- 変数名は camelCase を使用
+- ファイル名は小文字のケバブケース（例：my-component.html）
+
+## デザインルール
+- メインカラー: #3B82F6（青）
+- フォント: Noto Sans JP
+- 角丸: 8px
+
+## その他
+- レスポンシブ対応必須
+- アクセシビリティを考慮</div>
+
+            <div class="success-card">
+                <h4>一度設定すれば毎回適用</h4>
+                <p>Workflowsを設定しておけば、「青色で」「日本語コメントで」と毎回言わなくても、自動的に適用されます。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">実践：ToDoアプリを作ってみよう</h2>
+
+            <div class="note-card">
+                <h4>学んだテクニックを活用</h4>
+                <p>段階的な指示でToDoアプリを作ってみましょう。</p>
+            </div>
+
+            <div class="code-block">【ステップ1：基本構造】
+シンプルなToDoアプリを作ってください。
+まずは以下の機能だけ：
+- テキスト入力欄
+- 「追加」ボタン
+- タスクのリスト表示
+
+【ステップ2：削除機能】
+各タスクの横に「削除」ボタンを追加してください。
+ボタンを押すとそのタスクが消えるようにして。
+
+【ステップ3：完了機能】
+チェックボックスを追加して、
+チェックしたタスクは打ち消し線で表示されるようにして。
+
+【ステップ4：デザイン調整】
+デザインを整えてください：
+- 背景: 白
+- メインカラー: 青（#3B82F6）
+- 角丸のボタン
+- タスクカードに薄い影
+- スマホでも使いやすいサイズ</div>
+
+            <div class="success-card">
+                <h4>完成！</h4>
+                <p>4ステップで、しっかり動くToDoアプリが完成したはずです。一度に全部伝えるより、確実に動くものができあがります。</p>
+            </div>
+        </section>
+
+        <section class="lesson-section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>具体的に伝える：何を、どんなデザインで、どんな機能で</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Planningモード（複雑なタスク）とFastモード（簡単な修正）を使い分ける</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>段階的に指示：基本→確認→追加→調整の流れ</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>AIの提案は取捨選択して、主導権は自分が持つ</span>
+                </div>
+                <div class="checklist-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    <span>Workflowsで繰り返しの指示を自動化</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="lesson-nav">
+            <a href="lesson3.html" class="nav-prev">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                前のレッスン
+            </a>
+            <a href="lesson5.html" class="nav-next">
+                次のレッスン
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </nav>
+    </main>
+</body>
+</html>
